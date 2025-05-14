@@ -11,6 +11,11 @@ require "roast/workflow"
 module Roast
   ROOT = File.expand_path("../..", __FILE__)
 
+
+
+
+
+
   class CLI < Thor
     desc "execute [WORKFLOW_CONFIGURATION_FILE] [FILES...]", "Run a configured workflow"
     option :concise, type: :boolean, aliases: "-c", desc: "Optional flag for use in output templates"
