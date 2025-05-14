@@ -12,8 +12,6 @@ end
 
 task test: [:minitest]
 
-RuboCop::RakeTask.new do |task|
-  task.options = ["--autocorrect"]
-end
+RuboCop::RakeTask.new
 
 task default: [:test, :rubocop]
