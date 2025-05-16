@@ -1,4 +1,7 @@
 name: Targetless Workflow
+api_provider: openai
+api_token: test_openai_token
+
 tools: 
   - Roast::Tools::Grep
   - Roast::Tools::ReadFile

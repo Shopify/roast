@@ -8,7 +8,16 @@ require "active_support/notifications"
 class RoastWorkflowConfigurationParserTest < ActiveSupport::TestCase
   def setup
     @workflow_path = fixture_file("workflow/workflow.yml")
+    mock_openai_client = mock
+    OpenAI::Client.stubs(:new).with(access_token: "test_openai_token").returns(mock_openai_client)
+    mock_openai_client.stubs(:models).returns(mock_openai_client)
+    mock_openai_client.stubs(:list).returns([])
     @parser = Roast::Workflow::ConfigurationParser.new(@workflow_path)
+  end
+
+  def teardown
+    OpenAI::Client.unstub(:new) if OpenAI::Client.respond_to?(:unstub)
+    OpenRouter::Client.unstub(:new) if OpenRouter::Client.respond_to?(:unstub)
   end
 
   def capture_stderr
@@ -23,6 +32,16 @@ class RoastWorkflowConfigurationParserTest < ActiveSupport::TestCase
   def test_initialize_with_example_workflow
     assert_instance_of(Roast::Workflow::Configuration, @parser.configuration)
     assert_equal("run_coverage", @parser.configuration.steps.first)
+  end
+
+  def test_no_api_key_provided
+    workflow_path = fixture_file("openrouter_no_api_token_workflow.yml")
+
+    error = assert_raises(Roast::AuthenticationError) do
+      Roast::Workflow::ConfigurationParser.new(workflow_path)
+    end
+
+    assert_equal("API authentication failed: No API token provided or token is invalid", error.message)
   end
 
   def test_begin_without_files_or_target_runs_targetless_workflow

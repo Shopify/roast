@@ -3,6 +3,7 @@
 require "raix"
 require "thor"
 require "roast/version"
+require "roast/errors"
 require "roast/tools"
 require "roast/helpers"
 require "roast/resources"
