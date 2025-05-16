@@ -26,7 +26,9 @@ module Roast
 
       def call(prompt)
         Roast::Helpers::Logger.info("🤖 Running CodingAgent\n")
-        run_claude_code(prompt)
+        run_claude_code(prompt).tap do |result|
+          Roast::Helpers::Logger.info(result)
+        end
       rescue StandardError => e
         "Error running CodingAgent: #{e.message}".tap do |error_message|
           Roast::Helpers::Logger.error(error_message + "\n")
@@ -37,7 +39,7 @@ module Roast
       private
 
       def run_claude_code(prompt)
-        Roast::Helpers::Logger.debug("🤖 Executing Claude Code CLI with prompt: #{prompt}\n")
+        Roast::Helpers::Logger.info("🤖 Executing Claude Code CLI with prompt: #{prompt}\n")
 
         # Create a temporary file with a unique name
         timestamp = Time.now.to_i
