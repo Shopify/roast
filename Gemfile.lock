@@ -52,6 +52,7 @@ GEM
       faraday (~> 2.0)
     ffi (1.17.2)
     ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x86_64-linux-gnu)
     formatador (1.1.0)
     guard (2.19.1)
       formatador (>= 0.2.4)
@@ -161,6 +162,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-23
+  x86_64-linux
 
 DEPENDENCIES
   cgi
