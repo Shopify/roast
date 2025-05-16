@@ -16,6 +16,12 @@ $LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 # Require the main file
 require "roast"
 
+module Minitest
+  class << self
+    alias_method :at_exit, :original_at_exit
+  end
+end
+
 # Require test helpers
 require_relative "support/fixture_helpers"
 require_relative "support/improved_assertions"
