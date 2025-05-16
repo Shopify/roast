@@ -26,7 +26,7 @@ module Roast
       end
 
       def call(glob_pattern, path = ".")
-        Roast::Helpers::Logger.info("🔍 Searching for: '#{glob_pattern}' in '#{path}'\n")
+        Roast::Helpers::Logger.info("🔍 Searching for: '#{glob_pattern}' in '#{File.expand_path(path)}'\n")
         search_for(glob_pattern, path).then do |results|
           return "No results found for #{glob_pattern} in #{path}" if results.empty?
           return read_contents(results.first) if results.size == 1
