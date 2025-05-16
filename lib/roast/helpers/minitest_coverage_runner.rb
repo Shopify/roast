@@ -4,16 +4,6 @@ require "coverage"
 require "minitest"
 require_relative "logger"
 
-# Disable the built-in `at_exit` hook for Minitest before anything else
-module Minitest
-  class << self
-    alias_method :original_at_exit, :at_exit
-    def at_exit(*)
-      # Do nothing to prevent autorun hooks
-    end
-  end
-end
-
 module Roast
   module Helpers
     class TestStatsCollector
