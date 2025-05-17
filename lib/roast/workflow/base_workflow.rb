@@ -87,17 +87,25 @@ module Roast
         })
 
         result
-      rescue => e
+      rescue Faraday::ResourceNotFound => e
+        execution_time = Time.now - start_time
+        message = e.response.dig(:body, "error", "message") || e.message
+        error = Roast::ResourceNotFoundError.new(message)
+        e.set_backtrace([])
+        log_and_raise_error(error, message, model, kwargs, execution_time)
+      rescue NoMethodError => e
         execution_time = Time.now - start_time
 
-        ActiveSupport::Notifications.instrument("roast.chat_completion.error", {
-          error: e.class.name,
-          message: e.message,
-          model: model,
-          parameters: kwargs.except(:openai),
-          execution_time: execution_time,
-        })
-        raise
+        if e.message.include?("undefined method 'chat' for nil")
+          error = Roast::AuthenticationError.new("API authentication failed: No API token provided or token is invalid")
+          e.set_backtrace([])
+          log_and_raise_error(error, error.message, model, kwargs, execution_time)
+        else
+          log_and_raise_error(e, e.message, model, kwargs, execution_time)
+        end
+      rescue => e
+        execution_time = Time.now - start_time
+        log_and_raise_error(e, e.message, model, kwargs, execution_time)
       end
 
       def workflow
@@ -105,6 +113,18 @@ module Roast
       end
 
       private
+
+      def log_and_raise_error(error, message, model, params, execution_time)
+        ActiveSupport::Notifications.instrument("roast.chat_completion.error", {
+          error: error.class.name,
+          message: message,
+          model: model,
+          parameters: params.except(:openai),
+          execution_time: execution_time,
+        })
+
+        raise error
+      end
 
       # Determine the directory where the actual class is defined, not BaseWorkflow
       def determine_context_path
