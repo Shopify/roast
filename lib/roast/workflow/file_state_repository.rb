@@ -27,7 +27,7 @@ module Roast
             workflow.file,
             timestamp: workflow.session_timestamp,
           )
-          step_file = File.join(session_dir, format_step_filename(state_data[:order], step_name))
+          step_file = File.join(session_dir, format_step_filename(state_data[:order], step_name)[0..29])
           File.write(step_file, JSON.pretty_generate(state_data))
         end
       rescue => e

@@ -13,7 +13,7 @@ module Roast
           base.class_eval do
             function(
               :search_for_file,
-              "Search for a file in the project using a glob pattern.",
+              "Search for a file in the project using a glob pattern to match the file name. Only the first 100 results are returned.",
               glob_pattern: { type: "string", description: "A glob pattern to search for. Example: 'test/**/*_test.rb'" },
               path: { type: "string", description: "path to search from" },
             ) do |params|
@@ -26,7 +26,8 @@ module Roast
       end
 
       def call(glob_pattern, path = ".")
-        Roast::Helpers::Logger.info("🔍 Searching for: '#{glob_pattern}' in '#{path}'\n")
+        path = path.to_s
+        Roast::Helpers::Logger.info("🔍 Searching for: '#{glob_pattern}' in '#{File.expand_path(path)}'\n")
         search_for(glob_pattern, path).then do |results|
           return "No results found for #{glob_pattern} in #{path}" if results.empty?
           return read_contents(results.first) if results.size == 1
@@ -51,7 +52,7 @@ module Roast
       end
 
       def search_for(pattern, path)
-        Dir.glob(pattern, base: path)
+        Dir.glob(pattern, base: path).first(100)
       end
     end
   end

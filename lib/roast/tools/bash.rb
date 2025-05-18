@@ -5,7 +5,7 @@ require "roast/helpers/logger"
 
 module Roast
   module Tools
-    module Cmd
+    module Bash
       extend self
 
       class << self
@@ -13,12 +13,12 @@ module Roast
         def included(base)
           base.class_eval do
             function(
-              :cmd,
+              :bash,
               'Run a command in the current working directory (e.g. "ls", "rake", "ruby"). ' \
                 "You may use this tool to execute tests and verify if they pass.",
               command: { type: "string", description: "The command to run in a bash shell." },
             ) do |params|
-              Roast::Tools::Cmd.call(params[:command])
+              Roast::Tools::Bash.call(params[:command])
             end
           end
         end
@@ -28,16 +28,17 @@ module Roast
         Roast::Helpers::Logger.info("🔧 Running command: #{command}\n")
 
         # Validate the command starts with one of the allowed prefixes
-        allowed_prefixes = ["pwd", "find", "ls", "rake", "ruby", "dev"]
-        command_prefix = command.split(" ").first
+        # allowed_prefixes = ["pwd", "find", "ls", "rake", "ruby", "dev"]
+        # command_prefix = command.split(" ").first
 
-        err = "Error: Command not allowed. Only commands starting with #{allowed_prefixes.join(", ")} are permitted."
-        return err unless allowed_prefixes.any? do |prefix|
-          command_prefix == prefix
-        end
+        # err = "Error: Command not allowed. Only commands starting with #{allowed_prefixes.join(", ")} are permitted."
+        # return err unless allowed_prefixes.any? do |prefix|
+        #   command_prefix == prefix
+        # end
 
         # Execute the command in the current working directory
         result = ""
+        command_prefix = ""
 
         # Use a full shell environment for commands, especially for 'dev'
         if command_prefix == "dev"
