@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu]
-        ruby: ['3.4']
+        ruby: ['3.2', '3.3', '3.4']
     runs-on: ${{ matrix.os }}-latest
     continue-on-error: ${{ matrix.ruby == 'ruby-head' }}
     steps:
