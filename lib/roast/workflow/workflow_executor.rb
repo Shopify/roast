@@ -143,7 +143,7 @@ module Roast
       def find_and_load_step(step_name)
         # First check for a prompt step
         if step_name.strip.include?(" ")
-          return Roast::Workflow::PromptStep.new(workflow, name: step_name, auto_loop: false)
+          return setup_step(Roast::Workflow::PromptStep, step_name, nil)
         end
 
         # First check for a ruby file with the step name

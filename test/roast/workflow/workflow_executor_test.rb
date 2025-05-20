@@ -25,6 +25,22 @@ class RoastWorkflowWorkflowExecutorTest < ActiveSupport::TestCase
     @executor.execute_steps(["step {{file}}"])
   end
 
+  test "executes string steps with correct configuration" do
+    @executor = Roast::Workflow::WorkflowExecutor.new(
+      @workflow,
+      # Use a non-default model to ensure we pass it through
+      @config_hash.merge("model" => "gpt-4-mini"),
+      @context_path,
+    )
+
+    @workflow.stubs(resource: nil, append_to_final_output: nil, openai?: true)
+    @workflow.expects(:transcript).returns([])
+    @workflow.stubs(:chat_completion).with(openai: "gpt-4-mini", model: "gpt-4-mini", loop: false, json: false, params: {})
+      .returns("Test chat completion response")
+    result = @executor.execute_step("execute step")
+    assert_equal "Test chat completion response", result
+  end
+
   # Hash steps tests
   test "executes hash steps" do
     @executor.expects(:execute_step).with("command1").returns("result")
