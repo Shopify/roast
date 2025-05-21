@@ -84,6 +84,37 @@ module Roast
         assert_match(/Failed to save state/, output[1]) # stderr is at index 1
       end
 
+      test "#save_state creates parent directories for nested steps" do
+        state_data = {
+          step_name: "test_nested/deeply/step",
+          order: 1,
+          transcript: [],
+          output: {},
+          final_output: [],
+          execution_order: ["test_step"],
+        }
+
+        @repository.save_state(@workflow, state_data[:step_name], state_data)
+
+        workflow_dir = expected_workflow_dir
+        assert File.directory?(workflow_dir)
+
+        session_dirs = Dir.children(workflow_dir).reject { |f| f == ".gitignore" }
+        assert_equal 1, session_dirs.size
+
+        session_dir = File.join(workflow_dir, session_dirs.first)
+        state_paths = Dir.glob(File.join(session_dir, "step_*_*"))
+        assert_equal 1, state_paths.size
+        assert File.directory?(state_paths.first)
+
+        state_file = File.join(state_paths.first, "deeply", "step.json")
+        assert File.exist?(state_file)
+
+        state = JSON.parse(File.read(state_file))
+        assert_equal "test_nested/deeply/step", state["step_name"]
+        assert_equal 1, state["order"]
+      end
+
       test "#load_state_before_step returns false when no directory exists" do
         result = @repository.load_state_before_step(@workflow, "test_step")
         refute result
