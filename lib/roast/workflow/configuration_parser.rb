@@ -106,6 +106,9 @@ module Roast
       def configure_api_client
         return unless configuration.api_token
 
+        existing_client = !!(Raix.configuration.openrouter_client || Raix.configuration.openai_client)
+        return if existing_client
+
         begin
           case configuration.api_provider
           when :openrouter

@@ -25,6 +25,13 @@ class RoastWorkflowConfigurationParserTest < ActiveSupport::TestCase
     assert_equal("run_coverage", @parser.configuration.steps.first)
   end
 
+  def test_with_existing_api_client_does_not_configure_new_api_client
+    openai_client = OpenAI::Client.new(access_token: "test")
+    Raix.configuration.openai_client = openai_client
+    Roast::Workflow::ConfigurationParser.new(@workflow_path)
+    assert_equal(openai_client, Raix.configuration.openai_client)
+  end
+
   def test_begin_without_files_or_target_runs_targetless_workflow
     executor = mock("WorkflowExecutor")
     executor.stubs(:execute_steps)
