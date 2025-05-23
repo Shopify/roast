@@ -10,6 +10,10 @@ require "roast/workflow/workflow_executor"
 class RoastWorkflowTargetlessWorkflowTest < ActiveSupport::TestCase
   def setup
     @workflow_path = fixture_file_path("targetless_workflow.yml")
+    mock_openai_client = mock
+    OpenAI::Client.stubs(:new).with(access_token: "test_openai_token").returns(mock_openai_client)
+    mock_openai_client.stubs(:models).returns(mock_openai_client)
+    mock_openai_client.stubs(:list).returns([])
     @parser = Roast::Workflow::ConfigurationParser.new(@workflow_path)
   end
 

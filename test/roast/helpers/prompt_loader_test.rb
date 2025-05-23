@@ -7,6 +7,10 @@ class RoastHelpersPromptLoaderTest < ActiveSupport::TestCase
   def setup
     @workflow_file = fixture_file("workflow/workflow.yml")
     @test_file = fixture_file("test.rb")
+    mock_openai_client = mock
+    OpenAI::Client.stubs(:new).with(access_token: "test_openai_token").returns(mock_openai_client)
+    mock_openai_client.stubs(:models).returns(mock_openai_client)
+    mock_openai_client.stubs(:list).returns([])
     @workflow = build_workflow(@workflow_file, @test_file)
   end
 

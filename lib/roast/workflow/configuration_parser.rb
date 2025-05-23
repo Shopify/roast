@@ -104,29 +104,37 @@ module Roast
       end
 
       def configure_api_client
-        return unless configuration.api_token
+        client = case configuration.api_provider
+        when :openrouter
+          $stderr.puts "Configuring OpenRouter client with token from workflow"
+          require "open_router"
 
-        begin
-          case configuration.api_provider
-          when :openrouter
-            $stderr.puts "Configuring OpenRouter client with token from workflow"
-            require "open_router"
-
-            Raix.configure do |config|
-              config.openrouter_client = OpenRouter::Client.new(access_token: configuration.api_token)
-            end
-          else
-            $stderr.puts "Configuring OpenAI client with token from workflow"
-            require "openai"
-
-            Raix.configure do |config|
-              config.openai_client = OpenAI::Client.new(access_token: configuration.api_token)
-            end
+          Raix.configure do |config|
+            config.openrouter_client = OpenRouter::Client.new(access_token: configuration.api_token)
           end
-        rescue => e
-          Roast::Helpers::Logger.error("Error configuring API client: #{e.message}")
-          # Don't fail the workflow if client can't be configured
+        else
+          $stderr.puts "Configuring OpenAI client with token from workflow"
+          require "openai"
+
+          Raix.configure do |config|
+            config.openai_client = OpenAI::Client.new(access_token: configuration.api_token)
+          end
         end
+
+        # use an api call to list models as a way to validate our client configuration
+        client.models.list
+      rescue OpenRouter::ConfigurationError, Faraday::UnauthorizedError => e
+        error = Roast::AuthenticationError.new("API authentication failed: No API token provided or token is invalid")
+        e.set_backtrace([])
+
+        ActiveSupport::Notifications.instrument("roast.workflow.start.error", {
+          error: error.class.name,
+          message: error.message,
+        })
+
+        raise error
+      rescue => e
+        Roast::Helpers::Logger.error("Error configuring API client: #{e.message}")
       end
 
       def load_state_and_update_steps(steps, skip_until, step_name, timestamp)

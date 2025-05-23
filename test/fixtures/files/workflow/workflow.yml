@@ -1,4 +1,6 @@
 name: Grading current test changes
+api_provider: openai
+api_token: test_openai_token
 
 tools:
   - Roast::Tools::Grep
