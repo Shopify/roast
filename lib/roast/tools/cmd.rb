@@ -28,7 +28,7 @@ module Roast
         Roast::Helpers::Logger.info("🔧 Running command: #{command}\n")
 
         # Validate the command starts with one of the allowed prefixes
-        allowed_prefixes = ["pwd", "find", "ls", "rake", "ruby", "dev"]
+        allowed_prefixes = ["pwd", "find", "ls", "rake", "ruby", "dev", "mkdir"]
         command_prefix = command.split(" ").first
 
         err = "Error: Command not allowed. Only commands starting with #{allowed_prefixes.join(", ")} are permitted."

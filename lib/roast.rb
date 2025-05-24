@@ -59,7 +59,7 @@ module Roast
       end
 
       puts "Select an option:"
-      choices = ["Pick from examples", "New from prompt (coming soon)"]
+      choices = ["Pick from examples", "New from prompt (beta)"]
 
       selected = run_picker(choices, "Select initialization method:")
 
@@ -67,8 +67,8 @@ module Roast
       when "Pick from examples"
         example_choice = run_picker(examples, "Select an example:")
         copy_example(example_choice) if example_choice
-      when "New from prompt (coming soon)"
-        puts "This feature is not yet implemented."
+      when "New from prompt (beta)"
+        create_from_prompt
       end
     end
 
@@ -106,6 +106,24 @@ module Roast
 
       FileUtils.cp_r(source_path, target_path)
       puts "Successfully copied example '#{example_name}' to current directory."
+    end
+
+    def create_from_prompt
+      puts("Create a new workflow from a description")
+      puts
+
+      # Execute the workflow generator
+      generator_path = File.join(Roast::ROOT, "examples", "workflow_generator", "workflow.yml")
+
+      begin
+        # Execute the workflow generator (it will handle user input)
+        Roast::Workflow::ConfigurationParser.new(generator_path, [], {}).begin!
+
+        puts
+        puts("Workflow generation complete!")
+      rescue => e
+        puts("Error generating workflow: #{e.message}")
+      end
     end
 
     class << self
