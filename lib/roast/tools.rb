@@ -11,6 +11,7 @@ require "roast/tools/write_file"
 require "roast/tools/update_files"
 require "roast/tools/cmd"
 require "roast/tools/coding_agent"
+require "roast/tools/ask_user"
 
 module Roast
   module Tools
