@@ -37,9 +37,6 @@ module Roast
           step_result = step_object.call
 
           # Store result in workflow output
-          # Note: For typical workflows where each step writes to a unique key,
-          # this is safe even in parallel execution. If concurrent writes to the
-          # same key become necessary, additional synchronization may be required.
           @workflow.output[name] = step_result
 
           # Save state after each step

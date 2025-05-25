@@ -7,13 +7,6 @@ module Roast
   module Workflow
     # Manages workflow output, including both the key-value output hash
     # and the final output string/array
-    #
-    # Thread Safety Note:
-    # The underlying ActiveSupport::HashWithIndifferentAccess is not thread-safe
-    # for concurrent writes. For typical workflow patterns where each step writes
-    # to a unique key, this is generally safe. However, if future workflows involve
-    # concurrent writes to the same output key or more complex concurrent modifications,
-    # additional synchronization may be required.
     class OutputManager
       def initialize
         @output = ActiveSupport::HashWithIndifferentAccess.new

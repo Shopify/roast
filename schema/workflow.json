@@ -23,54 +23,6 @@
         "type": "string",
         "description": "Default AI model to use for all steps in the workflow"
       },
-      "context_management": {
-        "type": "object",
-        "description": "Configuration for automatic context management to prevent LLM context window overflow",
-        "properties": {
-          "enabled": {
-            "type": "boolean",
-            "description": "Whether context management is enabled",
-            "default": false
-          },
-          "strategy": {
-            "type": "string",
-            "enum": ["truncation", "llm_summarization"],
-            "description": "Strategy to use for reducing context size",
-            "default": "truncation"
-          },
-          "threshold": {
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0,
-            "description": "Percentage of max_tokens at which to trigger compaction",
-            "default": 0.75
-          },
-          "max_tokens": {
-            "type": "integer",
-            "minimum": 1,
-            "description": "Override the auto-detected model max_tokens limit"
-          },
-          "character_to_token_ratio": {
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0,
-            "description": "Ratio used for estimating tokens for non-OpenAI models",
-            "default": 0.25
-          },
-          "post_compaction_threshold_buffer": {
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0,
-            "description": "Target percentage of threshold to reach after compaction. Example: With model limit 128,000 tokens, threshold 0.8 (102,400 tokens), and buffer 0.9: compaction triggers at 102,400 tokens and reduces transcript to ~92,160 tokens (90% of 102,400), leaving 10,240 tokens buffer space for the next response. Lower values provide more buffer but remove more context.",
-            "default": 0.9
-          },
-          "summarization_model": {
-            "type": "string",
-            "description": "Override model to use for LLM summarization. If not specified, automatically selects a faster/cheaper model based on the main model"
-          }
-        },
-        "required": []
-      },
       "inputs": {
         "type": "array",
         "items": {

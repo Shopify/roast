@@ -11,7 +11,7 @@ module Roast
     # Encapsulates workflow configuration data and provides structured access
     # to the configuration settings
     class Configuration
-      attr_reader :config_hash, :workflow_path, :name, :steps, :tools, :function_configs, :model, :resource, :context_management
+      attr_reader :config_hash, :workflow_path, :name, :steps, :tools, :function_configs, :model, :resource
       attr_accessor :target
 
       delegate :api_provider, :openrouter?, :openai?, to: :api_configuration
@@ -33,7 +33,6 @@ module Roast
         @tools = ConfigurationLoader.extract_tools(@config_hash)
         @function_configs = ConfigurationLoader.extract_functions(@config_hash)
         @model = ConfigurationLoader.extract_model(@config_hash)
-        @context_management = extract_context_management(@config_hash)
 
         # Initialize components
         @api_configuration = ApiConfiguration.new(@config_hash)
@@ -91,20 +90,6 @@ module Roast
           # Update target with processed value for backward compatibility
           @target = @resource.value if has_target?
         end
-      end
-
-      def extract_context_management(config_hash)
-        context_config = config_hash["context_management"] || {}
-        
-        # Return OpenStruct with default values for easy access
-        OpenStruct.new(
-          enabled: context_config["enabled"] || false,
-          strategy: context_config["strategy"] || "truncation",
-          threshold: context_config["threshold"] || 0.75,
-          max_tokens: context_config["max_tokens"],
-          character_to_token_ratio: context_config["character_to_token_ratio"] || 0.25,
-          post_compaction_threshold_buffer: context_config["post_compaction_threshold_buffer"] || 0.9
-        )
       end
     end
   end
