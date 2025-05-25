@@ -8,11 +8,13 @@ require "active_support/notifications"
 require "active_support/core_ext/hash/indifferent_access"
 require "roast/workflow/output_manager"
 require "roast/workflow/context_path_resolver"
+require "roast/workflow/context_manager"
 
 module Roast
   module Workflow
     class BaseWorkflow
       include Raix::ChatCompletion
+      include Raix::FunctionDispatch
 
       attr_accessor :file,
         :concise,
@@ -41,6 +43,8 @@ module Roast
 
         # Initialize managers
         @output_manager = OutputManager.new
+        @context_manager = initialize_context_manager if context_management_enabled?
+        @context_compaction_mutex = Mutex.new
 
         # Setup prompt and handlers
         read_sidecar_prompt.then do |prompt|
@@ -58,6 +62,11 @@ module Roast
         step_model = kwargs[:model]
 
         with_model(step_model) do
+          # Check for context compaction before making LLM call (thread-safe)
+          @context_compaction_mutex.synchronize do
+            check_and_compact_context if @context_manager
+          end
+
           ActiveSupport::Notifications.instrument("roast.chat_completion.start", {
             model: model,
             parameters: kwargs.except(:openai, :model),
@@ -102,8 +111,26 @@ module Roast
         self
       end
 
+      # Override function calling to add max_tokens for tools when context management is enabled
+      def function_schemas
+        schemas = super
+        return schemas unless @context_manager&.config&.enabled
+
+        # Calculate max_tokens for tools based on context management configuration
+        tool_max_tokens = calculate_tool_max_tokens
+
+        # Modify schemas for tools that support max_tokens
+        schemas.map do |schema|
+          if tool_supports_max_tokens?(schema[:name]) && tool_max_tokens
+            add_max_tokens_to_schema(schema, tool_max_tokens)
+          else
+            schema
+          end
+        end
+      end
+
       # Expose output manager for state management
-      attr_reader :output_manager
+      attr_reader :output_manager, :context_compaction_mutex
 
       # Allow direct access to output values without 'output.' prefix
       def method_missing(method_name, *args, &block)
@@ -122,6 +149,94 @@ module Roast
 
       def read_sidecar_prompt
         Roast::Helpers::PromptLoader.load_prompt(self, file)
+      end
+
+      def context_management_enabled?
+        configuration&.context_management&.enabled
+      end
+
+      def initialize_context_manager
+        return nil unless configuration&.context_management
+
+        ContextManager.new(
+          config: configuration.context_management,
+          model: model || configuration.model
+        )
+      end
+
+      def check_and_compact_context
+        return unless @context_manager&.needs_compaction?(transcript)
+
+        original_count = transcript.length
+        original_tokens = @context_manager.count_transcript_tokens(transcript)
+        
+        self.transcript = @context_manager.compact_transcript(transcript)
+        
+        new_count = transcript.length
+        new_tokens = @context_manager.count_transcript_tokens(transcript)
+        
+        # Log compaction event
+        ActiveSupport::Notifications.instrument("roast.context_compaction", {
+          strategy: configuration.context_management.strategy,
+          original_messages: original_count,
+          new_messages: new_count,
+          original_tokens: original_tokens,
+          new_tokens: new_tokens,
+          tokens_saved: original_tokens - new_tokens
+        })
+      end
+
+      def calculate_tool_max_tokens
+        return nil unless @context_manager&.config&.enabled
+        
+        max_tokens = @context_manager.max_tokens
+        threshold = @context_manager.config.threshold
+        tool_buffer_factor = 0.75 # Default from PRD
+        
+        # Calculate available tokens after threshold
+        available_tokens = max_tokens * (1 - threshold)
+        
+        # Apply tool buffer factor
+        (available_tokens * tool_buffer_factor).to_i
+      end
+
+      def tool_supports_max_tokens?(tool_name)
+        # Get base schemas without context management modifications to avoid recursion
+        base_schemas = super
+        
+        # Check if tool already has max_tokens in its base function schema
+        tool_schema = base_schemas.find { |schema| schema[:name] == tool_name.to_s }
+        return false unless tool_schema
+        
+        # Check if the tool's parameters include max_tokens
+        parameters = tool_schema.dig(:parameters, :properties)
+        return false unless parameters
+        
+        # If tool already has max_tokens parameter, it supports it
+        parameters.key?(:max_tokens) || parameters.key?("max_tokens")
+      end
+
+      def add_max_tokens_to_schema(schema, max_tokens)
+        # Clone the schema to avoid modifying the original
+        modified_schema = schema.dup
+        
+        # Add max_tokens parameter with the calculated value as default
+        if modified_schema[:parameters] && modified_schema[:parameters][:properties]
+          modified_schema[:parameters] = modified_schema[:parameters].dup
+          modified_schema[:parameters][:properties] = modified_schema[:parameters][:properties].dup
+          
+          # Only add max_tokens if it doesn't already exist
+          properties = modified_schema[:parameters][:properties]
+          unless properties.key?(:max_tokens) || properties.key?("max_tokens")
+            properties[:max_tokens] = {
+              type: "integer",
+              description: "Maximum tokens to return (will truncate if exceeded)",
+              default: max_tokens
+            }
+          end
+        end
+        
+        modified_schema
       end
     end
   end

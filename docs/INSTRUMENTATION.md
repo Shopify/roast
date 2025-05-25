@@ -58,6 +58,11 @@ your-project/
 - `roast.chat_completion.error` - Emitted when AI API call fails
   - Payload: `{ error:, message:, model:, parameters:, execution_time: }`
 
+### Context Management Events
+
+- `roast.context_compaction` - Emitted when context compaction occurs
+  - Payload: `{ strategy:, original_messages:, new_messages:, original_tokens:, new_tokens:, tokens_saved: }`
+
 ### Tool Execution Events
 
 - `roast.tool.execute` - Emitted when a tool function is called
@@ -105,6 +110,26 @@ ActiveSupport::Notifications.subscribe("roast.workflow.complete") do |name, star
     workflow_path: payload[:workflow_path],
     duration: duration,
     success: payload[:success]
+  })
+end
+```
+
+### Context Management Monitoring
+
+```ruby
+# .roast/initializers/context_monitoring.rb
+ActiveSupport::Notifications.subscribe("roast.context_compaction") do |name, start, finish, id, payload|
+  puts "Context compacted using #{payload[:strategy]} strategy"
+  puts "  Original: #{payload[:original_messages]} messages (#{payload[:original_tokens]} tokens)"
+  puts "  Compacted: #{payload[:new_messages]} messages (#{payload[:new_tokens]} tokens)"
+  puts "  Saved: #{payload[:tokens_saved]} tokens"
+  
+  # Track compaction metrics
+  MyMetricsService.track_event("context_compaction", {
+    strategy: payload[:strategy],
+    tokens_saved: payload[:tokens_saved],
+    original_tokens: payload[:original_tokens],
+    compression_ratio: payload[:tokens_saved].to_f / payload[:original_tokens]
   })
 end
 ```
