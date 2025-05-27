@@ -1,10 +1,10 @@
 I'd like you to analyze the following input and provide your insights.
 
-<% if workflow.file && workflow.resource.content %>
+<% if workflow.file && workflow.resource.contents %>
 Here is the content to analyze:
 
 ```
-<%= workflow.resource.content %>
+<%= workflow.resource.contents %>
 ```
 <% else %>
 The workflow is running without a specific file target. Please provide general insights based on the context.
