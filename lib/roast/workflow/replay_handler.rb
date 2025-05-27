@@ -93,11 +93,12 @@ module Roast
 
       def restore_transcript(state_data)
         return unless state_data.key?(:transcript)
-        return unless @workflow.respond_to?(:transcript)
 
-        # Transcript is an array from Raix::ChatCompletion
-        # We need to clear it and repopulate it
-        if @workflow.transcript.respond_to?(:clear) && @workflow.transcript.respond_to?(:<<)
+        if @workflow.respond_to?(:transcript=)
+          @workflow.transcript = state_data[:transcript]
+        elsif @workflow.respond_to?(:transcript) &&
+            @workflow.transcript.respond_to?(:clear) &&
+            @workflow.transcript.respond_to?(:<<)
           @workflow.transcript.clear
           state_data[:transcript].each do |message|
             @workflow.transcript << message

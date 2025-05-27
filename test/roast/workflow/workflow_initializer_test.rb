@@ -46,13 +46,8 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
     # Stub Raix configuration to indicate no client is configured yet
     Raix.configuration.stubs(:openai_client).returns(nil)
 
-    # Mock successful client creation and validation
-    mock_client = mock("OpenAI::Client")
-    mock_models = mock("models")
-    mock_client.stubs(:models).returns(mock_models)
-    mock_models.stubs(:list).returns([])
-
-    OpenAI::Client.expects(:new).with(access_token: "test-token").returns(mock_client)
+    # When api_token is present and no client configured, configure the client
+    OpenAI::Client.expects(:new).with(access_token: "test-token").returns(mock("OpenAI::Client"))
 
     @initializer.setup
   end
@@ -79,13 +74,8 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
       # Stub Raix configuration to indicate no client is configured yet
       Raix.configuration.stubs(:openrouter_client).returns(nil)
 
-      # Mock successful client creation and validation
-      mock_client = mock("OpenRouter::Client")
-      mock_models = mock("models")
-      mock_client.stubs(:models).returns(mock_models)
-      mock_models.stubs(:list).returns([])
-
-      OpenRouter::Client.expects(:new).with(access_token: "test-token").returns(mock_client)
+      # When api_token is present and no client configured, configure the client
+      OpenRouter::Client.expects(:new).with(access_token: "test-token").returns(mock("OpenRouter::Client"))
       @initializer.setup
     else
       skip("OpenRouter gem not available")
@@ -133,65 +123,5 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
     Roast::Helpers::Logger.expects(:error).never
 
     @initializer.setup
-  end
-
-  def test_raises_authentication_error_when_api_token_invalid
-    @configuration.stubs(:api_token).returns("invalid-token")
-    @configuration.stubs(:api_provider).returns(:openai)
-
-    # Stub Raix configuration to indicate no client is configured yet
-    Raix.configuration.stubs(:openai_client).returns(nil)
-
-    # Mock client that raises unauthorized error on validation
-    mock_client = mock("OpenAI::Client")
-    mock_models = mock("models")
-    mock_client.stubs(:models).returns(mock_models)
-    mock_models.stubs(:list).raises(Faraday::UnauthorizedError.new(nil))
-
-    OpenAI::Client.expects(:new).with(access_token: "invalid-token").returns(mock_client)
-
-    ActiveSupport::Notifications.expects(:instrument).with(
-      "roast.workflow.start.error",
-      has_entries(
-        error: "Roast::AuthenticationError",
-        message: "API authentication failed: No API token provided or token is invalid",
-      ),
-    ).once
-
-    error = assert_raises(Roast::AuthenticationError) do
-      @initializer.setup
-    end
-
-    assert_equal("API authentication failed: No API token provided or token is invalid", error.message)
-  end
-
-  def test_handles_openrouter_configuration_error
-    # Only run if OpenRouter is available
-    if defined?(OpenRouter) && defined?(OpenRouter::Client) && defined?(OpenRouter::ConfigurationError)
-      @configuration.stubs(:api_token).returns("invalid-format-token")
-      @configuration.stubs(:api_provider).returns(:openrouter)
-
-      # Stub Raix configuration to indicate no client is configured yet
-      Raix.configuration.stubs(:openrouter_client).returns(nil)
-
-      # Mock OpenRouter client that raises configuration error
-      OpenRouter::Client.expects(:new).with(access_token: "invalid-format-token").raises(OpenRouter::ConfigurationError.new("Invalid access token format"))
-
-      ActiveSupport::Notifications.expects(:instrument).with(
-        "roast.workflow.start.error",
-        has_entries(
-          error: "Roast::AuthenticationError",
-          message: "API authentication failed: No API token provided or token is invalid",
-        ),
-      ).once
-
-      error = assert_raises(Roast::AuthenticationError) do
-        @initializer.setup
-      end
-
-      assert_equal("API authentication failed: No API token provided or token is invalid", error.message)
-    else
-      skip("OpenRouter gem not available")
-    end
   end
 end

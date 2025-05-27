@@ -172,33 +172,6 @@
                 }
               },
               "required": ["unless", "then"]
-            },
-            {
-              "type": "object",
-              "properties": {
-                "case": {
-                  "type": "string",
-                  "description": "Expression to evaluate. Can be a Ruby expression in {{...}}, a bash command in $(...), a step name, or prompt content."
-                },
-                "when": {
-                  "type": "object",
-                  "description": "Map of case values to steps to execute when matched",
-                  "additionalProperties": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/properties/steps/items"
-                    }
-                  }
-                },
-                "else": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/properties/steps/items"
-                  },
-                  "description": "Steps to execute when no when clauses match"
-                }
-              },
-              "required": ["case", "when"]
             }
           ]
         }

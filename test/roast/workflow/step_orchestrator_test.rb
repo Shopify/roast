@@ -97,6 +97,75 @@ module Roast
         @orchestrator.execute_step(step_name, exit_on_error: false)
       end
 
+      def test_execute_steps_with_string_step
+        step = "test_step"
+        executor = mock("executor")
+
+        StepExecutorFactory.expects(:for).with(step, @workflow_executor).returns(executor)
+        executor.expects(:execute).with(step)
+
+        @workflow.expects(:pause_step_name).returns(nil)
+
+        @orchestrator.execute_steps([step])
+      end
+
+      def test_execute_steps_with_hash_step
+        step = { "name" => "command" }
+        executor = mock("executor")
+
+        StepExecutorFactory.expects(:for).with(step, @workflow_executor).returns(executor)
+        executor.expects(:execute).with(step)
+
+        @orchestrator.execute_steps([step])
+      end
+
+      def test_execute_steps_with_array_step
+        step = ["step1", "step2"]
+        executor = mock("executor")
+
+        StepExecutorFactory.expects(:for).with(step, @workflow_executor).returns(executor)
+        executor.expects(:execute).with(step)
+
+        @orchestrator.execute_steps([step])
+      end
+
+      def test_execute_steps_with_pause
+        step = "pause_here"
+        executor = mock("executor")
+
+        StepExecutorFactory.expects(:for).with(step, @workflow_executor).returns(executor)
+        executor.expects(:execute).with(step)
+
+        @workflow.expects(:pause_step_name).returns("pause_here")
+
+        # We can't easily test binding.irb, so we'll stub it
+        Kernel.expects(:binding).returns(mock("binding", irb: nil))
+
+        @orchestrator.execute_steps([step])
+      end
+
+      def test_execute_steps_multiple_steps
+        step1 = "step1"
+        step2 = { "name" => "command" }
+        step3 = ["parallel1", "parallel2"]
+
+        executor1 = mock("executor1")
+        executor2 = mock("executor2")
+        executor3 = mock("executor3")
+
+        StepExecutorFactory.expects(:for).with(step1, @workflow_executor).returns(executor1)
+        StepExecutorFactory.expects(:for).with(step2, @workflow_executor).returns(executor2)
+        StepExecutorFactory.expects(:for).with(step3, @workflow_executor).returns(executor3)
+
+        executor1.expects(:execute).with(step1)
+        executor2.expects(:execute).with(step2)
+        executor3.expects(:execute).with(step3)
+
+        @workflow.stubs(:pause_step_name).returns(nil)
+
+        @orchestrator.execute_steps([step1, step2, step3])
+      end
+
       def test_execute_step_prints_execution_message
         step_name = "test_step"
 

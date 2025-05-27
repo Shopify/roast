@@ -9,7 +9,6 @@ module Roast
     # Base class for iteration steps (RepeatStep and EachStep)
     class BaseIterationStep < BaseStep
       include ExpressionUtils
-
       DEFAULT_MAX_ITERATIONS = 100
 
       attr_reader :steps

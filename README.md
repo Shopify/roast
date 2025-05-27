@@ -178,37 +178,7 @@ Roast supports several types of steps:
    - Until conditions: `until: "{{condition}}"`
    - Maximum iterations: `max_iterations: 10`
 
-6. **Case/when/else steps**: Select different execution paths based on a value (similar to Ruby's case statement)
-   ```yaml
-   steps:
-     - detect_language
-     
-     - case: "{{ workflow.output.detect_language }}"
-       when:
-         ruby:
-           - lint_with_rubocop
-           - test_with_rspec
-         javascript:
-           - lint_with_eslint
-           - test_with_jest
-         python:
-           - lint_with_pylint
-           - test_with_pytest
-       else:
-         - analyze_generic
-         - generate_basic_report
-   ```
-   
-   Case expressions can be:
-   - Workflow outputs: `case: "{{ workflow.output.variable }}"`
-   - Ruby expressions: `case: "{{ count > 10 ? 'high' : 'low' }}"`
-   - Bash commands: `case: "$(echo $ENVIRONMENT)"`
-   - Direct values: `case: "production"`
-   
-   The value is compared against each key in the `when` clause, and matching steps are executed.
-   If no match is found, the `else` steps are executed (if provided).
-
-7. **Raw prompt step**: Simple text prompts for the model without tools
+6. **Raw prompt step**: Simple text prompts for the model without tools
    ```yaml
    steps:
      - Summarize the changes made to the codebase.
@@ -477,6 +447,26 @@ Available in templates:
 For most workflows, you'll mainly use `response` to access the current step's results. The `workflow.output` hash becomes valuable when you need to reference specific data points from previous steps in your templates or for conditional display logic.
 
 ## Advanced Features
+
+### Context Management
+
+Roast includes automatic context management to prevent token overflow in long-running workflows. When approaching model token limits, Roast automatically compacts the conversation transcript using configurable strategies:
+
+```yaml
+name: Long Running Workflow
+model: gpt-4o
+context_management:
+  enabled: true
+  threshold: 0.75  # Trigger at 75% of token limit
+  strategy: llm_summarization  # or 'truncation'
+  max_tokens: 128000
+```
+
+Available strategies:
+- **llm_summarization**: Uses AI to intelligently summarize conversation history (preserves more context)
+- **truncation**: Simply removes oldest messages (faster but less intelligent)
+
+[Read the full context management guide](docs/CONTEXT_MANAGEMENT_GUIDE.md) for detailed configuration and testing examples.
 
 ### Instrumentation
 

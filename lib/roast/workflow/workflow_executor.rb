@@ -22,10 +22,24 @@ module Roast
   module Workflow
     # Handles the execution of workflow steps, including orchestration and threading
     #
-    # This class now delegates all step execution to StepExecutorCoordinator,
-    # which handles type resolution and execution for all step types.
-    # The circular dependency between executors and workflow has been broken
-    # by introducing the StepRunner interface.
+    # Current Architecture:
+    # This class has two parallel execution systems that need to be unified:
+    #
+    # 1. Direct execution path (execute_steps method):
+    #    - Used by WorkflowRunner and iteration steps
+    #    - Handles basic routing based on step type (Hash, Array, String)
+    #    - Directly executes steps without going through StepExecutorCoordinator
+    #
+    # 2. Coordinator-based execution path (execute_step method):
+    #    - Used for named steps
+    #    - Delegates to StepExecutorCoordinator for type resolution and execution
+    #    - More flexible and extensible design
+    #
+    # TODO: Future refactoring should:
+    # - Unify these two execution paths
+    # - Move all routing logic to StepExecutorCoordinator
+    # - Use StepExecutorFactory consistently for all step types
+    # - Remove the execute_hash_step, execute_parallel_steps, execute_string_step methods
     class WorkflowExecutor
       # Define custom exception classes for specific error scenarios
       class WorkflowExecutorError < StandardError
@@ -44,7 +58,7 @@ module Roast
       class StateError < WorkflowExecutorError; end
       class ConfigurationError < WorkflowExecutorError; end
 
-      attr_reader :context, :step_loader, :state_manager, :step_executor_coordinator
+      attr_reader :context, :step_loader, :state_manager
 
       delegate :workflow, :config_hash, :context_path, to: :context
 
@@ -66,7 +80,7 @@ module Roast
         @interpolator = interpolator || Interpolator.new(workflow, logger: @error_handler)
         @state_manager = state_manager || StateManager.new(workflow, logger: @error_handler)
         @iteration_executor = iteration_executor || IterationExecutor.new(workflow, context_path, @state_manager)
-        @conditional_executor = conditional_executor || ConditionalExecutor.new(workflow, context_path, @state_manager, self)
+        @conditional_executor = conditional_executor || ConditionalExecutor.new(workflow, context_path, @state_manager)
         @step_orchestrator = step_orchestrator || StepOrchestrator.new(workflow, @step_loader, @state_manager, @error_handler, self)
 
         # Initialize coordinator with dependencies
@@ -102,7 +116,22 @@ module Roast
       end
 
       def execute_steps(workflow_steps)
-        @step_executor_coordinator.execute_steps(workflow_steps)
+        workflow_steps.each do |step|
+          case step
+          when Hash
+            execute_hash_step(step)
+          when Array
+            execute_parallel_steps(step)
+          when String
+            execute_string_step(step)
+            # Handle pause after string steps
+            if workflow.pause_step_name == step
+              Kernel.binding.irb # rubocop:disable Lint/Debugger
+            end
+          else
+            @step_orchestrator.execute_step(step)
+          end
+        end
       end
 
       def interpolate(text)
@@ -115,6 +144,23 @@ module Roast
         raise StepNotFoundError.new(e.message, step_name: e.step_name, original_error: e.original_error)
       rescue StepLoader::StepExecutionError => e
         raise StepExecutionError.new(e.message, step_name: e.step_name, original_error: e.original_error)
+      end
+
+      # Methods moved to StepExecutorCoordinator but kept for backward compatibility
+      # These are only used by execute_steps and should be removed when we unify
+      # the execution paths to use StepExecutorCoordinator exclusively.
+      private
+
+      def execute_hash_step(step)
+        @step_executor_coordinator.execute(step)
+      end
+
+      def execute_parallel_steps(steps)
+        @step_executor_coordinator.execute(steps)
+      end
+
+      def execute_string_step(step)
+        @step_executor_coordinator.execute(step)
       end
     end
   end

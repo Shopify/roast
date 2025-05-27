@@ -37,7 +37,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - I do not like test-specific code embedded in production code, don't ever do that
 - **Do not use require_relative**
 - Require statements should always be in alphabetical order
-- Always leave a blank line after module includes and before the rest of the class
 
 ## Architecture Guidelines
 

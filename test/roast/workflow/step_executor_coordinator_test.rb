@@ -22,7 +22,6 @@ module Roast
           interpolator: mock("interpolator"),
           command_executor: mock("command_executor"),
           iteration_executor: mock("iteration_executor"),
-          conditional_executor: mock("conditional_executor"),
           step_orchestrator: mock("step_orchestrator"),
           error_handler: mock("error_handler"),
         }
@@ -81,16 +80,7 @@ module Roast
       def test_executes_hash_step_with_hash_command
         step = { "var1" => { "nested" => "command" } }
         @dependencies[:interpolator].expects(:interpolate).with("var1").returns("var1")
-        # Now the coordinator handles this internally by calling execute_steps
-        # Which will call execute on the nested hash
-        @dependencies[:interpolator].expects(:interpolate).with("nested").returns("nested")
-        @dependencies[:interpolator].expects(:interpolate).with("command").returns("command")
-        @context.expects(:exit_on_error?).with("nested").returns(true)
-        # And then the string step handler will also interpolate
-        @dependencies[:interpolator].expects(:interpolate).with("command").returns("command")
-        @context.expects(:exit_on_error?).with("command").returns(true)
-        @dependencies[:step_orchestrator].expects(:execute_step).with("command", exit_on_error: true).returns("result")
-        @workflow.output.expects(:[]=).with("nested", "result")
+        @dependencies[:workflow_executor].expects(:execute_steps).with([{ "nested" => "command" }])
 
         @coordinator.execute(step)
       end
@@ -117,16 +107,8 @@ module Roast
         # ParallelStepExecutor needs workflow_executor.workflow and workflow_executor.config_hash
         @dependencies[:workflow_executor].stubs(:workflow).returns(@workflow)
         @dependencies[:workflow_executor].stubs(:config_hash).returns({})
-        @dependencies[:workflow_executor].stubs(:step_executor_coordinator).returns(@coordinator)
-        # When parallel executor runs, it will execute_steps on each item
-        # Which goes through the full flow for string steps
-        @workflow.stubs(:pause_step_name).returns(nil)
-        @dependencies[:interpolator].expects(:interpolate).with("step1").returns("step1")
-        @dependencies[:interpolator].expects(:interpolate).with("step2").returns("step2")
-        @context.expects(:exit_on_error?).with("step1").returns(true)
-        @context.expects(:exit_on_error?).with("step2").returns(true)
-        @dependencies[:step_orchestrator].expects(:execute_step).with("step1", exit_on_error: true)
-        @dependencies[:step_orchestrator].expects(:execute_step).with("step2", exit_on_error: true)
+        @dependencies[:workflow_executor].expects(:execute_steps).with(["step1"])
+        @dependencies[:workflow_executor].expects(:execute_steps).with(["step2"])
 
         @coordinator.execute(steps)
       end

@@ -5,10 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - 2025-05-26
+## Unreleased
 
 ### Added
-- Conditional execution support with `if` and `unless` clauses for workflow steps
 - Iteration mechanisms for workflows with `repeat` and `each` constructs (resolving issue #48)
 - Support for conditional repetition with `until` condition and safety limits
 - Collection iteration with variable binding for processing lists of items
@@ -17,31 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for using bash commands, step names, and Ruby expressions in iteration conditions and collections
 - Intelligent LLM response to boolean conversion with pattern-based recognition for natural language responses
 - `exit_on_error` configuration option for command steps to continue workflow on failure (resolving issue #71)
-- Dot notation access for workflow outputs (e.g., `workflow.output.step.field`)
-- `--pause` flag for stepping through workflow execution interactively
 
 ### Fixed
 - Automatically add `.gitignore` file to cache directory when created (completing issue #22)
 - Load initializers before trying to load tools in case custom tools are defined in initializers (thanks @palkan)
 - Fix loading of targetless workflows (thanks @palkan)
 - Fix OpenRouter support (thanks @xrendan)
-- API authentication error handling and model access issues
-- Conditional step transcript replay regression
-- DotAccessHash serialization for AI prompts
 
 ### Improved
 - Enhanced search file tool logging to show full expanded paths instead of relative paths
-- Major refactoring to eliminate circular dependencies and improve architecture
-- Extracted command execution logic into dedicated CommandExecutor class
-- Separated conditional execution from iteration logic for better SOLID compliance
-- Enhanced error messages for API authentication failures
-- Replaced all `require_relative` with `require` statements for consistency
-
-### Changed
-- Refactored god objects to improve code organization and maintainability
-- Improved separation of concerns between workflow components
-
-[0.2.0]: https://github.com/Shopify/roast/compare/v0.1.7...v0.2.0
 
 ## [0.1.7] - 2024-05-16
 

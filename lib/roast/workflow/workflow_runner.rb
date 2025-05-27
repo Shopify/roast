@@ -72,7 +72,7 @@ module Roast
           file,
           name: @configuration.basename,
           context_path: @configuration.context_path,
-          resource: @configuration.resource,
+          resource: resource_for_workflow(file),
           session_name: @configuration.name,
           configuration: @configuration,
         ).tap do |workflow|
@@ -81,6 +81,12 @@ module Roast
           workflow.concise = @options[:concise] if @options[:concise].present?
           workflow.pause_step_name = @options[:pause] if @options[:pause].present?
         end
+      end
+
+      def resource_for_workflow(file)
+        # When running for specific files, let BaseWorkflow create the resource from the file
+        # When running for targets or targetless, use the configuration's resource
+        file ? nil : @configuration.resource
       end
     end
   end

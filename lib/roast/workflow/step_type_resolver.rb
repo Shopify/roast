@@ -9,7 +9,6 @@ module Roast
       GLOB_STEP = :glob
       ITERATION_STEP = :iteration
       CONDITIONAL_STEP = :conditional
-      CASE_STEP = :case
       HASH_STEP = :hash
       PARALLEL_STEP = :parallel
       STRING_STEP = :string
@@ -20,9 +19,6 @@ module Roast
 
       # Special step names for conditionals
       CONDITIONAL_STEPS = ["if", "unless"].freeze
-
-      # Special step name for case statements
-      CASE_STEPS = ["case"].freeze
 
       class << self
         # Resolve the type of a step
@@ -80,16 +76,6 @@ module Roast
           CONDITIONAL_STEPS.include?(step_name)
         end
 
-        # Check if a step is a case step
-        # @param step [Hash] The step to check
-        # @return [Boolean] true if it's a case step
-        def case_step?(step)
-          return false unless step.is_a?(Hash)
-
-          step_name = step.keys.first
-          CASE_STEPS.include?(step_name)
-        end
-
         # Extract the step name from various step formats
         # @param step [String, Hash, Array] The step
         # @return [String, nil] The step name or nil
@@ -121,8 +107,6 @@ module Roast
             ITERATION_STEP
           elsif conditional_step?(step)
             CONDITIONAL_STEP
-          elsif case_step?(step)
-            CASE_STEP
           else
             HASH_STEP
           end

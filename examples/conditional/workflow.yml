@@ -3,21 +3,21 @@ tools:
   - Roast::Tools::Cmd
 
 steps:
-  - check_os: "$(uname -s)"
+  - check_os: "uname -s"
   
   - if: "{{output.check_os.strip == 'Darwin'}}"
     then:
-      - mac_message: "$(echo 'Running on macOS!')"
-      - mac_info: "$(sw_vers)"
+      - mac_message: "echo 'Running on macOS!'"
+      - mac_info: "sw_vers"
     else:
-      - linux_message: "$(echo 'Running on Linux!')"
-      - linux_info: "$(lsb_release -a)"
+      - linux_message: "echo 'Running on Linux!'"
+      - linux_info: "lsb_release -a"
   
-  - check_file: "$(test -f /tmp/roast_test.txt && echo exists || echo missing)"
+  - check_file: "test -f /tmp/roast_test.txt && echo exists || echo missing"
   
   - unless: "{{output.check_file.strip == 'exists'}}"
     then:
-      - create_file: "$(touch /tmp/roast_test.txt && echo 'File created')"
+      - create_file: "touch /tmp/roast_test.txt && echo 'File created'"
   
-  - verify_file: "$(ls -la /tmp/roast_test.txt)"
-  - cleanup: "$(rm -f /tmp/roast_test.txt)"
+  - verify_file: "ls -la /tmp/roast_test.txt"
+  - cleanup: "rm -f /tmp/roast_test.txt"

@@ -12,18 +12,16 @@ module Roast
           @workflow = mock("workflow")
           @workflow.stubs(:output).returns({})
           @config_hash = {}
-          @coordinator = mock("coordinator")
           @workflow_executor = mock("workflow_executor")
           @workflow_executor.stubs(:workflow).returns(@workflow)
           @workflow_executor.stubs(:config_hash).returns(@config_hash)
-          @workflow_executor.stubs(:step_executor_coordinator).returns(@coordinator)
           @executor = HashStepExecutor.new(@workflow_executor)
         end
 
         def test_executes_simple_command_step
           @workflow_executor.expects(:interpolate).with("test_step").returns("test_step")
           @workflow_executor.expects(:interpolate).with("echo test").returns("echo test")
-          @coordinator.expects(:execute_step).with("echo test", exit_on_error: true).returns("test output")
+          @workflow_executor.expects(:execute_step).with("echo test", exit_on_error: true).returns("test output")
 
           @executor.execute({ "test_step" => "echo test" })
 
@@ -33,7 +31,7 @@ module Roast
         def test_executes_nested_hash_step
           nested_step = { "inner_step" => "echo inner" }
           @workflow_executor.expects(:interpolate).with("test_step").returns("test_step")
-          @coordinator.expects(:execute_steps).with([nested_step])
+          @workflow_executor.expects(:execute_steps).with([nested_step])
 
           @executor.execute({ "test_step" => nested_step })
         end
@@ -42,7 +40,7 @@ module Roast
           @config_hash["test_step"] = { "exit_on_error" => false }
           @workflow_executor.expects(:interpolate).with("test_step").returns("test_step")
           @workflow_executor.expects(:interpolate).with("$(exit 1)").returns("$(exit 1)")
-          @coordinator.expects(:execute_step).with("$(exit 1)", exit_on_error: false).returns("error output")
+          @workflow_executor.expects(:execute_step).with("$(exit 1)", exit_on_error: false).returns("error output")
 
           @executor.execute({ "test_step" => "$(exit 1)" })
         end

@@ -20,6 +20,10 @@ module Roast
         def openai?
           true
         end
+
+        def context_management
+          Roast::Workflow::ContextManagementConfig.new(enabled: false)
+        end
       end
 
       def test_chat_completion_module_is_included_in_base_workflow

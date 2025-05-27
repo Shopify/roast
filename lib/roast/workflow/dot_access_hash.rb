@@ -84,115 +84,11 @@ module Roast
         @hash.to_json(*args)
       end
 
-      def merge(other)
-        merged_hash = @hash.dup
-        other_hash = other.is_a?(DotAccessHash) ? other.to_h : other
-        merged_hash.merge!(other_hash)
-        DotAccessHash.new(merged_hash)
-      end
-
-      def values
-        @hash.values
-      end
-
-      def key?(key)
-        has_key?(key) # rubocop:disable Style/PreferredHashMethods
-      end
-
-      def include?(key)
-        has_key?(key) # rubocop:disable Style/PreferredHashMethods
-      end
-
-      def fetch(key, *args)
-        if has_key?(key) # rubocop:disable Style/PreferredHashMethods
-          self[key]
-        elsif block_given?
-          yield(key)
-        elsif !args.empty?
-          args[0]
-        else
-          raise KeyError, "key not found: #{key.inspect}"
-        end
-      end
-
-      def dig(*keys)
-        keys.inject(self) do |obj, key|
-          break nil unless obj.is_a?(DotAccessHash) || obj.is_a?(Hash)
-
-          if obj.is_a?(DotAccessHash)
-            obj[key]
-          else
-            obj[key.to_sym] || obj[key.to_s]
-          end
-        end
-      end
-
-      def size
-        @hash.size
-      end
-
-      alias_method :length, :size
-
-      def map(&block)
-        @hash.map(&block)
-      end
-
-      def select(&block)
-        DotAccessHash.new(@hash.select(&block))
-      end
-
-      def reject(&block)
-        DotAccessHash.new(@hash.reject(&block))
-      end
-
-      def compact
-        DotAccessHash.new(@hash.compact)
-      end
-
-      def slice(*keys)
-        sliced = {}
-        keys.each do |key|
-          if has_key?(key) # rubocop:disable Style/PreferredHashMethods
-            sliced[key.to_sym] = @hash[key.to_sym] || @hash[key.to_s]
-          end
-        end
-        DotAccessHash.new(sliced)
-      end
-
-      def except(*keys)
-        excluded = @hash.dup
-        keys.each do |key|
-          excluded.delete(key.to_sym)
-          excluded.delete(key.to_s)
-        end
-        DotAccessHash.new(excluded)
-      end
-
-      def delete(key)
-        @hash.delete(key.to_sym) || @hash.delete(key.to_s)
-      end
-
-      def clear
-        @hash.clear
-        self
-      end
-
-      def ==(other)
-        case other
-        when DotAccessHash
-          @hash == other.instance_variable_get(:@hash)
-        when Hash
-          @hash == other
-        else
-          false
-        end
-      end
+      private
 
       def has_key?(key_name)
         @hash.key?(key_name.to_sym) || @hash.key?(key_name.to_s)
       end
-
-      alias_method :member?, :has_key?
     end
   end
 end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "active_support/core_ext/module/delegation"
+require "ostruct"
 require "roast/workflow/api_configuration"
 require "roast/workflow/configuration_loader"
 require "roast/workflow/resource_resolver"
@@ -8,6 +9,21 @@ require "roast/workflow/step_finder"
 
 module Roast
   module Workflow
+    # Configuration object for context management settings
+    class ContextManagementConfig
+      attr_accessor :enabled, :max_tokens, :threshold, :strategy, :character_to_token_ratio, :post_compaction_threshold_buffer, :summarization_model
+
+      def initialize(enabled: false, max_tokens: nil, threshold: 0.75, strategy: "truncation", character_to_token_ratio: 0.25, post_compaction_threshold_buffer: 0.9, summarization_model: nil)
+        @enabled = enabled
+        @max_tokens = max_tokens
+        @threshold = threshold
+        @strategy = strategy
+        @character_to_token_ratio = character_to_token_ratio
+        @post_compaction_threshold_buffer = post_compaction_threshold_buffer
+        @summarization_model = summarization_model
+      end
+    end
+
     # Encapsulates workflow configuration data and provides structured access
     # to the configuration settings
     class Configuration
@@ -45,6 +61,17 @@ module Roast
 
       def context_path
         @context_path ||= File.dirname(workflow_path)
+      end
+
+      def context_management
+        @context_management ||= ContextManagementConfig.new(
+          enabled: false,
+          max_tokens: nil,
+          threshold: 0.75,
+          strategy: "truncation",
+          character_to_token_ratio: 0.25,
+          post_compaction_threshold_buffer: 0.9,
+        )
       end
 
       def basename

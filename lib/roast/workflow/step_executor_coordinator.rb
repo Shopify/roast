@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/workflow/case_executor"
 require "roast/workflow/conditional_executor"
 require "roast/workflow/step_executor_factory"
 require "roast/workflow/step_type_resolver"
@@ -27,31 +26,6 @@ module Roast
         @dependencies = dependencies
       end
 
-      # Execute a list of steps
-      def execute_steps(workflow_steps)
-        workflow_steps.each do |step|
-          case step
-          when Hash
-            execute(step)
-          when Array
-            execute(step)
-          when String
-            execute(step)
-            # Handle pause after string steps
-            if @context.workflow.pause_step_name == step
-              Kernel.binding.irb # rubocop:disable Lint/Debugger
-            end
-          else
-            step_orchestrator.execute_step(step)
-          end
-        end
-      end
-
-      # Execute a single step (alias for compatibility)
-      def execute_step(step, options = {})
-        execute(step, options)
-      end
-
       # Execute a step based on its type
       # @param step [String, Hash, Array] The step to execute
       # @param options [Hash] Execution options
@@ -69,8 +43,6 @@ module Roast
           execute_iteration_step(step)
         when StepTypeResolver::CONDITIONAL_STEP
           execute_conditional_step(step)
-        when StepTypeResolver::CASE_STEP
-          execute_case_step(step)
         when StepTypeResolver::HASH_STEP
           execute_hash_step(step)
         when StepTypeResolver::PARALLEL_STEP
@@ -106,15 +78,6 @@ module Roast
 
       def conditional_executor
         dependencies[:conditional_executor]
-      end
-
-      def case_executor
-        @case_executor ||= dependencies[:case_executor] || CaseExecutor.new(
-          context.workflow,
-          context.context_path,
-          dependencies[:state_manager] || dependencies[:workflow_executor].state_manager,
-          workflow_executor,
-        )
       end
 
       def step_orchestrator
@@ -166,16 +129,12 @@ module Roast
         conditional_executor.execute_conditional(step)
       end
 
-      def execute_case_step(step)
-        case_executor.execute_case(step)
-      end
-
       def execute_hash_step(step)
         name, command = step.to_a.flatten
         interpolated_name = interpolator.interpolate(name)
 
         if command.is_a?(Hash)
-          execute_steps([command])
+          workflow_executor.execute_steps([command])
         else
           interpolated_command = interpolator.interpolate(command)
           exit_on_error = context.exit_on_error?(interpolated_name)

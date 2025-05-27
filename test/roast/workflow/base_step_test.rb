@@ -19,7 +19,7 @@ class RoastWorkflowBaseStepTest < ActiveSupport::TestCase
 
   test "initialize sets workflow and default model" do
     assert_equal @workflow, @step.workflow
-    assert_equal "anthropic:claude-opus-4", @step.model
+    assert_equal "anthropic:claude-3-7-sonnet", @step.model
   end
 
   test "initialize accepts custom model" do

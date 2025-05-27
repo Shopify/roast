@@ -2,14 +2,14 @@ name: Simple Conditional Test
 tools: []
 
 steps:
-  - set_value: "$(echo 'true')"
+  - set_value: "echo 'true'"
   
   - if: "{{output.set_value.strip == 'true'}}"
     then:
-      - success: "$(echo 'If condition worked!')"
+      - success: "echo 'If condition worked!'"
     else:
-      - failure: "$(echo 'If condition failed!')"
+      - failure: "echo 'If condition failed!'"
   
   - unless: "{{output.set_value.strip == 'false'}}"
     then:
-      - unless_success: "$(echo 'Unless condition worked!')"
+      - unless_success: "echo 'Unless condition worked!'"

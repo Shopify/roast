@@ -41,33 +41,22 @@ module Roast
         # Skip if no api_token is provided in the workflow
         return if @configuration.api_token.blank?
 
-        client = case @configuration.api_provider
-        when :openrouter
-          configure_openrouter_client
-        when :openai
-          configure_openai_client
-        when nil
-          # Skip configuration if no api_provider is set
-          return
-        else
-          raise "Unsupported api_provider in workflow configuration: #{@configuration.api_provider}"
+        begin
+          case @configuration.api_provider
+          when :openrouter
+            configure_openrouter_client
+          when :openai
+            configure_openai_client
+          when nil
+            # Skip configuration if no api_provider is set
+            nil
+          else
+            raise "Unsupported api_provider in workflow configuration: #{@configuration.api_provider}"
+          end
+        rescue => e
+          Roast::Helpers::Logger.error("Error configuring API client: #{e.message}")
+          raise e
         end
-
-        # Validate the client configuration by making a test API call
-        validate_api_client(client) if client
-      rescue OpenRouter::ConfigurationError, Faraday::UnauthorizedError => e
-        error = Roast::AuthenticationError.new("API authentication failed: No API token provided or token is invalid")
-        error.set_backtrace(e.backtrace)
-
-        ActiveSupport::Notifications.instrument("roast.workflow.start.error", {
-          error: error.class.name,
-          message: error.message,
-        })
-
-        raise error
-      rescue => e
-        Roast::Helpers::Logger.error("Error configuring API client: #{e.message}")
-        raise e
       end
 
       def api_client_already_configured?
@@ -85,27 +74,18 @@ module Roast
         $stderr.puts "Configuring OpenRouter client with token from workflow"
         require "open_router"
 
-        client = OpenRouter::Client.new(access_token: @configuration.api_token)
         Raix.configure do |config|
-          config.openrouter_client = client
+          config.openrouter_client = OpenRouter::Client.new(access_token: @configuration.api_token)
         end
-        client
       end
 
       def configure_openai_client
         $stderr.puts "Configuring OpenAI client with token from workflow"
         require "openai"
 
-        client = OpenAI::Client.new(access_token: @configuration.api_token)
         Raix.configure do |config|
-          config.openai_client = client
+          config.openai_client = OpenAI::Client.new(access_token: @configuration.api_token)
         end
-        client
-      end
-
-      def validate_api_client(client)
-        # Make a lightweight API call to validate the token
-        client.models.list if client.respond_to?(:models)
       end
     end
   end

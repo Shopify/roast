@@ -16,7 +16,7 @@ module Roast
       def_delegator :workflow, :chat_completion
       def_delegator :workflow, :transcript
 
-      def initialize(workflow, model: "anthropic:claude-opus-4", name: nil, context_path: nil, auto_loop: true)
+      def initialize(workflow, model: "anthropic:claude-3-7-sonnet", name: nil, context_path: nil, auto_loop: true)
         @workflow = workflow
         @model = model
         @name = name || self.class.name.underscore.split("/").last

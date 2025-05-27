@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "roast/workflow/step_executors/base_step_executor"
-require "roast/workflow/step_runner"
 
 module Roast
   module Workflow
@@ -18,7 +17,7 @@ module Roast
 
               begin
                 # Execute the single step in this thread
-                step_runner.execute_steps([sub_step])
+                workflow_executor.execute_steps([sub_step])
                 Thread.current[:result] = :success
               rescue => e
                 Thread.current[:error] = e
@@ -37,16 +36,6 @@ module Roast
           end
 
           :success
-        end
-
-        private
-
-        def step_runner
-          @step_runner ||= StepRunner.new(coordinator)
-        end
-
-        def coordinator
-          workflow_executor.step_executor_coordinator
         end
       end
     end

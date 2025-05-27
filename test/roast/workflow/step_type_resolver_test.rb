@@ -83,36 +83,6 @@ module Roast
         refute(StepTypeResolver.iteration_step?([]))
       end
 
-      def test_conditional_step_predicate
-        assert(StepTypeResolver.conditional_step?({ "if" => "condition" }))
-        assert(StepTypeResolver.conditional_step?({ "unless" => "condition" }))
-        refute(StepTypeResolver.conditional_step?({ "var" => "value" }))
-        refute(StepTypeResolver.conditional_step?("string"))
-        refute(StepTypeResolver.conditional_step?([]))
-      end
-
-      def test_case_step_predicate
-        assert(StepTypeResolver.case_step?({ "case" => "expression" }))
-        refute(StepTypeResolver.case_step?({ "var" => "value" }))
-        refute(StepTypeResolver.case_step?("string"))
-        refute(StepTypeResolver.case_step?([]))
-      end
-
-      def test_resolves_conditional_step_if
-        step = { "if" => "condition", "then" => ["step1"] }
-        assert_equal(StepTypeResolver::CONDITIONAL_STEP, StepTypeResolver.resolve(step))
-      end
-
-      def test_resolves_conditional_step_unless
-        step = { "unless" => "condition", "then" => ["step1"] }
-        assert_equal(StepTypeResolver::CONDITIONAL_STEP, StepTypeResolver.resolve(step))
-      end
-
-      def test_resolves_case_step
-        step = { "case" => "expression", "when" => { "value1" => ["step1"] } }
-        assert_equal(StepTypeResolver::CASE_STEP, StepTypeResolver.resolve(step))
-      end
-
       def test_extract_name_from_string
         assert_equal("test", StepTypeResolver.extract_name("test"))
       end
