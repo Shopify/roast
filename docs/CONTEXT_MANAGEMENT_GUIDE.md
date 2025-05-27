@@ -21,29 +21,107 @@ context_management:
   strategy: truncation  # Fast, reliable strategy
 ```
 
+### Setup for Testing with OpenRouter
+
+For comprehensive testing with models like Google Gemini, set up OpenRouter:
+
+1. **Get OpenRouter API Key**: Sign up at https://openrouter.ai/ and get your API key
+2. **Set Environment Variable**: 
+   ```bash
+   export OPENROUTER_API_KEY="your-openrouter-api-key-here"
+   ```
+3. **Configure Workflow**:
+   ```yaml
+   name: Context Management Test
+   api_provider: openrouter
+   api_token: $(echo $OPENROUTER_API_KEY)
+   model: google/gemini-2.0-flash-001
+   context_management:
+     enabled: true
+     threshold: 0.6  # Trigger at 60% to test sooner
+     strategy: llm_summarization
+     max_tokens: 1000000
+   ```
+
 ### Testing the Feature
 
-Create a simple test workflow to see context management in action:
+Create a comprehensive test workflow to see context management in action:
 
 ```yaml
-# test-context-management.yml
+# context-test-workflow.yml
 name: Context Management Test
-model: gpt-4o-mini
+api_provider: openrouter
+api_token: $(echo $OPENROUTER_API_KEY)
+model: google/gemini-2.0-flash-001
+
 context_management:
   enabled: true
-  threshold: 0.1  # Very low threshold to trigger quickly
-  strategy: truncation
-  
+  threshold: 0.6  # Trigger at 60% to test sooner
+  strategy: llm_summarization
+  max_tokens: 1000000
+
 tools:
   - Roast::Tools::ReadFile
+  - Roast::Tools::WriteFile
 
 steps:
-  - read_many_files: "Read and summarize all Ruby files in the lib/ directory, providing detailed analysis for each file"
-  - generate_report: "Create a comprehensive report of the codebase structure and patterns"
-  - final_summary: "Provide final recommendations for code improvements"
+  - detailed_analysis
+  - code_review
+  - security_audit
+  - performance_review
+  - documentation_review
+  - final_report
+
+# Step configurations to enable output saving
+detailed_analysis:
+  print_response: true
+code_review:
+  print_response: true
+security_audit:
+  print_response: true
+performance_review:
+  print_response: true
+documentation_review:
+  print_response: true
+final_report:
+  print_response: true
 ```
 
-Run with: `bin/roast test-context-management.yml`
+Create step directories with prompts (example for `detailed_analysis/prompt.md`):
+
+```markdown
+# Extremely Detailed Code Analysis
+
+Please provide an exhaustive analysis of this code. Be very verbose and detailed:
+
+<% if workflow.file %>
+**File:** `<%= workflow.file %>`
+
+```
+<%= workflow.resource.contents %>
+```
+
+Provide detailed analysis covering:
+1. **Line-by-line breakdown** - Go through each method
+2. **Design patterns used** - Identify all patterns
+3. **Data structures** - Analyze each variable and its purpose
+4. **Method signatures** - Detailed parameter analysis
+5. **Return values** - What each method returns and why
+6. **Edge cases** - What could go wrong
+7. **Memory usage** - How memory is managed
+8. **Time complexity** - Big O analysis for each method
+9. **Space complexity** - Memory requirements
+10. **Ruby idioms** - What Ruby-specific features are used
+
+Be extremely thorough and verbose in your analysis.
+<% end %>
+```
+
+**Important**: Run from your workflow directory using relative paths:
+```bash
+cd your-test-directory
+bundle exec /path/to/roast/exe/roast execute context-test-workflow.yml sample_code.rb -v
+```
 
 ## Practical Example Workflows
 
@@ -252,6 +330,45 @@ DEBUG=1 bin/roast your-workflow.yml
 
 **Issue**: Unexpected token counting
 **Solution**: Adjust `character_to_token_ratio` for your specific models
+
+### Important: Template Syntax
+
+⚠️ **Critical Fix**: Use `workflow.resource.contents` (plural) in your ERB templates, not `workflow.resource.content` (singular):
+
+```erb
+<!-- ✅ Correct -->
+<%= workflow.resource.contents %>
+
+<!-- ❌ Incorrect - will cause "undefined method" errors -->
+<%= workflow.resource.content %>
+```
+
+### Workflow Execution Best Practices
+
+**Path Resolution**: For best results, run workflows from the directory containing your workflow files:
+
+```bash
+# ✅ Recommended approach
+cd your-workflow-directory
+bundle exec /path/to/roast/exe/roast execute workflow.yml target_file.rb
+
+# ⚠️ May cause resource resolution issues
+bundle exec roast execute /full/path/to/workflow.yml /full/path/to/target.rb
+```
+
+**Step Configuration**: Remember to add `print_response: true` to steps where you want to save output:
+
+```yaml
+steps:
+  - analyze_code
+  - generate_report
+
+# Step configurations
+analyze_code:
+  print_response: true
+generate_report:
+  print_response: true
+```
 
 ## Advanced Configuration Examples
 

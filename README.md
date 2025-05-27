@@ -448,6 +448,26 @@ For most workflows, you'll mainly use `response` to access the current step's re
 
 ## Advanced Features
 
+### Context Management
+
+Roast includes automatic context management to prevent token overflow in long-running workflows. When approaching model token limits, Roast automatically compacts the conversation transcript using configurable strategies:
+
+```yaml
+name: Long Running Workflow
+model: gpt-4o
+context_management:
+  enabled: true
+  threshold: 0.75  # Trigger at 75% of token limit
+  strategy: llm_summarization  # or 'truncation'
+  max_tokens: 128000
+```
+
+Available strategies:
+- **llm_summarization**: Uses AI to intelligently summarize conversation history (preserves more context)
+- **truncation**: Simply removes oldest messages (faster but less intelligent)
+
+[Read the full context management guide](docs/CONTEXT_MANAGEMENT_GUIDE.md) for detailed configuration and testing examples.
+
 ### Instrumentation
 
 Roast provides extensive instrumentation capabilities using ActiveSupport::Notifications. You can monitor workflow execution, track AI model usage, measure performance, and integrate with external monitoring systems. [Read the full instrumentation documentation](docs/INSTRUMENTATION.md).
