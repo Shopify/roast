@@ -90,17 +90,15 @@ module Roast
           })
           result
         end
+      rescue Faraday::ResourceNotFound => e
+        execution_time = Time.now - start_time
+        message = e.response.dig(:body, "error", "message") || e.message
+        error = Roast::ResourceNotFoundError.new(message)
+        error.set_backtrace(e.backtrace)
+        log_and_raise_error(error, message, step_model || model, kwargs, execution_time)
       rescue => e
         execution_time = Time.now - start_time
-
-        ActiveSupport::Notifications.instrument("roast.chat_completion.error", {
-          error: e.class.name,
-          message: e.message,
-          model: step_model || model,
-          parameters: kwargs.except(:openai, :model),
-          execution_time: execution_time,
-        })
-        raise
+        log_and_raise_error(e, e.message, step_model || model, kwargs, execution_time)
       end
 
       def with_model(model)
@@ -184,6 +182,18 @@ module Roast
             self.transcript = @context_manager.compact_transcript(transcript)
           end
         end
+      end
+
+      def log_and_raise_error(error, message, model, params, execution_time)
+        ActiveSupport::Notifications.instrument("roast.chat_completion.error", {
+          error: error.class.name,
+          message: message,
+          model: model,
+          parameters: params.except(:openai, :model),
+          execution_time: execution_time,
+        })
+
+        raise error
       end
 
       def read_sidecar_prompt
