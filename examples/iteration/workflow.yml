@@ -33,7 +33,12 @@ steps:
       steps:
         - select_next_issue
         - implement_fix
+          available_tools:
+            - update_files
+            - coding_agent
         - verify_fix
+          available_tools:
+            - cmd
         - update_fix_count
       until: "{{output['update_fix_count']['fixes_applied'] >= 5 || output['select_next_issue']['no_issues_left'] == true}}"
       max_iterations: 10

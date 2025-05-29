@@ -58,6 +58,7 @@ class RoastWorkflowWorkflowExecutorTest < ActiveSupport::TestCase
       loop: true,
       json: false,
       params: {},
+      tools: nil,
     ).returns("Test response")
 
     result = @executor.execute_step("this is a plain text prompt")

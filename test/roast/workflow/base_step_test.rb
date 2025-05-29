@@ -44,4 +44,49 @@ class RoastWorkflowBaseStepTest < ActiveSupport::TestCase
     assert_equal({ user: "Test prompt" }, @workflow.transcript.last)
     assert_equal "Test chat completion response", result
   end
+
+  test "available_tools attribute defaults to nil" do
+    assert_nil @step.available_tools
+  end
+
+  test "available_tools can be set" do
+    tools = ["grep", "read_file"]
+    @step.available_tools = tools
+    assert_equal tools, @step.available_tools
+  end
+
+  test "call with available_tools passes tools to chat_completion" do
+    available_tools = ["grep", "search_file"]
+    @step.available_tools = available_tools
+
+    Roast::Helpers::PromptLoader.stubs(:load_prompt)
+      .with(@step, @workflow.file)
+      .returns("Test prompt")
+
+    @workflow.stubs(:openai?)
+      .returns(true)
+
+    # Expect chat_completion to be called with tools parameter
+    @workflow.expects(:chat_completion)
+      .with(openai: @step.model, loop: true, model: @step.model, json: false, params: {}, tools: available_tools)
+      .returns("Test response")
+
+    @step.call
+  end
+
+  test "call without available_tools passes nil tools" do
+    Roast::Helpers::PromptLoader.stubs(:load_prompt)
+      .with(@step, @workflow.file)
+      .returns("Test prompt")
+
+    @workflow.stubs(:openai?)
+      .returns(true)
+
+    # Expect chat_completion to be called with tools: nil
+    @workflow.expects(:chat_completion)
+      .with(openai: @step.model, loop: true, model: @step.model, json: false, params: {}, tools: nil)
+      .returns("Test response")
+
+    @step.call
+  end
 end

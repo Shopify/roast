@@ -28,12 +28,20 @@ steps:
 # Configure the steps
 analyze_spec:
   print_response: false
+  available_tools:
+    - read_file
+    - grep
 
 create_minitest:
   print_response: true
+  available_tools:
+    - write_file
 
 run_and_improve:
-  print_response: true 
+  print_response: true
+  available_tools:
+    - cmd
+    - coding_agent 
 
 functions:
   grep:

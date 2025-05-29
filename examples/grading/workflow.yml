@@ -24,10 +24,25 @@ steps:
   - generate_recommendations
 
 # set non-default attributes for steps below
+read_dependencies:
+  available_tools:
+    - read_file
+  json: true
+
 analyze_coverage:
 #  model: gpt-4.1-mini
   auto_loop: false
   json: true
+
+verify_test_helpers:
+  available_tools:
+    - grep
+    - search_file
+
+verify_mocks_and_stubs:
+  available_tools:
+    - grep
+    - search_file
   
 generate_grades:
 #  model: o3
