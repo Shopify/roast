@@ -1,0 +1,15 @@
+name: Tool Configuration Example
+model: default
+tools:
+  - Roast::Tools::ReadFile
+  - Roast::Tools::Cmd:
+      allowed_commands:
+        - ls
+        - pwd
+        - echo
+        - cat
+  - Roast::Tools::WriteFile
+
+steps:
+  - example_step
+

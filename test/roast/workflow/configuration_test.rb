@@ -5,6 +5,7 @@ require "roast/workflow/configuration"
 require "yaml"
 require "open3"
 require "fileutils"
+require "tempfile"
 
 module Roast
   module Workflow
@@ -123,6 +124,150 @@ module Roast
         def test_returns_empty_hash_for_non_existing_function
           configuration = Roast::Workflow::Configuration.new(@workflow_path, @options)
           assert_equal({}, configuration.function_config("nonexistent"))
+        end
+      end
+
+      class ToolConfigTest < ActiveSupport::TestCase
+        FIXTURES = File.expand_path("../../../test/fixtures/files", __dir__)
+
+        def fixture_file(filename)
+          File.join(FIXTURES, filename)
+        end
+
+        def setup
+          @options = {}
+          FileUtils.mkdir_p(FIXTURES) unless Dir.exist?(FIXTURES)
+        end
+
+        def teardown
+          # Clean up any temporary files created during tests
+          Dir.glob(File.join(FIXTURES, "*.yml")).each do |file|
+            File.delete(file) if File.basename(file).start_with?("mixed_tools_config") ||
+              File.basename(file).start_with?("string_tools_only") ||
+              File.basename(file).start_with?("hash_tools_only") ||
+              File.basename(file).start_with?("empty_tools")
+          end
+        end
+
+        def test_parses_mixed_tool_formats_with_string_and_hash_configurations
+          temp_file = Tempfile.new(["mixed_tools_config", ".yml"], FIXTURES)
+          config_hash = {
+            "name" => "Mixed Tools Test",
+            "tools" => [
+              "Roast::Tools::Grep",
+              { "Roast::Tools::Cmd" => { "allowed_commands" => ["sed", "gh", "ruby"] } },
+              "Roast::Tools::ReadFile",
+              "Roast::Tools::SearchFile",
+            ],
+            "steps" => ["step1"],
+          }
+          temp_file.write(config_hash.to_yaml)
+          temp_file.close
+
+          begin
+            config = Configuration.new(temp_file.path)
+
+            # Check that all tools are parsed correctly
+            assert_equal(
+              [
+                "Roast::Tools::Grep",
+                "Roast::Tools::Cmd",
+                "Roast::Tools::ReadFile",
+                "Roast::Tools::SearchFile",
+              ],
+              config.tools,
+            )
+
+            # Check that tool configurations are stored correctly
+            assert_equal({}, config.tool_config("Roast::Tools::Grep"))
+            assert_equal({ "allowed_commands" => ["sed", "gh", "ruby"] }, config.tool_config("Roast::Tools::Cmd"))
+            assert_equal({}, config.tool_config("Roast::Tools::ReadFile"))
+            assert_equal({}, config.tool_config("Roast::Tools::SearchFile"))
+
+            # Check that non-existent tool returns empty hash
+            assert_equal({}, config.tool_config("NonExistent::Tool"))
+          ensure
+            temp_file.unlink
+          end
+        end
+
+        def test_handles_tools_with_only_string_format_backward_compatibility
+          temp_file = Tempfile.new(["string_tools_only", ".yml"], FIXTURES)
+          config_hash = {
+            "name" => "String Tools Test",
+            "tools" => [
+              "Roast::Tools::Grep",
+              "Roast::Tools::ReadFile",
+            ],
+            "steps" => ["step1"],
+          }
+          temp_file.write(config_hash.to_yaml)
+          temp_file.close
+
+          begin
+            config = Configuration.new(temp_file.path)
+
+            # Check that tools are parsed correctly
+            assert_equal(2, config.tools.length)
+            assert_includes(config.tools, "Roast::Tools::Grep")
+            assert_includes(config.tools, "Roast::Tools::ReadFile")
+
+            # Check that no tool configurations are stored (all should be empty hashes)
+            assert_equal({}, config.tool_config("Roast::Tools::Grep"))
+            assert_equal({}, config.tool_config("Roast::Tools::ReadFile"))
+          ensure
+            temp_file.unlink
+          end
+        end
+
+        def test_handles_tools_with_only_hash_format
+          temp_file = Tempfile.new(["hash_tools_only", ".yml"], FIXTURES)
+          config_hash = {
+            "name" => "Hash Tools Test",
+            "tools" => [
+              { "Roast::Tools::Cmd" => { "allowed_commands" => ["git", "npm"] } },
+              { "Roast::Tools::Grep" => nil }, # Shows hash format works even without config
+            ],
+            "steps" => ["step1"],
+          }
+          temp_file.write(config_hash.to_yaml)
+          temp_file.close
+
+          begin
+            config = Configuration.new(temp_file.path)
+
+            # Check that tools are parsed correctly
+            assert_equal(2, config.tools.length)
+            assert_includes(config.tools, "Roast::Tools::Cmd")
+            assert_includes(config.tools, "Roast::Tools::Grep")
+
+            # Check that tool configurations are stored correctly
+            assert_equal({ "allowed_commands" => ["git", "npm"] }, config.tool_config("Roast::Tools::Cmd"))
+            assert_equal({}, config.tool_config("Roast::Tools::Grep")) # Empty since Grep doesn't support config
+          ensure
+            temp_file.unlink
+          end
+        end
+
+        def test_handles_empty_tools_configuration
+          temp_file = Tempfile.new(["empty_tools", ".yml"], FIXTURES)
+          config_hash = {
+            "name" => "Empty Tools Test",
+            "steps" => ["step1"],
+          }
+          temp_file.write(config_hash.to_yaml)
+          temp_file.close
+
+          begin
+            config = Configuration.new(temp_file.path)
+
+            # Check that empty tools are handled correctly
+            assert_empty(config.tools)
+            assert_empty(config.tool_configs)
+            assert_equal({}, config.tool_config("Any::Tool"))
+          ensure
+            temp_file.unlink
+          end
         end
       end
 

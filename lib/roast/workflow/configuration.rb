@@ -11,7 +11,7 @@ module Roast
     # Encapsulates workflow configuration data and provides structured access
     # to the configuration settings
     class Configuration
-      attr_reader :config_hash, :workflow_path, :name, :steps, :tools, :function_configs, :model, :resource
+      attr_reader :config_hash, :workflow_path, :name, :steps, :tools, :tool_configs, :function_configs, :model, :resource
       attr_accessor :target
 
       delegate :api_provider, :openrouter?, :openai?, to: :api_configuration
@@ -30,7 +30,7 @@ module Roast
         # Extract basic configuration values
         @name = ConfigurationLoader.extract_name(@config_hash, workflow_path)
         @steps = ConfigurationLoader.extract_steps(@config_hash)
-        @tools = ConfigurationLoader.extract_tools(@config_hash)
+        @tools, @tool_configs = ConfigurationLoader.extract_tools(@config_hash)
         @function_configs = ConfigurationLoader.extract_functions(@config_hash)
         @model = ConfigurationLoader.extract_model(@config_hash)
 
@@ -78,6 +78,13 @@ module Roast
       # @return [Hash] The configuration for the function or empty hash if not found
       def function_config(function_name)
         @function_configs[function_name.to_s] || {}
+      end
+
+      # Get configuration for a specific tool
+      # @param tool_name [String] The name of the tool (e.g., 'Roast::Tools::Cmd')
+      # @return [Hash] The configuration for the tool or empty hash if not found
+      def tool_config(tool_name)
+        @tool_configs[tool_name.to_s] || {}
       end
 
       private
