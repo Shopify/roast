@@ -149,6 +149,33 @@ module Roast
         step.json = step_config["json"] if step_config.key?("json")
         step.params = step_config["params"] if step_config.key?("params")
         step.coerce_to = step_config["coerce_to"].to_sym if step_config.key?("coerce_to")
+        
+        if step_config.key?("available_tools")
+          validate_available_tools(step_config["available_tools"])
+          step.available_tools = step_config["available_tools"]
+        end
+      end
+
+      # Validate that available_tools references valid tool names
+      def validate_available_tools(available_tools)
+        return if available_tools.nil? || available_tools.empty?
+
+        # Get all included tool modules from the workflow
+        included_tools = workflow.configuration.tools || []
+        
+        # Extract tool names from the module names (e.g., "Roast::Tools::Grep" -> "grep")
+        valid_tool_names = included_tools.map do |tool_module_name|
+          tool_module_name.split("::").last.underscore
+        end
+
+        # Check each available tool
+        available_tools.each do |tool_name|
+          unless valid_tool_names.include?(tool_name)
+            raise StepLoaderError.new(
+              "Invalid tool '#{tool_name}' in available_tools. Valid tools are: #{valid_tool_names.join(', ')}"
+            )
+          end
+        end
       end
     end
   end
