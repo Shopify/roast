@@ -22,16 +22,30 @@ module Roast
         def post_configuration_setup(base, config = {})
           allowed_commands = config[CONFIG_ALLOWED_COMMANDS] || DEFAULT_ALLOWED_COMMANDS
 
-          allowed_commands.each do |command|
-            register_command_function(base, command)
+          allowed_commands.each do |command_entry|
+            case command_entry
+            when String
+              register_command_function(base, command_entry, nil)
+            when Hash
+              command_name = command_entry["name"] || command_entry[:name]
+              description = command_entry["description"] || command_entry[:description]
+
+              if command_name.nil?
+                raise ArgumentError, "Command configuration must include 'name' field"
+              end
+
+              register_command_function(base, command_name, description)
+            else
+              raise ArgumentError, "Invalid command configuration format: #{command_entry.inspect}"
+            end
           end
         end
 
         private
 
-        def register_command_function(base, command)
+        def register_command_function(base, command, custom_description = nil)
           function_name = command.to_sym
-          description = generate_command_description(command)
+          description = custom_description || generate_command_description(command)
 
           base.class_eval do
             function(
@@ -57,25 +71,37 @@ module Roast
         def generate_command_description(command)
           case command
           when "pwd"
-            "Print the current working directory"
+            "pwd command - print current working directory path"
           when "ls"
-            "List directory contents"
+            "ls command - list directory contents with options like -la, -R"
           when "find"
-            "Search for files and directories"
+            "find command - search for files/directories using patterns like -name '*.rb'"
           when "rake"
-            "Run Ruby rake tasks"
+            "rake command - run Ruby tasks defined in Rakefile"
           when "ruby"
-            "Execute Ruby code or scripts"
+            "ruby command - execute Ruby code or scripts, supports -e for inline code"
           when "dev"
-            "Run Shopify dev commands"
+            "Shopify dev CLI - development environment tool with subcommands"
           when "mkdir"
-            "Create directories"
+            "mkdir command - create directories, supports -p for parent directories"
           when "git"
-            "Execute git version control commands"
+            "git CLI - version control system with subcommands like status, commit, push"
           when "echo"
-            "Display a line of text"
+            "echo command - output text to stdout, supports > for file redirection"
           when "cat"
-            "Display file contents"
+            "cat command - display file contents, concatenate files, works with pipes"
+          when "npm"
+            "npm CLI - Node.js package manager with subcommands like install, run"
+          when "docker"
+            "Docker CLI - container platform with subcommands like run, build, ps"
+          when "curl"
+            "curl command - transfer data from URLs, supports -X, -H, -d options"
+          when "jq"
+            "jq command - process JSON data with filters like '.key' or '.[].name'"
+          when "make"
+            "make command - run build targets defined in Makefile"
+          when "grep"
+            "grep command - search text patterns with options like -r, -i, -E"
           else
             "Execute the #{command} command"
           end
@@ -107,9 +133,20 @@ module Roast
 
       def validate_command(command, allowed_commands)
         command_prefix = command.split(" ").first
-        return if allowed_commands.include?(command_prefix)
 
-        "Error: Command not allowed. Only commands starting with #{allowed_commands.join(", ")} are permitted."
+        # Extract command names from the allowed_commands array
+        allowed_command_names = allowed_commands.map do |cmd_entry|
+          case cmd_entry
+          when String
+            cmd_entry
+          when Hash
+            cmd_entry["name"] || cmd_entry[:name]
+          end
+        end.compact
+
+        return if allowed_command_names.include?(command_prefix)
+
+        "Error: Command not allowed. Only commands starting with #{allowed_command_names.join(", ")} are permitted."
       end
 
       def extract_tool_config

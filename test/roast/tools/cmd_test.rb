@@ -71,9 +71,9 @@ module Roast
         assert DummyBaseClass.registered_functions.key?(:git)
 
         # Check descriptions
-        assert_equal "List directory contents", DummyBaseClass.registered_functions[:ls][:description]
-        assert_equal "Print the current working directory", DummyBaseClass.registered_functions[:pwd][:description]
-        assert_equal "Execute git version control commands", DummyBaseClass.registered_functions[:git][:description]
+        assert_equal "ls command - list directory contents with options like -la, -R", DummyBaseClass.registered_functions[:ls][:description]
+        assert_equal "pwd command - print current working directory path", DummyBaseClass.registered_functions[:pwd][:description]
+        assert_equal "git CLI - version control system with subcommands like status, commit, push", DummyBaseClass.registered_functions[:git][:description]
 
         # Check params
         assert_equal "string", DummyBaseClass.registered_functions[:ls][:params][:args][:type]
@@ -113,6 +113,81 @@ module Roast
         result = ls_function.call({ args: "-la" })
         assert_match(/Command: ls -la/, result)
         assert_match(/Exit status:/, result)
+      end
+
+      test "post_configuration_setup accepts hash format with custom descriptions" do
+        DummyBaseClass.registered_functions = {}
+
+        config = {
+          "allowed_commands" => [
+            "ls",
+            { "name" => "git", "description" => "Custom git description for version control" },
+            { "name" => "npm", "description" => "Node.js package manager for dependencies" },
+          ],
+        }
+        Roast::Tools::Cmd.post_configuration_setup(DummyBaseClass, config)
+
+        # Check that functions were registered
+        assert DummyBaseClass.registered_functions.key?(:ls)
+        assert DummyBaseClass.registered_functions.key?(:git)
+        assert DummyBaseClass.registered_functions.key?(:npm)
+
+        # Check descriptions
+        assert_equal "ls command - list directory contents with options like -la, -R", DummyBaseClass.registered_functions[:ls][:description]
+        assert_equal "Custom git description for version control", DummyBaseClass.registered_functions[:git][:description]
+        assert_equal "Node.js package manager for dependencies", DummyBaseClass.registered_functions[:npm][:description]
+      end
+
+      test "post_configuration_setup accepts symbol keys in hash format" do
+        DummyBaseClass.registered_functions = {}
+
+        config = {
+          "allowed_commands" => [
+            { name: "docker", description: "Container management tool" },
+          ],
+        }
+        Roast::Tools::Cmd.post_configuration_setup(DummyBaseClass, config)
+
+        assert DummyBaseClass.registered_functions.key?(:docker)
+        assert_equal "Container management tool", DummyBaseClass.registered_functions[:docker][:description]
+      end
+
+      test "post_configuration_setup raises error for invalid hash format" do
+        DummyBaseClass.registered_functions = {}
+
+        config = {
+          "allowed_commands" => [
+            { "description" => "Missing name field" },
+          ],
+        }
+
+        assert_raises(ArgumentError) do
+          Roast::Tools::Cmd.post_configuration_setup(DummyBaseClass, config)
+        end
+      end
+
+      test "validate_command works with mixed format allowed_commands" do
+        config = {
+          "allowed_commands" => [
+            "pwd",
+            { "name" => "git", "description" => "Version control" },
+            { "name" => "npm" },
+          ],
+        }
+
+        # These should work
+        result = Roast::Tools::Cmd.call("pwd", config)
+        refute_match(/Error: Command not allowed/, result)
+
+        result = Roast::Tools::Cmd.call("git status", config)
+        refute_match(/Error: Command not allowed/, result)
+
+        result = Roast::Tools::Cmd.call("npm install", config)
+        refute_match(/Error: Command not allowed/, result)
+
+        # This should fail
+        result = Roast::Tools::Cmd.call("rm file.txt", config)
+        assert_equal "Error: Command not allowed. Only commands starting with pwd, git, npm are permitted.", result
       end
 
       test "included method does not register any functions" do
