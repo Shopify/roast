@@ -1,0 +1,39 @@
+name: Building Projects with Command Functions
+model: default
+
+# Learn how to create project structures using command functions
+
+tools:
+  - Roast::Tools::Cmd:
+      allowed_commands:
+        - pwd
+        - ls
+        - mkdir
+        - echo
+        - cat
+  - Roast::Tools::WriteFile
+
+steps:
+  - |
+    # Project Builder Tutorial
+
+    Welcome! This workflow teaches you how to create project structures using
+    command functions combined with file writing capabilities.
+
+    You have access to:
+    - `pwd()` - Check current location
+    - `ls(args: "...")` - List files
+    - `mkdir(args: "...")` - Create directories
+    - `echo(args: "...")` - Display messages
+    - `cat(args: "...")` - View file contents
+    - `write_file()` - Create new files
+
+    I'll demonstrate how to:
+    1. Create a well-organized directory structure
+    2. Add essential files like README and configuration
+    3. Verify the structure was created correctly
+
+    This is a practical skill for automating project setup!
+
+  - create_project
+  - verify_project

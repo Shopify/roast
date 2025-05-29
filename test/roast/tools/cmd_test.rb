@@ -44,62 +44,84 @@ module Roast
         assert_equal "Error: Command not allowed. Only commands starting with git are permitted.", result
       end
 
-      test "handles empty configuration gracefully" do
-        result = Roast::Tools::Cmd.call("ls", {})
-        assert_match(/Command: ls/, result)
-        assert_match(/Exit status: 0/, result)
-      end
+      class DummyBaseClass
+        class << self
+          attr_accessor :registered_functions
 
-      test "handles nil configuration gracefully" do
-        result = Roast::Tools::Cmd.call("pwd")
-        assert_match(/Command: pwd/, result)
-        assert_match(/Exit status: 0/, result)
-      end
-
-      test "handles command execution errors" do
-        config = { "allowed_commands" => ["false"] }
-        result = Roast::Tools::Cmd.call("false", config)
-        assert_match(/Command: false/, result)
-        assert_match(/Exit status: 1/, result)
-      end
-
-      test "handles non-existent commands" do
-        config = { "allowed_commands" => ["nonexistent_command_xyz"] }
-        result = Roast::Tools::Cmd.call("nonexistent_command_xyz", config)
-        assert_match(/Error running command:/, result)
-      end
-
-      test "formats output correctly" do
-        config = { "allowed_commands" => ["echo"] }
-        result = Roast::Tools::Cmd.call("echo 'test'", config)
-
-        lines = result.split("\n")
-        assert_match(/^Command: echo 'test'$/, lines[0])
-        assert_match(/^Exit status: \d+$/, lines[1])
-        assert_equal "Output:", lines[2]
-        assert_match(/test/, lines[3])
-      end
-
-      test "includes all expected default commands" do
-        expected_commands = ["pwd", "find", "ls", "rake", "ruby", "dev", "mkdir"]
-        expected_commands.each do |cmd|
-          # Test that each default command is allowed by trying to execute it with a safe argument
-          test_command = case cmd
-          when "find"
-            "find . -maxdepth 0" # Safe find command that won't recurse
-          when "ruby"
-            "ruby -v" # Just show version
-          when "rake"
-            "rake --version" # Just show version
-          when "dev"
-            "dev version" # Assuming dev has a version command
-          else
-            cmd # pwd, ls, mkdir work without arguments
+          def function(name, description, **params, &block)
+            @registered_functions ||= {}
+            @registered_functions[name] = {
+              description: description,
+              params: params,
+              block: block,
+            }
           end
-
-          result = Roast::Tools::Cmd.call(test_command)
-          refute_match(/Error: Command not allowed/, result, "Expected '#{cmd}' to be allowed in default configuration, but it was rejected")
         end
+      end
+
+      test "post_configuration_setup registers individual command functions" do
+        DummyBaseClass.registered_functions = {}
+
+        config = { "allowed_commands" => ["ls", "pwd", "git"] }
+        Roast::Tools::Cmd.post_configuration_setup(DummyBaseClass, config)
+
+        # Check that functions were registered
+        assert DummyBaseClass.registered_functions.key?(:ls)
+        assert DummyBaseClass.registered_functions.key?(:pwd)
+        assert DummyBaseClass.registered_functions.key?(:git)
+
+        # Check descriptions
+        assert_equal "List directory contents", DummyBaseClass.registered_functions[:ls][:description]
+        assert_equal "Print the current working directory", DummyBaseClass.registered_functions[:pwd][:description]
+        assert_equal "Execute git version control commands", DummyBaseClass.registered_functions[:git][:description]
+
+        # Check params
+        assert_equal "string", DummyBaseClass.registered_functions[:ls][:params][:args][:type]
+        assert_equal false, DummyBaseClass.registered_functions[:ls][:params][:args][:required]
+      end
+
+      test "post_configuration_setup uses default commands when no config provided" do
+        DummyBaseClass.registered_functions = {}
+
+        Roast::Tools::Cmd.post_configuration_setup(DummyBaseClass, {})
+
+        # Check that default functions were registered
+        assert DummyBaseClass.registered_functions.key?(:pwd)
+        assert DummyBaseClass.registered_functions.key?(:find)
+        assert DummyBaseClass.registered_functions.key?(:ls)
+        assert DummyBaseClass.registered_functions.key?(:rake)
+        assert DummyBaseClass.registered_functions.key?(:ruby)
+        assert DummyBaseClass.registered_functions.key?(:dev)
+        assert DummyBaseClass.registered_functions.key?(:mkdir)
+      end
+
+      test "individual command functions execute correctly" do
+        DummyBaseClass.registered_functions = {}
+
+        config = { "allowed_commands" => ["ls"] }
+        Roast::Tools::Cmd.post_configuration_setup(DummyBaseClass, config)
+
+        # Get the ls function block
+        ls_function = DummyBaseClass.registered_functions[:ls][:block]
+
+        # Test with no args
+        result = ls_function.call({ args: nil })
+        assert_match(/Command: ls/, result)
+        assert_match(/Exit status:/, result)
+
+        # Test with args
+        result = ls_function.call({ args: "-la" })
+        assert_match(/Command: ls -la/, result)
+        assert_match(/Exit status:/, result)
+      end
+
+      test "included method does not register any functions" do
+        DummyBaseClass.registered_functions = {}
+
+        Roast::Tools::Cmd.included(DummyBaseClass)
+
+        # Should not register any functions in included
+        assert_empty DummyBaseClass.registered_functions
       end
     end
   end

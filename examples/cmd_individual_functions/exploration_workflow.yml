@@ -1,0 +1,36 @@
+name: Exploring Your Project with Commands
+model: default
+
+# Learn how to navigate and explore your project using command functions
+
+tools:
+  - Roast::Tools::Cmd:
+      allowed_commands:
+        - pwd
+        - ls
+        - cat
+        - git
+
+steps:
+  - |
+    # Project Exploration Guide
+
+    Let's explore your project structure using command functions! This workflow
+    teaches you how to navigate and understand your codebase.
+
+    You've configured four useful commands for exploration:
+    - `pwd()` - Check your current location
+    - `ls(args: "...")` - List files and directories
+    - `cat(args: "...")` - View file contents
+    - `git(args: "...")` - Check version control status
+
+    I'll show you how to use these commands to:
+    1. Understand where you are in the project
+    2. Explore the directory structure
+    3. Examine specific files
+    4. Check your git repository status
+
+    Ready to explore? Let's start!
+
+  - explore_project
+  - check_git_status

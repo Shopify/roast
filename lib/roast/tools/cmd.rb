@@ -15,20 +15,81 @@ module Roast
       class << self
         # Add this method to be included in other classes
         def included(base)
+          @base_class = base
+        end
+
+        # Called after configuration is loaded
+        def post_configuration_setup(base, config = {})
+          allowed_commands = config[CONFIG_ALLOWED_COMMANDS] || DEFAULT_ALLOWED_COMMANDS
+
+          allowed_commands.each do |command|
+            register_command_function(base, command)
+          end
+        end
+
+        private
+
+        def register_command_function(base, command)
+          function_name = command.to_sym
+          description = generate_command_description(command)
+
           base.class_eval do
             function(
-              :cmd,
-              'Run a command in the current working directory (e.g. "ls", "rake", "ruby"). ' \
-                "You may use this tool to execute tests and verify if they pass.",
-              command: { type: "string", description: "The command to run in a bash shell." },
+              function_name,
+              description,
+              args: {
+                type: "string",
+                description: "Arguments to pass to the #{command} command",
+                required: false,
+              },
             ) do |params|
-              tool_config = extract_tool_config
-              Roast::Tools::Cmd.call(params[:command], tool_config)
+              full_command = if params[:args].nil? || params[:args].empty?
+                command
+              else
+                "#{command} #{params[:args]}"
+              end
+
+              Roast::Tools::Cmd.execute_allowed_command(full_command, command)
             end
+          end
+        end
+
+        def generate_command_description(command)
+          case command
+          when "pwd"
+            "Print the current working directory"
+          when "ls"
+            "List directory contents"
+          when "find"
+            "Search for files and directories"
+          when "rake"
+            "Run Ruby rake tasks"
+          when "ruby"
+            "Execute Ruby code or scripts"
+          when "dev"
+            "Run Shopify dev commands"
+          when "mkdir"
+            "Create directories"
+          when "git"
+            "Execute git version control commands"
+          when "echo"
+            "Display a line of text"
+          when "cat"
+            "Display file contents"
+          else
+            "Execute the #{command} command"
           end
         end
       end
 
+      def execute_allowed_command(full_command, command_prefix)
+        Roast::Helpers::Logger.info("🔧 Running command: #{full_command}\n")
+        execute_command(full_command, command_prefix)
+      rescue StandardError => e
+        handle_error(e)
+      end
+
+      # Legacy method for backward compatibility
       def call(command, config = {})
         Roast::Helpers::Logger.info("🔧 Running command: #{command}\n")
 
