@@ -51,6 +51,10 @@ steps:
 analyze_coverage:
   model: gpt-4-turbo
   json: true
+
+# Step-specific config that specifies a custom path, not in the current directory
+generate_report:
+  path: ../reporting/generate_report
 ```
 
 Each step can have its own prompt file (e.g., `analyze_coverage/prompt.md`) and configuration. Steps can be run in parallel by nesting them in arrays:

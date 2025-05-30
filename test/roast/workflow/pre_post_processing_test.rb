@@ -305,6 +305,89 @@ module Roast
           assert_match(/Running post-processing steps/, output[1])
         end
       end
+
+      test "step loader finds step in per-step path directory (relative path)" do
+        # Create a custom directory for a specific step, relative to workflow
+        per_step_dir = File.join(@temp_dir, "per_step_relative")
+        FileUtils.mkdir_p(File.join(per_step_dir, "rel_step"))
+        File.write(File.join(per_step_dir, "rel_step", "prompt.md"), "Relative path prompt")
+
+        # Write workflow YAML with per-step relative path
+        rel_path = File.basename(per_step_dir) # relative to workflow
+        File.write(@workflow_path, <<~YAML)
+          name: test_workflow
+          steps:
+            - rel_step
+          rel_step:
+            path: #{rel_path}
+        YAML
+
+        configuration = Configuration.new(@workflow_path)
+        loader = StepLoader.new(BaseWorkflow.new(nil, name: "test", context_path: @temp_dir), configuration.config_hash, @temp_dir)
+        step = loader.load("rel_step")
+        assert_instance_of BaseStep, step
+        assert_equal "rel_step", step.name
+        assert_equal File.join(per_step_dir, "rel_step"), step.context_path
+      end
+
+      test "step loader finds step in per-step path directory (absolute path)" do
+        # Create a custom directory for a specific step, absolute path
+        per_step_dir = File.join(@temp_dir, "per_step_absolute")
+        FileUtils.mkdir_p(File.join(per_step_dir, "abs_step"))
+        File.write(File.join(per_step_dir, "abs_step", "prompt.md"), "Absolute path prompt")
+
+        # Write workflow YAML with per-step absolute path
+        abs_path = per_step_dir # already absolute
+        File.write(@workflow_path, <<~YAML)
+          name: test_workflow
+          steps:
+            - abs_step
+          abs_step:
+            path: #{abs_path}
+        YAML
+
+        configuration = Configuration.new(@workflow_path)
+        loader = StepLoader.new(BaseWorkflow.new(nil, name: "test", context_path: @temp_dir), configuration.config_hash, @temp_dir)
+        step = loader.load("abs_step")
+        assert_instance_of BaseStep, step
+        assert_equal "abs_step", step.name
+        assert_equal File.join(per_step_dir, "abs_step"), step.context_path
+      end
+
+      test "step loader finds multiple steps each with a different path" do
+        # Create two custom directories for two steps
+        rel_dir = File.join(@temp_dir, "multi_rel")
+        abs_dir = File.join(@temp_dir, "multi_abs")
+        FileUtils.mkdir_p(File.join(rel_dir, "step_a"))
+        FileUtils.mkdir_p(File.join(abs_dir, "step_b"))
+        File.write(File.join(rel_dir, "step_a", "prompt.md"), "Prompt for step A (relative)")
+        File.write(File.join(abs_dir, "step_b", "prompt.md"), "Prompt for step B (absolute)")
+
+        # Write workflow YAML with both steps, one relative, one absolute
+        rel_path = File.basename(rel_dir)
+        abs_path = abs_dir
+        File.write(@workflow_path, <<~YAML)
+          name: test_workflow
+          steps:
+            - step_a
+            - step_b
+          step_a:
+            path: #{rel_path}
+          step_b:
+            path: #{abs_path}
+        YAML
+
+        configuration = Configuration.new(@workflow_path)
+        loader = StepLoader.new(BaseWorkflow.new(nil, name: "test", context_path: @temp_dir), configuration.config_hash, @temp_dir)
+        step_a = loader.load("step_a")
+        step_b = loader.load("step_b")
+        assert_instance_of BaseStep, step_a
+        assert_instance_of BaseStep, step_b
+        assert_equal "step_a", step_a.name
+        assert_equal "step_b", step_b.name
+        assert_equal File.join(rel_dir, "step_a"), step_a.context_path
+        assert_equal File.join(abs_dir, "step_b"), step_b.context_path
+      end
     end
   end
 end

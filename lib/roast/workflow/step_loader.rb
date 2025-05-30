@@ -50,6 +50,10 @@ module Roast
       def load(step_name)
         name = step_name.is_a?(Roast::ValueObjects::StepName) ? step_name : Roast::ValueObjects::StepName.new(step_name)
 
+        # Get step config for per-step path
+        step_config = config_hash[name.to_s] || {}
+        per_step_path = step_config["path"]
+
         # First check for a prompt step (contains spaces)
         if name.plain_text?
           step = Roast::Workflow::PromptStep.new(workflow, name: name.to_s, auto_loop: true)
@@ -58,13 +62,13 @@ module Roast
         end
 
         # Look for Ruby file in various locations
-        step_file_path = find_step_file(name.to_s)
+        step_file_path = find_step_file(name.to_s, per_step_path)
         if step_file_path
           return load_ruby_step(step_file_path, name.to_s)
         end
 
         # Look for step directory
-        step_directory = find_step_directory(name.to_s)
+        step_directory = find_step_directory(name.to_s, per_step_path)
         unless step_directory
           raise StepNotFoundError.new("Step directory or file not found: #{name}", step_name: name.to_s)
         end
@@ -74,8 +78,22 @@ module Roast
 
       private
 
+      def resolve_path(path)
+        return unless path
+        return path if Pathname.new(path).absolute?
+
+        File.expand_path(path, context_path)
+      end
+
       # Find a Ruby step file in various locations
-      def find_step_file(step_name)
+      def find_step_file(step_name, per_step_path = nil)
+        # Check in per-step path first
+        if per_step_path
+          resolved_per_step_path = resolve_path(per_step_path)
+          custom_rb_path = File.join(resolved_per_step_path, "#{step_name}.rb")
+          return custom_rb_path if File.file?(custom_rb_path)
+        end
+
         # Check in phase-specific directory first
         if phase != :steps
           phase_rb_path = File.join(context_path, phase.to_s, "#{step_name}.rb")
@@ -94,7 +112,14 @@ module Roast
       end
 
       # Find a step directory
-      def find_step_directory(step_name)
+      def find_step_directory(step_name, per_step_path = nil)
+        # Check in per-step path first
+        if per_step_path
+          resolved_per_step_path = resolve_path(per_step_path)
+          custom_step_path = File.join(resolved_per_step_path, step_name)
+          return custom_step_path if File.directory?(custom_step_path)
+        end
+
         # Check in phase-specific directory first
         if phase != :steps
           phase_step_path = File.join(context_path, phase.to_s, step_name)
