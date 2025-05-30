@@ -12,7 +12,21 @@ module Roast
         # @return [Hash] The parsed configuration hash
         def load(workflow_path)
           validate_path!(workflow_path)
-          config_hash = YAML.load_file(workflow_path)
+
+          # Load shared.yml if it exists one level above
+          parent_dir = File.dirname(workflow_path)
+          shared_path = File.join(parent_dir, "..", "shared.yml")
+
+          yaml_content = ""
+
+          if File.exist?(shared_path)
+            yaml_content += File.read(shared_path)
+            yaml_content += "\n"
+          end
+
+          yaml_content += File.read(workflow_path)
+          config_hash = YAML.load(yaml_content, aliases: true)
+
           validate_config!(config_hash)
           config_hash
         end

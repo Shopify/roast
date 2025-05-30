@@ -266,6 +266,43 @@ Roast supports several types of steps:
    ```
    This creates a simple prompt-response interaction without tool calls or looping. It's detected by the presence of spaces in the step name and is useful for summarization or simple questions at the end of a workflow.
 
+#### Shared Configuration
+
+Roast supports sharing common configuration and steps across multiple workflows using a `shared.yml` file.
+
+1. Place a `shared.yml` file one level above your workflow directory
+2. Define YAML anchors for common configurations like tools, models or steps
+3. Reference these anchors in your workflow files using YAML alias syntax
+
+**Example structure:**
+```
+my_project/
+├── shared.yml          # Common configuration anchors
+└── workflows/
+    ├── analyze_code.yml
+    ├── generate_docs.yml
+    └── test_suite.yml
+```
+
+**Example `shared.yml`:**
+```yaml
+# Define common tools
+standard_tools: &standard_tools
+  - Roast::Tools::Grep
+  - Roast::Tools::ReadFile
+  - Roast::Tools::WriteFile
+  - Roast::Tools::SearchFile
+```
+
+**Using in workflows:**
+```yaml
+name: Code Analysis Workflow
+tools: *standard_tools         # Reference shared tools
+
+steps:
+  ...
+```
+
 #### Data Flow Between Steps
 
 Roast handles data flow between steps in three primary ways:

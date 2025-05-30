@@ -123,6 +123,76 @@ module Roast
         assert_equal("options.rb", target)
       end
 
+      def test_load_with_shared_yml
+        shared_yaml = <<~YAML
+          standard_tools: &tools
+            - "Roast::Tools::Grep"
+            - "Roast::Tools::ReadFile"
+        YAML
+
+        workflow_yaml = <<~YAML
+          name: "test-workflow"
+          api_token: "test-token"
+          model: "gpt-4"
+          tools: *tools
+          steps: ["step1", "step2"]
+        YAML
+
+        with_temp_workflow_and_shared_yaml(workflow_yaml, shared_yaml) do |workflow_path|
+          config = ConfigurationLoader.load(workflow_path)
+
+          assert_equal("test-workflow", config["name"])
+          assert_equal("test-token", config["api_token"])
+          assert_equal("gpt-4", config["model"])
+          assert_equal(["Roast::Tools::Grep", "Roast::Tools::ReadFile"], config["tools"])
+          assert_equal(["step1", "step2"], config["steps"])
+        end
+      end
+
+      def test_load_without_shared_yml
+        # Ensure it still works when shared.yml doesn't exist
+        workflow_config = {
+          "name" => "test-workflow",
+          "api_token" => "direct-token",
+          "steps" => ["step1", "step2"],
+        }
+
+        with_temp_dir do |dir|
+          subdir = File.join(dir, "workflows")
+          FileUtils.mkdir_p(subdir)
+          workflow_path = File.join(subdir, "workflow.yml")
+          File.write(workflow_path, YAML.dump(workflow_config))
+
+          config = ConfigurationLoader.load(workflow_path)
+
+          assert_equal("test-workflow", config["name"])
+          assert_equal("direct-token", config["api_token"])
+          assert_equal(["step1", "step2"], config["steps"])
+        end
+      end
+
+      def test_yaml_aliases_with_array_references
+        shared_yaml = <<~YAML
+          standard_tools: &tools
+            - Roast::Tools::Grep
+            - Roast::Tools::ReadFile
+            - Roast::Tools::SearchFile
+        YAML
+
+        workflow_yaml = <<~YAML
+          name: test-workflow
+          tools: *tools
+          steps:
+            - step1
+        YAML
+
+        with_temp_workflow_and_shared_yaml(workflow_yaml, shared_yaml) do |workflow_path|
+          config = ConfigurationLoader.load(workflow_path)
+
+          assert_equal(["Roast::Tools::Grep", "Roast::Tools::ReadFile", "Roast::Tools::SearchFile"], config["tools"])
+        end
+      end
+
       private
 
       def with_temp_yaml_file(content)
@@ -139,6 +209,32 @@ module Roast
         path = File.join(dir, filename)
         File.write(path, content)
         yield path
+      ensure
+        FileUtils.rm_rf(dir)
+      end
+
+      def with_temp_dir
+        dir = Dir.mktmpdir
+        yield dir
+      ensure
+        FileUtils.rm_rf(dir)
+      end
+
+      def with_temp_workflow_and_shared_yaml(workflow_yaml, shared_yaml)
+        dir = Dir.mktmpdir
+
+        # Create shared.yml in parent directory
+        File.write(File.join(dir, "shared.yml"), shared_yaml)
+
+        # Create workflow subdirectory
+        workflow_dir = File.join(dir, "workflows")
+        FileUtils.mkdir_p(workflow_dir)
+
+        # Create workflow.yml in subdirectory
+        workflow_path = File.join(workflow_dir, "workflow.yml")
+        File.write(workflow_path, workflow_yaml)
+
+        yield workflow_path
       ensure
         FileUtils.rm_rf(dir)
       end
