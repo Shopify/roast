@@ -60,6 +60,27 @@ tools:
         - rake
 ```
 
+### Enhanced Command Configuration with Descriptions
+
+You can also provide custom descriptions for commands to help the LLM understand their purpose:
+
+```yaml
+tools:
+  - Roast::Tools::Cmd:
+      allowed_commands:
+        - ls
+        - pwd
+        - name: echo
+          description: "echo command - output text to stdout, supports > for file redirection"
+        - name: cat
+          description: "cat command - display file contents, concatenate files, works with pipes"
+```
+
+This mixed format allows you to:
+- Use simple strings for commands with good default descriptions
+- Provide custom descriptions for commands that need more context
+- Help the LLM make better decisions about which command to use
+
 With this configuration:
 - ✅ `ls -la` will work
 - ✅ `echo "Hello World"` will work

@@ -558,6 +558,36 @@ tools:
 
 Currently, only `Roast::Tools::Cmd` supports configuration via `allowed_commands`, which restricts which commands can be executed (defaults to: `pwd`, `find`, `ls`, `rake`, `ruby`, `dev`, `mkdir`).
 
+##### Cmd Tool Configuration
+
+The `Cmd` tool's `allowed_commands` can be configured in two ways:
+
+**1. Simple String Format** (uses default descriptions):
+```yaml
+tools:
+  - Roast::Tools::Cmd:
+      allowed_commands:
+        - pwd
+        - ls
+        - git
+```
+
+**2. Hash Format with Custom Descriptions**:
+```yaml
+tools:
+  - Roast::Tools::Cmd:
+      allowed_commands:
+        - pwd
+        - name: git
+          description: "git CLI - version control system with subcommands like status, commit, push"
+        - name: npm
+          description: "npm CLI - Node.js package manager with subcommands like install, run"
+        - name: docker
+          description: "Docker CLI - container platform with subcommands like build, run, ps"
+```
+
+Custom descriptions help the LLM understand when and how to use each command, making your workflows more effective.
+
 #### ReadFile
 
 Reads the contents of a file from the filesystem.

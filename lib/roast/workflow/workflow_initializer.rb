@@ -32,6 +32,19 @@ module Roast
         BaseWorkflow.include(Raix::FunctionDispatch)
         BaseWorkflow.include(Roast::Helpers::FunctionCachingInterceptor) # Add caching support
         BaseWorkflow.include(*@configuration.tools.map(&:constantize))
+
+        post_configure_tools
+      end
+
+      def post_configure_tools
+        @configuration.tools.each do |tool_name|
+          tool_module = tool_name.constantize
+
+          if tool_module.respond_to?(:post_configuration_setup)
+            tool_config = @configuration.tool_config(tool_name)
+            tool_module.post_configuration_setup(BaseWorkflow, tool_config)
+          end
+        end
       end
 
       def configure_api_client
