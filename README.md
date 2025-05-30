@@ -78,7 +78,7 @@ steps:
 
 ## Try it
 
-If you don’t have one already, get an OpenAI key from [here](https://platform.openai.com/settings/organization/api-keys). You will need an account with a credit card, make sure that a basic completion works.
+If you don't have one already, get an OpenAI key from [here](https://platform.openai.com/settings/organization/api-keys). You will need an account with a credit card, make sure that a basic completion works.
 
 ```bash
 export OPENAI_API_KEY=sk-proj-....
@@ -169,7 +169,7 @@ Roast supports several types of steps:
    steps:
      - lint_check: $(rubocop {{file}})
      - fix_issues
-   
+
    # Step configuration
    lint_check:
      exit_on_error: false  # Continue workflow even if command fails
@@ -186,13 +186,13 @@ Roast supports several types of steps:
            - notify_team
          else:
            - run_development_setup
-     
+
      - verify_dependencies:
          unless: "$(bundle check)"
          then:
            - bundle_install: "$(bundle install)"
    ```
-   
+
    Conditions can be:
    - Ruby expressions: `if: "{{output['count'] > 5}}"`
    - Bash commands: `if: "$(test -f config.yml && echo true)"` (exit code 0 = true)
@@ -209,7 +209,7 @@ Roast supports several types of steps:
          steps:
            - analyze_file
            - Generate a report for {{current_file}}
-     
+
      # Repeat until a condition is met
      - improve_code:
          repeat:
@@ -219,12 +219,12 @@ Roast supports several types of steps:
              - run_tests
              - fix_issues
    ```
-   
+
    Each loops support:
    - Collections from Ruby expressions: `each: "{{[1, 2, 3]}}"`
    - Command output: `each: "$(ls *.rb)"`
    - Step references: `each: "file_list"`
-   
+
    Repeat loops support:
    - Until conditions: `until: "{{condition}}"`
    - Maximum iterations: `max_iterations: 10`
@@ -233,7 +233,7 @@ Roast supports several types of steps:
    ```yaml
    steps:
      - detect_language
-     
+
      - case: "{{ workflow.output.detect_language }}"
        when:
          ruby:
@@ -249,13 +249,13 @@ Roast supports several types of steps:
          - analyze_generic
          - generate_basic_report
    ```
-   
+
    Case expressions can be:
    - Workflow outputs: `case: "{{ workflow.output.variable }}"`
    - Ruby expressions: `case: "{{ count > 10 ? 'high' : 'low' }}"`
    - Bash commands: `case: "$(echo $ENVIRONMENT)"`
    - Direct values: `case: "production"`
-   
+
    The value is compared against each key in the `when` clause, and matching steps are executed.
    If no match is found, the `else` steps are executed (if provided).
 
@@ -541,6 +541,22 @@ Roast provides extensive instrumentation capabilities using ActiveSupport::Notif
 ### Built-in Tools
 
 Roast provides several built-in tools that you can use in your workflows:
+
+#### Tool Configuration
+
+Tools can be configured using a hash format in your workflow YAML:
+
+```yaml
+tools:
+  - Roast::Tools::ReadFile        # No configuration needed
+  - Roast::Tools::Cmd:             # With configuration
+      allowed_commands:
+        - git
+        - npm
+        - yarn
+```
+
+Currently, only `Roast::Tools::Cmd` supports configuration via `allowed_commands`, which restricts which commands can be executed (defaults to: `pwd`, `find`, `ls`, `rake`, `ruby`, `dev`, `mkdir`).
 
 #### ReadFile
 

@@ -8,6 +8,10 @@ module Roast
     module Cmd
       extend self
 
+      DEFAULT_ALLOWED_COMMANDS = ["pwd", "find", "ls", "rake", "ruby", "dev", "mkdir"].freeze
+      CONFIG_ALLOWED_COMMANDS = "allowed_commands"
+      private_constant :DEFAULT_ALLOWED_COMMANDS, :CONFIG_ALLOWED_COMMANDS
+
       class << self
         # Add this method to be included in other classes
         def included(base)
@@ -18,54 +22,64 @@ module Roast
                 "You may use this tool to execute tests and verify if they pass.",
               command: { type: "string", description: "The command to run in a bash shell." },
             ) do |params|
-              Roast::Tools::Cmd.call(params[:command])
+              tool_config = extract_tool_config
+              Roast::Tools::Cmd.call(params[:command], tool_config)
             end
           end
         end
       end
 
-      def call(command)
+      def call(command, config = {})
         Roast::Helpers::Logger.info("🔧 Running command: #{command}\n")
 
-        # Validate the command starts with one of the allowed prefixes
-        allowed_prefixes = ["pwd", "find", "ls", "rake", "ruby", "dev", "mkdir"]
+        allowed_commands = config[CONFIG_ALLOWED_COMMANDS] || DEFAULT_ALLOWED_COMMANDS
+        validation_result = validate_command(command, allowed_commands)
+        return validation_result unless validation_result.nil?
+
         command_prefix = command.split(" ").first
+        execute_command(command, command_prefix)
+      rescue StandardError => e
+        handle_error(e)
+      end
 
-        err = "Error: Command not allowed. Only commands starting with #{allowed_prefixes.join(", ")} are permitted."
-        return err unless allowed_prefixes.any? do |prefix|
-          command_prefix == prefix
-        end
+      private
 
-        # Execute the command in the current working directory
-        result = ""
+      def validate_command(command, allowed_commands)
+        command_prefix = command.split(" ").first
+        return if allowed_commands.include?(command_prefix)
 
-        # Use a full shell environment for commands, especially for 'dev'
-        if command_prefix == "dev"
+        "Error: Command not allowed. Only commands starting with #{allowed_commands.join(", ")} are permitted."
+      end
+
+      def extract_tool_config
+        return {} unless respond_to?(:configuration)
+
+        configuration&.tool_config("Roast::Tools::Cmd") || {}
+      end
+
+      def execute_command(command, command_prefix)
+        result = if command_prefix == "dev"
           # Use bash -l -c to ensure we get a login shell with all environment variables
           full_command = "bash -l -c '#{command.gsub("'", "\\'")}'"
-          IO.popen(full_command, chdir: Dir.pwd) do |io|
-            result = io.read
-          end
+          IO.popen(full_command, chdir: Dir.pwd, &:read)
         else
-          # For other commands, use the original approach
-          IO.popen(command, chdir: Dir.pwd) do |io|
-            result = io.read
-          end
+          IO.popen(command, chdir: Dir.pwd, &:read)
         end
 
-        exit_status = $CHILD_STATUS.exitstatus
+        format_output(command, result, $CHILD_STATUS.exitstatus)
+      end
 
-        # Return the command output along with exit status information
-        output = "Command: #{command}\n"
-        output += "Exit status: #{exit_status}\n"
-        output += "Output:\n#{result}"
+      def format_output(command, result, exit_status)
+        "Command: #{command}\n" \
+          "Exit status: #{exit_status}\n" \
+          "Output:\n#{result}"
+      end
 
-        output
-      rescue StandardError => e
-        "Error running command: #{e.message}".tap do |error_message|
-          Roast::Helpers::Logger.error(error_message + "\n")
-          Roast::Helpers::Logger.debug(e.backtrace.join("\n") + "\n") if ENV["DEBUG"]
-        end
+      def handle_error(error)
+        error_message = "Error running command: #{error.message}"
+        Roast::Helpers::Logger.error("#{error_message}\n")
+        Roast::Helpers::Logger.debug("#{error.backtrace.join("\n")}\n") if ENV["DEBUG"]
+        error_message
       end
     end
   end

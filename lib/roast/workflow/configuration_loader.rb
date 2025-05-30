@@ -46,11 +46,27 @@ module Roast
           config_hash["post_processing"] || []
         end
 
-        # Extract tools from the configuration
+        # Extract tools and tool configurations from the configuration
         # @param config_hash [Hash] The configuration hash
-        # @return [Array] The tools array or empty array
+        # @return [Array, Hash] The tools array or empty array
         def extract_tools(config_hash)
-          config_hash["tools"] || []
+          tools_config = config_hash["tools"] || []
+          tools = []
+          tool_configs = {}
+
+          tools_config.each do |tool_entry|
+            case tool_entry
+            when String
+              tools << tool_entry
+            when Hash
+              tool_entry.each do |tool_name, config|
+                tools << tool_name
+                tool_configs[tool_name] = config || {}
+              end
+            end
+          end
+
+          [tools, tool_configs]
         end
 
         # Extract function configurations
