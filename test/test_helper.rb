@@ -1,11 +1,17 @@
 # frozen_string_literal: true
 
 require "minitest/autorun"
+require "minitest/rg"
 require "mocha/minitest"
 require "cgi"
 require "vcr"
 
 require "active_support/test_case"
+
+# Turn on color during CI since GitHub Actions supports it
+if ENV["CI"]
+  Minitest::RG.rg!(color: true)
+end
 
 # not sure why this workaround is needed
 def ActiveSupport.test_order = :random

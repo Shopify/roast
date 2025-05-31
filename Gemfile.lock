@@ -88,6 +88,8 @@ GEM
     lumberjack (1.2.10)
     method_source (1.1.0)
     minitest (5.25.5)
+    minitest-rg (5.3.0)
+      minitest (~> 5.0)
     mocha (2.7.1)
       ruby2_keywords (>= 0.0.5)
     multipart-post (2.4.1)
@@ -173,6 +175,7 @@ DEPENDENCIES
   dotenv
   guard
   guard-minitest
+  minitest-rg
   mocha
   rake
   roast-ai!
