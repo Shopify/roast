@@ -7,9 +7,6 @@ require "vcr"
 
 require "active_support/test_case"
 
-# not sure why this workaround is needed
-def ActiveSupport.test_order = :random
-
 # Add the lib directory to the load path
 $LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 
