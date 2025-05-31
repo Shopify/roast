@@ -13,7 +13,6 @@ module Roast
       attr_reader :workflow, :name, :context_path
 
       def_delegator :workflow, :append_to_final_output
-      def_delegator :workflow, :chat_completion
       def_delegator :workflow, :transcript
 
       # TODO: is this really the model we want to default to, and is this the right place to set it?
