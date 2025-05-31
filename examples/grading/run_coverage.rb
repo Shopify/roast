@@ -30,7 +30,16 @@ class RunCoverage < Roast::Workflow::BaseStep
 
     # Resolve paths to prevent issues when pwd differs from project root
     resolved_subject_file = Roast::Helpers::PathResolver.resolve(subject_file)
+    unless File.exist?(resolved_subject_file)
+      Roast::Helpers::Logger.error("Subject file not found: #{resolved_subject_file}")
+      exit(1)
+    end
+
     resolved_test_file = Roast::Helpers::PathResolver.resolve(test_file)
+    unless File.exist?(resolved_test_file)
+      Roast::Helpers::Logger.error("Test file not found: #{resolved_test_file}")
+      exit(1)
+    end
 
     # Run the test_runner using shadowenv for environment consistency
     command = "shadowenv exec --dir . -- #{test_runner_path} #{resolved_test_file} #{resolved_subject_file}"

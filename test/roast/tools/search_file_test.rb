@@ -88,10 +88,10 @@ class RoastToolsSearchFileTest < ActiveSupport::TestCase
   end
 
   test ".call with path parameter passes path to search_for" do
-    Roast::Tools::SearchFile.expects(:search_for).with("test_file", "nested/dir").returns(["test_file.txt"])
-    Roast::Tools::SearchFile.stubs(:read_contents).with("nested/dir/test_file.txt").returns("file content")
+    Roast::Tools::SearchFile.expects(:search_for).with("test_file", "nested/deep").returns(["test_file.txt"])
+    Roast::Tools::SearchFile.stubs(:read_contents).with("nested/deep/test_file.txt").returns("file content")
 
-    result = Roast::Tools::SearchFile.call("test_file", "nested/dir")
+    result = Roast::Tools::SearchFile.call("test_file", "nested/deep")
     assert_equal "file content", result
   end
 
@@ -107,6 +107,13 @@ class RoastToolsSearchFileTest < ActiveSupport::TestCase
 
     result = Roast::Tools::SearchFile.call("nonexistent")
     assert_equal "No results found for nonexistent in .", result
+  end
+
+  test ".call when path doesn't exist" do
+    Roast::Tools::SearchFile.stubs(:search_for).with("test_file", "nonexistent").returns([])
+
+    result = Roast::Tools::SearchFile.call("test_file", "nonexistent")
+    assert_equal "Path does not exist: nonexistent", result
   end
 
   test ".call handles errors gracefully" do
@@ -135,6 +142,6 @@ class RoastToolsSearchFileTest < ActiveSupport::TestCase
     assert_equal true, DummyBaseClass.function_called
     assert_equal :search_for_file, DummyBaseClass.function_name
     assert_equal({ type: "string", description: "A glob pattern to search for. Example: 'test/**/*_test.rb'" }, DummyBaseClass.function_params[:glob_pattern])
-    assert_equal({ type: "string", description: "path to search from" }, DummyBaseClass.function_params[:path])
+    assert_equal({ type: "string", description: "path to search from", default: "." }, DummyBaseClass.function_params[:path])
   end
 end

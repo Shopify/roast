@@ -15,7 +15,7 @@ module Roast
               :search_for_file,
               "Search for a file in the project using a glob pattern.",
               glob_pattern: { type: "string", description: "A glob pattern to search for. Example: 'test/**/*_test.rb'" },
-              path: { type: "string", description: "path to search from" },
+              path: { type: "string", description: "path to search from", default: "." },
             ) do |params|
               Roast::Tools::SearchFile.call(params[:glob_pattern], params[:path]).tap do |result|
                 Roast::Helpers::Logger.debug(result) if ENV["DEBUG"]
@@ -26,6 +26,15 @@ module Roast
       end
 
       def call(glob_pattern, path = ".")
+        raise ArgumentError, "glob_pattern is required" if glob_pattern.nil?
+
+        path ||= "."
+
+        unless File.exist?(path)
+          Roast::Helpers::Logger.error("Path does not exist: #{path}")
+          return "Path does not exist: #{path}"
+        end
+
         Roast::Helpers::Logger.info("🔍 Searching for: '#{glob_pattern}' in '#{File.expand_path(path)}'\n")
         search_for(glob_pattern, path).then do |results|
           return "No results found for #{glob_pattern} in #{path}" if results.empty?
