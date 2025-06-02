@@ -41,8 +41,10 @@ module Roast
           end
 
           if cache_enabled
+            require "digest"
+            cache_id = Digest::MD5.hexdigest(configuration.workflow_path)
             # Call the original function and pass in the cache
-            super(function_name, params, cache: Roast::Tools::CACHE)
+            super(function_name, params, cache: Roast::Config::Cache.for(cache_id))
           else
             Roast::Helpers::Logger.debug("⚠️ Caching not enabled for #{function_name}")
             super(function_name, params)

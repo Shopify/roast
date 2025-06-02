@@ -2,6 +2,7 @@
 
 require "fileutils"
 require "digest"
+require "roast/config"
 
 module Roast
   module Workflow
@@ -74,7 +75,7 @@ module Roast
         file_id = Digest::MD5.hexdigest(file_path || Dir.pwd)
         file_basename = File.basename(file_path || Dir.pwd).parameterize.underscore
         human_readable_id = "#{file_basename}_#{file_id[0..7]}"
-        File.join(Dir.pwd, ".roast", "sessions", workflow_dir_name, human_readable_id)
+        File.join(Roast::Config.root, "sessions", workflow_dir_name, human_readable_id)
       end
 
       def find_latest_session_directory(workflow_dir)
