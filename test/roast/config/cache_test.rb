@@ -76,13 +76,13 @@ module Roast
         end
       end
 
-      def test_create_ensures_directory_and_gitignore_exist
+      def test_for_ensures_directory_and_gitignore_exist
         Roast::Config.stub(:root, File.dirname(@test_cache_path)) do
           refute(File.directory?(@test_cache_path))
           gitignore_path = File.join(@test_cache_path, ".gitignore")
           refute(File.exist?(gitignore_path))
 
-          cache = Roast::Config::Cache.create
+          cache = Roast::Config::Cache.for
 
           assert(File.directory?(@test_cache_path))
           assert(File.exist?(gitignore_path))
@@ -91,17 +91,17 @@ module Roast
         end
       end
 
-      def test_create_returns_file_store_cache_instance
+      def test_for_returns_file_store_cache_instance
         Roast::Config.stub(:root, File.dirname(@test_cache_path)) do
-          cache = Roast::Config::Cache.create
+          cache = Roast::Config::Cache.for
 
           assert_instance_of(ActiveSupport::Cache::FileStore, cache)
         end
       end
 
-      def test_create_sets_correct_cache_path
+      def test_for_sets_correct_cache_path
         Roast::Config.stub(:root, File.dirname(@test_cache_path)) do
-          cache = Roast::Config::Cache.create
+          cache = Roast::Config::Cache.for
 
           # Access the cache_path through the FileStore's options
           assert_equal(@test_cache_path, cache.cache_path)

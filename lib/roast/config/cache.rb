@@ -12,7 +12,7 @@ module Roast
         end
 
         def path_for(key)
-          File.join(path, key)
+          key.empty? ? path : File.join(path, key)
         end
 
         def path
