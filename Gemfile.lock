@@ -160,6 +160,7 @@ GEM
     uri (1.0.3)
     vcr (6.3.1)
       base64
+    vernier (1.8.0)
     webmock (3.25.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
@@ -181,6 +182,7 @@ DEPENDENCIES
   roast-ai!
   rubocop-shopify
   vcr
+  vernier
   webmock
 
 BUNDLED WITH
