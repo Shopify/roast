@@ -82,13 +82,13 @@ steps:
 
 ## Try it
 
-If you don't have one already, get an OpenAI key from [here](https://platform.openai.com/settings/organization/api-keys). You will need an account with a credit card, make sure that a basic completion works.
+If you don’t have one already, get an OpenAI key from [here](https://platform.openai.com/settings/organization/api-keys). You will need an account with a credit card and credits applied to the associated project. Make sure that a basic completion works:
 
 ```bash
 export OPENAI_API_KEY=sk-proj-....
 
 curl -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $API_TOKEN" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{"model":"gpt-4.1-mini","messages":[{"role":"user","content":"What is 1+1?"}]}' \
     https://api.openai.com/v1/chat/completions
 ```
