@@ -3,33 +3,6 @@
 require "test_helper"
 
 module Roast
-  class ConfigRootTest < ActiveSupport::TestCase
-    def ending_path
-      File.join(Roast::ROOT, "test", "fixtures", "config_root")
-    end
-
-    def test_with_no_roast_folder
-      starting_path = File.join(ending_path, "empty")
-      path = Roast::Initializers.config_root(starting_path, ending_path)
-      expected_path = File.join(starting_path, ".roast")
-      assert_equal(expected_path, path)
-    end
-
-    def test_with_shallow_roast_folder
-      starting_path = File.join(ending_path, "shallow")
-      path = Roast::Initializers.config_root(starting_path, ending_path)
-      expected_path = File.join(starting_path, ".roast")
-      assert_equal(expected_path, path)
-    end
-
-    def test_with_nested_roast_folder
-      starting_path = File.join(ending_path, "deeply", "nested", "start", "folder")
-      path = Roast::Initializers.config_root(starting_path, ending_path)
-      expected_path = File.join(ending_path, "deeply", ".roast")
-      assert_equal(expected_path, path)
-    end
-  end
-
   class InitializersTest < ActiveSupport::TestCase
     def path_for_initializers(name)
       File.join(Dir.pwd, "test", "fixtures", "initializers", name)
@@ -38,9 +11,9 @@ module Roast
     def test_with_invalid_initializers_folder
       initializer_path = path_for_initializers("invalid")
 
-      Roast::Initializers.stub(:initializers_path, initializer_path) do
+      Roast::Config::Initializers.stub(:path, initializer_path) do
         out, err = capture_io do
-          Roast::Initializers.load_all
+          Roast::Config::Initializers.load_all
         end
 
         assert_equal("", out)
@@ -51,9 +24,9 @@ module Roast
     def test_with_no_initializer_files
       initializer_path = path_for_initializers("empty")
 
-      Roast::Initializers.stub(:initializers_path, initializer_path) do
+      Roast::Config::Initializers.stub(:path, initializer_path) do
         out, err = capture_io do
-          Roast::Initializers.load_all
+          Roast::Config::Initializers.load_all
         end
 
         assert_equal("", out)
@@ -67,9 +40,9 @@ module Roast
     def test_with_initializer_file_that_raises
       initializer_path = path_for_initializers("raises")
 
-      Roast::Initializers.stub(:initializers_path, initializer_path) do
+      Roast::Config::Initializers.stub(:path, initializer_path) do
         out, err = capture_io do
-          Roast::Initializers.load_all
+          Roast::Config::Initializers.load_all
         end
 
         expected_output = <<~OUTPUT
@@ -87,9 +60,9 @@ module Roast
     def test_with_an_initializer_file
       initializer_path = path_for_initializers("single")
 
-      Roast::Initializers.stub(:initializers_path, initializer_path) do
+      Roast::Config::Initializers.stub(:path, initializer_path) do
         out, err = capture_io do
-          Roast::Initializers.load_all
+          Roast::Config::Initializers.load_all
         end
 
         assert_equal("", out)
@@ -104,9 +77,9 @@ module Roast
     def test_with_multiple_initializer_files
       initializer_path = path_for_initializers("multiple")
 
-      Roast::Initializers.stub(:initializers_path, initializer_path) do
+      Roast::Config::Initializers.stub(:path, initializer_path) do
         out, err = capture_io do
-          Roast::Initializers.load_all
+          Roast::Config::Initializers.load_all
         end
 
         assert_equal("", out)
