@@ -37,6 +37,7 @@ module Roast
           model: "gpt-4o",
           json: true,
           params: { "temperature" => 0.7 },
+          available_tools: nil,
         ).returns('{"result": "Test response"}')
 
         result = @executor.execute_step("analyze the code")
@@ -53,6 +54,7 @@ module Roast
           model: "openai/gpt-4o-mini", # Default model
           json: false,
           params: {},
+          available_tools: nil,
         ).returns("Default response")
 
         result = executor.execute_step("analyze without config")
@@ -71,6 +73,7 @@ module Roast
           model: "claude-3-opus",
           json: false,
           params: {},
+          available_tools: nil,
         ).returns("Claude response")
 
         result = executor.execute_step("use global model")
@@ -91,6 +94,7 @@ module Roast
           model: "step-specific-model", # Step-specific overrides global
           json: false,
           params: {},
+          available_tools: nil,
         ).returns("Specific response")
 
         result = executor.execute_step("specific prompt")

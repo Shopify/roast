@@ -24,3 +24,16 @@ tools:
 steps:
   - analyze_project
   - smart_tool_selection
+
+# Step configuration
+analyze_project:
+  available_tools:
+    - pwd
+    - ls
+    - git
+
+smart_tool_selection:
+  available_tools:
+    - npm
+    - docker
+    - make

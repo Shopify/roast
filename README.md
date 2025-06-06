@@ -658,6 +658,27 @@ tools:
 
 Custom descriptions help the LLM understand when and how to use each command, making your workflows more effective.
 
+### Step-Level Tool Filtering
+
+Limit which tools are available to specific steps using `available_tools`:
+
+```yaml
+analyze_code:
+  available_tools:
+    - grep
+    - read_file
+
+verify_tests:
+  available_tools:
+    - search_file
+```
+
+Only the specified tools will be available to the LLM for that step. Use snake_case tool names (e.g., `read_file` for `Roast::Tools::ReadFile`).
+
+Roast validates that all tools specified in `available_tools` are actually included in the workflow's global tools list. If an invalid tool is specified, an error will be raised with a helpful message showing the valid tool options.
+
+This improves security by limiting tool access, reduces the tool list sent to the LLM for better performance, and makes tool usage explicit.
+
 #### ReadFile
 
 Reads the contents of a file from the filesystem.

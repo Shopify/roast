@@ -19,3 +19,16 @@ tools:
 steps:
   - explore_project
   - check_repository
+
+# Step configuration
+explore_project:
+  available_tools:
+    - pwd
+    - ls
+    - find
+    - cat
+
+check_repository:
+  available_tools:
+    - git
+    - grep

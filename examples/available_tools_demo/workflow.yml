@@ -1,0 +1,36 @@
+name: Available Tools Demo
+model: gpt-4o-mini
+
+# This example demonstrates how to limit tool availability for specific steps
+
+tools:
+  - Roast::Tools::Grep
+  - Roast::Tools::ReadFile
+  - Roast::Tools::WriteFile
+  - Roast::Tools::Cmd:
+      allowed_commands:
+        - pwd
+        - ls
+        - git
+        - echo
+
+steps:
+  - explore_directory
+  - analyze_files
+  - write_summary
+
+# Step configuration with available_tools
+explore_directory:
+  available_tools:
+    - pwd
+    - ls
+
+analyze_files:
+  available_tools:
+    - grep
+    - read_file
+
+write_summary:
+  available_tools:
+    - write_file
+    - echo

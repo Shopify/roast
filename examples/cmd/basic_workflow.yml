@@ -15,3 +15,16 @@ tools:
 steps:
   - basic_demo
   - create_and_verify
+
+# Step configuration
+basic_demo:
+  available_tools:
+    - pwd
+    - ls
+    - echo
+create_and_verify:
+  available_tools:
+    - echo
+    - mkdir
+    - ls
+    - cat

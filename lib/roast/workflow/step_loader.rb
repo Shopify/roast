@@ -189,6 +189,10 @@ module Roast
         step.json = step_config["json"] if step_config.key?("json")
         step.params = step_config["params"] if step_config.key?("params")
         step.coerce_to = step_config["coerce_to"].to_sym if step_config.key?("coerce_to")
+
+        if step_config.key?("available_tools")
+          step.available_tools = step_config["available_tools"]
+        end
       end
     end
   end
