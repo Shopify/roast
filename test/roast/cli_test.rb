@@ -89,4 +89,69 @@ class RoastCLITest < ActiveSupport::TestCase
     cli = Roast::CLI.new([], options)
     cli.execute(workflow_path)
   end
+
+  def test_list_with_no_roast_directory
+    # Create a temporary directory without a roast/ subdirectory
+    Dir.mktmpdir do |tmpdir|
+      Dir.chdir(tmpdir) do
+        cli = Roast::CLI.new
+
+        # Expect the error message
+        assert_raises(Thor::Error, "No roast/ directory found in current path") do
+          cli.list
+        end
+      end
+    end
+  end
+
+  def test_list_with_empty_roast_directory
+    # Create a temporary directory with an empty roast/ subdirectory
+    Dir.mktmpdir do |tmpdir|
+      Dir.chdir(tmpdir) do
+        FileUtils.mkdir_p("roast")
+
+        cli = Roast::CLI.new
+
+        # Expect the error message
+        assert_raises(Thor::Error, "No workflow.yml files found in roast/ directory") do
+          cli.list
+        end
+      end
+    end
+  end
+
+  def test_list_with_workflows
+    # Create a temporary directory with workflows
+    Dir.mktmpdir do |tmpdir|
+      Dir.chdir(tmpdir) do
+        # Create various workflow structures
+        FileUtils.mkdir_p("roast/workflow1")
+        File.write("roast/workflow1/workflow.yml", "name: workflow1")
+
+        FileUtils.mkdir_p("roast/workflow2")
+        File.write("roast/workflow2/workflow.yml", "name: workflow2")
+
+        FileUtils.mkdir_p("roast/nested/workflow3")
+        File.write("roast/nested/workflow3/workflow.yml", "name: workflow3")
+
+        # Root workflow
+        File.write("roast/workflow.yml", "name: root")
+
+        cli = Roast::CLI.new
+
+        # Capture output using capture_io
+        output, _err = capture_io do
+          cli.list
+        end
+
+        # Check the output contains expected workflows (order independent)
+        assert_match(/Available workflows:/, output)
+        assert_match(/\. \(from project\)/, output)
+        assert_match(/workflow1 \(from project\)/, output)
+        assert_match(/workflow2 \(from project\)/, output)
+        assert_match(%r{nested/workflow3 \(from project\)}, output)
+        assert_match(/Run a workflow with: roast execute <workflow_name>/, output)
+      end
+    end
+  end
 end

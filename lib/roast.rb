@@ -63,6 +63,32 @@ module Roast
       end
     end
 
+    desc "list", "List workflows visible to Roast and their source"
+    def list
+      roast_dir = File.join(Dir.pwd, "roast")
+
+      unless File.directory?(roast_dir)
+        raise Thor::Error, "No roast/ directory found in current path"
+      end
+
+      workflow_files = Dir.glob(File.join(roast_dir, "**/workflow.yml")).sort
+
+      if workflow_files.empty?
+        raise Thor::Error, "No workflow.yml files found in roast/ directory"
+      end
+
+      puts "Available workflows:"
+      puts
+
+      workflow_files.each do |file|
+        workflow_name = File.dirname(file.sub("#{roast_dir}/", ""))
+        puts "  #{workflow_name} (from project)"
+      end
+
+      puts
+      puts "Run a workflow with: roast execute <workflow_name>"
+    end
+
     private
 
     def show_example_picker
