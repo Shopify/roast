@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "json"
-
-require "net/http"
 
 class ApiResourceTest < ActiveSupport::TestCase
   def setup

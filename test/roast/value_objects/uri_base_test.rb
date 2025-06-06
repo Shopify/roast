@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/value_objects/uri_base"
 
 module Roast
   module ValueObjects

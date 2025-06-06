@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "securerandom"
-require "tmpdir"
 
 class RoastTest < ActiveSupport::TestCase
   def test_config_file_returns_correct_path

@@ -43,10 +43,7 @@ module Roast
         def clear!
           @executors.clear
           @type_matchers.clear
-          # Reset the factory's defaults flag if it's defined
-          if defined?(StepExecutorFactory)
-            StepExecutorFactory.instance_variable_set(:@defaults_registered, false)
-          end
+          StepExecutorFactory.instance_variable_set(:@defaults_registered, false)
         end
 
         # Get all registered executors (useful for debugging)

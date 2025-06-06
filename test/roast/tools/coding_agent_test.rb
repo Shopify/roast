@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/tools/coding_agent"
-require "open3"
-require "stringio"
 
 module Roast
   module Tools

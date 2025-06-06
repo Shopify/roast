@@ -1,18 +1,5 @@
 # frozen_string_literal: true
 
-require "English"
-require "fileutils"
-
-require "roast/tools/ask_user"
-require "roast/tools/bash"
-require "roast/tools/cmd"
-require "roast/tools/coding_agent"
-require "roast/tools/grep"
-require "roast/tools/read_file"
-require "roast/tools/search_file"
-require "roast/tools/update_files"
-require "roast/tools/write_file"
-
 module Roast
   module Tools
     extend self

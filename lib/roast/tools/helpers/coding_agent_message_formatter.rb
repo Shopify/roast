@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
-require "json"
-require "yaml"
-
 module Roast
   module Tools
-    module CodingAgent
+    module Helpers
       module CodingAgentMessageFormatter
         extend self
 

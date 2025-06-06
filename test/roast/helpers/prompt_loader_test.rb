@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/helpers/prompt_loader"
 
 class RoastHelpersPromptLoaderTest < ActiveSupport::TestCase
   def setup

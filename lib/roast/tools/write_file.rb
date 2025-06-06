@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "fileutils"
-require "roast/helpers/logger"
-
 module Roast
   module Tools
     module WriteFile

@@ -24,7 +24,6 @@ module Roast
         raise WorkflowExecutor::ConfigurationError, "Missing 'when' clauses in case configuration" unless when_clauses
 
         # Create and execute a CaseStep
-        require "roast/workflow/case_step" unless defined?(Roast::Workflow::CaseStep)
         case_step = CaseStep.new(
           @workflow,
           config: case_config,

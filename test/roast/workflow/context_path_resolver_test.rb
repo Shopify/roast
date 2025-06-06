@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/context_path_resolver"
 
 module Roast
   module Workflow

@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/resource_resolver"
-require "roast/resources"
 
 module Roast
   module Workflow

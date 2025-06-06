@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/iteration_executor"
-require "roast/workflow/base_iteration_step"
 
 module Roast
   module Workflow

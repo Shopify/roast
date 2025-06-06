@@ -1,24 +1,44 @@
 # frozen_string_literal: true
 
+# Standard library requires
+require "digest"
+require "English"
+require "erb"
+require "fileutils"
+require "forwardable"
+require "json"
+require "logger"
+require "net/http"
+require "open3"
+require "pathname"
+require "securerandom"
+require "tempfile"
+require "uri"
+require "yaml"
+
+# Third-party gem requires
 require "active_support"
 require "active_support/cache"
-require "active_support/notifications"
 require "active_support/core_ext/hash/indifferent_access"
+require "active_support/core_ext/module/delegation"
 require "active_support/core_ext/string"
 require "active_support/core_ext/string/inflections"
-require "active_support/core_ext/module/delegation"
 require "active_support/isolated_execution_state"
-require "fileutils"
+require "active_support/notifications"
 require "cli/ui"
+require "diff/lcs"
+require "json-schema"
 require "raix"
+require "raix/chat_completion"
+require "raix/function_dispatch"
 require "thor"
-require "roast/errors"
-require "roast/helpers"
-require "roast/initializers"
-require "roast/resources"
-require "roast/tools"
-require "roast/version"
-require "roast/workflow"
+
+# Autoloading setup
+require "zeitwerk"
+
+# Set up Zeitwerk autoloader
+loader = Zeitwerk::Loader.for_gem
+loader.setup
 
 module Roast
   ROOT = File.expand_path("../..", __FILE__)

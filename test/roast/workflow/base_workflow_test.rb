@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/base_workflow"
 
 class RoastWorkflowBaseWorkflowTest < ActiveSupport::TestCase
   FILE_PATH = File.join(Dir.pwd, "test/fixtures/files/test.rb")

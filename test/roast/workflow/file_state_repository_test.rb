@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "fileutils"
-require "tmpdir"
-require "json"
 
 module Roast
   module Workflow

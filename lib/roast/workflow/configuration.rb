@@ -1,10 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/workflow/api_configuration"
-require "roast/workflow/configuration_loader"
-require "roast/workflow/resource_resolver"
-require "roast/workflow/step_finder"
-
 module Roast
   module Workflow
     # Encapsulates workflow configuration data and provides structured access
@@ -98,11 +93,9 @@ module Roast
       attr_reader :api_configuration
 
       def process_resource
-        if defined?(Roast::Resources)
-          @resource = ResourceResolver.resolve(@target, context_path)
-          # Update target with processed value for backward compatibility
-          @target = @resource.value if has_target?
-        end
+        @resource = ResourceResolver.resolve(@target, context_path)
+        # Update target with processed value for backward compatibility
+        @target = @resource.value if has_target?
       end
 
       def mark_last_step_for_output

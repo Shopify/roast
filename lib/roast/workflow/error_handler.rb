@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/helpers/logger"
-require "roast/workflow/command_executor"
-
 module Roast
   module Workflow
     # Handles error logging and instrumentation for workflow execution

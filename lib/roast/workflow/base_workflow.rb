@@ -1,12 +1,5 @@
 # frozen_string_literal: true
 
-require "raix/chat_completion"
-require "raix/function_dispatch"
-
-require "roast/workflow/context_path_resolver"
-require "roast/workflow/dot_access_hash"
-require "roast/workflow/output_manager"
-
 module Roast
   module Workflow
     class BaseWorkflow
@@ -81,7 +74,7 @@ module Roast
       rescue Faraday::ResourceNotFound => e
         execution_time = Time.now - start_time
         message = e.response.dig(:body, "error", "message") || e.message
-        error = Roast::ResourceNotFoundError.new(message)
+        error = Roast::Errors::ResourceNotFoundError.new(message)
         error.set_backtrace(e.backtrace)
         log_and_raise_error(error, message, step_model || model, kwargs, execution_time)
       rescue => e

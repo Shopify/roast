@@ -1,10 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/workflow/step_executor_registry"
-require "roast/workflow/step_executors/hash_step_executor"
-require "roast/workflow/step_executors/parallel_step_executor"
-require "roast/workflow/step_executors/string_step_executor"
-
 module Roast
   module Workflow
     # Factory for creating step executors - now delegates to registry

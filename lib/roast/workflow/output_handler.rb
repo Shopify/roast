@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/workflow/file_state_repository"
-
 module Roast
   module Workflow
     # Handles output operations for workflows including saving final output and results

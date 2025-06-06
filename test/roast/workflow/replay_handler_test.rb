@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/replay_handler"
 
 class RoastWorkflowReplayHandlerTest < ActiveSupport::TestCase
   def setup

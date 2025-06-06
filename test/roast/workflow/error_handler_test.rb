@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/error_handler"
-require "roast/workflow/workflow_executor"
 
 class RoastWorkflowErrorHandlerTest < ActiveSupport::TestCase
   def setup

@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "open3"
-require "roast/resources"
-
 module Roast
   module Workflow
     # Handles resource resolution and target processing

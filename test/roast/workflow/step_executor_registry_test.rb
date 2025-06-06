@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/step_executor_registry"
 
 module Roast
   module Workflow

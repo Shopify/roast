@@ -24,7 +24,6 @@ module Roast
         raise WorkflowExecutor::ConfigurationError, "Missing 'until' condition in repeat configuration" unless until_condition
 
         # Create and execute a RepeatStep
-        require "roast/workflow/repeat_step" unless defined?(RepeatStep)
         repeat_step = RepeatStep.new(
           @workflow,
           steps: steps,
@@ -64,7 +63,6 @@ module Roast
         raise WorkflowExecutor::ConfigurationError, "Missing 'steps' in each configuration" unless steps
 
         # Create and execute an EachStep
-        require "roast/workflow/each_step" unless defined?(EachStep)
         each_step = EachStep.new(
           @workflow,
           collection_expr: collection_expr,

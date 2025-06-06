@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require "json"
-require "net/http"
-require "uri"
-
 module Roast
   module Resources
     # Resource implementation for API endpoints using Fetch API-style format

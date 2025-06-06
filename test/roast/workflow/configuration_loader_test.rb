@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/configuration_loader"
-require "tempfile"
 
 module Roast
   module Workflow

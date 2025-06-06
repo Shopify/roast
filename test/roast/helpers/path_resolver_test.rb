@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "fileutils"
-require "roast/helpers/path_resolver"
 
 class PathResolverTest < ActiveSupport::TestCase
   def setup

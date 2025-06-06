@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/workflow/command_executor"
-require "roast/workflow/expression_utils"
-
 module Roast
   module Workflow
     # Shared module for evaluating expressions in workflow steps

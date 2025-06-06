@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "yaml"
-
 module Roast
   module Workflow
     # Handles loading and parsing of workflow configuration files

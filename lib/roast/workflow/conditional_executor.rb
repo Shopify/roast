@@ -24,7 +24,6 @@ module Roast
         raise WorkflowExecutor::ConfigurationError, "Missing 'then' steps in conditional configuration" unless then_steps
 
         # Create and execute a ConditionalStep
-        require "roast/workflow/conditional_step" unless defined?(Roast::Workflow::ConditionalStep)
         conditional_step = ConditionalStep.new(
           @workflow,
           config: conditional_config,

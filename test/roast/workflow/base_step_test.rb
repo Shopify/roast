@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/base_step"
-require "roast/workflow/base_workflow"
 
 class RoastWorkflowBaseStepTest < ActiveSupport::TestCase
   # Helper to load fixture files

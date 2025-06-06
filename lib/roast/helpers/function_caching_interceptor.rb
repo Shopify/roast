@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/helpers/logger"
-
 module Roast
   module Helpers
     # Intercepts function dispatching to add caching capabilities

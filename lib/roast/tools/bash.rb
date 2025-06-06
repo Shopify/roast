@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "English"
-require "roast/helpers/logger"
-
 module Roast
   module Tools
     module Bash

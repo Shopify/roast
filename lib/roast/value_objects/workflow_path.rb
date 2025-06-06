@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "pathname"
-
 module Roast
   module ValueObjects
     # Value object representing a workflow file path with validation and resolution

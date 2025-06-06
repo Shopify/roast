@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/output_handler"
 
 class RoastWorkflowOutputHandlerTest < ActiveSupport::TestCase
   def setup

@@ -1,12 +1,5 @@
 # frozen_string_literal: true
 
-require "erb"
-require "roast/workflow/replay_handler"
-require "roast/workflow/workflow_executor"
-require "roast/workflow/output_handler"
-require "roast/workflow/base_workflow"
-require "roast/workflow/dot_access_hash"
-
 module Roast
   module Workflow
     # Handles running workflows for files/targets and orchestrating execution

@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "fileutils"
-require "digest"
-
 module Roast
   module Workflow
     # Manages session creation, timestamping, and directory management

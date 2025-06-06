@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require "erb"
-require "forwardable"
-require "roast/workflow/context_path_resolver"
-
 module Roast
   module Workflow
     class BaseStep
@@ -97,7 +93,6 @@ module Roast
           !!result
         when :llm_boolean
           # Use LLM boolean coercer for natural language responses
-          require "roast/workflow/llm_boolean_coercer"
           LlmBooleanCoercer.coerce(result)
         when :iterable
           # Ensure result is iterable

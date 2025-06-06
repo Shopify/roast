@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/conditional_step"
 
 module Roast
   module Workflow

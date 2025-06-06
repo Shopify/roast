@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/helpers/logger"
-
 module Roast
   module Tools
     module Grep
@@ -30,7 +28,6 @@ module Roast
         Roast::Helpers::Logger.info("🔍 Grepping for string: #{string}\n")
 
         # Use Open3 to safely pass the string as an argument, avoiding shell injection
-        require "open3"
         cmd = ["rg", "-C", "4", "--trim", "--color=never", "--heading", "-F", "--", string, "."]
         stdout, _stderr, _status = Open3.capture3(*cmd)
 

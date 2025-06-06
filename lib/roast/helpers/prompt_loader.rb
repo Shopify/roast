@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "erb"
-
 module Roast
   module Helpers
     class PromptLoader

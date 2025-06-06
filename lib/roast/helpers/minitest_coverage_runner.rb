@@ -2,7 +2,6 @@
 
 require "coverage"
 require "minitest"
-require "roast/helpers/logger"
 
 # Disable the built-in `at_exit` hook for Minitest before anything else
 module Minitest

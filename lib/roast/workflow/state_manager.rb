@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/workflow/file_state_repository"
-
 module Roast
   module Workflow
     # Manages workflow state persistence and restoration

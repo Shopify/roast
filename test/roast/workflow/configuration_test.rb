@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/configuration"
-require "yaml"
-require "open3"
-require "fileutils"
-require "tempfile"
 
 module Roast
   module Workflow

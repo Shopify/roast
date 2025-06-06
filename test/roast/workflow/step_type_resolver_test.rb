@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/step_type_resolver"
-require "roast/workflow/workflow_context"
 
 module Roast
   module Workflow

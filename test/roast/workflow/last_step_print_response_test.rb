@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/configuration"
-require "roast/workflow/workflow_executor"
-require "roast/workflow/base_workflow"
-require "tmpdir"
 
 class RoastWorkflowLastStepPrintResponseTest < ActiveSupport::TestCase
   def setup

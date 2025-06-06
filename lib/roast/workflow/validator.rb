@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require "json-schema"
-require "json"
-require "yaml"
-
 module Roast
   module Workflow
     class Validator

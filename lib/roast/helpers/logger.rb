@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "logger"
-require "forwardable"
-
 module Roast
   module Helpers
     # Central logger for the Roast application

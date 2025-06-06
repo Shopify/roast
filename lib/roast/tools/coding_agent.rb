@@ -1,12 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/helpers/logger"
-require "roast/tools/helpers/coding_agent_message_formatter"
-require "json"
-require "open3"
-require "tempfile"
-require "securerandom"
-
 module Roast
   module Tools
     module CodingAgent
@@ -110,7 +103,7 @@ module Roast
       def handle_intermediate_message(json)
         case json["type"]
         when "assistant", "user"
-          CodingAgentMessageFormatter.format_messages(json).each(&method(:log_message))
+          Roast::Tools::Helpers::CodingAgentMessageFormatter.format_messages(json).each(&method(:log_message))
         when "result", "system"
           # Ignore these message types
         else

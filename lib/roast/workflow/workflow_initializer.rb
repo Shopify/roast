@@ -1,12 +1,5 @@
 # frozen_string_literal: true
 
-require "raix"
-require "roast/initializers"
-require "roast/helpers/function_caching_interceptor"
-require "roast/helpers/logger"
-require "roast/workflow/base_workflow"
-require "roast/workflow/interpolator"
-
 module Roast
   module Workflow
     # Handles initialization of workflow dependencies: initializers, tools, and API clients
@@ -103,7 +96,7 @@ module Roast
         # Validate the client configuration by making a test API call
         validate_api_client(client) if client
       rescue OpenRouter::ConfigurationError, Faraday::UnauthorizedError => e
-        error = Roast::AuthenticationError.new("API authentication failed: No API token provided or token is invalid")
+        error = Roast::Errors::AuthenticationError.new("API authentication failed: No API token provided or token is invalid")
         error.set_backtrace(e.backtrace)
 
         ActiveSupport::Notifications.instrument("roast.workflow.start.error", {

@@ -2,11 +2,6 @@
 
 require "test_helper"
 
-require "roast/workflow/configuration_parser"
-require "roast/workflow/base_workflow"
-require "roast/resources/none_resource"
-require "roast/workflow/workflow_executor"
-
 class RoastWorkflowTargetlessWorkflowTest < ActiveSupport::TestCase
   def setup
     # Create a simple targetless workflow for testing

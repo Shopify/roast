@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/workflow_initializer"
-require "roast/workflow/configuration"
 
 class RoastWorkflowInitializerTest < ActiveSupport::TestCase
   def setup
@@ -233,12 +231,12 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
     ActiveSupport::Notifications.expects(:instrument).with(
       "roast.workflow.start.error",
       has_entries(
-        error: "Roast::AuthenticationError",
+        error: "Roast::Errors::AuthenticationError",
         message: "API authentication failed: No API token provided or token is invalid",
       ),
     ).once
 
-    error = assert_raises(Roast::AuthenticationError) do
+    error = assert_raises(Roast::Errors::AuthenticationError) do
       @initializer.setup
     end
 
@@ -258,12 +256,12 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
     ActiveSupport::Notifications.expects(:instrument).with(
       "roast.workflow.start.error",
       has_entries(
-        error: "Roast::AuthenticationError",
+        error: "Roast::Errors::AuthenticationError",
         message: "API authentication failed: No API token provided or token is invalid",
       ),
     ).once
 
-    error = assert_raises(Roast::AuthenticationError) do
+    error = assert_raises(Roast::Errors::AuthenticationError) do
       @initializer.setup
     end
 

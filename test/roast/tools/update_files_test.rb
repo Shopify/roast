@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/tools/update_files"
-require "fileutils"
 
 class RoastToolsUpdateFilesTest < ActiveSupport::TestCase
   def setup

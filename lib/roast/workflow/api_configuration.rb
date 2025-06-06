@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/factories/api_provider_factory"
-require "roast/workflow/resource_resolver"
-require "roast/value_objects/uri_base"
-
 module Roast
   module Workflow
     # Handles API-related configuration including tokens and providers

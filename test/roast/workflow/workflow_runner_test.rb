@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/workflow_runner"
-require "roast/workflow/configuration"
 
 class RoastWorkflowRunnerTest < ActiveSupport::TestCase
   def setup

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/workflow/dot_access_hash"
-
 module Roast
   module Workflow
     # Manages workflow output, including both the key-value output hash

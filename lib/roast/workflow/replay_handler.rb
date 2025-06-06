@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/workflow/step_finder"
-require "roast/workflow/file_state_repository"
-
 module Roast
   module Workflow
     # Handles replay functionality for workflows

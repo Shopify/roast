@@ -2,8 +2,6 @@
 
 require "test_helper"
 
-require "roast"
-
 class RoastCLITest < ActiveSupport::TestCase
   def test_execute_with_workflow_yml_path
     workflow_path = "path/to/workflow.yml"

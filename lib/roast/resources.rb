@@ -1,13 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/resources/base_resource"
-require "roast/resources/file_resource"
-require "roast/resources/directory_resource"
-require "roast/resources/url_resource"
-require "roast/resources/api_resource"
-require "roast/resources/none_resource"
-require "uri"
-
 module Roast
   # The Resources module contains classes for handling different types of resources
   # that workflows can operate on. Each resource type implements a common interface.

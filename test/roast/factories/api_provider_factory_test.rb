@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/factories/api_provider_factory"
 
 module Roast
   module Factories

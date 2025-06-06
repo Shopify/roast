@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/base_workflow"
-require "roast/workflow/repeat_step"
-require "roast/workflow/each_step"
-require "roast/workflow/llm_boolean_coercer"
 
 module Roast
   module Workflow
@@ -77,7 +73,6 @@ module Roast
         )
 
         # Mock the LlmBooleanCoercer behavior
-        require "roast/workflow/llm_boolean_coercer"
 
         # Test positive responses
         assert_equal true, step.send(:coerce_result, "Yes, the condition is met.", :llm_boolean)

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "roast/workflow/step_executors/base_step_executor"
-
 module Roast
   module Workflow
     module StepExecutors

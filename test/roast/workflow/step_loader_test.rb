@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/step_loader"
 
 module Roast
   module Workflow
@@ -33,8 +32,6 @@ module Roast
         Dir.mktmpdir do |dir|
           step_file = File.join(dir, "test_step.rb")
           File.write(step_file, <<~RUBY)
-            require "roast/workflow/base_step"
-
             class TestStep < Roast::Workflow::BaseStep
               def call
                 "Test step executed"
@@ -61,8 +58,6 @@ module Roast
 
           step_file = File.join(shared_dir, "test_step.rb")
           File.write(step_file, <<~RUBY)
-            require "roast/workflow/base_step"
-
             class TestStep < Roast::Workflow::BaseStep
               def call
                 "Test step from shared"
@@ -133,7 +128,6 @@ module Roast
       end
 
       def test_sets_resource_when_supported
-        require "roast/resources/file_resource"
         @workflow.resource = Roast::Resources::FileResource.new("test.txt")
 
         step = @step_loader.load("test")

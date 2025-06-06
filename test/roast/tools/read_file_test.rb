@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/tools/read_file"
-require "tempfile"
-require "fileutils"
 
 class RoastToolsReadFileTest < ActiveSupport::TestCase
   def setup

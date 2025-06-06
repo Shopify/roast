@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "roast/workflow/iteration_executor"
 
 class RoastWorkflowIterationExecutorTest < ActiveSupport::TestCase
   def setup

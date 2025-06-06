@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "open3"
-
 class RunCoverage < Roast::Workflow::BaseStep
   def call
     # Run the test with coverage analysis
