@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require "raix"
-require "roast/initializers"
-require "roast/helpers/function_caching_interceptor"
+require "roast/helpers/function_cache"
 require "roast/helpers/logger"
 require "roast/workflow/base_workflow"
+require "roast/workflow/initializers"
 require "roast/workflow/interpolator"
 
 module Roast
@@ -24,14 +24,14 @@ module Roast
       private
 
       def load_roast_initializers
-        Roast::Initializers.load_all
+        Roast::Workflow::Initializers.load_all
       end
 
       def include_tools
         return unless @configuration.tools.present? || @configuration.mcp_tools.present?
 
         BaseWorkflow.include(Raix::FunctionDispatch)
-        BaseWorkflow.include(Roast::Helpers::FunctionCachingInterceptor) # Add caching support
+        BaseWorkflow.include(Roast::Helpers::FunctionCache::Interceptor) # Add caching support
 
         if @configuration.tools.present?
           BaseWorkflow.include(*@configuration.tools.map(&:constantize))

@@ -38,6 +38,7 @@ module Roast
       # Find a session directory for the workflow
       def find_session_directory(session_name, file_path, timestamp = nil)
         workflow_dir = workflow_directory(session_name, file_path)
+        puts "find_session_directory workflow_dir: #{workflow_dir}"
         return unless File.directory?(workflow_dir)
 
         if timestamp
@@ -68,13 +69,13 @@ module Roast
       private
 
       def workflow_directory(session_name, file_path)
+        # For targetless sessions we don't have a file_path
         file_path ||= TARGETLESS_FILE_PATH
         workflow_dir_name = session_name.parameterize.underscore
-        # For targetless sessions we don't have a file_path
-        file_id = Digest::MD5.hexdigest(file_path || Dir.pwd)
-        file_basename = File.basename(file_path || Dir.pwd).parameterize.underscore
+        file_id = Digest::MD5.hexdigest(file_path)
+        file_basename = File.basename(file_path).parameterize.underscore
         human_readable_id = "#{file_basename}_#{file_id[0..7]}"
-        File.join(Dir.pwd, ".roast", "sessions", workflow_dir_name, human_readable_id)
+        File.join(Roast.dot_roast_dir, "sessions", workflow_dir_name, human_readable_id)
       end
 
       def find_latest_session_directory(workflow_dir)

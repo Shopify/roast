@@ -11,7 +11,7 @@
 **/.claude/settings.local.json
 
 **/CLAUDE.local.md
-.roast/
+/.roast/
 
 bin/_guard-core
 bin/bundle

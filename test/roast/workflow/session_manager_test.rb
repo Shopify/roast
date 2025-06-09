@@ -16,11 +16,15 @@ module Roast
         FileUtils.touch(@file)
         # Stub Dir.pwd to isolate the working directory
         Dir.stubs(:pwd).returns(@temp_dir)
+        # Stub Roast.dot_roast_dir to return a testable location in temp dir
+        Roast.stubs(:dot_roast_dir).returns(File.join(@temp_dir, ".roast"))
         @manager = SessionManager.new
       end
 
       def teardown
         FileUtils.remove_entry(@temp_dir) if @temp_dir && File.exist?(@temp_dir)
+        Dir.unstub(:pwd)
+        Roast.unstub(:dot_roast_dir)
       end
 
       test "ensure_session_directory creates the directory structure" do

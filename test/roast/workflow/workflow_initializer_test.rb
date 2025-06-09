@@ -3,6 +3,7 @@
 require "test_helper"
 require "roast/workflow/workflow_initializer"
 require "roast/workflow/configuration"
+require "roast/workflow/initializers"
 
 class RoastWorkflowInitializerTest < ActiveSupport::TestCase
   def setup
@@ -12,7 +13,7 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
     @initializer = Roast::Workflow::WorkflowInitializer.new(@configuration)
 
     # Stub out initializer loading to prevent side effects
-    Roast::Initializers.stubs(:load_all)
+    Roast::Workflow::Initializers.stubs(:load_all)
   end
 
   def teardown
@@ -20,7 +21,7 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
   end
 
   def test_setup_loads_initializers_and_configures_tools
-    Roast::Initializers.expects(:load_all)
+    Roast::Workflow::Initializers.expects(:load_all)
 
     @initializer.setup
   end
@@ -30,7 +31,7 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
     @configuration.stubs(:mcp_tools).returns([])
 
     Roast::Workflow::BaseWorkflow.expects(:include).with(Raix::FunctionDispatch)
-    Roast::Workflow::BaseWorkflow.expects(:include).with(Roast::Helpers::FunctionCachingInterceptor)
+    Roast::Workflow::BaseWorkflow.expects(:include).with(Roast::Helpers::FunctionCache::Interceptor)
     Roast::Workflow::BaseWorkflow.expects(:include).with(Roast::Tools::ReadFile, Roast::Tools::Grep)
 
     @initializer.setup
@@ -64,7 +65,7 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
     Raix::MCP::StdioClient.stubs(:new).with("echo", "test", {}).returns(mock_client)
 
     Roast::Workflow::BaseWorkflow.expects(:include).with(Raix::FunctionDispatch)
-    Roast::Workflow::BaseWorkflow.expects(:include).with(Roast::Helpers::FunctionCachingInterceptor)
+    Roast::Workflow::BaseWorkflow.expects(:include).with(Roast::Helpers::FunctionCache::Interceptor)
     Roast::Workflow::BaseWorkflow.expects(:include).with(Raix::MCP)
     Roast::Workflow::BaseWorkflow.expects(:mcp).with(client: mock_client, only: ["get_issue", "get_issue_comments"], except: nil)
 
