@@ -216,6 +216,8 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
   def test_raises_authentication_error_when_api_token_invalid
     @configuration.stubs(:api_token).returns("invalid-token")
     @configuration.stubs(:api_provider).returns(:openai)
+    @configuration.stubs(:openai?).returns(true)
+    @configuration.stubs(:openrouter?).returns(false)
 
     # Stub Raix configuration to indicate no client is configured yet
     Raix.configuration.stubs(:openai_client).returns(nil)
@@ -232,7 +234,7 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
       "roast.workflow.start.error",
       has_entries(
         error: "Roast::Errors::AuthenticationError",
-        message: "API authentication failed: No API token provided or token is invalid",
+        message: ":openai provider requires the OPENAI_API_KEY environment variable to be present, but not found",
       ),
     ).once
 
@@ -240,12 +242,14 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
       @initializer.setup
     end
 
-    assert_equal("API authentication failed: No API token provided or token is invalid", error.message)
+    assert_equal(":openai provider requires the OPENAI_API_KEY environment variable to be present, but not found", error.message)
   end
 
   def test_handles_openrouter_configuration_error
     @configuration.stubs(:api_token).returns("invalid-format-token")
     @configuration.stubs(:api_provider).returns(:openrouter)
+    @configuration.stubs(:openrouter?).returns(true)
+    @configuration.stubs(:openai?).returns(false)
 
     # Stub Raix configuration to indicate no client is configured yet
     Raix.configuration.stubs(:openrouter_client).returns(nil)
@@ -257,7 +261,7 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
       "roast.workflow.start.error",
       has_entries(
         error: "Roast::Errors::AuthenticationError",
-        message: "API authentication failed: No API token provided or token is invalid",
+        message: ":openrouter provider requires the OPENROUTER_API_KEY environment variable to be present, but not found",
       ),
     ).once
 
@@ -265,6 +269,6 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
       @initializer.setup
     end
 
-    assert_equal("API authentication failed: No API token provided or token is invalid", error.message)
+    assert_equal(":openrouter provider requires the OPENROUTER_API_KEY environment variable to be present, but not found", error.message)
   end
 end
