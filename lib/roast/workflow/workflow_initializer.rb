@@ -96,7 +96,7 @@ module Roast
         # Validate the client configuration by making a test API call
         validate_api_client(client) if client
       rescue OpenRouter::ConfigurationError, Faraday::UnauthorizedError => e
-        error = Roast::Errors::AuthenticationError.new("API authentication failed: No API token provided or token is invalid")
+        error = Roast::Errors::AuthenticationError.new(@configuration.authentication_failure_reason(e))
         error.set_backtrace(e.backtrace)
 
         ActiveSupport::Notifications.instrument("roast.workflow.start.error", {
