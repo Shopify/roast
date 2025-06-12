@@ -29,6 +29,23 @@ module Roast
         @api_token || environment_token
       end
 
+      # A reason for why the API authentication failed, if it failed.
+      # Includes the API provider and the environment variable,
+      # and whether it was present and invalid or missing
+      def authentication_failure_reason(e)
+        return unless e
+
+        reason = "#{@api_provider.inspect} provider requires"
+        reason += " the #{environment_key} environment variable" if environment_key
+        reason += if environment_token.present?
+          " to be valid, but failed to authenticate"
+        else
+          " to be present, but not found"
+        end
+
+        reason
+      end
+
       private
 
       def process_api_configuration
@@ -54,10 +71,14 @@ module Roast
       end
 
       def environment_token
+        ENV[environment_key] if environment_key
+      end
+
+      def environment_key
         if openai?
-          ENV["OPENAI_API_KEY"]
+          "OPENAI_API_KEY"
         elsif openrouter?
-          ENV["OPENROUTER_API_KEY"]
+          "OPENROUTER_API_KEY"
         end
       end
     end
