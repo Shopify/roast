@@ -87,7 +87,8 @@ module Roast
         file_id = Digest::MD5.hexdigest(@file)
         file_basename = File.basename(@file).parameterize.underscore
         human_readable_id = "#{file_basename}_#{file_id[0..7]}"
-        File.join(@temp_dir, ".roast", "sessions", workflow_dir_name, human_readable_id)
+        # Use XDG state directory in tests
+        File.join(Roast::XDG::State.subdir(:sessions, gitignored: true), workflow_dir_name, human_readable_id)
       end
     end
   end
