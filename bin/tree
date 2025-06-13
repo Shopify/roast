@@ -1,0 +1,358 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# git-tree.rb: Manage git worktrees in Ruby
+# Usage: 
+#   git-tree add [BRANCH]     - Create and switch to a worktree
+#   git-tree remove [BRANCH]  - Remove a worktree, aborting if dirty
+#   git-tree list             - List all worktrees
+#   git-tree cd [BRANCH]      - Print path to a worktree (for shell integration)
+#
+# If BRANCH is not provided, it will present an fzf picker to select a branch
+
+require 'fileutils'
+require 'open3'
+
+# Get the current repository root and name
+def get_repo_info
+  repo_root, _status = Open3.capture2('git rev-parse --show-toplevel')
+  repo_root = repo_root.strip
+  repo_name = File.basename(repo_root)
+  
+  [repo_root, repo_name]
+end
+
+# Get parent directory for worktrees (one level up from repo root)
+def get_worktree_parent_dir
+  repo_root, _repo_name = get_repo_info
+  File.dirname(repo_root)
+end
+
+# Get worktree path for a given branch
+def get_worktree_path(branch)
+  _repo_root, repo_name = get_repo_info
+  parent_dir = get_worktree_parent_dir
+  clean_branch = get_clean_branch_name(branch)
+  "#{parent_dir}/#{repo_name}@#{clean_branch}"
+end
+
+# Ensure we're in a git repository
+def ensure_git_repo
+  unless system('git rev-parse --is-inside-work-tree > /dev/null 2>&1')
+    puts "Error: Not in a git repository"
+    exit 1
+  end
+end
+
+# Pick a branch using fzf
+def pick_branch
+  branches_cmd = "git branch --all | grep -v HEAD | sed 's/^\\s*//' | sed 's/^remotes\\/origin\\///' | sort -u"
+  branches, _status = Open3.capture2(branches_cmd)
+  
+  # Exit if no branches found
+  if branches.strip.empty?
+    puts "No branches found"
+    exit 1
+  end
+  
+  # Use fzf to select a branch
+  selected, _status = Open3.capture2("fzf --height 40% --reverse --no-multi", stdin_data: branches)
+  selected.strip
+end
+
+# Pick a worktree using fzf
+def pick_worktree
+  parent_dir = get_worktree_parent_dir
+  _repo_root, repo_name = get_repo_info
+  
+  # Find worktrees with the repo@branch pattern
+  find_cmd = "find #{parent_dir} -maxdepth 1 -name '#{repo_name}@*' -type d"
+  worktrees_paths, _status = Open3.capture2(find_cmd)
+  
+  # Format worktrees (extract branch names)
+  worktrees = worktrees_paths.lines.map do |path|
+    basename = File.basename(path.strip)
+    basename.sub(/^#{Regexp.escape(repo_name)}@/, '')
+  end
+  
+  # Check if we have any worktrees to remove
+  if worktrees.empty?
+    puts "No worktrees found with pattern #{repo_name}@*"
+    exit 0
+  end
+  
+  # Use fzf to select a worktree
+  selected, _status = Open3.capture2("fzf --height 40% --reverse --no-multi --prompt='Select worktree to remove: '", 
+                                    stdin_data: worktrees.join("\n"))
+  selected.strip
+end
+
+# Get clean branch name for directory
+def get_clean_branch_name(branch)
+  branch.gsub(/[^[:alnum:]-]/, '-').sub(/-*$/, '')
+end
+
+# Command: Add a new worktree
+def cmd_add(args)
+  branch = args.empty? ? pick_branch : args[0]
+  
+  # Exit if no branch selected (e.g., user pressed ESC in fzf)
+  exit 0 if branch.empty?
+  
+  worktree_path = get_worktree_path(branch)
+  
+  if Dir.exist?(worktree_path)
+    puts "Worktree for '#{branch}' already exists at '#{worktree_path}'"
+  else
+    puts "Creating worktree for '#{branch}' at '#{worktree_path}'..."
+    
+    # Add the worktree
+    system("git worktree add '#{worktree_path}' '#{branch}'")
+    
+    # Check if the command succeeded
+    unless $?.success?
+      FileUtils.rm_rf(worktree_path)
+      puts "Failed to create worktree"
+      exit 1
+    end
+  end
+  
+  # Change to the worktree directory
+  puts "Changing to worktree directory: #{worktree_path}"
+  Dir.chdir(worktree_path)
+  exec(ENV['SHELL'])
+end
+
+# Command: Remove a worktree
+def cmd_remove(args)
+  branch = if args.empty?
+             pick_worktree
+           else
+             args[0]
+           end
+  
+  # Exit if no worktree selected
+  exit 0 if branch.empty?
+  
+  worktree_path = get_worktree_path(branch)
+  
+  unless Dir.exist?(worktree_path)
+    puts "Error: Worktree not found at '#{worktree_path}'"
+    exit 1
+  end
+  
+  # Check if worktree is dirty
+  dirty_check_cmd = "git -C '#{worktree_path}' status --porcelain"
+  dirty_status, _status = Open3.capture2(dirty_check_cmd)
+  
+  if !dirty_status.strip.empty?
+    puts "Error: Worktree at '#{worktree_path}' has uncommitted changes. Aborting."
+    exit 1
+  end
+  
+  # Check if we're currently in the worktree being removed
+  current_dir = Dir.pwd
+  in_target_worktree = current_dir.start_with?(worktree_path)
+  
+  if in_target_worktree
+    puts "Currently in the worktree being removed. Will switch to main worktree afterward."
+  end
+  
+  puts "Removing worktree at '#{worktree_path}'..."
+  system("git worktree remove --force '#{worktree_path}'")
+  
+  puts "Worktree removed successfully."
+  
+  # If we were in the removed worktree, switch to main worktree
+  if in_target_worktree
+    repo_root, _repo_name = get_repo_info
+    puts "Changing to main worktree directory: #{repo_root}"
+    Dir.chdir(repo_root)
+    exec(ENV['SHELL'])
+  end
+end
+
+# Command: List all worktrees
+def cmd_list(_args)
+  repo_root, repo_name = get_repo_info
+  parent_dir = get_worktree_parent_dir
+  
+  puts "Git worktrees:"
+  puts "---------------------------"
+  
+  # Get current directory to check if we're in a worktree
+  current_dir = Dir.pwd
+  
+  # List the main worktree first
+  git_branch_cmd = "git -C '#{repo_root}' rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'Unknown'"
+  git_branch, _status = Open3.capture2(git_branch_cmd)
+  git_branch = git_branch.strip
+  
+  # Check if main worktree has uncommitted changes
+  dirty_check_cmd = "git -C '#{repo_root}' status --porcelain 2>/dev/null"
+  dirty_status, _status = Open3.capture2(dirty_check_cmd)
+  status = dirty_status.strip.empty? ? "[clean]" : "[dirty]"
+  
+  # Add a marker if this is the current worktree
+  current_indicator = current_dir.start_with?(repo_root) && current_dir == repo_root ? "* " : ""
+  
+  printf("%s%-40s %-30s %s\n", current_indicator, "main (main worktree)", git_branch, status)
+  
+  # Find additional worktrees with the repo@branch pattern
+  find_cmd = "find #{parent_dir} -maxdepth 1 -name '#{repo_name}@*' -type d"
+  worktrees_paths, _status = Open3.capture2(find_cmd)
+  
+  if !worktrees_paths.strip.empty?
+    worktrees = worktrees_paths.lines.map do |path|
+      path.strip
+    end.sort
+    
+    worktrees.each do |path|
+      basename = File.basename(path)
+      branch_name = basename.sub(/^#{Regexp.escape(repo_name)}@/, '')
+      
+      # Get git branch for this worktree
+      git_branch_cmd = "git -C '#{path}' rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'Unknown'"
+      git_branch, _status = Open3.capture2(git_branch_cmd)
+      git_branch = git_branch.strip
+      
+      # Check if worktree has uncommitted changes
+      dirty_check_cmd = "git -C '#{path}' status --porcelain 2>/dev/null"
+      dirty_status, _status = Open3.capture2(dirty_check_cmd)
+      status = dirty_status.strip.empty? ? "[clean]" : "[dirty]"
+      
+      # Add a marker if this is the current worktree
+      current_indicator = ""
+      if current_dir.start_with?(path)
+        current_indicator = "* "
+      end
+      
+      printf("%s%-40s %-30s %s\n", current_indicator, branch_name, git_branch, status)
+    end
+  end
+end
+
+# Command: Change to a worktree directory
+def cmd_cd(args)
+  repo_root, repo_name = get_repo_info
+  parent_dir = get_worktree_parent_dir
+  
+  # If a branch name is provided, use it; otherwise pick using fzf
+  if args.empty?
+    # Collect all worktrees (main + additional ones)
+    worktrees = [{ name: "main", path: repo_root }]
+    
+    # Find additional worktrees with the repo@branch pattern
+    find_cmd = "find #{parent_dir} -maxdepth 1 -name '#{repo_name}@*' -type d"
+    worktrees_paths, _status = Open3.capture2(find_cmd)
+    
+    if !worktrees_paths.strip.empty?
+      additional_worktrees = worktrees_paths.lines.map do |path|
+        path = path.strip
+        basename = File.basename(path)
+        branch_name = basename.sub(/^#{Regexp.escape(repo_name)}@/, '')
+        { name: branch_name, path: path }
+      end.sort_by { |w| w[:name] }
+      
+      worktrees.concat(additional_worktrees)
+    end
+    
+    # Format the choices for fzf
+    formatted_worktrees = worktrees.map do |worktree|
+      path = worktree[:path]
+      name = worktree[:name]
+      
+      # Get git branch for this worktree
+      git_branch_cmd = "git -C '#{path}' rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'Unknown'"
+      git_branch, _status = Open3.capture2(git_branch_cmd)
+      git_branch = git_branch.strip
+      
+      # Display string for fzf with original path stored for retrieval
+      display_name = name == "main" ? "#{name} (main worktree)" : name
+      "#{display_name} (#{git_branch})\t#{path}"
+    end.join("\n")
+    
+    # Exit if no worktrees available
+    if formatted_worktrees.empty?
+      puts "No worktrees found"
+      exit 1
+    end
+    
+    # Use fzf to select a worktree
+    selected, _status = Open3.capture2("fzf --height 40% --reverse --no-multi --with-nth=1 -d'\t' --prompt='Select worktree: '", 
+                                      stdin_data: formatted_worktrees)
+    
+    # Exit if nothing selected (e.g., ESC pressed)
+    exit 0 if selected.strip.empty?
+    
+    # Extract the path from the selected line
+    worktree_path = selected.strip.split("\t")[1]
+  else
+    # Get branch name from arguments
+    branch_name = args[0]
+    
+    if branch_name == "main"
+      worktree_path = repo_root
+    else
+      worktree_path = get_worktree_path(branch_name)
+      
+      # Check if the worktree exists
+      unless Dir.exist?(worktree_path)
+        puts "Error: Worktree not found at '#{worktree_path}'"
+        exit 1
+      end
+    end
+  end
+  
+  # Change to the worktree directory
+  puts "Changing to worktree directory: #{worktree_path}"
+  Dir.chdir(worktree_path)
+  exec(ENV['SHELL'])
+end
+
+# Display usage information
+def show_usage
+  puts "Usage: git-tree [COMMAND] [BRANCH]"
+  puts
+  puts "Commands:"
+  puts "  add     - Create and switch to a worktree"
+  puts "  remove  - Remove a worktree, aborting if dirty"
+  puts "  list    - List all worktrees"
+  puts "  cd      - Change to a worktree directory"
+  puts
+  puts "If BRANCH is not provided, it will present an fzf picker"
+  exit 0
+end
+
+# Main function
+def main
+  ensure_git_repo
+  
+  # No default command - show usage if no command provided
+  if ARGV.empty?
+    show_usage
+    return
+  end
+  
+  # Parse command
+  command = ARGV.shift
+  
+  # Execute the appropriate command
+  case command
+  when "add"
+    cmd_add(ARGV)
+  when "remove"
+    cmd_remove(ARGV)
+  when "list"
+    cmd_list(ARGV)
+  when "cd"
+    cmd_cd(ARGV)
+  when "help", "--help", "-h"
+    show_usage
+  else
+    puts "Unknown command: #{command}"
+    show_usage
+  end
+end
+
+main
