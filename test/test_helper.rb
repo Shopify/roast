@@ -18,8 +18,10 @@ require "vcr"
 require "webmock/minitest"
 
 # Test support files
-require "support/fixture_helpers"
 require "support/improved_assertions"
+require "support/redefine_constants"
+require "support/fixture_helpers"
+require "support/xdg_helper"
 
 # Turn on color during CI since GitHub Actions supports it
 if ENV["CI"]
@@ -50,4 +52,12 @@ def create_mock_workflow(options = {})
   }
   workflow.stubs(default_stubs.merge(options))
   workflow
+end
+
+# Helper methods for creating test files and directories
+def create_test_file(base_dir, relative_path, content)
+  file_path = File.join(base_dir, relative_path)
+  FileUtils.mkdir_p(File.dirname(file_path))
+  File.write(file_path, content)
+  file_path
 end
