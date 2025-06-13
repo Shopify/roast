@@ -5,8 +5,11 @@ require "test_helper"
 module Roast
   module Workflow
     class FileStateRepositoryTest < ActiveSupport::TestCase
+      include XDGHelper
+
       def setup
         @temp_dir = Dir.mktmpdir
+        stub_xdg_env(@temp_dir)
         @file = File.join(@temp_dir, "test.rb")
         @session_name = "test_workflow"
         @session_manager = SessionManager.new
@@ -28,6 +31,7 @@ module Roast
       end
 
       def teardown
+        unstub_xdg_env
         FileUtils.remove_entry(@temp_dir) if @temp_dir && File.exist?(@temp_dir)
         Dir.unstub(:pwd)
       end
@@ -193,7 +197,8 @@ module Roast
         file_id = Digest::MD5.hexdigest(@workflow.file)
         file_basename = File.basename(@workflow.file).parameterize.underscore
         human_readable_id = "#{file_basename}_#{file_id[0..7]}"
-        File.join(@temp_dir, ".roast", "sessions", workflow_dir_name, human_readable_id)
+        # Use XDG state directory in tests
+        File.join(SESSION_DATA_DIR, workflow_dir_name, human_readable_id)
       end
 
       def create_test_state(step_name, order, additional_data = {})

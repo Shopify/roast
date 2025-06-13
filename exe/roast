@@ -14,4 +14,5 @@ require "bundler/setup"
 require "roast"
 
 puts "🔥🔥🔥 Everyone loves a good roast 🔥🔥🔥\n\n"
+
 Roast::CLI.start(ARGV)

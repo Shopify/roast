@@ -14,11 +14,11 @@ module Roast
         })
 
         # Handle workflows with or without configuration
-        result = if !respond_to?(:configuration) || configuration.nil?
+        result = if !respond_to?(:workflow_configuration) || workflow_configuration.nil?
           super(function_name, params)
         else
-          function_config = if configuration.respond_to?(:function_config)
-            configuration.function_config(function_name)
+          function_config = if workflow_configuration.respond_to?(:function_config)
+            workflow_configuration.function_config(function_name)
           else
             {}
           end
