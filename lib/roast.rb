@@ -37,6 +37,11 @@ require "zeitwerk"
 
 # Set up Zeitwerk autoloader
 loader = Zeitwerk::Loader.for_gem
+
+# Configure custom inflector for XDG acronym
+loader.inflector.inflect("xdg" => "XDG")
+loader.inflector.inflect("xdg_migration" => "XDGMigration")
+
 loader.setup
 
 module Roast
@@ -54,6 +59,11 @@ module Roast
 
     def execute(*paths)
       raise Thor::Error, "Workflow configuration file is required" if paths.empty?
+
+      # Check for and perform XDG migration if needed (skip in test environment)
+      unless defined?(Minitest) && Minitest::Test
+        Roast::XDGMigration.migrate_if_needed
+      end
 
       workflow_path, *files = paths
 
