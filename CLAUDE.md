@@ -59,6 +59,45 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Step labels are inferred for most steps and optional for inline prompts, but required for steps that need custom configuration
 - The result of running a step is stored in the `workflow.output` hash with the step label as the key
 
+## How Roast Tools Work (CRITICAL - READ THIS!)
+**Tools in Roast are NOT explicitly invoked in workflow steps!** This is a fundamental concept that differs from many other workflow systems.
+
+### Key Concepts:
+1. **Tools are capabilities available to the LLM** - They are functions the LLM can choose to call while executing a step
+2. **Steps contain prompts** - Steps describe what needs to be done, not how to do it
+3. **The LLM decides when to use tools** - While executing a step's prompt, the LLM analyzes the task and calls tools as needed
+4. **Tools are registered, not declared in steps** - Use the `tools:` section to make tools available, but never use a `tool:` key in step configuration
+
+### Correct inline prompt syntax:
+```yaml
+steps:
+  - analyze_code: |
+      Analyze the codebase and identify performance bottlenecks.
+      Use any available tools to read files and search for patterns.
+```
+
+### INCORRECT syntax (DO NOT USE):
+```yaml
+# WRONG - no 'prompt:' key
+steps:
+  - analyze_code:
+      prompt: "Analyze the codebase"
+      
+# WRONG - no 'tool:' key
+steps:
+  - run_analysis:
+      tool: coding_agent
+      prompt: "Analyze code"
+```
+
+### How tools are actually used:
+When the LLM executes the `analyze_code` step above, it might:
+1. Decide it needs to read files and call `read_file(path)`
+2. Decide it needs to search and call `grep(pattern, path)`
+3. Decide it needs Claude Swarm and call `swarm(prompt, config_path)`
+
+The LLM makes these decisions based on the prompt and available tools, similar to how Claude (you) decides when to use Bash, Read, or other tools when responding to user requests.
+
 ## Step Configuration
 - The `path` key in a step configuration is the path to a Ruby file that defines a custom step.
 - The `model` key in a step configuration is the model to use for the step.
