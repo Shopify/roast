@@ -17,9 +17,10 @@ module Roast
         :session_timestamp,
         :model,
         :workflow_configuration,
-        :storage_type
+        :storage_type,
+        :context_management_config
 
-      attr_reader :pre_processing_data
+      attr_reader :pre_processing_data, :context_manager
 
       delegate :api_provider, :openai?, to: :workflow_configuration, allow_nil: true
       delegate :output, :output=, :append_to_final_output, :final_output, to: :output_manager
@@ -37,6 +38,8 @@ module Roast
 
         # Initialize managers
         @output_manager = OutputManager.new
+        @context_manager = ContextManager.new
+        @context_management_config = {}
 
         # Setup prompt and handlers
         read_sidecar_prompt.then do |prompt|
@@ -54,15 +57,40 @@ module Roast
         step_model = kwargs[:model]
 
         with_model(step_model) do
+          # Configure context manager if needed
+          if @context_management_config.any?
+            @context_manager.configure(@context_management_config)
+          end
+
+          # Track token usage before API call
+          messages = kwargs[:messages] || transcript.flatten.compact
+          if @context_management_config[:enabled]
+            @context_manager.track_usage(messages)
+            @context_manager.check_warnings
+          end
+
           ActiveSupport::Notifications.instrument("roast.chat_completion.start", {
             model: model,
             parameters: kwargs.except(:openai, :model),
           })
 
+          # Clear any previous response
+          Thread.current[:chat_completion_response] = nil
+
           # Call the parent module's chat_completion
           # skip model because it is read directly from the model method
           result = super(**kwargs.except(:model))
           execution_time = Time.now - start_time
+
+          # Extract token usage from the raw response stored by Raix
+          raw_response = Thread.current[:chat_completion_response]
+          token_usage = extract_token_usage(raw_response) if raw_response
+
+          # Update context manager with actual token usage if available
+          if token_usage && @context_management_config[:enabled]
+            actual_total = token_usage.dig("total_tokens") || token_usage.dig(:total_tokens)
+            @context_manager.update_with_actual_usage(actual_total) if actual_total
+          end
 
           ActiveSupport::Notifications.instrument("roast.chat_completion.complete", {
             success: true,
@@ -70,6 +98,7 @@ module Roast
             parameters: kwargs.except(:openai, :model),
             execution_time: execution_time,
             response_size: result.to_s.length,
+            token_usage: token_usage,
           })
           result
         end
@@ -115,6 +144,15 @@ module Roast
 
       def read_sidecar_prompt
         Roast::Helpers::PromptLoader.load_prompt(self, file)
+      end
+
+      def extract_token_usage(result)
+        # Token usage is typically in the response metadata
+        # This depends on the API provider's response format
+        return unless result.is_a?(Hash) || result.respond_to?(:to_h)
+
+        result_hash = result.is_a?(Hash) ? result : result.to_h
+        result_hash.dig("usage") || result_hash.dig(:usage)
       end
     end
   end

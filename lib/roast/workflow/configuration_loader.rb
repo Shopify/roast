@@ -144,6 +144,30 @@ module Roast
           options[:target] || config_hash["target"]
         end
 
+        # Extract context management configuration
+        # @param config_hash [Hash] The configuration hash
+        # @return [Hash] The context management configuration with defaults
+        def extract_context_management(config_hash)
+          default_config = {
+            enabled: true,
+            strategy: "auto",
+            threshold: 0.8,
+            max_tokens: nil,
+            retain_steps: [],
+          }
+
+          return default_config unless config_hash["context_management"].is_a?(Hash)
+
+          config = config_hash["context_management"]
+          {
+            enabled: config.fetch("enabled", default_config[:enabled]),
+            strategy: config.fetch("strategy", default_config[:strategy]),
+            threshold: config.fetch("threshold", default_config[:threshold]),
+            max_tokens: config["max_tokens"],
+            retain_steps: config.fetch("retain_steps", default_config[:retain_steps]),
+          }
+        end
+
         private
 
         def validate_path!(workflow_path)

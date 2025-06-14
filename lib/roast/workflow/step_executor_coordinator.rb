@@ -28,11 +28,11 @@ module Roast
           is_last_step = (index == workflow_steps.length - 1)
           case step
           when Hash
-            execute(step, is_last_step: is_last_step)
+            execute(step, is_last_step:)
           when Array
-            execute(step, is_last_step: is_last_step)
+            execute(step, is_last_step:)
           when String
-            execute(step, is_last_step: is_last_step)
+            execute(step, is_last_step:)
             # Handle pause after string steps
             if @context.workflow.pause_step_name == step
               Kernel.binding.irb # rubocop:disable Lint/Debugger
@@ -62,17 +62,17 @@ module Roast
         when StepTypeResolver::AGENT_STEP
           execute_agent_step(step, options)
         when StepTypeResolver::GLOB_STEP
-          execute_glob_step(step)
+          execute_glob_step(step, options)
         when StepTypeResolver::ITERATION_STEP
-          execute_iteration_step(step)
+          execute_iteration_step(step, options)
         when StepTypeResolver::CONDITIONAL_STEP
-          execute_conditional_step(step)
+          execute_conditional_step(step, options)
         when StepTypeResolver::CASE_STEP
-          execute_case_step(step)
+          execute_case_step(step, options)
         when StepTypeResolver::INPUT_STEP
-          execute_input_step(step)
+          execute_input_step(step, options)
         when StepTypeResolver::HASH_STEP
-          execute_hash_step(step)
+          execute_hash_step(step, options)
         when StepTypeResolver::PARALLEL_STEP
           # Use factory for parallel steps
           executor = StepExecutorFactory.for(step, workflow_executor)
@@ -189,11 +189,11 @@ module Roast
         step_orchestrator.execute_step(step_name, exit_on_error:, step_key: options[:step_key], agent_type: :coding_agent)
       end
 
-      def execute_glob_step(step)
+      def execute_glob_step(step, options = {})
         Dir.glob(step).join("\n")
       end
 
-      def execute_iteration_step(step)
+      def execute_iteration_step(step, options = {})
         name = step.keys.first
         command = step[name]
 
@@ -206,19 +206,19 @@ module Roast
         end
       end
 
-      def execute_conditional_step(step)
+      def execute_conditional_step(step, options = {})
         conditional_executor.execute_conditional(step)
       end
 
-      def execute_case_step(step)
+      def execute_case_step(step, options = {})
         case_executor.execute_case(step)
       end
 
-      def execute_input_step(step)
+      def execute_input_step(step, options = {})
         input_executor.execute_input(step["input"])
       end
 
-      def execute_hash_step(step)
+      def execute_hash_step(step, options = {})
         name, command = step.to_a.flatten
         interpolated_name = interpolator.interpolate(name)
 
@@ -230,7 +230,8 @@ module Roast
 
           # Execute the command directly using the appropriate executor
           # Pass the original key name for configuration lookup
-          result = execute(interpolated_command, { exit_on_error: exit_on_error, step_key: interpolated_name })
+          # Merge options to preserve is_last_step
+          result = execute(interpolated_command, { exit_on_error:, step_key: interpolated_name }.merge(options))
           context.workflow.output[interpolated_name] = result
           result
         end
@@ -247,10 +248,10 @@ module Roast
         if StepTypeResolver.command_step?(interpolated_step)
           # Command step - execute directly, preserving any passed options
           exit_on_error = options.fetch(:exit_on_error, true)
-          execute_command_step(interpolated_step, { exit_on_error: exit_on_error })
+          execute_command_step(interpolated_step, { exit_on_error: })
         else
           exit_on_error = options.fetch(:exit_on_error, context.exit_on_error?(step))
-          execute_standard_step(interpolated_step, options.merge(exit_on_error: exit_on_error))
+          execute_standard_step(interpolated_step, options.merge(exit_on_error:))
         end
       end
 

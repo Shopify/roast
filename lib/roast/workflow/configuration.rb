@@ -7,7 +7,7 @@ module Roast
     class Configuration
       MCPTool = Struct.new(:name, :config, :only, :except, keyword_init: true)
 
-      attr_reader :config_hash, :workflow_path, :name, :steps, :pre_processing, :post_processing, :tools, :tool_configs, :mcp_tools, :function_configs, :model, :resource
+      attr_reader :config_hash, :workflow_path, :name, :steps, :pre_processing, :post_processing, :tools, :tool_configs, :mcp_tools, :function_configs, :model, :resource, :context_management
       attr_accessor :target
 
       delegate :api_provider, :openrouter?, :openai?, :uri_base, to: :api_configuration
@@ -32,6 +32,7 @@ module Roast
         @mcp_tools = ConfigurationLoader.extract_mcp_tools(@config_hash)
         @function_configs = ConfigurationLoader.extract_functions(@config_hash)
         @model = ConfigurationLoader.extract_model(@config_hash)
+        @context_management = ConfigurationLoader.extract_context_management(@config_hash)
 
         # Initialize components
         @api_configuration = ApiConfiguration.new(@config_hash)

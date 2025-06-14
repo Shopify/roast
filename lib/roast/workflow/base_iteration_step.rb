@@ -65,10 +65,11 @@ module Roast
         executor ||= WorkflowExecutor.new(context, config_hash, context_path)
         results = []
 
-        steps.each do |step|
+        steps.each_with_index do |step, index|
+          is_last_step = (index == steps.length - 1)
           result = case step
           when String
-            executor.execute_step(step)
+            executor.execute_step(step, is_last_step:)
           when Hash, Array
             executor.execute_steps([step])
           end

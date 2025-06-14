@@ -72,7 +72,7 @@ module Roast
         @step_orchestrator = step_orchestrator || StepOrchestrator.new(workflow, @step_loader, @state_manager, @error_handler, self)
 
         # Initialize coordinator with dependencies
-        @step_executor_coordinator = step_executor_coordinator || StepExecutorCoordinator.new(
+        base_coordinator = step_executor_coordinator || StepExecutorCoordinator.new(
           context: @context,
           dependencies: {
             workflow_executor: self,
@@ -84,6 +84,13 @@ module Roast
             error_handler: @error_handler,
           },
         )
+
+        # Only wrap with reporting decorator if workflow has token tracking enabled
+        @step_executor_coordinator = if workflow.respond_to?(:context_manager) && workflow.context_manager
+          StepExecutorWithReporting.new(base_coordinator, @context)
+        else
+          base_coordinator
+        end
       end
 
       # Logger interface methods for backward compatibility
@@ -111,8 +118,8 @@ module Roast
         @interpolator.interpolate(text)
       end
 
-      def execute_step(name, exit_on_error: true)
-        @step_executor_coordinator.execute(name, exit_on_error: exit_on_error)
+      def execute_step(name, exit_on_error: true, is_last_step: nil)
+        @step_executor_coordinator.execute(name, exit_on_error:, is_last_step:)
       rescue StepLoader::StepNotFoundError => e
         raise StepNotFoundError.new(e.message, step_name: e.step_name, original_error: e.original_error)
       rescue StepLoader::StepExecutionError => e

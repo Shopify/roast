@@ -8,7 +8,7 @@
 # this file is here to facilitate running it.
 #
 
-ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../.ruby-lsp/Gemfile", __dir__)
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
 
 bundle_binstub = File.expand_path("bundle", __dir__)
 

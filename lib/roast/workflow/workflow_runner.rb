@@ -171,6 +171,8 @@ module Roast
           workflow.storage_type = @options[:file_storage] ? "file" : nil
           # Set model from configuration with fallback to default
           workflow.model = @configuration.model || StepLoader::DEFAULT_MODEL
+          # Set context management configuration
+          workflow.context_management_config = @configuration.context_management
         end
       end
 
