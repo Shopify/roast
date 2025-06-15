@@ -1,65 +1,83 @@
 # frozen_string_literal: true
 
+require "English"
+require "roast/helpers/logger"
+require "roast/helpers/timeout_handler"
+
 module Roast
   module Tools
     module Cmd
       extend self
 
-      DEFAULT_ALLOWED_COMMANDS = [
-        { "name" => "pwd", "description" => "pwd command - print current working directory path" },
-        { "name" => "find", "description" => "find command - search for files/directories using patterns like -name '*.rb'" },
-        { "name" => "ls", "description" => "ls command - list directory contents with options like -la, -R" },
-        { "name" => "rake", "description" => "rake command - run Ruby tasks defined in Rakefile" },
-        { "name" => "ruby", "description" => "ruby command - execute Ruby code or scripts, supports -e for inline code" },
-        { "name" => "dev", "description" => "Shopify dev CLI - development environment tool with subcommands" },
-        { "name" => "mkdir", "description" => "mkdir command - create directories, supports -p for parent directories" },
+      # Cmd-specific configuration key
+      CONFIG_ALLOWED_COMMANDS = "allowed_commands"
+
+      DEFAULT_ALLOWED_COMMANDS = %w[
+        awk
+        basename
+        bc
+        cat
+        cd
+        chmod
+        chown
+        cp
+        cut
+        date
+        df
+        diff
+        dirname
+        du
+        echo
+        env
+        expr
+        find
+        grep
+        head
+        hostname
+        id
+        kill
+        less
+        ln
+        ls
+        man
+        mkdir
+        more
+        mv
+        ps
+        pwd
+        rm
+        rmdir
+        sed
+        sleep
+        sort
+        tail
+        tar
+        tee
+        test
+        touch
+        tr
+        uname
+        uniq
+        wc
+        which
+        whoami
       ].freeze
 
-      CONFIG_ALLOWED_COMMANDS = "allowed_commands"
-      private_constant :DEFAULT_ALLOWED_COMMANDS, :CONFIG_ALLOWED_COMMANDS
-
       class << self
-        # Add this method to be included in other classes
-        def included(base)
-          @base_class = base
-        end
-
-        # Called after configuration is loaded
-        def post_configuration_setup(base, config = {})
-          allowed_commands = config[CONFIG_ALLOWED_COMMANDS] || DEFAULT_ALLOWED_COMMANDS
-
-          allowed_commands.each do |command_entry|
-            case command_entry
-            when String
-              register_command_function(base, command_entry, nil)
-            when Hash
-              command_name = command_entry["name"] || command_entry[:name]
-              description = command_entry["description"] || command_entry[:description]
-
-              if command_name.nil?
-                raise ArgumentError, "Command configuration must include 'name' field"
-              end
-
-              register_command_function(base, command_name, description)
-            else
-              raise ArgumentError, "Invalid command configuration format: #{command_entry.inspect}"
-            end
-          end
-        end
-
-        private
-
-        def register_command_function(base, command, custom_description = nil)
-          function_name = command.to_sym
-          description = custom_description || generate_command_description(command)
-
-          base.class_eval do
-            function(
-              function_name,
-              description,
+        def register
+          DEFAULT_ALLOWED_COMMANDS.each do |command|
+            Roast::Tools.register_function(
+              :cmd,
+              command,
+              "Run #{command} command in a safe, controlled environment",
               args: {
                 type: "string",
                 description: "Arguments to pass to the #{command} command",
+                required: false,
+              },
+              timeout: {
+                type: "integer",
+                description: "Timeout in seconds (optional, default: 30)",
                 required: false,
               },
             ) do |params|
@@ -69,34 +87,41 @@ module Roast
                 "#{command} #{params[:args]}"
               end
 
-              Roast::Tools::Cmd.execute_allowed_command(full_command, command)
+              Roast::Tools::Cmd.execute_allowed_command(full_command, command, timeout: params[:timeout])
             end
           end
         end
 
-        def generate_command_description(command)
-          default_cmd = DEFAULT_ALLOWED_COMMANDS.find { |cmd| cmd["name"] == command }
-          default_cmd ? default_cmd["description"] : "Execute the #{command} command"
+        def configuration
+          Roast.configuration
         end
       end
 
-      def execute_allowed_command(full_command, command_prefix)
+      def execute_allowed_command(full_command, command_prefix, timeout: 30)
         Roast::Helpers::Logger.info("🔧 Running command: #{full_command}\n")
-        execute_command(full_command, command_prefix)
+
+        if timeout && timeout > 0
+          execute_command_with_timeout(full_command, command_prefix, timeout: timeout)
+        else
+          execute_command(full_command, command_prefix)
+        end
       rescue StandardError => e
         handle_error(e)
       end
 
       # Legacy method for backward compatibility
-      def call(command, config = {})
+      def call(command, config = {}, timeout: 30)
         Roast::Helpers::Logger.info("🔧 Running command: #{command}\n")
 
         allowed_commands = config[CONFIG_ALLOWED_COMMANDS] || DEFAULT_ALLOWED_COMMANDS
         validation_result = validate_command(command, allowed_commands)
         return validation_result unless validation_result.nil?
 
-        command_prefix = command.split(" ").first
-        execute_command(command, command_prefix)
+        if timeout && timeout > 0
+          execute_command_with_timeout(command, command.split(" ").first, timeout: timeout)
+        else
+          execute_command(command, command.split(" ").first)
+        end
       rescue StandardError => e
         handle_error(e)
       end
@@ -106,50 +131,63 @@ module Roast
       def validate_command(command, allowed_commands)
         command_prefix = command.split(" ").first
 
-        # Extract command names from the allowed_commands array
-        allowed_command_names = allowed_commands.map do |cmd_entry|
-          case cmd_entry
-          when String
-            cmd_entry
-          when Hash
-            cmd_entry["name"] || cmd_entry[:name]
-          end
-        end.compact
+        unless allowed_commands.include?(command_prefix)
+          return "Error: Command '#{command_prefix}' is not allowed. Allowed commands: #{allowed_commands.join(", ")}"
+        end
 
-        return if allowed_command_names.include?(command_prefix)
-
-        "Error: Command not allowed. Only commands starting with #{allowed_command_names.join(", ")} are permitted."
+        nil
       end
 
-      def extract_tool_config
-        return {} unless respond_to?(:configuration)
+      def handle_error(error)
+        Roast::Helpers::Logger.error("Command execution failed: #{error.message}\n")
+        "Error: #{error.message}"
+      end
 
+      def format_output(command, result, exit_status)
+        if exit_status == 0
+          result
+        else
+          "Command '#{command}' failed with exit status #{exit_status}:\n#{result}"
+        end
+      end
+
+      def tool_config
         configuration&.tool_config("Roast::Tools::Cmd") || {}
+      end
+
+      def execute_command_with_timeout(command, command_prefix, timeout:)
+        timeout = Roast::Helpers::TimeoutHandler.validate_timeout(timeout)
+
+        full_command = if command_prefix == "dev"
+          "bash -l -c '#{command.gsub("'", "\\'")}'"
+        else
+          command
+        end
+
+        result, exit_status = Roast::Helpers::TimeoutHandler.call(
+          full_command,
+          timeout: timeout,
+          working_directory: Dir.pwd,
+        )
+
+        format_output(command, result, exit_status)
+      rescue Timeout::Error => e
+        Roast::Helpers::Logger.error(e.message + "\n")
+        e.message
       end
 
       def execute_command(command, command_prefix)
         result = if command_prefix == "dev"
           # Use bash -l -c to ensure we get a login shell with all environment variables
-          full_command = "bash -l -c '#{command.gsub("'", "\\'")}'"
-          IO.popen(full_command, chdir: Dir.pwd, &:read)
+          `bash -l -c '#{command.gsub("'", "\\'")}'`
         else
-          IO.popen(command, chdir: Dir.pwd, &:read)
+          `#{command}`
         end
 
-        format_output(command, result, $CHILD_STATUS.exitstatus)
-      end
-
-      def format_output(command, result, exit_status)
-        "Command: #{command}\n" \
-          "Exit status: #{exit_status}\n" \
-          "Output:\n#{result}"
-      end
-
-      def handle_error(error)
-        error_message = "Error running command: #{error.message}"
-        Roast::Helpers::Logger.error("#{error_message}\n")
-        Roast::Helpers::Logger.debug("#{error.backtrace.join("\n")}\n") if ENV["DEBUG"]
-        error_message
+        exit_status = $CHILD_STATUS.exitstatus
+        format_output(command, result, exit_status)
+      rescue StandardError => e
+        handle_error(e)
       end
     end
   end

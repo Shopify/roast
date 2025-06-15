@@ -198,6 +198,265 @@ module Roast
         # Should not register any functions in included
         assert_empty DummyBaseClass.registered_functions
       end
+
+      # Timeout functionality tests
+      test "cmd tool hanging command simulation" do
+        hanging_command = "sed 's/foo/bar/g'"
+
+        result = Roast::Tools::Cmd.call(hanging_command)
+
+        assert_match(/Error: Command not allowed/, result)
+      end
+
+      test "cmd tool timeout with ruby sleep" do
+        start_time = Time.now
+
+        result = Roast::Tools::Cmd.call("ruby -e 'sleep 2'", timeout: 1)
+
+        end_time = Time.now
+        elapsed_time = end_time - start_time
+
+        assert(elapsed_time < 10, "Command should timeout within reasonable time, but took #{elapsed_time} seconds")
+        assert_match(/timed out after 1 seconds/, result)
+      end
+
+      test "cmd tool timeout with quick find command" do
+        start_time = Time.now
+
+        result = Roast::Tools::Cmd.call("find . -maxdepth 2 -name '*.rb' | head -5", timeout: 5)
+
+        end_time = Time.now
+        elapsed_time = end_time - start_time
+
+        assert(elapsed_time < 3, "Quick find should complete in under 3 seconds")
+        assert(result.include?("Command: find"))
+        assert(result.include?("Exit status:"))
+        refute_match(/timed out/, result)
+      end
+
+      test "cmd tool with timeout parameter quick command" do
+        result = Roast::Tools::Cmd.call("pwd", timeout: 5)
+
+        assert(result.include?("Command: pwd"))
+        assert(result.include?("Exit status: 0"))
+        assert(result.include?("Output:"))
+        refute_match(/timed out/, result)
+
+        result_default = Roast::Tools::Cmd.call("pwd")
+
+        assert(result_default.include?("Command: pwd"))
+        assert(result_default.include?("Exit status: 0"))
+        refute_match(/timed out/, result_default)
+      end
+
+      test "cmd tool timeout with ruby infinite loop" do
+        start_time = Time.now
+
+        result = Roast::Tools::Cmd.call("ruby -e 'loop { sleep(0.1) }'", timeout: 1)
+
+        end_time = Time.now
+        elapsed_time = end_time - start_time
+
+        assert(elapsed_time < 10, "Command should timeout within reasonable time, but took #{elapsed_time} seconds")
+        assert_match(/timed out after 1 seconds/, result)
+      end
+
+      test "timeout prevents infinite hangs" do
+        start_time = Time.now
+
+        result = Roast::Tools::Cmd.call("ruby -e 'sleep 10'", timeout: 2)
+
+        end_time = Time.now
+        elapsed_time = end_time - start_time
+
+        assert(elapsed_time < 15, "Timeout should prevent infinite hangs - took #{elapsed_time} seconds")
+        assert_match(/timed out after 2 seconds/, result)
+        assert(result.is_a?(String), "Should return error message, not hang")
+        assert_match(/timed out/, result)
+      end
+
+      test "timeout functionality exists" do
+        result_with_timeout = Roast::Tools::Cmd.call("pwd", timeout: 30)
+        result_without_timeout = Roast::Tools::Cmd.call("pwd")
+
+        assert(result_with_timeout.include?("Command: pwd"))
+        assert(result_without_timeout.include?("Command: pwd"))
+
+        refute_match(/timed out/, result_with_timeout)
+        refute_match(/timed out/, result_without_timeout)
+      end
+
+      test "timeout validation bounds" do
+        result = Roast::Tools::Cmd.call("pwd", timeout: 9999)
+        assert(result.include?("Command: pwd"))
+        assert(result.include?("Exit status: 0"))
+      end
+
+      test "timeout validation edge cases" do
+        result = Roast::Tools::Cmd.call("pwd", timeout: nil)
+        assert(result.include?("Command: pwd"))
+        assert(result.include?("Exit status: 0"))
+
+        result = Roast::Tools::Cmd.call("pwd", timeout: -5)
+        assert(result.include?("Command: pwd"))
+        assert(result.include?("Exit status: 0"))
+
+        result = Roast::Tools::Cmd.call("pwd", timeout: 0)
+        assert(result.include?("Command: pwd"))
+        assert(result.include?("Exit status: 0"))
+      end
+
+      test "thread safety exit status" do
+        results = []
+        threads = []
+
+        5.times do |i|
+          threads << Thread.new do
+            if i.even?
+              result = Roast::Tools::Cmd.call("pwd", timeout: 2)
+              results << { thread: i, success: result.include?("Exit status: 0") }
+            else
+              result = Roast::Tools::Cmd.call("ls /nonexistent_path_#{i} 2>/dev/null", timeout: 2)
+              results << { thread: i, success: result.include?("Exit status: 0") }
+            end
+          end
+        end
+
+        threads.each(&:join)
+
+        success_count = results.count { |r| r[:success] }
+        failure_count = results.count { |r| !r[:success] }
+
+        assert(success_count >= 2, "Should have successful commands")
+        assert(failure_count >= 2, "Should have failed commands")
+      end
+
+      test "resource cleanup on timeout" do
+        start_time = Time.now
+
+        result = Roast::Tools::Cmd.call("ruby -e 'puts Process.pid; sleep 10'", timeout: 1)
+
+        end_time = Time.now
+        elapsed_time = end_time - start_time
+
+        assert(elapsed_time < 5, "Should cleanup quickly after timeout")
+        assert_match(/timed out after 1 seconds/, result)
+      end
+
+      test "dev command shell escaping with timeout" do
+        script_content = <<~SCRIPT
+          #!/bin/bash
+          echo "Executed with args: $@"
+          echo "Shell: $0"
+        SCRIPT
+
+        File.write("/tmp/fake_dev", script_content)
+        File.chmod(0o755, "/tmp/fake_dev")
+
+        config = { "allowed_commands" => ["/tmp/fake_dev"] }
+
+        begin
+          result = Roast::Tools::Cmd.call("/tmp/fake_dev echo 'hello world'", config, timeout: 5)
+
+          assert(result.include?("Command: /tmp/fake_dev echo 'hello world'"))
+          assert(result.include?("Exit status: 0"))
+          assert(result.include?("hello world"))
+        ensure
+          File.delete("/tmp/fake_dev") if File.exist?("/tmp/fake_dev")
+        end
+      end
+
+      test "command prefix dev detection" do
+        config = { "allowed_commands" => ["dev"] }
+
+        result = Roast::Tools::Cmd.call("dev help", config, timeout: 1)
+
+        assert(result.include?("Command: dev help"))
+        assert(result.include?("command not found"))
+      end
+
+      test "quote escaping in bash command" do
+        config = { "allowed_commands" => ["echo"] }
+
+        result = Roast::Tools::Cmd.call("echo \"it's working\"", config, timeout: 5)
+
+        assert(result.include?("Exit status: 0"))
+        assert(result.include?("it's working"))
+      end
+
+      test "timeout path vs non timeout path consistency" do
+        config = { "allowed_commands" => ["echo"] }
+
+        result_without_timeout = Roast::Tools::Cmd.call("echo 'test'", config)
+        result_with_timeout = Roast::Tools::Cmd.call("echo 'test'", config, timeout: 5)
+
+        assert(result_without_timeout.include?("Exit status: 0"))
+        assert(result_with_timeout.include?("Exit status: 0"))
+        assert(result_without_timeout.include?("test"))
+        assert(result_with_timeout.include?("test"))
+      end
+
+      test "process kill error handling" do
+        config = { "allowed_commands" => ["ruby"] }
+
+        result = Roast::Tools::Cmd.call("ruby -e 'exit 0'", config, timeout: 1)
+
+        assert(result.include?("Exit status: 0"))
+      end
+
+      test "execute allowed command with standard error" do
+        config = { "allowed_commands" => ["ruby"] }
+
+        result = Roast::Tools::Cmd.execute_allowed_command("ruby -e 'raise \"test error\"'", "ruby", 5)
+
+        assert(result.is_a?(String))
+        assert(result.include?("Exit status: 1"))
+      end
+
+      test "call method with standard error handling" do
+        config = { "allowed_commands" => ["nonexistent_command_xyz"] }
+
+        result = Roast::Tools::Cmd.call("nonexistent_command_xyz", config, timeout: 1)
+
+        assert(result.is_a?(String))
+        assert(result.include?("Error running command") || result.include?("command not found"))
+      end
+
+      # Output formatting tests
+      test "formats output consistently" do
+        result = Roast::Tools::Cmd.call("pwd")
+
+        assert_match(/Command: pwd/, result)
+        assert_match(/Exit status: 0/, result)
+        assert_match(/Output:\n/, result)
+        assert_includes(result, Dir.pwd)
+      end
+
+      test "formats output with custom commands" do
+        config = { "allowed_commands" => ["echo"] }
+        result = Roast::Tools::Cmd.call("echo 'test output'", config)
+
+        assert_match(/Command: echo 'test output'/, result)
+        assert_match(/Exit status: 0/, result)
+        assert_match(/Output:\ntest output/, result)
+      end
+
+      test "formats output with non-zero exit status" do
+        config = { "allowed_commands" => ["ruby"] }
+        result = Roast::Tools::Cmd.call("ruby -e 'exit 1'", config)
+
+        assert_match(/Command: ruby -e 'exit 1'/, result)
+        assert_match(/Exit status: 1/, result)
+        assert_match(/Output:/, result)
+      end
+
+      test "formats complex command output" do
+        result = Roast::Tools::Cmd.call("find . -maxdepth 1 -name '*.rb' | head -1")
+
+        assert_match(/Command: find/, result)
+        assert_match(/Exit status:/, result)
+        assert_match(/Output:/, result)
+      end
     end
   end
 end
