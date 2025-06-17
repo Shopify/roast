@@ -1,16 +1,16 @@
 ========== TEST RECOMMENDATIONS ==========
-<%- if response.recommendations.empty? -%>
+<%- if response['recommendations'].nil? || response['recommendations'].empty? -%>
 No recommendations found.
 <%- else -%>
-<%- response.recommendations.each_with_index do |rec, index| -%>
+<%- response['recommendations'].each_with_index do |rec, index| -%>
 Recommendation #<%= index + 1 %>:
-Description: <%= rec.description %>
-Impact: <%= rec.impact %>
-Priority: <%= rec.priority %>
+Description: <%= rec['description'] %>
+Impact: <%= rec['impact'] %>
+Priority: <%= rec['priority'] %>
 
 Code Suggestion:
 
-<%= rec.code_suggestion %>
+<%= rec['code_suggestion'] %>
 
 <%- end -%>
 <%- end -%>
