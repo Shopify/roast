@@ -38,10 +38,28 @@ require "zeitwerk"
 
 # Set up Zeitwerk autoloader
 loader = Zeitwerk::Loader.for_gem
+
+# Configure custom inflector for XDG acronym
+loader.inflector.inflect("xdg_migration" => "XDGMigration")
+
 loader.setup
 
 module Roast
   ROOT = File.expand_path("../..", __FILE__)
+
+  # https://specifications.freedesktop.org/basedir-spec/latest/
+  XDG_CONFIG_HOME = ENV.fetch("XDG_CONFIG_HOME", File.join(Dir.home, ".config"))
+  XDG_CACHE_HOME = ENV.fetch("XDG_CACHE_HOME", File.join(Dir.home, ".cache"))
+  XDG_DATA_HOME = ENV.fetch("XDG_DATA_HOME", File.join(Dir.home, ".local", "share"))
+
+  CONFIG_DIR = File.join(XDG_CONFIG_HOME, "roast")
+  CACHE_DIR = File.join(XDG_CACHE_HOME, "roast")
+  DATA_DIR = File.join(XDG_DATA_HOME, "roast")
+
+  GLOBAL_INITIALIZERS_DIR = File.join(CONFIG_DIR, "initializers")
+  FUNCTION_CACHE_DIR = File.join(CACHE_DIR, "function_calls")
+  SESSION_DATA_DIR = File.join(DATA_DIR, "sessions")
+  SESSION_DB_PATH = ENV.fetch("ROAST_SESSIONS_DB", File.join(DATA_DIR, "sessions.db"))
 
   class CLI < Thor
     desc "execute [WORKFLOW_CONFIGURATION_FILE] [FILES...]", "Run a configured workflow"
@@ -55,6 +73,9 @@ module Roast
 
     def execute(*paths)
       raise Thor::Error, "Workflow configuration file is required" if paths.empty?
+
+      # Check for and perform XDG migration if needed
+      Roast::XDGMigration.migrate_if_needed
 
       workflow_path, *files = paths
 
