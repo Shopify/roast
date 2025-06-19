@@ -24,8 +24,11 @@ module Roast
 
       def execute_step(name, exit_on_error: true, step_key: nil, **options)
         resource_type = @workflow.respond_to?(:resource) ? @workflow.resource&.type : nil
+        
+        # Get retry policy from step configuration
+        retry_policy = build_retry_policy_for_step(name)
 
-        @error_handler.with_error_handling(name, resource_type: resource_type) do
+        @error_handler.with_error_handling(name, resource_type: resource_type, retry_policy: retry_policy) do
           $stderr.puts "Executing: #{name} (Resource type: #{resource_type || "unknown"})"
 
           # Use step_key for loading if provided, otherwise use name
@@ -42,6 +45,23 @@ module Roast
 
           step_result
         end
+      end
+
+      private
+
+      def build_retry_policy_for_step(step_name)
+        # Get step-specific retry config
+        step_config = @workflow.workflow_configuration&.get_step_config(step_name)
+        step_retry_config = step_config["retry"] if step_config
+
+        # Get global retry config
+        global_retry_config = @workflow.workflow_configuration&.retry_config
+
+        # Step-specific config takes precedence over global config
+        retry_config = step_retry_config || global_retry_config
+        return nil unless retry_config
+
+        RetryPolicyFactory.build(retry_config)
       end
     end
   end

@@ -168,6 +168,13 @@ module Roast
           }
         end
 
+        # Extract retry configuration from the configuration
+        # @param config_hash [Hash] The configuration hash
+        # @return [Hash] The retry configuration or nil
+        def extract_retry_config(config_hash)
+          config_hash["retry"]
+        end
+
         private
 
         def validate_path!(workflow_path)

@@ -53,6 +53,20 @@ module Roast
 
       # Override chat_completion to add instrumentation
       def chat_completion(**kwargs)
+        # Check if retry is configured for API calls
+        api_retry_policy = build_api_retry_policy
+        
+        if api_retry_policy
+          retryable = Retryable.new(policy: api_retry_policy)
+          retryable.execute { chat_completion_with_instrumentation(**kwargs) }
+        else
+          chat_completion_with_instrumentation(**kwargs)
+        end
+      end
+
+      private
+
+      def chat_completion_with_instrumentation(**kwargs)
         start_time = Time.now
         step_model = kwargs[:model]
 
@@ -112,6 +126,30 @@ module Roast
         execution_time = Time.now - start_time
         log_and_raise_error(e, e.message, step_model || model, kwargs, execution_time)
       end
+
+      def build_api_retry_policy
+        return nil unless workflow_configuration&.retry_config
+        
+        # Check if there's a specific API retry config
+        api_config = workflow_configuration.retry_config["api"]
+        return nil unless api_config
+        
+        # Build retry policy with API-specific matchers
+        config = api_config.dup
+        config[:matcher] ||= {
+          type: "composite",
+          operator: "any",
+          matchers: [
+            { type: "rate_limit" },
+            { type: "http_status" },
+            { type: "error_message", pattern: /timeout|timed out/i }
+          ]
+        }
+        
+        RetryPolicyFactory.build(config)
+      end
+
+      public
 
       def with_model(model)
         previous_model = @model
