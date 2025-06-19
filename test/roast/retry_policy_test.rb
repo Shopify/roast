@@ -31,7 +31,7 @@ module Roast
         handlers: handlers,
         base_delay: 2,
         max_delay: 120,
-        jitter: true
+        jitter: true,
       )
 
       assert_equal @strategy, policy.strategy
@@ -63,20 +63,20 @@ module Roast
     test "delay_for delegates to strategy" do
       strategy = mock
       strategy.expects(:calculate).with(2, base_delay: 1, max_delay: 60).returns(4)
-      
+
       policy = RetryPolicy.new(strategy: strategy)
-      
+
       assert_equal 4, policy.delay_for(2)
     end
 
     test "delay_for adds jitter when enabled" do
       strategy = mock
       strategy.expects(:calculate).returns(10).at_least_once
-      
+
       policy = RetryPolicy.new(strategy: strategy, jitter: true)
-      
+
       delays = 10.times.map { policy.delay_for(1) }
-      
+
       # Verify jitter is applied - delays should vary
       assert delays.uniq.size > 1
       # Verify delays are within expected range (10 ± 10%)

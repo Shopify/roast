@@ -7,7 +7,7 @@ module Roast
     class ErrorMessageMatcherTest < ActiveSupport::TestCase
       test "matches string pattern" do
         matcher = ErrorMessageMatcher.new("timeout")
-        
+
         assert matcher.matches?(StandardError.new("Connection timeout"))
         assert matcher.matches?(StandardError.new("Request timeout occurred"))
         refute matcher.matches?(StandardError.new("Connection refused"))
@@ -15,7 +15,7 @@ module Roast
 
       test "matches regex pattern" do
         matcher = ErrorMessageMatcher.new(/timeout|rate limit/i)
-        
+
         assert matcher.matches?(StandardError.new("Connection timeout"))
         assert matcher.matches?(StandardError.new("Rate limit exceeded"))
         assert matcher.matches?(StandardError.new("TIMEOUT ERROR"))

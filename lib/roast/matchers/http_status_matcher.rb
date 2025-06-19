@@ -8,15 +8,16 @@ module Roast
       attr_reader :statuses
 
       def initialize(statuses = RETRYABLE_STATUSES)
+        super()
         @statuses = Array(statuses)
       end
 
       def matches?(error)
         return false unless error.respond_to?(:response)
-        
+
         response = error.response
-        return false unless response && response.respond_to?(:status)
-        
+        return false unless response&.respond_to?(:status)
+
         statuses.include?(response.status)
       end
     end

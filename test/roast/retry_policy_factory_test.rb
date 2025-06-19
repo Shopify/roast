@@ -6,7 +6,7 @@ module Roast
   class RetryPolicyFactoryTest < ActiveSupport::TestCase
     test "builds default policy when config is nil" do
       policy = RetryPolicyFactory.build(nil)
-      
+
       assert_kind_of RetryPolicy, policy
       assert_kind_of RetryStrategies::ExponentialBackoffStrategy, policy.strategy
       assert_equal 3, policy.max_attempts
@@ -19,7 +19,7 @@ module Roast
     test "builds policy with exponential strategy" do
       config = { strategy: "exponential", max_attempts: 5 }
       policy = RetryPolicyFactory.build(config)
-      
+
       assert_kind_of RetryStrategies::ExponentialBackoffStrategy, policy.strategy
       assert_equal 5, policy.max_attempts
     end
@@ -27,7 +27,7 @@ module Roast
     test "builds policy with linear strategy" do
       config = { strategy: "linear", base_delay: 2 }
       policy = RetryPolicyFactory.build(config)
-      
+
       assert_kind_of RetryStrategies::LinearBackoffStrategy, policy.strategy
       assert_equal 2, policy.base_delay
     end
@@ -35,14 +35,14 @@ module Roast
     test "builds policy with fixed strategy" do
       config = { strategy: "fixed", max_delay: 120 }
       policy = RetryPolicyFactory.build(config)
-      
+
       assert_kind_of RetryStrategies::FixedDelayStrategy, policy.strategy
       assert_equal 120, policy.max_delay
     end
 
     test "raises error for unknown strategy" do
       config = { strategy: "unknown" }
-      
+
       assert_raises(ArgumentError) do
         RetryPolicyFactory.build(config)
       end
@@ -53,12 +53,12 @@ module Roast
         strategy: "exponential",
         matcher: {
           type: "error_type",
-          errors: ["StandardError", "RuntimeError"]
-        }
+          errors: ["StandardError", "RuntimeError"],
+        },
       }
-      
+
       policy = RetryPolicyFactory.build(config)
-      
+
       assert_kind_of Matchers::ErrorTypeMatcher, policy.matcher
       assert policy.matcher.matches?(StandardError.new)
       assert policy.matcher.matches?(RuntimeError.new)
@@ -69,12 +69,12 @@ module Roast
         strategy: "exponential",
         matcher: {
           type: "error_message",
-          pattern: "timeout"
-        }
+          pattern: "timeout",
+        },
       }
-      
+
       policy = RetryPolicyFactory.build(config)
-      
+
       assert_kind_of Matchers::ErrorMessageMatcher, policy.matcher
       assert policy.matcher.matches?(StandardError.new("Connection timeout"))
     end
@@ -84,12 +84,12 @@ module Roast
         strategy: "exponential",
         matcher: {
           type: "http_status",
-          statuses: [429, 503]
-        }
+          statuses: [429, 503],
+        },
       }
-      
+
       policy = RetryPolicyFactory.build(config)
-      
+
       assert_kind_of Matchers::HttpStatusMatcher, policy.matcher
     end
 
@@ -97,12 +97,12 @@ module Roast
       config = {
         strategy: "exponential",
         matcher: {
-          type: "rate_limit"
-        }
+          type: "rate_limit",
+        },
       }
-      
+
       policy = RetryPolicyFactory.build(config)
-      
+
       assert_kind_of Matchers::RateLimitMatcher, policy.matcher
     end
 
@@ -114,13 +114,13 @@ module Roast
           operator: "all",
           matchers: [
             { type: "error_type", errors: ["StandardError"] },
-            { type: "error_message", pattern: "timeout" }
-          ]
-        }
+            { type: "error_message", pattern: "timeout" },
+          ],
+        },
       }
-      
+
       policy = RetryPolicyFactory.build(config)
-      
+
       assert_kind_of Matchers::CompositeMatcher, policy.matcher
     end
 
@@ -129,12 +129,12 @@ module Roast
         strategy: "exponential",
         handlers: [
           { type: "logging" },
-          { type: "instrumentation", namespace: "custom.retry" }
-        ]
+          { type: "instrumentation", namespace: "custom.retry" },
+        ],
       }
-      
+
       policy = RetryPolicyFactory.build(config)
-      
+
       assert_equal 2, policy.handlers.size
       assert_kind_of Handlers::LoggingHandler, policy.handlers[0]
       assert_kind_of Handlers::InstrumentationHandler, policy.handlers[1]
@@ -143,9 +143,9 @@ module Roast
     test "raises error for unknown handler type" do
       config = {
         strategy: "exponential",
-        handlers: [{ type: "unknown" }]
+        handlers: [{ type: "unknown" }],
       }
-      
+
       assert_raises(ArgumentError) do
         RetryPolicyFactory.build(config)
       end

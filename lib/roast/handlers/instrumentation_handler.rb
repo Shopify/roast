@@ -6,6 +6,7 @@ module Roast
       attr_reader :namespace
 
       def initialize(namespace: "roast.retry")
+        super()
         @namespace = namespace
       end
 
@@ -17,7 +18,7 @@ module Roast
         ActiveSupport::Notifications.instrument("#{namespace}.retry", {
           attempt: attempt,
           error_class: error.class.name,
-          error_message: error.message
+          error_message: error.message,
         })
       end
 
@@ -29,7 +30,7 @@ module Roast
         ActiveSupport::Notifications.instrument("#{namespace}.failure", {
           attempt: attempt,
           error_class: error.class.name,
-          error_message: error.message
+          error_message: error.message,
         })
       end
     end

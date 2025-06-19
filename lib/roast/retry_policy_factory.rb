@@ -17,7 +17,7 @@ module Roast
           handlers: handlers,
           base_delay: config[:base_delay] || 1,
           max_delay: config[:max_delay] || 60,
-          jitter: config[:jitter] || false
+          jitter: config[:jitter] || false,
         )
       end
 
@@ -30,8 +30,8 @@ module Roast
           jitter: true,
           handlers: [
             Handlers::LoggingHandler.new,
-            Handlers::InstrumentationHandler.new
-          ]
+            Handlers::InstrumentationHandler.new,
+          ],
         )
       end
 
@@ -51,7 +51,7 @@ module Roast
       end
 
       def build_matcher(matcher_config)
-        return nil unless matcher_config
+        return unless matcher_config
 
         case matcher_config[:type]
         when "error_type"
@@ -83,7 +83,7 @@ module Roast
           when "exponential_backoff"
             Handlers::ExponentialBackoffHandler.new(
               base_delay: handler_config[:base_delay],
-              max_delay: handler_config[:max_delay]
+              max_delay: handler_config[:max_delay],
             )
           else
             raise ArgumentError, "Unknown handler type: #{handler_config[:type]}"

@@ -6,6 +6,7 @@ module Roast
       attr_reader :matchers, :operator
 
       def initialize(matchers, operator: :any)
+        super()
         @matchers = Array(matchers)
         @operator = operator
       end

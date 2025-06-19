@@ -55,7 +55,7 @@ module Roast
       def chat_completion(**kwargs)
         # Check if retry is configured for API calls
         api_retry_policy = build_api_retry_policy
-        
+
         if api_retry_policy
           retryable = Retryable.new(policy: api_retry_policy)
           retryable.execute { chat_completion_with_instrumentation(**kwargs) }
@@ -128,12 +128,12 @@ module Roast
       end
 
       def build_api_retry_policy
-        return nil unless workflow_configuration&.retry_config
-        
+        return unless workflow_configuration&.retry_config
+
         # Check if there's a specific API retry config
         api_config = workflow_configuration.retry_config["api"]
-        return nil unless api_config
-        
+        return unless api_config
+
         # Build retry policy with API-specific matchers
         config = api_config.dup
         config[:matcher] ||= {
@@ -142,10 +142,10 @@ module Roast
           matchers: [
             { type: "rate_limit" },
             { type: "http_status" },
-            { type: "error_message", pattern: /timeout|timed out/i }
-          ]
+            { type: "error_message", pattern: /timeout|timed out/i },
+          ],
         }
-        
+
         RetryPolicyFactory.build(config)
       end
 

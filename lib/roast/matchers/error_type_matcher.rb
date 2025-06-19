@@ -6,6 +6,7 @@ module Roast
       attr_reader :error_types
 
       def initialize(error_types)
+        super()
         @error_types = Array(error_types)
       end
 

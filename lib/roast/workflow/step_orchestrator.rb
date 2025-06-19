@@ -24,7 +24,7 @@ module Roast
 
       def execute_step(name, exit_on_error: true, step_key: nil, **options)
         resource_type = @workflow.respond_to?(:resource) ? @workflow.resource&.type : nil
-        
+
         # Get retry policy from step configuration
         retry_policy = build_retry_policy_for_step(name)
 
@@ -59,7 +59,7 @@ module Roast
 
         # Step-specific config takes precedence over global config
         retry_config = step_retry_config || global_retry_config
-        return nil unless retry_config
+        return unless retry_config
 
         RetryPolicyFactory.build(retry_config)
       end

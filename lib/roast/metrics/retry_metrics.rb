@@ -33,12 +33,14 @@ module Roast
 
       def average_duration
         return 0 if durations.empty?
+
         durations.sum / durations.size
       end
 
       def success_rate
         total = successes + failures
         return 0 if total == 0
+
         (successes.to_f / total) * 100
       end
 
@@ -49,7 +51,7 @@ module Roast
           successes: successes,
           failures: failures,
           average_duration: average_duration,
-          success_rate: success_rate
+          success_rate: success_rate,
         }
       end
     end

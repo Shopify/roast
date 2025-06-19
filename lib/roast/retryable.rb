@@ -16,7 +16,7 @@ module Roast
       begin
         attempt += 1
         notify_before_attempt(attempt)
-        
+
         result = block.call
         notify_success(attempt, Time.now - begin_time)
         result

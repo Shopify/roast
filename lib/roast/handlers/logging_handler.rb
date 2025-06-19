@@ -6,6 +6,7 @@ module Roast
       attr_reader :logger
 
       def initialize(logger: nil)
+        super()
         @logger = logger || default_logger
       end
 

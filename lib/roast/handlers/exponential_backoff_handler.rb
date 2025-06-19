@@ -6,6 +6,7 @@ module Roast
       attr_reader :logger, :base_delay, :max_delay
 
       def initialize(logger: nil, base_delay: 1, max_delay: 60)
+        super()
         @logger = logger || Rails.logger
         @base_delay = base_delay
         @max_delay = max_delay
@@ -19,7 +20,7 @@ module Roast
       private
 
       def calculate_delay(attempt)
-        delay = base_delay * (2 ** (attempt - 1))
+        delay = base_delay * (2**(attempt - 1))
         [delay, max_delay].min
       end
     end

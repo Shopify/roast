@@ -6,9 +6,11 @@ module Roast
       attr_reader :pattern
 
       def initialize(pattern)
+        super()
         unless pattern.is_a?(String) || pattern.is_a?(Regexp)
           raise ArgumentError, "Pattern must be a String or Regexp"
         end
+
         @pattern = pattern
       end
 

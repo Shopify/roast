@@ -28,12 +28,12 @@ module Roast
       def log_retry_metrics(step_name, metrics)
         ActiveSupport::Notifications.instrument("roast.step.retry_metrics", {
           step_name: step_name,
-          metrics: metrics.to_h
+          metrics: metrics.to_h,
         })
 
         if metrics.successes > 0
           Roast::Helpers::Logger.info(
-            "Step '#{step_name}' succeeded after #{metrics.attempts} attempts"
+            "Step '#{step_name}' succeeded after #{metrics.attempts} attempts",
           )
         end
       end
