@@ -17,6 +17,12 @@ module Roast
         @workflow.stubs(:tools).returns(nil)
         @workflow.stubs(:storage_type).returns(nil)
 
+        # Add workflow_configuration mock
+        @workflow_config = mock("workflow_configuration")
+        @workflow_config.stubs(:get_step_config).returns({})
+        @workflow_config.stubs(:retry_config).returns(nil)
+        @workflow.stubs(:workflow_configuration).returns(@workflow_config)
+
         @config_hash = {
           "analyze the code" => {
             "model" => "gpt-4o",

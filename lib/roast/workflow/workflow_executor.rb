@@ -62,7 +62,7 @@ module Roast
         )
 
         # Dependencies with defaults
-        @error_handler = error_handler || ErrorHandler.new
+        @error_handler = error_handler || RetryableErrorHandler.new
         @step_loader = step_loader || StepLoader.new(workflow, config_hash, context_path, phase: phase)
         @command_executor = command_executor || CommandExecutor.new(logger: @error_handler)
         @interpolator = interpolator || Interpolator.new(workflow, logger: @error_handler)
