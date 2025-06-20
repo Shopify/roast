@@ -24,8 +24,9 @@ module Roast
 
       def execute_step(name, exit_on_error: true, step_key: nil, **options)
         resource_type = @workflow.respond_to?(:resource) ? @workflow.resource&.type : nil
+        step_config = @workflow.config.get_step_config(name)
 
-        @error_handler.with_error_handling(name, resource_type: resource_type) do
+        @error_handler.with_error_handling(name, resource_type: resource_type, step_config: step_config) do
           $stderr.puts "Executing: #{name} (Resource type: #{resource_type || "unknown"})"
 
           # Use step_key for loading if provided, otherwise use name

@@ -24,6 +24,12 @@ module FixtureHelpers
   def fixture_file_path(filename)
     File.expand_path(File.join(fixtures_dir, filename))
   end
+
+  def mock_workflow_config
+    config = mock("config")
+    config.stubs(:get_step_config).returns({})
+    config
+  end
 end
 
 Minitest::Test.include(FixtureHelpers)

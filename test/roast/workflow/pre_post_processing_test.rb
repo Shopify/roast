@@ -48,7 +48,7 @@ module Roast
         File.write(File.join(step_dir, "prompt.md"), "Setup the environment")
 
         # Create a mock workflow
-        workflow = BaseWorkflow.new(nil, name: "test", context_path: @temp_dir)
+        workflow = BaseWorkflow.new(nil, name: "test", context_path: @temp_dir, workflow_configuration: mock_workflow_config)
         config_hash = { "name" => "test" }
         loader = StepLoader.new(workflow, config_hash, @temp_dir, phase: :pre_processing)
 
@@ -65,7 +65,7 @@ module Roast
         File.write(File.join(step_dir, "prompt.md"), "Generate report")
 
         # Create a mock workflow
-        workflow = BaseWorkflow.new(nil, name: "test", context_path: @temp_dir)
+        workflow = BaseWorkflow.new(nil, name: "test", context_path: @temp_dir, workflow_configuration: mock_workflow_config)
         config_hash = { "name" => "test" }
         loader = StepLoader.new(workflow, config_hash, @temp_dir, phase: :post_processing)
 
@@ -169,7 +169,7 @@ module Roast
       end
 
       test "workflow executor creates correct phase-specific loader" do
-        workflow = BaseWorkflow.new(nil, name: "test", context_path: @temp_dir)
+        workflow = BaseWorkflow.new(nil, name: "test", context_path: @temp_dir, workflow_configuration: mock_workflow_config)
         config_hash = { "name" => "test" }
 
         # Test default phase
@@ -321,7 +321,7 @@ module Roast
         YAML
 
         configuration = Configuration.new(@workflow_path)
-        loader = StepLoader.new(BaseWorkflow.new(nil, name: "test", context_path: @temp_dir), configuration.config_hash, @temp_dir)
+        loader = StepLoader.new(BaseWorkflow.new(nil, name: "test", context_path: @temp_dir, workflow_configuration: mock_workflow_config), configuration.config_hash, @temp_dir)
         step = loader.load("rel_step")
         assert_instance_of BaseStep, step
         assert_equal "rel_step", step.name
@@ -345,7 +345,7 @@ module Roast
         YAML
 
         configuration = Configuration.new(@workflow_path)
-        loader = StepLoader.new(BaseWorkflow.new(nil, name: "test", context_path: @temp_dir), configuration.config_hash, @temp_dir)
+        loader = StepLoader.new(BaseWorkflow.new(nil, name: "test", context_path: @temp_dir, workflow_configuration: mock_workflow_config), configuration.config_hash, @temp_dir)
         step = loader.load("abs_step")
         assert_instance_of BaseStep, step
         assert_equal "abs_step", step.name
@@ -376,7 +376,7 @@ module Roast
         YAML
 
         configuration = Configuration.new(@workflow_path)
-        loader = StepLoader.new(BaseWorkflow.new(nil, name: "test", context_path: @temp_dir), configuration.config_hash, @temp_dir)
+        loader = StepLoader.new(BaseWorkflow.new(nil, name: "test", context_path: @temp_dir, workflow_configuration: mock_workflow_config), configuration.config_hash, @temp_dir)
         step_a = loader.load("step_a")
         step_b = loader.load("step_b")
         assert_instance_of BaseStep, step_a

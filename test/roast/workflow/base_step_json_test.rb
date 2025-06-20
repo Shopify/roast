@@ -6,7 +6,7 @@ module Roast
   module Workflow
     class BaseStepJsonTest < ActiveSupport::TestCase
       setup do
-        @workflow = BaseWorkflow.new(nil, name: "test_workflow")
+        @workflow = BaseWorkflow.new(nil, name: "test_workflow", workflow_configuration: mock_workflow_config)
         @workflow.output = {}
       end
 

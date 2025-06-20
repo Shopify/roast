@@ -22,7 +22,7 @@ class RoastWorkflowErrorHandlerTest < ActiveSupport::TestCase
     resource_type = "file"
     result = "success"
 
-    actual_result = @handler.with_error_handling(step_name, resource_type: resource_type) do
+    actual_result = @handler.with_error_handling(step_name, resource_type: resource_type, step_config: nil) do
       result
     end
 
@@ -46,7 +46,7 @@ class RoastWorkflowErrorHandlerTest < ActiveSupport::TestCase
     error = Roast::Workflow::WorkflowExecutor::StepNotFoundError.new("Step not found", step_name: step_name)
 
     assert_raises(Roast::Workflow::WorkflowExecutor::StepNotFoundError) do
-      @handler.with_error_handling(step_name) do
+      @handler.with_error_handling(step_name, step_config: nil) do
         raise error
       end
     end
@@ -64,7 +64,7 @@ class RoastWorkflowErrorHandlerTest < ActiveSupport::TestCase
     original_error = StandardError.new("Something went wrong")
 
     error = assert_raises(Roast::Workflow::WorkflowExecutor::StepExecutionError) do
-      @handler.with_error_handling(step_name) do
+      @handler.with_error_handling(step_name, step_config: nil) do
         raise original_error
       end
     end

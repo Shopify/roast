@@ -8,7 +8,9 @@ class RoastWorkflowWorkflowExecutorTest < ActiveSupport::TestCase
     @output = {}
     @context_manager = mock("context_manager")
     @context_manager.stubs(:total_tokens).returns(0)
-    @workflow.stubs(output: @output, pause_step_name: nil, verbose: false, storage_type: nil, context_manager: @context_manager)
+    @config = mock("config")
+    @config.stubs(:get_step_config).returns({})
+    @workflow.stubs(output: @output, pause_step_name: nil, verbose: false, storage_type: nil, context_manager: @context_manager, config: @config)
     @config_hash = { "step1" => { "model" => "test-model" } }
     @context_path = "/tmp/test"
     @executor = Roast::Workflow::WorkflowExecutor.new(@workflow, @config_hash, @context_path)

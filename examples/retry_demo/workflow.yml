@@ -1,0 +1,49 @@
+name: retry_demo
+description: Demonstrates various retry configuration options
+
+steps:
+  - simple_retry: "Simple retry with default exponential backoff"
+  - exponential_retry: "Custom exponential backoff configuration"
+  - linear_retry: "Linear backoff example"
+  - constant_retry: "Constant delay between retries"
+  - no_retry: "Step that should not be retried"
+  - non_idempotent: "Non-idempotent operation example"
+
+# Simple retry - just specify the number of attempts
+simple_retry:
+  retry: 3
+
+# Detailed exponential backoff configuration
+exponential_retry:
+  retry:
+    strategy: exponential
+    max_attempts: 5
+    base_delay: 1.0
+    max_delay: 30.0
+    multiplier: 2.0
+    jitter: true
+
+# Linear backoff - delays increase linearly
+linear_retry:
+  retry:
+    strategy: linear
+    max_attempts: 4
+    base_delay: 2.0
+    increment: 1.5
+    max_delay: 10.0
+
+# Constant delay - same delay between all retries
+constant_retry:
+  retry:
+    strategy: constant
+    max_attempts: 3
+    base_delay: 5.0
+
+# Explicitly disable retries
+no_retry:
+  retry: false
+
+# Non-idempotent operations should not be retried
+non_idempotent:
+  idempotent: false
+  retry: 3  # This will be ignored due to idempotent: false

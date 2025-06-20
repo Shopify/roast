@@ -4,11 +4,12 @@ module Roast
   module Workflow
     # Handles error logging and instrumentation for workflow execution
     class ErrorHandler
-      def initialize
+      def initialize(retry_coordinator: nil)
         # Use the Roast logger singleton
+        @retry_coordinator = retry_coordinator || Roast::Retry::RetryCoordinator.new
       end
 
-      def with_error_handling(step_name, resource_type: nil)
+      def with_error_handling(step_name, resource_type: nil, step_config: nil, &block)
         start_time = Time.now
 
         ActiveSupport::Notifications.instrument("roast.step.start", {
@@ -16,7 +17,11 @@ module Roast
           resource_type: resource_type,
         })
 
-        result = yield
+        result = if step_config && @retry_coordinator
+          @retry_coordinator.execute_with_retry(step_config, &block)
+        else
+          yield
+        end
 
         execution_time = Time.now - start_time
 

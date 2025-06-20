@@ -6,7 +6,7 @@ module Roast
   module Workflow
     class BaseWorkflowDotNotationTest < ActiveSupport::TestCase
       def setup
-        @workflow = BaseWorkflow.new
+        @workflow = BaseWorkflow.new(nil, workflow_configuration: mock_workflow_config)
       end
 
       test "allows direct access to output values via method_missing" do

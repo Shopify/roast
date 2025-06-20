@@ -6,18 +6,37 @@ module Roast
   module Workflow
     class InlinePromptConfigurationTest < ActiveSupport::TestCase
       def setup
-        @workflow = mock("workflow")
-        @workflow.stubs(:output).returns({})
-        @transcript = []
-        @workflow.stubs(:transcript).returns(@transcript)
-        @workflow.stubs(:resource).returns(nil)
-        @workflow.stubs(:append_to_final_output)
-        @workflow.stubs(:openai?).returns(false)
-        @workflow.stubs(:pause_step_name).returns(nil)
-        @workflow.stubs(:tools).returns(nil)
-        @workflow.stubs(:storage_type).returns(nil)
+        @context_path = "/tmp/test"
+      end
 
-        @config_hash = {
+      private
+
+      def create_workflow_mock(config_hash)
+        workflow = mock("workflow")
+        workflow.stubs(:output).returns({})
+        workflow.stubs(:transcript).returns([])
+        workflow.stubs(:resource).returns(nil)
+        workflow.stubs(:append_to_final_output)
+        workflow.stubs(:openai?).returns(false)
+        workflow.stubs(:pause_step_name).returns(nil)
+        workflow.stubs(:tools).returns(nil)
+        workflow.stubs(:storage_type).returns(nil)
+
+        # Mock the config object
+        config = mock("config")
+        config_hash.each do |key, value|
+          if key != "model" && value.is_a?(Hash) # Step-specific config
+            config.stubs(:get_step_config).with(key).returns(value)
+          end
+        end
+        config.stubs(:get_step_config).with(anything).returns({})
+        workflow.stubs(:config).returns(config)
+
+        workflow
+      end
+
+      test "inline prompt accepts configuration from config hash" do
+        config_hash = {
           "analyze the code" => {
             "model" => "gpt-4o",
             "print_response" => true,
@@ -26,13 +45,11 @@ module Roast
           },
         }
 
-        @context_path = "/tmp/test"
-        @executor = WorkflowExecutor.new(@workflow, @config_hash, @context_path)
-      end
+        workflow = create_workflow_mock(config_hash)
+        executor = WorkflowExecutor.new(workflow, config_hash, @context_path)
 
-      test "inline prompt accepts configuration from config hash" do
         # The inline prompt should receive the configuration
-        @workflow.expects(:chat_completion).with(
+        workflow.expects(:chat_completion).with(
           openai: false,
           model: "gpt-4o",
           json: true,
@@ -40,18 +57,19 @@ module Roast
           available_tools: nil,
         ).returns({ "result" => "Test response" })
 
-        result = @executor.execute_step("analyze the code")
+        result = executor.execute_step("analyze the code")
         assert_equal({ "result" => "Test response" }, result)
       end
 
       test "inline prompt uses defaults when no configuration provided" do
         # Test with no configuration
-        executor = WorkflowExecutor.new(@workflow, {}, @context_path)
+        workflow = create_workflow_mock({})
+        executor = WorkflowExecutor.new(workflow, {}, @context_path)
 
         # Now expects loop: false due to new BaseStep behavior
-        @workflow.expects(:chat_completion).with(
+        workflow.expects(:chat_completion).with(
           openai: false,
-          model: "gpt-4o-mini", # Default model
+          model: "gpt-4o-mini", # Default model from StepLoader
           json: false,
           params: {},
           available_tools: nil,
@@ -65,10 +83,11 @@ module Roast
         config_with_global_model = {
           "model" => "claude-3-opus",
         }
-        executor = WorkflowExecutor.new(@workflow, config_with_global_model, @context_path)
+        workflow = create_workflow_mock(config_with_global_model)
+        executor = WorkflowExecutor.new(workflow, config_with_global_model, @context_path)
 
         # Now expects loop: false due to new BaseStep behavior
-        @workflow.expects(:chat_completion).with(
+        workflow.expects(:chat_completion).with(
           openai: false,
           model: "claude-3-opus",
           json: false,
@@ -87,9 +106,10 @@ module Roast
             "model" => "step-specific-model",
           },
         }
-        executor = WorkflowExecutor.new(@workflow, config_with_both, @context_path)
+        workflow = create_workflow_mock(config_with_both)
+        executor = WorkflowExecutor.new(workflow, config_with_both, @context_path)
 
-        @workflow.expects(:chat_completion).with(
+        workflow.expects(:chat_completion).with(
           openai: false,
           model: "step-specific-model", # Step-specific overrides global
           json: false,

@@ -8,7 +8,11 @@ module Roast
       include FixtureHelpers
 
       def setup
-        @workflow = BaseWorkflow.new(nil, name: "test_workflow")
+        # Create a mock configuration
+        @config = mock("config")
+        @config.stubs(:get_step_config).returns({})
+
+        @workflow = BaseWorkflow.new(nil, name: "test_workflow", workflow_configuration: @config)
         @workflow.output = {}
         @context_path = File.expand_path("../../fixtures/steps/iteration_test", __dir__)
 

@@ -26,6 +26,9 @@ module Roast
       delegate :output, :output=, :append_to_final_output, :final_output, to: :output_manager
       delegate_missing_to :output
 
+      # Alias for backward compatibility
+      alias_method :config, :workflow_configuration
+
       def initialize(file = nil, name: nil, context_path: nil, resource: nil, session_name: nil, workflow_configuration: nil, pre_processing_data: nil)
         @file = file
         @name = name || self.class.name.underscore.split("/").last

@@ -12,6 +12,11 @@ module Roast
         @error_handler = mock("error_handler")
         @workflow_executor = mock("workflow_executor")
 
+        # Mock the config object
+        @config = mock("config")
+        @config.stubs(:get_step_config).returns({})
+        @workflow.stubs(:config).returns(@config)
+
         @orchestrator = StepOrchestrator.new(
           @workflow,
           @step_loader,
@@ -36,7 +41,7 @@ module Roast
 
         @state_manager.expects(:save_state).with(step_name, step_result)
 
-        @error_handler.expects(:with_error_handling).with(step_name, resource_type: "file").yields.returns(step_result)
+        @error_handler.expects(:with_error_handling).with(step_name, resource_type: "file", step_config: {}).yields.returns(step_result)
 
         result = @orchestrator.execute_step(step_name)
         assert_equal(step_result, result)
@@ -55,7 +60,7 @@ module Roast
 
         @state_manager.expects(:save_state).with(step_name, step_result)
 
-        @error_handler.expects(:with_error_handling).with(step_name, resource_type: nil).yields.returns(step_result)
+        @error_handler.expects(:with_error_handling).with(step_name, resource_type: nil, step_config: {}).yields.returns(step_result)
 
         result = @orchestrator.execute_step(step_name)
         assert_equal(step_result, result)
@@ -74,7 +79,7 @@ module Roast
         step_object.expects(:call).returns(step_result)
 
         @state_manager.expects(:save_state).with(step_name, step_result)
-        @error_handler.expects(:with_error_handling).yields.returns("result")
+        @error_handler.expects(:with_error_handling).with(step_name, resource_type: nil, step_config: {}).yields.returns(step_result)
 
         @orchestrator.execute_step(step_name)
         assert_equal(step_result, output_hash[step_name])
@@ -91,7 +96,7 @@ module Roast
         step_object.expects(:call).returns("result")
 
         @state_manager.expects(:save_state)
-        @error_handler.expects(:with_error_handling).yields.returns("result")
+        @error_handler.expects(:with_error_handling).with(step_name, resource_type: nil, step_config: {}).yields.returns("result")
 
         @orchestrator.execute_step(step_name, exit_on_error: false)
       end
@@ -107,7 +112,7 @@ module Roast
         step_object.expects(:call).returns("result")
 
         @state_manager.expects(:save_state)
-        @error_handler.expects(:with_error_handling).yields.returns("result")
+        @error_handler.expects(:with_error_handling).with(step_name, resource_type: nil, step_config: {}).yields.returns("result")
 
         # Capture stderr output
         original_stderr = $stderr
@@ -134,7 +139,7 @@ module Roast
         step_object.expects(:call).returns(step_result)
 
         @state_manager.expects(:save_state).with(step_name, step_result)
-        @error_handler.expects(:with_error_handling).with(step_name, resource_type: nil).yields.returns(step_result)
+        @error_handler.expects(:with_error_handling).with(step_name, resource_type: nil, step_config: {}).yields.returns(step_result)
 
         result = @orchestrator.execute_step(step_name, step_key: step_key)
         assert_equal(step_result, result)

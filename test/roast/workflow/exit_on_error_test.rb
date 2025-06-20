@@ -8,7 +8,7 @@ module Roast
       include FixtureHelpers
 
       def setup
-        @workflow = BaseWorkflow.new(nil, name: "test_workflow")
+        @workflow = BaseWorkflow.new(nil, name: "test_workflow", workflow_configuration: mock_workflow_config)
         @workflow.output = {}
         @context_path = File.expand_path("../../fixtures/steps", __dir__)
         @config_hash = {}

@@ -6,7 +6,7 @@ module Roast
   module Workflow
     class JsonReplayTest < ActiveSupport::TestCase
       setup do
-        @workflow = BaseWorkflow.new(nil, name: "test_workflow")
+        @workflow = BaseWorkflow.new(nil, name: "test_workflow", workflow_configuration: mock_workflow_config)
         @workflow.session_name = "test_session"
         @workflow.storage_type = "file" # Force file storage for this test
         @state_repository = StateRepositoryFactory.create("file")
@@ -36,7 +36,7 @@ module Roast
         @state_manager.save_state(step2_name, "processed")
 
         # Create a new workflow instance to simulate fresh start for replay
-        new_workflow = BaseWorkflow.new(nil, name: "test_workflow")
+        new_workflow = BaseWorkflow.new(nil, name: "test_workflow", workflow_configuration: mock_workflow_config)
         new_workflow.session_name = "test_session"
         new_workflow.output = {}
 
@@ -80,7 +80,7 @@ module Roast
         @state_manager.save_state(step2_name, "analysis complete")
 
         # Create new workflow to simulate fresh start
-        new_workflow = BaseWorkflow.new(nil, name: "test_workflow")
+        new_workflow = BaseWorkflow.new(nil, name: "test_workflow", workflow_configuration: mock_workflow_config)
         new_workflow.session_name = "test_session"
         new_workflow.output = {}
 
