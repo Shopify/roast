@@ -54,10 +54,12 @@ module Roast
         # Set the variable in the workflow's context
         workflow.instance_variable_set("@#{@variable_name}", value)
 
-        # Define a getter method for the variable
+        # Define a getter method for the variable if it doesn't exist
         var_name = @variable_name.to_sym
-        workflow.singleton_class.class_eval do
-          attr_reader(var_name)
+        unless workflow.respond_to?(var_name)
+          workflow.singleton_class.class_eval do
+            attr_reader(var_name)
+          end
         end
 
         # Make the variable accessible in the output hash

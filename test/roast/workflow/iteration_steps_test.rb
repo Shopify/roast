@@ -138,25 +138,10 @@ module Roast
       end
 
       def test_bash_command_input
-        # Mock execute_command to return predictable values
-        original_method = @iteration_step.method(:execute_command)
-
-        # Replace with our mock
-        @iteration_step.define_singleton_method(:execute_command) do |command, coerce_to|
-          if command.include?("exit 0")
-            coerce_to == :boolean ? true : "Success"
-          elsif command.include?("exit 1")
-            coerce_to == :boolean ? false : "Failed"
-          elsif command.include?("echo") && command.include?("line")
-            if coerce_to == :iterable
-              ["line1", "line2", "line3"]
-            else
-              "line1\nline2\nline3"
-            end
-          else
-            "Unknown command"
-          end
-        end
+        # Mock execute_command to return predictable values without redefinition warnings
+        @iteration_step.stubs(:execute_command).with("exit 0", :boolean).returns(true)
+        @iteration_step.stubs(:execute_command).with("exit 1", :boolean).returns(false)
+        @iteration_step.stubs(:execute_command).with("echo 'line1\nline2\nline3'", :iterable).returns(["line1", "line2", "line3"])
 
         # Test bash command with boolean coercion (exitcode 0 = true)
         result = @iteration_step.test_input("$(exit 0)", @workflow, coerce_to: :boolean)
@@ -169,26 +154,13 @@ module Roast
         # Test bash command with iterable output
         result = @iteration_step.test_input("$(echo 'line1\nline2\nline3')", @workflow, coerce_to: :iterable)
         assert_equal(["line1", "line2", "line3"], result)
-
-        # Restore original method
-        @iteration_step.define_singleton_method(:execute_command, original_method)
       end
 
       def test_step_handling
         # For step handling, we'll mock the execute_step_by_name method
         # since it's hard to set up actual steps in tests
-        original_method = @iteration_step.method(:execute_step_by_name)
-
-        # Replace with our mock implementation that returns predictable values
-        @iteration_step.define_singleton_method(:execute_step_by_name) do |step_name, _context|
-          if step_name == "test_boolean_step"
-            true
-          elsif step_name == "test_iterable_step"
-            [4, 5, 6]
-          else
-            "Unknown step: #{step_name}"
-          end
-        end
+        @iteration_step.stubs(:execute_step_by_name).with("test_boolean_step", @workflow).returns(true)
+        @iteration_step.stubs(:execute_step_by_name).with("test_iterable_step", @workflow).returns([4, 5, 6])
 
         # Test step name with boolean coercion
         result = @iteration_step.test_input("test_boolean_step", @workflow, coerce_to: :boolean)
@@ -197,21 +169,15 @@ module Roast
         # Test step name with iterable coercion
         result = @iteration_step.test_input("test_iterable_step", @workflow, coerce_to: :iterable)
         assert_equal([4, 5, 6], result)
-
-        # Restore original method
-        @iteration_step.define_singleton_method(:execute_step_by_name, original_method)
       end
 
       def test_direct_value_input
-        # For direct value input, we'll mock the process_iteration_input method
+        # For direct value input, we'll mock the process_step_or_prompt method
         # to bypass the step execution
-        original_method = @iteration_step.method(:process_step_or_prompt)
-
-        # Replace with our mock that returns the input directly
-        @iteration_step.define_singleton_method(:process_step_or_prompt) do |input, _context, coerce_to|
-          # Just coerce the value directly
-          coerce_result(input, coerce_to)
-        end
+        @iteration_step.stubs(:process_step_or_prompt).with(true, @workflow, :boolean).returns(true)
+        @iteration_step.stubs(:process_step_or_prompt).with(nil, @workflow, :boolean).returns(false)
+        @iteration_step.stubs(:process_step_or_prompt).with([1, 2], @workflow, :iterable).returns([1, 2])
+        @iteration_step.stubs(:process_step_or_prompt).with("test", @workflow, :iterable).returns(["test"])
 
         # Test direct values with boolean coercion
         assert_equal(true, @iteration_step.test_input(true, @workflow, coerce_to: :boolean))
@@ -221,9 +187,6 @@ module Roast
         assert_equal([1, 2], @iteration_step.test_input([1, 2], @workflow, coerce_to: :iterable))
         # With a string value, it should be split into lines
         assert_equal(["test"], @iteration_step.test_input("test", @workflow, coerce_to: :iterable))
-
-        # Restore original method
-        @iteration_step.define_singleton_method(:process_step_or_prompt, original_method)
       end
 
       def test_llm_boolean_coercion

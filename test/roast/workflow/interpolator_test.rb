@@ -62,12 +62,7 @@ module Roast
       def test_logs_error_for_failed_interpolation
         logger = mock("Logger")
         interpolator = Interpolator.new(@context, logger: logger)
-
-        logger.expects(:error) do |msg|
-          msg.include?("Error interpolating {{unknown}}:") &&
-            msg.include?("undefined local variable or method") &&
-            msg.include?("This variable is not defined in the workflow context.")
-        end
+        logger.expects(:error).with(includes("Error interpolating {{unknown}}:", "undefined local variable or method", "This variable is not defined in the workflow context."))
 
         interpolator.interpolate("{{unknown}}")
       end

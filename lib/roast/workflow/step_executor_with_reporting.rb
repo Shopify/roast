@@ -11,12 +11,12 @@ module Roast
         @name_extractor = StepNameExtractor.new
       end
 
-      def execute(step, options = {})
+      def execute(step, **options)
         # Track tokens before execution
         tokens_before = @context.workflow.context_manager&.total_tokens || 0
 
         # Execute the step
-        result = @base_executor.execute(step, options)
+        result = @base_executor.execute(step, **options)
 
         # Report token consumption after successful execution
         tokens_after = @context.workflow.context_manager&.total_tokens || 0

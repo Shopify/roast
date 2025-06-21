@@ -20,12 +20,11 @@ module Roast
 
       test "delegates execution to base executor" do
         step = "my_step"
-        options = { is_last_step: true }
 
-        @base_executor.expects(:execute).with(step, options).returns("result")
+        @base_executor.expects(:execute).with(step, is_last_step: true).returns("result")
         @context_manager.stubs(:total_tokens).returns(100, 150)
 
-        result = @executor.execute(step, options)
+        result = @executor.execute(step, is_last_step: true)
 
         assert_equal "result", result
       end
@@ -34,7 +33,7 @@ module Roast
         @base_executor.stubs(:execute).returns("result")
         @context_manager.stubs(:total_tokens).returns(100, 250)
 
-        @executor.execute("test_step", {})
+        @executor.execute("test_step")
 
         assert_equal "✓ Complete: test_step (consumed 150 tokens, total 250)\n\n\n", @output.string
       end
@@ -43,7 +42,7 @@ module Roast
         @workflow.stubs(:context_manager).returns(nil)
         @base_executor.stubs(:execute).returns("result")
 
-        @executor.execute("test_step", {})
+        @executor.execute("test_step")
 
         assert_equal "✓ Complete: test_step (consumed 0 tokens, total 0)\n\n\n", @output.string
       end
@@ -53,7 +52,7 @@ module Roast
         @context_manager.stubs(:total_tokens).returns(100)
 
         assert_raises(StandardError) do
-          @executor.execute("failing_step", {})
+          @executor.execute("failing_step")
         end
 
         assert_equal "", @output.string
@@ -84,7 +83,7 @@ module Roast
         @base_executor.stubs(:execute).returns("result")
         @context_manager.stubs(:total_tokens).returns(100, 200)
 
-        @executor.execute(hash_step, {})
+        @executor.execute(hash_step)
 
         assert_match(/✓ Complete: analyze/, @output.string)
       end
