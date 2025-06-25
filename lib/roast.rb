@@ -67,7 +67,11 @@ module Roast
 
       raise Thor::Error, "Expected a Roast workflow configuration file, got directory: #{expanded_workflow_path}" if File.directory?(expanded_workflow_path)
 
-      Roast::Workflow::ConfigurationParser.new(expanded_workflow_path, files, options.transform_keys(&:to_sym)).begin!
+      begin
+        Roast::Workflow::ConfigurationParser.new(expanded_workflow_path, files, options.transform_keys(&:to_sym)).begin!
+      rescue Roast::Errors::AuthenticationError => e
+        raise Thor::Error, "API authentication failed: #{e.message}"
+      end
     end
 
     desc "resume WORKFLOW_FILE", "Resume a paused workflow with an event"
