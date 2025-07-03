@@ -3,13 +3,14 @@
 module Roast
   module Workflow
     class AgentStep < BaseStep
-      attr_accessor :include_context_summary, :continue
+      attr_accessor :include_context_summary, :continue, :resume
 
       def initialize(workflow, **kwargs)
         super
         # Set default values for agent-specific options
         @include_context_summary = false
         @continue = false
+        @resume = nil
       end
 
       def call
@@ -25,6 +26,7 @@ module Roast
         agent_options = {
           include_context_summary: @include_context_summary,
           continue: @continue,
+          resume: @resume,
         }
 
         # Call CodingAgent directly with the prompt content and options

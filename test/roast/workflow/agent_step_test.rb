@@ -88,7 +88,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     Roast::Helpers::PromptLoader.stubs(:load_prompt).returns("Test agent prompt")
 
     # Set expectation that CodingAgent will be called with the prompt and default options
-    Roast::Tools::CodingAgent.expects(:call).with("Test agent prompt", include_context_summary: false, continue: false).returns("Agent response")
+    Roast::Tools::CodingAgent.expects(:call).with("Test agent prompt", include_context_summary: false, continue: false, resume: nil).returns("Agent response")
 
     # Execute the step
     result = agent_step.call
@@ -189,7 +189,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     agent_step = Roast::Workflow::AgentStep.new(workflow, name: inline_prompt)
 
     # Set up expectation for CodingAgent call with the inline prompt and default options
-    Roast::Tools::CodingAgent.expects(:call).with(inline_prompt, include_context_summary: false, continue: false).returns("Found 3 bottlenecks")
+    Roast::Tools::CodingAgent.expects(:call).with(inline_prompt, include_context_summary: false, continue: false, resume: nil).returns("Found 3 bottlenecks")
 
     # Execute the step
     result = agent_step.call
@@ -244,18 +244,20 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
       )
 
       # Mock CodingAgent calls to prevent actual LLM execution
-      # First agent step should get config: include_context_summary=true, continue=false
+      # First agent step should get config: include_context_summary=true, continue=false, resume=nil
       Roast::Tools::CodingAgent.expects(:call).with(
         "analyze the code and identify issues",
         include_context_summary: true,
         continue: false,
+        resume: nil,
       ).returns("Found 3 issues: X, Y, Z")
 
-      # Second agent step should get config: include_context_summary=false, continue=true
+      # Second agent step should get config: include_context_summary=false, continue=true, resume=nil
       Roast::Tools::CodingAgent.expects(:call).with(
         "refactor the problematic functions",
         include_context_summary: false,
         continue: true,
+        resume: nil,
       ).returns("Refactored functions A, B, C")
 
       executor.execute_steps(configuration.steps)

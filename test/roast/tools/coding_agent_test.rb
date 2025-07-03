@@ -247,7 +247,7 @@ module Roast
         assert DummyBaseClass.registered_functions.key?(:coding_agent)
 
         function_def = DummyBaseClass.registered_functions[:coding_agent]
-        assert_equal "AI-powered coding agent that runs an instance of the Claude Code agent with the given prompt. If the agent is iterating on previous work, set continue to true.", function_def[:description]
+        assert_equal "AI-powered coding agent that runs an instance of the Claude Code agent with the given prompt. If the agent is iterating on previous work, set continue to true. To resume from a specific previous session, set resume to the step name.", function_def[:description]
         assert_equal "string", function_def[:params][:prompt][:type]
         assert_equal "The prompt to send to Claude Code", function_def[:params][:prompt][:description]
       end

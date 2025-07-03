@@ -120,6 +120,7 @@ module Roast
           "Test prompt",
           include_context_summary: true,
           continue: true,
+          resume: nil,
         ).returns("Success")
 
         result = CodingAgent.call("Test prompt", include_context_summary: true, continue: true)
@@ -164,6 +165,150 @@ module Roast
         base_command = "custom-claude-wrapper --some-flag"
         result = CodingAgent.send(:build_command, base_command, continue: false)
         assert_equal "custom-claude-wrapper --some-flag --model opus", result
+      end
+
+      test "call method passes resume option correctly" do
+        # Mock the run_claude_code method to verify it receives the resume option
+        CodingAgent.expects(:run_claude_code).with(
+          "Test prompt",
+          include_context_summary: false,
+          continue: false,
+          resume: "previous_step",
+        ).returns("Success")
+
+        result = CodingAgent.call("Test prompt", resume: "previous_step")
+        assert_equal "Success", result
+      end
+
+      test "build_command handles resume with session ID" do
+        base_command = "claude -p --verbose --output-format stream-json"
+        result = CodingAgent.send(:build_command, base_command, continue: false, session_id: "test-session-123")
+        assert_equal "claude --resume test-session-123 -p --verbose --output-format stream-json", result
+      end
+
+      test "build_command prefers session_id over continue" do
+        base_command = "claude -p --verbose --output-format stream-json"
+        result = CodingAgent.send(:build_command, base_command, continue: true, session_id: "test-session-123")
+        assert_equal "claude --resume test-session-123 -p --verbose --output-format stream-json", result
+      end
+
+      test "build_command handles resume with non-standard commands" do
+        base_command = "custom-claude-wrapper --some-flag"
+        result = CodingAgent.send(:build_command, base_command, continue: false, session_id: "test-session-456")
+        assert_equal "custom-claude-wrapper --some-flag --resume test-session-456", result
+      end
+
+      test "resolve_session_id returns nil when no workflow context" do
+        Thread.current[:workflow_context] = nil
+        result = CodingAgent.send(:resolve_session_id, "test_step")
+        assert_nil result
+      end
+
+      test "resolve_session_id returns session ID from step output" do
+        # Create mock workflow with step output containing session ID
+        workflow = mock
+        workflow.stubs(:output).returns({
+          "test_step" => { "session_id" => "test-session-789", "content" => "step result" },
+        })
+
+        context = mock
+        context.stubs(:workflow).returns(workflow)
+        Thread.current[:workflow_context] = context
+
+        result = CodingAgent.send(:resolve_session_id, "test_step")
+        assert_equal "test-session-789", result
+
+        Thread.current[:workflow_context] = nil
+      end
+
+      test "resolve_session_id returns nil when step has no session ID" do
+        # Create mock workflow with step output but no session ID
+        workflow = mock
+        workflow.stubs(:output).returns({
+          "test_step" => { "content" => "step result" },
+        })
+
+        context = mock
+        context.stubs(:workflow).returns(workflow)
+        Thread.current[:workflow_context] = context
+
+        result = CodingAgent.send(:resolve_session_id, "test_step")
+        assert_nil result
+
+        Thread.current[:workflow_context] = nil
+      end
+
+      test "resolve_session_id returns nil when step output is not a hash" do
+        # Create mock workflow with string step output
+        workflow = mock
+        workflow.stubs(:output).returns({
+          "test_step" => "just a string result",
+        })
+
+        context = mock
+        context.stubs(:workflow).returns(workflow)
+        Thread.current[:workflow_context] = context
+
+        result = CodingAgent.send(:resolve_session_id, "test_step")
+        assert_nil result
+
+        Thread.current[:workflow_context] = nil
+      end
+
+      test "store_session_id stores session ID in specified step output" do
+        # Create mock workflow with empty output
+        workflow = mock
+        output_hash = {}
+        workflow.stubs(:output).returns(output_hash)
+
+        context = mock
+        context.stubs(:workflow).returns(workflow)
+        Thread.current[:workflow_context] = context
+        Thread.current[:current_step_name] = "current_step"
+
+        CodingAgent.send(:store_session_id, "new-session-123")
+
+        assert_equal "new-session-123", output_hash["current_step"]["session_id"]
+
+        Thread.current[:workflow_context] = nil
+        Thread.current[:current_step_name] = nil
+      end
+
+      test "store_session_id converts string output to hash with session ID" do
+        # Create mock workflow with existing string output
+        workflow = mock
+        output_hash = { "current_step" => "existing content" }
+        workflow.stubs(:output).returns(output_hash)
+
+        context = mock
+        context.stubs(:workflow).returns(workflow)
+        Thread.current[:workflow_context] = context
+        Thread.current[:current_step_name] = "current_step"
+
+        CodingAgent.send(:store_session_id, "new-session-456")
+
+        expected_output = {
+          "content" => "existing content",
+          "session_id" => "new-session-456",
+        }
+        assert_equal expected_output, output_hash["current_step"]
+
+        Thread.current[:workflow_context] = nil
+        Thread.current[:current_step_name] = nil
+      end
+
+      test "current_step_name returns step name from thread storage" do
+        Thread.current[:current_step_name] = "test_step"
+        result = CodingAgent.send(:current_step_name)
+        assert_equal "test_step", result
+
+        Thread.current[:current_step_name] = nil
+      end
+
+      test "current_step_name returns nil when no step name set" do
+        Thread.current[:current_step_name] = nil
+        result = CodingAgent.send(:current_step_name)
+        assert_nil result
       end
     end
   end
