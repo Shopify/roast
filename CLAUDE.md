@@ -35,6 +35,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Do not use require_relative**
 - Require statements should always be in alphabetical order
 - Always leave a blank line after module includes and before the rest of the class
+- **Avoid mutating method arguments**: Use `merge` instead of `dup` + mutation to avoid side effects
+- **This is NOT a Rails application**: Never use Rails-specific code like `Rails.logger`
+- **Use Roast's logger**: Always use `Roast::Helpers::Logger.instance` for logging
+- **ActiveSupport instrumentation naming**: Follow Rails convention of `event.library` format (e.g., `retry.roast.retry`)
 
 ## Architecture Guidelines
 - **SOLID principles are important** - don't violate them
