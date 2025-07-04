@@ -18,7 +18,7 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
   end
 
   def test_setup_loads_initializers_and_configures_tools
-    Roast::Initializers.expects(:load_all)
+    Roast::Initializers.expects(:load_all).with(@configuration.context_path)
 
     @initializer.setup
   end
