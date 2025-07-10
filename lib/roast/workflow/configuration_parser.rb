@@ -21,9 +21,8 @@ module Roast
 
       def begin!
         start_time = Time.now
-        $stderr.puts "Starting workflow..."
-        $stderr.puts "Workflow: #{configuration.workflow_path}"
-        $stderr.puts "Options: #{options}"
+        $stderr.puts "🔄 Workflow: #{configuration.workflow_path}"
+        $stderr.puts "🔧 Options: #{options}"
 
         ActiveSupport::Notifications.instrument("roast.workflow.start", {
           workflow_path: configuration.workflow_path,
@@ -39,7 +38,7 @@ module Roast
           @workflow_runner.run_targetless
         end
       rescue Roast::Errors::ExitEarly
-        $stderr.puts "Exiting workflow early."
+        $stderr.puts "🚨 Exiting workflow early."
       ensure
         execution_time = Time.now - start_time
 
