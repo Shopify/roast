@@ -29,6 +29,7 @@ module Roast
         @workflow.expects(:respond_to?).with(:resource).returns(true)
         @workflow.expects(:resource).returns(resource).at_least_once
         @workflow.expects(:output).returns({})
+        @workflow.expects(:workflow_configuration).returns(nil).at_least_once
 
         step_object = mock("step_object")
         @step_loader.expects(:load).returns(step_object)
@@ -36,7 +37,7 @@ module Roast
 
         @state_manager.expects(:save_state).with(step_name, step_result)
 
-        @error_handler.expects(:with_error_handling).with(step_name, resource_type: "file").yields.returns(step_result)
+        @error_handler.expects(:with_error_handling).with(step_name, resource_type: "file", retry_policy: nil).yields.returns(step_result)
 
         result = @orchestrator.execute_step(step_name)
         assert_equal(step_result, result)
@@ -48,6 +49,7 @@ module Roast
 
         @workflow.expects(:respond_to?).with(:resource).returns(false)
         @workflow.expects(:output).returns({})
+        @workflow.expects(:workflow_configuration).returns(nil).at_least_once
 
         step_object = mock("step_object")
         @step_loader.expects(:load).returns(step_object)
@@ -55,7 +57,7 @@ module Roast
 
         @state_manager.expects(:save_state).with(step_name, step_result)
 
-        @error_handler.expects(:with_error_handling).with(step_name, resource_type: nil).yields.returns(step_result)
+        @error_handler.expects(:with_error_handling).with(step_name, resource_type: nil, retry_policy: nil).yields.returns(step_result)
 
         result = @orchestrator.execute_step(step_name)
         assert_equal(step_result, result)
@@ -68,6 +70,7 @@ module Roast
 
         @workflow.expects(:respond_to?).with(:resource).returns(false)
         @workflow.expects(:output).returns(output_hash)
+        @workflow.expects(:workflow_configuration).returns(nil).at_least_once
 
         step_object = mock("step_object")
         @step_loader.expects(:load).returns(step_object)
@@ -85,6 +88,7 @@ module Roast
 
         @workflow.expects(:respond_to?).with(:resource).returns(false)
         @workflow.expects(:output).returns({})
+        @workflow.expects(:workflow_configuration).returns(nil).at_least_once
 
         step_object = mock("step_object")
         @step_loader.expects(:load).returns(step_object)
@@ -101,6 +105,7 @@ module Roast
 
         @workflow.expects(:respond_to?).with(:resource).returns(false)
         @workflow.expects(:output).returns({})
+        @workflow.expects(:workflow_configuration).returns(nil).at_least_once
 
         step_object = mock("step_object")
         @step_loader.expects(:load).returns(step_object)
@@ -128,13 +133,14 @@ module Roast
 
         @workflow.expects(:respond_to?).with(:resource).returns(false)
         @workflow.expects(:output).returns({})
+        @workflow.expects(:workflow_configuration).returns(nil).at_least_once
 
         step_object = mock("step_object")
         @step_loader.expects(:load).returns(step_object)
         step_object.expects(:call).returns(step_result)
 
         @state_manager.expects(:save_state).with(step_name, step_result)
-        @error_handler.expects(:with_error_handling).with(step_name, resource_type: nil).yields.returns(step_result)
+        @error_handler.expects(:with_error_handling).with(step_name, resource_type: nil, retry_policy: nil).yields.returns(step_result)
 
         result = @orchestrator.execute_step(step_name, step_key: step_key)
         assert_equal(step_result, result)
