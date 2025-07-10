@@ -19,14 +19,18 @@ module Roast
         File.join(Roast::Initializers.config_root, "initializers")
       end
 
-      def load_all
+      def load_all(configuration)
         project_initializers = Roast::Initializers.initializers_path
         return unless Dir.exist?(project_initializers)
 
-        $stderr.puts "Loading project initializers from #{project_initializers}"
+        if configuration.verbose
+          $stderr.puts "Loading project initializers from #{project_initializers}"
+        end
         pattern = File.join(project_initializers, "**/*.rb")
         Dir.glob(pattern, sort: true).each do |file|
-          $stderr.puts "Loading initializer: #{file}"
+          if configuration.verbose
+            $stderr.puts "Loading initializer: #{file}"
+          end
           require file
         end
       rescue => e
