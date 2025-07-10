@@ -139,7 +139,7 @@ module Roast
         resource_type = @context.resource_type
 
         error_handler.with_error_handling(step, resource_type: resource_type) do
-          $stderr.puts "Executing: #{step} (Resource type: #{resource_type || "unknown"})"
+          $stderr.puts "▶️ Executing: #{step} (Resource type: #{resource_type || "unknown"})"
 
           begin
             output = command_executor.execute(step, exit_on_error: exit_on_error)
