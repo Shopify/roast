@@ -12,7 +12,7 @@ module Roast
       end
 
       def execute_repeat(repeat_config)
-        $stderr.puts "Executing repeat step: #{repeat_config.inspect}"
+        $stderr.puts "🔁 Executing repeat step: #{repeat_config.inspect}"
 
         # Extract parameters from the repeat configuration
         steps = repeat_config["steps"]
@@ -50,7 +50,7 @@ module Roast
       end
 
       def execute_each(each_config)
-        $stderr.puts "Executing each step: #{each_config.inspect}"
+        $stderr.puts "🔁 Executing each step: #{each_config.inspect}"
 
         # Extract parameters from the each configuration
         collection_expr = each_config["each"]
