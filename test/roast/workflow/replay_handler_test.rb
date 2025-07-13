@@ -5,8 +5,21 @@ require "test_helper"
 class RoastWorkflowReplayHandlerTest < ActiveSupport::TestCase
   def setup
     @workflow = mock("workflow")
+    @workflow.stubs(:metadata).returns({})
     @state_repository = mock("state_repository")
     @handler = Roast::Workflow::ReplayHandler.new(@workflow, state_repository: @state_repository)
+
+    Roast::Helpers::PromptLoader.stubs(:load_prompt).returns("Test prompt")
+    Roast::Tools.stubs(:setup_interrupt_handler)
+    Roast::Tools.stubs(:setup_exit_handler)
+    ActiveSupport::Notifications.stubs(:instrument).returns(true)
+  end
+
+  def teardown
+    Roast::Helpers::PromptLoader.unstub(:load_prompt)
+    Roast::Tools.unstub(:setup_interrupt_handler)
+    Roast::Tools.unstub(:setup_exit_handler)
+    ActiveSupport::Notifications.unstub(:instrument)
   end
 
   def capture_stderr
@@ -180,5 +193,94 @@ class RoastWorkflowReplayHandlerTest < ActiveSupport::TestCase
     transcript.expects(:<<).with({ "assistant" => "msg2" })
 
     @handler.send(:restore_workflow_state, state_data)
+  end
+
+  def test_restore_workflow_state_restores_metadata
+    workflow = Roast::Workflow::BaseWorkflow.new(nil, name: "test_workflow")
+    handler = Roast::Workflow::ReplayHandler.new(workflow, state_repository: @state_repository)
+
+    # Set some initial metadata
+    workflow.metadata["initial"] = { "data" => "value" }
+
+    # Create saved state with metadata
+    state_data = {
+      metadata: {
+        "step1" => { "duration_ms" => 100 },
+        "step2" => { "retries" => 3 },
+      },
+    }
+
+    # Restore the state
+    handler.send(:restore_workflow_state, state_data)
+
+    # Verify metadata was restored (replacing the initial metadata)
+    assert_equal(state_data[:metadata], workflow.metadata.to_h)
+    assert_equal(100, workflow.metadata.step1.duration_ms)
+    assert_equal(3, workflow.metadata.step2.retries)
+    # Initial metadata should be gone
+    assert_nil(workflow.metadata.initial)
+  end
+
+  def test_restore_workflow_state_handles_missing_metadata
+    workflow = Roast::Workflow::BaseWorkflow.new(nil, name: "test_workflow")
+    handler = Roast::Workflow::ReplayHandler.new(workflow, state_repository: @state_repository)
+
+    # Set some initial metadata
+    workflow.metadata["existing"] = { "should" => "remain" }
+
+    # Saved state without metadata key
+    state_data = {
+      output: { "step1" => "result1" },
+    }
+
+    # Restore the state (should only restore output, not touch metadata)
+    handler.send(:restore_workflow_state, state_data)
+
+    # Verify output was restored
+    assert_equal("result1", workflow.output["step1"])
+
+    # Verify metadata was not changed (no metadata in state_data)
+    assert_equal({ "existing" => { "should" => "remain" } }, workflow.metadata.to_h)
+  end
+
+  def test_restore_workflow_state_replaces_all_metadata
+    workflow = Roast::Workflow::BaseWorkflow.new(nil, name: "test_workflow")
+    handler = Roast::Workflow::ReplayHandler.new(workflow, state_repository: @state_repository)
+
+    # Set initial metadata
+    workflow.metadata["initial_step"] = { "preserved" => true }
+    workflow.metadata["another_step"] = { "also_preserved" => false }
+
+    # Verify initial state
+    assert_equal(true, workflow.metadata.initial_step.preserved)
+    assert_equal(false, workflow.metadata.another_step.also_preserved)
+
+    # Saved state with different metadata
+    state_data = {
+      metadata: {
+        "step1" => { "from_save" => "value1" },
+        "step2" => { "from_save" => "value2" },
+      },
+    }
+
+    # Restore the state
+    handler.send(:restore_workflow_state, state_data)
+
+    # Should have metadata from saved state
+    assert_equal(
+      {
+        "step1" => { "from_save" => "value1" },
+        "step2" => { "from_save" => "value2" },
+      },
+      workflow.metadata.to_h,
+    )
+
+    # Initial metadata should be gone (full replacement)
+    refute(workflow.metadata.to_h.key?("initial_step"))
+    refute(workflow.metadata.to_h.key?("another_step"))
+
+    # New metadata should be accessible via dot notation
+    assert_equal("value1", workflow.metadata.step1.from_save)
+    assert_equal("value2", workflow.metadata.step2.from_save)
   end
 end
