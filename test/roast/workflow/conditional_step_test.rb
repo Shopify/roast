@@ -10,6 +10,7 @@ module Roast
         @workflow_executor = mock("workflow_executor")
         @output = {}
         @workflow.stubs(:output).returns(@output)
+        @workflow.stubs(:metadata).returns({})
         @context_path = "/path/to/workflow.yml"
       end
 

@@ -27,6 +27,7 @@ module Roast
 
       test "StepExecutorCoordinator routes input steps correctly" do
         workflow = mock("workflow")
+        workflow.stubs(:metadata).returns({})
         workflow.stubs(:output).returns({})
         workflow.stubs(:pause_step_name).returns(nil)
 

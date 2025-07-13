@@ -7,6 +7,7 @@ module Roast
     class WorkflowContextTest < ActiveSupport::TestCase
       def setup
         @workflow = mock("workflow")
+        @workflow.stubs(:metadata).returns({})
         @config_hash = {
           "step1" => { "exit_on_error" => false },
           "step2" => { "exit_on_error" => true },

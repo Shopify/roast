@@ -9,6 +9,7 @@ module Roast
         @base_executor = mock("base_executor")
         @context = mock("context")
         @workflow = mock("workflow")
+        @workflow.stubs(:metadata).returns({})
         @context_manager = mock("context_manager")
 
         @context.stubs(:workflow).returns(@workflow)

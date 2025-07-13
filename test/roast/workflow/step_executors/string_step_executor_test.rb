@@ -8,6 +8,7 @@ module Roast
       class StringStepExecutorTest < ActiveSupport::TestCase
         def setup
           @workflow = mock("workflow")
+          @workflow.stubs(:metadata).returns({})
           @config_hash = {}
           @workflow_executor = mock("workflow_executor")
           @workflow_executor.stubs(:workflow).returns(@workflow)

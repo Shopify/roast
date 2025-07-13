@@ -38,6 +38,7 @@ class RoastWorkflowTargetlessWorkflowTest < ActiveSupport::TestCase
       workflow = mock("workflow")
       workflow.stubs(:output_file).returns(nil)
       workflow.stubs(:final_output).returns("")
+      workflow.stubs(:metadata).returns({})
       workflow.stubs(:session_name).returns("targetless")
       workflow.stubs(:file).returns(nil)
       workflow.stubs(:session_timestamp).returns(nil)
