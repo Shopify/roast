@@ -77,6 +77,7 @@ module Roast
         return unless state_data && @workflow
 
         restore_output(state_data)
+        restore_metadata(state_data)
         restore_transcript(state_data)
         restore_final_output(state_data)
       end
@@ -86,6 +87,13 @@ module Roast
         return unless @workflow.respond_to?(:output=)
 
         @workflow.output = state_data[:output]
+      end
+
+      def restore_metadata(state_data)
+        return unless state_data.key?(:metadata)
+        return unless @workflow.respond_to?(:metadata=)
+
+        @workflow.metadata = state_data[:metadata]
       end
 
       def restore_transcript(state_data)

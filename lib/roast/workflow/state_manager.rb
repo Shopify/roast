@@ -42,6 +42,7 @@ module Roast
           order: determine_step_order(step_name),
           transcript: extract_transcript,
           output: extract_output,
+          metadata: extract_metadata,
           final_output: extract_final_output,
           execution_order: extract_execution_order,
         }
@@ -66,6 +67,13 @@ module Roast
         return {} unless workflow.respond_to?(:output)
 
         workflow.output.clone
+      end
+
+      # Extract metadata if available
+      def extract_metadata
+        return {} unless workflow.respond_to?(:metadata)
+
+        workflow.metadata.clone
       end
 
       # Extract final output data if available

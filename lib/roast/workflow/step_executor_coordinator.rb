@@ -54,6 +54,10 @@ module Roast
       # @return [Object] The result of the step execution
       def execute(step, options = {})
         step_type = StepTypeResolver.resolve(step, @context)
+        step_name = StepTypeResolver.extract_name(step)
+
+        Thread.current[:current_step_name] = step_name if step_name
+        Thread.current[:workflow_metadata] = @context.workflow.metadata
 
         case step_type
         when StepTypeResolver::COMMAND_STEP

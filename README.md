@@ -743,6 +743,100 @@ For most workflows, you'll mainly use `response` to access the current step's re
 
 ## Advanced Features
 
+### Workflow Metadata
+
+Roast workflows maintain a metadata store that allows steps to share structured data beyond the standard output hash. This is particularly useful for tracking state that needs to persist across steps but shouldn't be part of the conversation context.
+
+#### Setting Metadata
+
+Metadata can be set by custom Ruby steps that extend `BaseStep`:
+
+```ruby
+# workflow/analyze_codebase.rb
+class AnalyzeCodebase < Roast::Workflow::BaseStep
+   include Roast::Helpers::MetadataAccess
+   
+  def call
+    # Perform analysis
+    analysis_results = perform_deep_analysis
+    
+    # Store metadata for other steps to use
+    workflow.metadata[name.to_s] ||= {}
+    workflow.metadata[name.to_s]["total_files"] = analysis_results[:file_count]
+    workflow.metadata[name.to_s]["complexity_score"] = analysis_results[:complexity]
+    workflow.metadata[name.to_s]["analysis_id"] = SecureRandom.uuid
+    
+    # Return the normal output for the conversation
+    "Analyzed #{analysis_results[:file_count]} files with average complexity of #{analysis_results[:complexity]}"
+  end
+  
+  private
+  
+  def perform_deep_analysis
+    # Your analysis logic here
+    { file_count: 42, complexity: 7.5 }
+  end
+end
+```
+
+#### Accessing Metadata
+
+Metadata from previous steps can be accessed in:
+
+1. **Custom Ruby steps:**
+```ruby
+class GenerateReport < Roast::Workflow::BaseStep
+  def call
+    # Access metadata from a previous step
+    total_files = workflow.metadata.dig("analyze_codebase", "total_files")
+    complexity = workflow.metadata.dig("analyze_codebase", "complexity_score")
+    
+    "Generated report for #{total_files} files with complexity score: #{complexity}"
+  end
+end
+```
+
+2. **Workflow configuration via interpolation:**
+```yaml
+steps:
+  - analyze_codebase
+  - validate_threshold
+  - generate_report
+
+# Use metadata in step configuration
+validate_threshold:
+  if: "{{metadata.analyze_codebase.complexity_score > 8.0}}"
+  then:
+    - send_alert
+    - create_ticket
+  else:
+    - mark_as_passed
+
+# Pass metadata to command steps
+send_alert:
+  $(slack-notify "High complexity detected: {{metadata.analyze_codebase.complexity_score}}")
+```
+
+3. **Prompt templates (ERB):**
+```erb
+# In analyze_codebase/output.txt
+Analysis Summary:
+Files analyzed: <%= workflow.metadata.dig(name.to_s, "total_files") %>
+Complexity score: <%= workflow.metadata.dig(name.to_s, "complexity_score") %>
+Analysis ID: <%= workflow.metadata.dig(name.to_s, "analysis_id") %>
+```
+
+#### Metadata Best Practices
+
+- **Use metadata for data that shouldn't be in the conversation** 
+- **Don't duplicate output data:** Metadata complements the output hash, it doesn't replace it
+
+The metadata system is particularly useful for:
+- Tracking session or transaction IDs across multiple steps
+- Storing configuration or state that tools need to access
+- Passing data between steps without cluttering the AI conversation
+- Implementing complex conditional logic based on computed values
+
 ### Instrumentation
 
 Roast provides extensive instrumentation capabilities using ActiveSupport::Notifications. You can monitor workflow execution, track AI model usage, measure performance, and integrate with external monitoring systems. [Read the full instrumentation documentation](docs/INSTRUMENTATION.md).
