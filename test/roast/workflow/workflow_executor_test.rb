@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "tmpdir"
 
 class RoastWorkflowWorkflowExecutorTest < ActiveSupport::TestCase
   def setup
     @workflow = mock("workflow")
+    @workflow.stubs(:metadata).returns({})
     @output = {}
     @context_manager = mock("context_manager")
     @context_manager.stubs(:total_tokens).returns(0)
@@ -312,5 +314,40 @@ class RoastWorkflowWorkflowExecutorTest < ActiveSupport::TestCase
 
     result = @executor.interpolate("Analysis result: {{output['dangerous_output']}}")
     assert_equal "Analysis result: #{dangerous_content}", result
+  end
+
+  test "interpolates metadata from workflow metadata store" do
+    Dir.mktmpdir do |tmpdir|
+      # Create a real workflow with a real metadata manager
+      workflow_file = File.join(tmpdir, "test_workflow.yml")
+      File.write(workflow_file, { "steps" => ["test_step", "analysis"] }.to_yaml)
+
+      workflow = Roast::Workflow::BaseWorkflow.new(workflow_file)
+
+      # Set up metadata in the workflow
+      workflow.metadata["previous_step"] = {
+        "execution_time" => 42,
+        "status" => "completed",
+      }
+      workflow.metadata["analysis"] = {
+        "score" => 95,
+        "recommendation" => "optimize further",
+      }
+
+      # Create executor with real workflow
+      executor = Roast::Workflow::WorkflowExecutor.new(workflow, @config_hash, @context_path)
+
+      # Test simple metadata interpolation
+      result = executor.interpolate("Previous step took {{metadata.previous_step.execution_time}}ms")
+      assert_equal "Previous step took 42ms", result
+
+      # Test nested metadata interpolation
+      result = executor.interpolate("Analysis score: {{metadata.analysis.score}}, {{metadata.analysis.recommendation}}")
+      assert_equal "Analysis score: 95, optimize further", result
+
+      # Test metadata interpolation with bracket notation
+      result = executor.interpolate("Status was {{metadata['previous_step']['status']}}")
+      assert_equal "Status was completed", result
+    end
   end
 end
