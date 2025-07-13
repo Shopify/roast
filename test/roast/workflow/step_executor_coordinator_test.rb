@@ -27,7 +27,8 @@ module Roast
           command_executor: mock("command_executor"),
           iteration_executor: mock("iteration_executor"),
           conditional_executor: mock("conditional_executor"),
-          step_orchestrator: mock("step_orchestrator"),
+          step_loader: mock("step_loader"),
+          state_manager: mock("state_manager"),
           error_handler: mock("error_handler"),
         }
         @coordinator = StepExecutorCoordinator.new(context: @context, dependencies: @dependencies)
@@ -94,8 +95,12 @@ module Roast
         @dependencies[:interpolator].expects(:interpolate).with("command").returns("command")
         # And then the string step handler will also interpolate
         @dependencies[:interpolator].expects(:interpolate).with("command").returns("command")
-        @dependencies[:step_orchestrator].expects(:execute_step).returns("result")
-        @workflow.output.expects(:[]=).with("nested", "result")
+        @dependencies[:error_handler].expects(:with_error_handling).with("command", resource_type: nil).yields.returns("result")
+        step_object = mock("step")
+        step_object.expects(:call).returns("result")
+        @dependencies[:step_loader].expects(:load).with("command", exit_on_error: true, step_key: "nested", is_last_step: true).returns(step_object)
+        @dependencies[:state_manager].expects(:save_state).with("command", "result")
+        @workflow.output.expects(:[]=).with("nested", "result").twice
 
         @coordinator.execute(step)
       end
@@ -110,9 +115,12 @@ module Roast
         @dependencies[:interpolator].expects(:interpolate).with("command1").returns("command1")
         # The string step handler will also try to interpolate, so expect it twice
         @dependencies[:interpolator].expects(:interpolate).with("command1").returns("command1")
-        @dependencies[:step_orchestrator].expects(:execute_step).returns("result")
-
-        @workflow.output.expects(:[]=).with("var1", "result")
+        @dependencies[:error_handler].expects(:with_error_handling).with("command1", resource_type: nil).yields.returns("result")
+        step_object = mock("step")
+        step_object.expects(:call).returns("result")
+        @dependencies[:step_loader].expects(:load).with("command1", exit_on_error: true, step_key: "var1", is_last_step: nil).returns(step_object)
+        @dependencies[:state_manager].expects(:save_state).with("command1", "result")
+        @workflow.output.expects(:[]=).with("var1", "result").twice
 
         @coordinator.execute(step)
         # Hash steps don't return a value, they set the output
@@ -134,7 +142,18 @@ module Roast
         @workflow.stubs(:pause_step_name).returns(nil)
         @dependencies[:interpolator].expects(:interpolate).with("step1").returns("step1")
         @dependencies[:interpolator].expects(:interpolate).with("step2").returns("step2")
-        @dependencies[:step_orchestrator].expects(:execute_step).twice
+        @dependencies[:error_handler].expects(:with_error_handling).with("step1", resource_type: nil).yields
+        @dependencies[:error_handler].expects(:with_error_handling).with("step2", resource_type: nil).yields
+        step_object1 = mock("step1")
+        step_object1.expects(:call).returns("result1")
+        step_object2 = mock("step2")
+        step_object2.expects(:call).returns("result2")
+        @dependencies[:step_loader].expects(:load).with("step1", exit_on_error: true, step_key: "step1", is_last_step: true).returns(step_object1)
+        @dependencies[:step_loader].expects(:load).with("step2", exit_on_error: true, step_key: "step2", is_last_step: true).returns(step_object2)
+        @dependencies[:state_manager].expects(:save_state).with("step1", "result1")
+        @dependencies[:state_manager].expects(:save_state).with("step2", "result2")
+        @workflow.output.expects(:[]=).with("step1", "result1")
+        @workflow.output.expects(:[]=).with("step2", "result2")
 
         @coordinator.execute(steps)
       end
@@ -158,14 +177,24 @@ module Roast
         @context.stubs(:exit_on_error?).with("regular_step").returns(false)
 
         @dependencies[:interpolator].expects(:interpolate).with(step).returns(step)
-        @dependencies[:step_orchestrator].expects(:execute_step)
+        @dependencies[:error_handler].expects(:with_error_handling).with(step, resource_type: nil).yields
+        step_object = mock("step")
+        step_object.expects(:call).returns("result")
+        @dependencies[:step_loader].expects(:load).with(step, exit_on_error: false, step_key: step, is_last_step: nil).returns(step_object)
+        @dependencies[:state_manager].expects(:save_state).with(step, "result")
+        @workflow.output.expects(:[]=).with(step, "result")
 
         @coordinator.execute(step)
       end
 
       def test_executes_standard_step_as_fallback
         step = mock("unknown_step")
-        @dependencies[:step_orchestrator].expects(:execute_step)
+        @dependencies[:error_handler].expects(:with_error_handling).with(step, resource_type: nil).yields
+        step_object = mock("step")
+        step_object.expects(:call).returns("result")
+        @dependencies[:step_loader].expects(:load).with(step, exit_on_error: true, step_key: step, is_last_step: nil).returns(step_object)
+        @dependencies[:state_manager].expects(:save_state).with(step, "result")
+        @workflow.output.expects(:[]=).with(step, "result")
 
         @coordinator.execute(step)
       end

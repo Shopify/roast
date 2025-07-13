@@ -108,11 +108,13 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     state_manager = mock
     state_manager.stubs(:save_state)
 
-    error_handler = mock
-    error_handler.stubs(:with_error_handling).yields
+    error_handler = Object.new
+    def error_handler.with_error_handling(step_name, options = {})
+      yield
+    end
 
-    step_orchestrator = mock
-    step_orchestrator.expects(:execute_step).with("my_prompt", exit_on_error: true, step_key: nil, agent_type: :coding_agent).returns("agent result")
+    step_loader = mock
+    step_loader.expects(:load).with("my_prompt", exit_on_error: true, step_key: "my_prompt", is_last_step: nil, agent_type: :coding_agent).returns(mock.tap { |m| m.expects(:call).returns("agent result") })
 
     context = Roast::Workflow::WorkflowContext.new(
       workflow:,
@@ -124,7 +126,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
       workflow_executor: mock,
       state_manager:,
       error_handler:,
-      step_orchestrator:,
+      step_loader:,
     }
 
     coordinator = Roast::Workflow::StepExecutorCoordinator.new(context:, dependencies:)
@@ -145,14 +147,16 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     state_manager = mock
     state_manager.stubs(:save_state)
 
-    error_handler = mock
-    error_handler.stubs(:with_error_handling).yields
+    error_handler = Object.new
+    def error_handler.with_error_handling(step_name, options = {})
+      yield
+    end
 
-    step_orchestrator = mock
+    step_loader = mock
 
     # The inline prompt should have the ^ prefix stripped
     expected_prompt = "Review the code and identify any code smells"
-    step_orchestrator.expects(:execute_step).with(expected_prompt, exit_on_error: true, step_key: nil, agent_type: :coding_agent).returns("agent result")
+    step_loader.expects(:load).with(expected_prompt, step_key: expected_prompt, exit_on_error: true, is_last_step: nil, agent_type: :coding_agent).returns(mock.tap { |m| m.expects(:call).returns("agent result") })
 
     context = Roast::Workflow::WorkflowContext.new(
       workflow:,
@@ -164,7 +168,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
       workflow_executor: mock,
       state_manager:,
       error_handler:,
-      step_orchestrator:,
+      step_loader:,
     }
 
     coordinator = Roast::Workflow::StepExecutorCoordinator.new(context:, dependencies:)

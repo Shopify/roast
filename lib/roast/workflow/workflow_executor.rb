@@ -42,7 +42,6 @@ module Roast
       # @param state_manager [StateManager] Optional custom state manager
       # @param iteration_executor [IterationExecutor] Optional custom iteration executor
       # @param conditional_executor [ConditionalExecutor] Optional custom conditional executor
-      # @param step_orchestrator [StepOrchestrator] Optional custom step orchestrator
       # @param step_executor_coordinator [StepExecutorCoordinator] Optional custom step executor coordinator
       # @param phase [Symbol] The execution phase - determines where to load steps from
       #   Valid values:
@@ -52,7 +51,7 @@ module Roast
       def initialize(workflow, config_hash, context_path,
         error_handler: nil, step_loader: nil, command_executor: nil,
         interpolator: nil, state_manager: nil, iteration_executor: nil,
-        conditional_executor: nil, step_orchestrator: nil, step_executor_coordinator: nil,
+        conditional_executor: nil, step_executor_coordinator: nil,
         phase: :steps)
         # Create context object to reduce data clump
         @context = WorkflowContext.new(
@@ -69,7 +68,6 @@ module Roast
         @state_manager = state_manager || StateManager.new(workflow, logger: @error_handler, storage_type: workflow.storage_type)
         @iteration_executor = iteration_executor || IterationExecutor.new(workflow, context_path, @state_manager, config_hash)
         @conditional_executor = conditional_executor || ConditionalExecutor.new(workflow, context_path, @state_manager, self)
-        @step_orchestrator = step_orchestrator || StepOrchestrator.new(workflow, @step_loader, @state_manager, @error_handler, self)
 
         # Initialize coordinator with dependencies
         base_coordinator = step_executor_coordinator || StepExecutorCoordinator.new(
@@ -80,7 +78,8 @@ module Roast
             command_executor: @command_executor,
             iteration_executor: @iteration_executor,
             conditional_executor: @conditional_executor,
-            step_orchestrator: @step_orchestrator,
+            step_loader: @step_loader,
+            state_manager: @state_manager,
             error_handler: @error_handler,
           },
         )

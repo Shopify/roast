@@ -38,7 +38,7 @@ module Roast
               Kernel.binding.irb # rubocop:disable Lint/Debugger
             end
           else
-            step_orchestrator.execute_step(step, is_last_step: is_last_step)
+            execute_custom_step(step, is_last_step: is_last_step)
           end
         end
       end
@@ -126,12 +126,16 @@ module Roast
         )
       end
 
-      def step_orchestrator
-        dependencies[:step_orchestrator]
-      end
-
       def error_handler
         dependencies[:error_handler]
+      end
+
+      def step_loader
+        dependencies[:step_loader]
+      end
+
+      def state_manager
+        dependencies[:state_manager]
       end
 
       def execute_command_step(step, options)
@@ -185,8 +189,11 @@ module Roast
         step_name = StepTypeResolver.extract_name(step)
 
         # Load and execute the agent step
-        exit_on_error = options.fetch(:exit_on_error, context.exit_on_error?(step))
-        step_orchestrator.execute_step(step_name, exit_on_error:, step_key: options[:step_key], agent_type: :coding_agent)
+        merged_options = options.merge(
+          exit_on_error: options.fetch(:exit_on_error, context.exit_on_error?(step)),
+          agent_type: :coding_agent,
+        )
+        execute_custom_step(step_name, **merged_options)
       end
 
       def execute_glob_step(step, options = {})
@@ -259,13 +266,37 @@ module Roast
         exit_on_error = options.fetch(:exit_on_error, true)
         step_key = options[:step_key]
         is_last_step = options[:is_last_step]
-        step_orchestrator.execute_step(step, exit_on_error:, step_key:, is_last_step:)
+        execute_custom_step(step, exit_on_error:, step_key:, is_last_step:)
       end
 
       def validate_each_step!(step)
         unless step.key?("as") && step.key?("steps")
           raise WorkflowExecutor::ConfigurationError,
             "Invalid 'each' step format. 'as' and 'steps' must be at the same level as 'each'"
+        end
+      end
+
+      def execute_custom_step(name, step_key: nil, **options)
+        resource_type = @context.workflow.respond_to?(:resource) ? @context.workflow.resource&.type : nil
+
+        error_handler.with_error_handling(name, resource_type: resource_type) do
+          $stderr.puts "Executing: #{name} (Resource type: #{resource_type || "unknown"})"
+
+          # Use step_key for loading if provided, otherwise use name
+          load_key = step_key || name
+          is_last_step = options[:is_last_step]
+          step_object = step_loader.load(name, exit_on_error: false, step_key: load_key, is_last_step:, **options)
+          step_result = step_object.call
+
+          # Store result in workflow output
+          # Use step_key for output storage if provided (for hash steps)
+          output_key = step_key || name
+          @context.workflow.output[output_key] = step_result
+
+          # Save state after each step
+          state_manager.save_state(name, step_result)
+
+          step_result
         end
       end
     end
