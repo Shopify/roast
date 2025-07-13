@@ -166,6 +166,34 @@ module Roast
         assert_equal "custom-claude-wrapper --some-flag --model opus", result
       end
 
+      test "build_command adds --resume flag with session_id when continue is true and session_id is provided" do
+        base_command = "claude -p --verbose --output-format stream-json"
+        session_id = "test-session-123"
+        result = CodingAgent.send(:build_command, base_command, continue: true, session_id: session_id)
+        assert_equal "claude --resume test-session-123 -p --verbose --output-format stream-json", result
+      end
+
+      test "build_command adds --continue flag when continue is true but no session_id" do
+        base_command = "claude -p --verbose --output-format stream-json"
+        result = CodingAgent.send(:build_command, base_command, continue: true, session_id: nil)
+        assert_equal "claude --continue -p --verbose --output-format stream-json", result
+      end
+
+      test "build_command handles --resume with non-standard commands" do
+        base_command = "custom-claude-wrapper --some-flag"
+        session_id = "test-session-456"
+        result = CodingAgent.send(:build_command, base_command, continue: true, session_id: session_id)
+        assert_equal "custom-claude-wrapper --some-flag --resume test-session-456", result
+      end
+
+      test "build_command includes both configured options and resume flag" do
+        CodingAgent.configured_options = { model: "opus", temperature: 0.5 }
+        base_command = "claude -p --verbose"
+        session_id = "test-session-789"
+        result = CodingAgent.send(:build_command, base_command, continue: true, session_id: session_id)
+        assert_equal "claude --resume test-session-789 --model opus --temperature 0.5 -p --verbose", result
+      end
+
       test "call uses configured retries as default when not specified" do
         CodingAgent.configured_options = { "retries" => 2 }
         ENV["CLAUDE_CODE_COMMAND"] = "claude --output-format stream-json"

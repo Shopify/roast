@@ -4,6 +4,7 @@ module Roast
   module Tools
     module CodingAgent
       extend self
+      include Roast::Helpers::MetadataAccess
 
       class CodingAgentError < StandardError; end
 
@@ -83,9 +84,17 @@ module Roast
           temp_file.write(final_prompt)
           temp_file.close
 
-          # Build the command with continue option if specified
+          # Check for session ID if continue is requested
+          # Resuming from a specific session id is more resilient than simply continuing if there are
+          # parallel invocations of claude being run in the same working directory.
+          session_id = nil
+          if continue
+            session_id = workflow_metadata&.dig(current_step_name, "coding_agent_session_id")
+          end
+
+          # Build the command with continue option (may become resume if session_id exists)
           base_command = claude_code_command
-          command_to_run = build_command(base_command, continue:)
+          command_to_run = build_command(base_command, continue:, session_id:)
 
           Roast::Helpers::Logger.debug(command_to_run)
 
@@ -102,12 +111,15 @@ module Roast
                 json = parse_json(line)
                 next unless json
 
+                handle_session_info(json)
                 handle_intermediate_message(json)
                 handled_result = handle_result(json)
                 result += handled_result if handled_result
               end
             else
               result = stdout.read
+              # Clear any stale session ID we might have when not using JSON formatting
+              set_current_step_metadata("coding_agent_session_id", nil)
             end
 
             status = wait_thread.value
@@ -152,6 +164,13 @@ module Roast
         end
       end
 
+      def handle_session_info(json)
+        session_id = json["session_id"]
+        if session_id
+          set_current_step_metadata("coding_agent_session_id", session_id)
+        end
+      end
+
       def log_message(text)
         return if text.blank?
 
@@ -165,7 +184,7 @@ module Roast
         CodingAgent.configured_command || ENV["CLAUDE_CODE_COMMAND"] || "claude -p --verbose --output-format stream-json --dangerously-skip-permissions"
       end
 
-      def build_command(base_command, continue:)
+      def build_command(base_command, continue:, session_id: nil)
         command = base_command.dup
 
         # Add configured options (like --model), excluding retries which is handled internally
@@ -180,9 +199,18 @@ module Roast
           end
         end
 
-        # Add --continue flag if needed
+        # Add --resume or --continue flag based on continue option and session_id value
         if continue
-          command = if command.start_with?("claude ")
+          command = if session_id
+            # Use --resume with session ID if available
+            if command.start_with?("claude ")
+              command.sub("claude ", "claude --resume #{session_id} ")
+            else
+              # Fallback for non-standard commands
+              "#{command} --resume #{session_id}"
+            end
+          elsif command.start_with?("claude ")
+            # Use --continue if no session ID
             command.sub("claude ", "claude --continue ")
           else
             # Fallback for non-standard commands

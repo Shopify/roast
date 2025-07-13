@@ -279,6 +279,59 @@ Roast supports several types of steps:
    ```
    Agent steps are prefixed with `^` and send the prompt content directly to the CodingAgent tool without LLM translation. This is useful when you want to give precise instructions to a coding agent without the intermediate interpretation layer. Agent steps support both file-based prompts (`fix_linting_errors/prompt.md`) and inline prompts (text with spaces).
 
+   **Session continuity for agent steps:**
+   
+   Agent steps support two options for maintaining Claude context across steps:
+   
+   1. **`continue: true`** - Continues from the immediately previous Claude Code session (note, if multiple Claude Code sessions are being run in parallel in the same working directory, this might not be the previous Claude Code session from this workflow) 
+   2. **`resume: step_name`** - Resumes from a specific earlier step's Claude Code session
+   
+   **Continue option:**
+   
+   The `continue` option allows sequential agent steps to maintain a continuous conversation:
+   
+   ```yaml
+   steps:
+     - ^analyze_codebase
+     - ^implement_feature
+     - ^add_tests
+   
+   # Configuration
+   analyze_codebase:
+     continue: false  # Start fresh (default)
+   
+   implement_feature:
+     continue: true   # Continue from immediately previous analyze_codebase step
+   
+   add_tests:
+     continue: true   # Continue from immediately previous implement_feature step
+   ```
+   
+   **Resume functionality for agent steps:**
+   
+   Agent steps can resume from specific previous Claude Code sessions:
+   
+   ```yaml
+   steps:
+     - ^analyze_codebase
+     - ^implement_feature
+     - ^polish_implementation
+   
+   # Configuration
+   analyze_codebase:
+     continue: false  # Start fresh
+   
+   implement_feature:
+     continue: true   # Continue from previous conversation
+   
+   polish_implementation:
+     resume: analyze_codebase  # Resume from a specific step's session not the immediately previous one
+   ```
+   
+   Note: Session IDs are only available when the CodingAgent is configured to output JSON format (includes `--output-format stream-json` in the command). If you are using a custom CodingAgent command that does not produce JSON output, resume functionality will not be available.
+
+   If `resume` is specified but the step name given does not have CodingAgent session to resume from, the CodingAgent will start Claude Code with a fresh session. 
+
 9. **Shell script step**: Execute shell scripts directly as workflow steps
    ```yaml
    steps:
@@ -1100,7 +1153,7 @@ Creates a specialized agent for complex coding tasks or long-running operations.
 coding_agent(
   prompt: "Refactor the authentication module to use JWT tokens",
   include_context_summary: true,  # Include workflow context in the agent prompt
-  continue: true                   # Continue from previous agent session
+  continue: true                  # Continue from previous agent session
 )
 
 # With automatic retries on failure

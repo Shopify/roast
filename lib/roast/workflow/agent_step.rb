@@ -3,7 +3,7 @@
 module Roast
   module Workflow
     class AgentStep < BaseStep
-      attr_accessor :include_context_summary, :continue
+      attr_accessor :include_context_summary, :continue, :resume
 
       def initialize(workflow, **kwargs)
         super
@@ -21,10 +21,21 @@ module Roast
           read_sidecar_prompt
         end
 
+        # Handle resume option by copying session ID from referenced step
+        if @resume.present?
+          if (session_id = workflow.metadata.dig(@resume, "coding_agent_session_id"))
+            workflow.metadata[name.to_s] ||= {}
+            workflow.metadata[name.to_s]["coding_agent_session_id"] = session_id
+          else
+            Roast::Helpers::Logger.warn("Cannot resume from step '#{@resume}'. It does not have a coding_agent_session_id in its metadata.")
+          end
+        end
+
         # Use agent-specific configuration that was applied by StepLoader
+        # If resume is set and a session_id is available, translate it to continue
         agent_options = {
           include_context_summary: @include_context_summary,
-          continue: @continue,
+          continue: @continue || session_id.present?, # Use continue if either continue is set or a session_id to resume from is available
         }
 
         # Call CodingAgent directly with the prompt content and options
