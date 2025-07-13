@@ -101,6 +101,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     # Create mock dependencies
     workflow = mock
     workflow.stubs(:output).returns({})
+    workflow.stubs(:metadata).returns({})
     config_mock = mock
     config_mock.stubs(:workflow_path).returns("/test/workflow.yml")
     workflow.stubs(:config).returns(config_mock)
@@ -140,6 +141,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     # Create mock dependencies
     workflow = mock
     workflow.stubs(:output).returns({})
+    workflow.stubs(:metadata).returns({})
     config_mock = mock
     config_mock.stubs(:workflow_path).returns("/test/workflow.yml")
     workflow.stubs(:config).returns(config_mock)

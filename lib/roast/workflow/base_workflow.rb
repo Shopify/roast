@@ -24,6 +24,7 @@ module Roast
 
       delegate :api_provider, :openai?, to: :workflow_configuration, allow_nil: true
       delegate :output, :output=, :append_to_final_output, :final_output, to: :output_manager
+      delegate :metadata, :metadata=, to: :metadata_manager
       delegate_missing_to :output
 
       def initialize(file = nil, name: nil, context_path: nil, resource: nil, session_name: nil, workflow_configuration: nil, pre_processing_data: nil)
@@ -38,6 +39,7 @@ module Roast
 
         # Initialize managers
         @output_manager = OutputManager.new
+        @metadata_manager = MetadataManager.new
         @context_manager = ContextManager.new
         @context_management_config = {}
 
@@ -125,8 +127,8 @@ module Roast
         self
       end
 
-      # Expose output manager for state management
-      attr_reader :output_manager
+      # Expose output and metadata managers for state management
+      attr_reader :output_manager, :metadata_manager
 
       private
 

@@ -8,6 +8,7 @@ module Roast
       def setup
         @workflow = mock("workflow")
         @workflow.stubs(:output).returns({})
+        @workflow.stubs(:metadata).returns({})
         @workflow.stubs(:transcript).returns([])
         @workflow.stubs(:resource).returns(nil)
         @workflow.stubs(:append_to_final_output)

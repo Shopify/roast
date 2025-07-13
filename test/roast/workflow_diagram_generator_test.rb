@@ -75,6 +75,7 @@ module Roast
 
     test "generates correct output filename from workflow path" do
       workflow = mock("workflow")
+      workflow.stubs(:metadata).returns({})
       workflow.stubs(:name).returns("Test Workflow")
       workflow.stubs(:steps).returns([])
 
@@ -89,6 +90,7 @@ module Roast
 
     test "generates fallback filename when no path provided" do
       workflow = mock("workflow")
+      workflow.stubs(:metadata).returns({})
       workflow.stubs(:name).returns("Test Workflow!")
       workflow.stubs(:steps).returns([])
 

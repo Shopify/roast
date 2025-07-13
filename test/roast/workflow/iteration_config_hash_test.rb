@@ -7,6 +7,7 @@ module Roast
     class IterationConfigHashTest < ActiveSupport::TestCase
       def setup
         @workflow = mock("workflow")
+        @workflow.stubs(:metadata).returns({})
         @workflow.stubs(:output).returns({})
         @state_manager = mock("state_manager")
         @state_manager.stubs(:save_state)

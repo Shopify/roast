@@ -9,6 +9,7 @@ module Roast
         @workflow = mock("workflow")
         @workflow.stubs(:output).returns({})
         @workflow.stubs(:verbose).returns(false)
+        @workflow.stubs(:metadata).returns({})
 
         @config_hash = {}
 

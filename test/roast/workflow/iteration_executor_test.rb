@@ -6,6 +6,7 @@ class RoastWorkflowIterationExecutorTest < ActiveSupport::TestCase
   def setup
     @workflow = mock("workflow")
     @workflow.stubs(:output).returns({})
+    @workflow.stubs(:metadata).returns({})
     @context_path = "/test/path"
     @state_manager = mock("state_manager")
     @executor = Roast::Workflow::IterationExecutor.new(@workflow, @context_path, @state_manager, {})

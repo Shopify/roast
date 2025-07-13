@@ -8,6 +8,7 @@ module Roast
       def setup
         @workflow = mock("workflow")
         @workflow.stubs(:output).returns({})
+        @workflow.stubs(:metadata).returns({})
         @workflow.stubs(:state).returns({})
         @workflow.stubs(:respond_to?).with(:state).returns(true)
         @workflow.stubs(:respond_to?).with(:resource).returns(false)

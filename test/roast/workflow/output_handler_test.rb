@@ -6,6 +6,7 @@ class RoastWorkflowOutputHandlerTest < ActiveSupport::TestCase
   def setup
     @handler = Roast::Workflow::OutputHandler.new
     @workflow = mock("workflow")
+    @workflow.stubs(:metadata).returns({})
   end
 
   def test_save_final_output_saves_when_conditions_met

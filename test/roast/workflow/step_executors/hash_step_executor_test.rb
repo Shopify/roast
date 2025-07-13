@@ -9,6 +9,7 @@ module Roast
         def setup
           @workflow = mock("workflow")
           @workflow.stubs(:output).returns({})
+          @workflow.stubs(:metadata).returns({})
           @config_hash = {}
           @coordinator = mock("coordinator")
           @workflow_executor = mock("workflow_executor")

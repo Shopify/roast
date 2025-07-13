@@ -8,6 +8,7 @@ module Roast
       class ParallelStepExecutorTest < ActiveSupport::TestCase
         def setup
           @workflow = mock("workflow")
+          @workflow.stubs(:metadata).returns({})
           @coordinator = mock("coordinator")
           @workflow_executor = mock("workflow_executor")
           @workflow_executor.stubs(:workflow).returns(@workflow)
