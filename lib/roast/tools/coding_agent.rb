@@ -89,7 +89,7 @@ module Roast
           # parallel invocations of claude being run in the same working directory.
           session_id = nil
           if continue
-            session_id = workflow_metadata&.dig(current_step_name, "coding_agent_session_id")
+            session_id = step_metadata["coding_agent_session_id"]
           end
 
           # Build the command with continue option (may become resume if session_id exists)
