@@ -91,11 +91,11 @@ module Roast
         executor = WorkflowExecutor.new(workflow, @configuration.config_hash, @configuration.context_path)
         executor.execute_steps(steps)
 
-        $stderr.puts "🔥🔥🔥 ROAST COMPLETE! 🔥🔥🔥"
-
         # Save outputs
         @output_handler.save_final_output(workflow)
         @output_handler.write_results(workflow)
+
+        $stderr.puts "🔥🔥🔥 ROAST COMPLETE! 🔥🔥🔥"
       end
 
       private
