@@ -17,14 +17,15 @@ module Roast
               "Execute any bash command without restrictions. ⚠️ WARNING: Use only in trusted environments!",
               command: { type: "string", description: "The bash command to execute" },
               timeout: { type: "integer", description: "Timeout in seconds (optional, default: 30)", required: false },
+              use_pgroup: { type: "boolean", description: "Use process group for better cleanup (optional, default: true)", required: false },
             ) do |params|
-              Roast::Tools::Bash.call(params[:command], timeout: params[:timeout])
+              Roast::Tools::Bash.call(params[:command], timeout: params[:timeout], use_pgroup: params[:use_pgroup])
             end
           end
         end
       end
 
-      def call(command, timeout: 30)
+      def call(command, timeout: 30, use_pgroup: true)
         Roast::Helpers::Logger.info("🚀 Executing bash command: #{command}\n")
 
         # Show warning unless explicitly disabled
@@ -36,6 +37,8 @@ module Roast
           "#{command} 2>&1",
           timeout: timeout,
           working_directory: Dir.pwd,
+          use_pgroup: use_pgroup,
+          grace_period: 0.5,
         )
 
         format_output(command, result, exit_status)
