@@ -25,6 +25,7 @@ module Roast
           File.write(workflow.output_file, workflow.final_output)
           $stdout.puts "Results saved to #{workflow.output_file}"
         else
+          $stderr.puts "🔥🔥🔥 Final Output: 🔥🔥🔥"
           $stdout.puts workflow.final_output
         end
       end
