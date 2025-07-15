@@ -505,4 +505,205 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     assert_equal "high", result["severity"]
     assert_equal ["refactor loops", "sanitize input", "add tests"], result["recommendations"]
   end
+
+  test "agent step handles resume option by copying session ID from referenced step" do
+    # Create a mock workflow with metadata
+    workflow = mock
+    workflow.stubs(:resource).returns(nil)
+    workflow.stubs(:output).returns({})
+    workflow.stubs(:transcript).returns([])
+    workflow.stubs(:append_to_final_output)
+    workflow.stubs(:file).returns(nil)
+    workflow.stubs(:config).returns({})
+
+    # Set up metadata with session ID from previous step
+    metadata = {
+      "previous_step" => {
+        "coding_agent_session_id" => "session-from-previous-123",
+      },
+    }
+    workflow.stubs(:metadata).returns(metadata)
+
+    # Create agent step with resume option
+    agent_step = Roast::Workflow::AgentStep.new(workflow, name: "current_step")
+    agent_step.resume = "previous_step"
+
+    # Mock the prompt loader
+    Roast::Helpers::PromptLoader.stubs(:load_prompt).returns("Continue working on the task")
+
+    # Mock CodingAgent - should receive continue: true when resume is set
+    Roast::Tools::CodingAgent.expects(:call).with(
+      "Continue working on the task",
+      include_context_summary: false,
+      continue: true, # Should be true because resume is set
+    ).returns("Continued from previous session")
+
+    # Execute the step
+    result = agent_step.call
+
+    # Verify the session ID was copied to the current step's metadata
+    assert_equal "session-from-previous-123", metadata["current_step"]["coding_agent_session_id"]
+    assert_equal "Continued from previous session", result
+  end
+
+  test "agent step logs warning when resume step has no session ID" do
+    # Create a mock workflow with metadata (no session ID for previous_step)
+    workflow = mock
+    workflow.stubs(:resource).returns(nil)
+    workflow.stubs(:output).returns({})
+    workflow.stubs(:transcript).returns([])
+    workflow.stubs(:append_to_final_output)
+    workflow.stubs(:file).returns(nil)
+    workflow.stubs(:config).returns({})
+
+    # Metadata without session ID
+    metadata = {
+      "previous_step" => {},
+    }
+    workflow.stubs(:metadata).returns(metadata)
+
+    # Create agent step with resume option
+    agent_step = Roast::Workflow::AgentStep.new(workflow, name: "current_step")
+    agent_step.resume = "previous_step"
+
+    # Mock the prompt loader
+    Roast::Helpers::PromptLoader.stubs(:load_prompt).returns("Continue working on the task")
+
+    # Expect warning log
+    Roast::Helpers::Logger.expects(:warn).with("Cannot resume from step 'previous_step'. It does not have a coding_agent_session_id in its metadata.")
+
+    # Mock CodingAgent - should not receive `continue: true` implied by `resume` because we don't have a session ID
+    Roast::Tools::CodingAgent.expects(:call).with(
+      "Continue working on the task",
+      include_context_summary: false,
+      continue: false,
+    ).returns("Ran with --continue instead of --resume")
+
+    # Execute the step
+    result = agent_step.call
+
+    # Verify no session ID was copied
+    assert_nil metadata["current_step"]
+    assert_equal "Ran with --continue instead of --resume", result
+  end
+
+  test "agent step passes continue true when either continue is set or resume is set with a session_id available" do
+    # Test with continue: true, resume: nil
+    workflow = mock
+    workflow.stubs(:resource).returns(nil)
+    workflow.stubs(:output).returns({})
+    workflow.stubs(:transcript).returns([])
+    workflow.stubs(:append_to_final_output)
+    workflow.stubs(:file).returns(nil)
+    workflow.stubs(:config).returns({})
+
+    # Create metadata with session ID for "some_step"
+    metadata_with_session = {
+      "some_step" => {
+        "coding_agent_session_id" => "session-123",
+      },
+    }
+    workflow.stubs(:metadata).returns(metadata_with_session)
+
+    agent_step = Roast::Workflow::AgentStep.new(workflow, name: "test_step")
+    agent_step.continue = true
+    agent_step.resume = nil
+
+    Roast::Helpers::PromptLoader.stubs(:load_prompt).returns("Test prompt")
+    Roast::Tools::CodingAgent.expects(:call).with(
+      "Test prompt",
+      include_context_summary: false,
+      continue: true,
+    ).returns("Result")
+
+    agent_step.call
+
+    agent_step2 = Roast::Workflow::AgentStep.new(workflow, name: "test_step2")
+    agent_step2.continue = false
+    agent_step2.resume = "some_step"
+
+    Roast::Tools::CodingAgent.expects(:call).with(
+      "Test prompt",
+      include_context_summary: false,
+      continue: true, # Should be true because resume is set and a session_id is available
+    ).returns("Result")
+
+    agent_step2.call
+
+    # Verify the session ID was copied
+    assert_equal "session-123", metadata_with_session["test_step2"]["coding_agent_session_id"]
+  end
+
+  test "agent step full integration test with resume functionality" do
+    Dir.mktmpdir do |tmpdir|
+      workflow_file = File.join(tmpdir, "test_workflow.yml")
+      File.write(workflow_file, <<~YAML)
+        name: resume_test_workflow
+        tools: []
+        steps:
+          - ^analyze the code
+          - ^refactor based on analysis
+          - ^polish the refactoring
+
+        analyze the code:
+          continue: false
+
+        refactor based on analysis:
+          continue: true
+
+        polish the refactoring:
+          resume: "analyze the code"
+      YAML
+
+      # Create a Configuration from the YAML
+      configuration = Roast::Workflow::Configuration.new(workflow_file)
+
+      # Create a workflow from the configuration
+      workflow = Roast::Workflow::BaseWorkflow.new(nil, name: configuration.name)
+
+      # Initialize metadata
+      workflow.metadata["analyze the code"] = {
+        "coding_agent_session_id" => "initial-session-789",
+      }
+
+      # Create WorkflowExecutor
+      executor = Roast::Workflow::WorkflowExecutor.new(
+        workflow,
+        configuration.config_hash,
+        tmpdir,
+      )
+
+      # Mock CodingAgent calls
+      # First step - no continue
+      Roast::Tools::CodingAgent.expects(:call).with(
+        "analyze the code",
+        include_context_summary: false,
+        continue: false,
+      ).returns("Analysis complete")
+
+      # Second step - continue: true
+      Roast::Tools::CodingAgent.expects(:call).with(
+        "refactor based on analysis",
+        include_context_summary: false,
+        continue: true,
+      ).returns("Refactoring done")
+
+      # Third step - resume from first step
+      Roast::Tools::CodingAgent.expects(:call).with(
+        "polish the refactoring",
+        include_context_summary: false,
+        continue: true, # True because resume is set
+      ).returns("Polishing complete")
+
+      executor.execute_steps(configuration.steps)
+
+      # Verify outputs
+      assert_equal "Analysis complete", workflow.output["analyze the code"]
+      assert_equal "Refactoring done", workflow.output["refactor based on analysis"]
+      assert_equal "Polishing complete", workflow.output["polish the refactoring"]
+
+      # Verify metadata was copied for resume
+      assert_equal "initial-session-789", workflow.metadata["polish the refactoring"]["coding_agent_session_id"]
+    end
+  end
 end

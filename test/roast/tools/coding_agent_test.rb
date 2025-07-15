@@ -259,6 +259,88 @@ module Roast
         assert_equal "string", function_def[:params][:prompt][:type]
         assert_equal "The prompt to send to Claude Code", function_def[:params][:prompt][:description]
       end
+
+      test "handle_session_info extracts and stores session_id from JSON" do
+        # Mock MetadataAccess methods
+        CodingAgent.expects(:set_current_step_metadata).with("coding_agent_session_id", "test-session-123")
+
+        # Create JSON with session_id
+        json = { "session_id" => "test-session-123" }
+
+        # Call handle_session_info
+        Roast::Tools::CodingAgent.send(:handle_session_info, json)
+      end
+
+      test "handle_session_info does nothing when no session_id in JSON" do
+        # Create JSON without session_id
+        json = { "type" => "assistant", "message" => "some message" }
+
+        # Expect no call to set_current_step_metadata
+        CodingAgent.expects(:set_current_step_metadata).never
+
+        # Call handle_session_info
+        Roast::Tools::CodingAgent.send(:handle_session_info, json)
+      end
+
+      test "run_claude_code uses session_id from metadata when continue is true" do
+        original_env = ENV["CLAUDE_CODE_COMMAND"]
+        ENV["CLAUDE_CODE_COMMAND"] = "claude --output-format stream-json"
+
+        # Mock MetadataAccess methods
+        CodingAgent.expects(:current_step_name).returns("test_step").at_least_once
+        CodingAgent.expects(:workflow_metadata).returns({
+          "test_step" => {
+            "coding_agent_session_id" => "existing-session-456",
+          },
+        }).at_least_once
+
+        # Mock successful response
+        mock_output = [
+          { type: "result", subtype: "success", is_error: false, result: "Success with resume" }.to_json,
+        ].join("\n")
+        mock_stdin = mock
+        mock_stdout = StringIO.new(mock_output)
+        mock_stderr = StringIO.new("")
+        mock_wait_thread = mock
+        mock_status = mock
+        mock_stdin.expects(:close)
+        mock_status.expects(:success?).returns(true)
+        mock_wait_thread.expects(:value).returns(mock_status)
+
+        # Expect command with --resume flag
+        Open3.expects(:popen3).with { |cmd| cmd =~ /claude --resume existing-session-456 --output-format stream-json$/ }
+          .yields(mock_stdin, mock_stdout, mock_stderr, mock_wait_thread)
+
+        result = Roast::Tools::CodingAgent.send(:run_claude_code, "Test prompt", include_context_summary: false, continue: true)
+        assert_equal("Success with resume", result)
+      ensure
+        ENV["CLAUDE_CODE_COMMAND"] = original_env
+      end
+
+      test "run_claude_code clears session_id when not using JSON formatting" do
+        original_env = ENV["CLAUDE_CODE_COMMAND"]
+        ENV["CLAUDE_CODE_COMMAND"] = "claude"
+
+        # Mock MetadataAccess methods
+        CodingAgent.expects(:set_current_step_metadata).with("coding_agent_session_id", nil)
+
+        # Mock successful response (non-JSON)
+        mock_stdin = mock
+        mock_stdout = StringIO.new("Plain text response")
+        mock_stderr = StringIO.new("")
+        mock_wait_thread = mock
+        mock_status = mock
+        mock_stdin.expects(:close)
+        mock_status.expects(:success?).returns(true)
+        mock_wait_thread.expects(:value).returns(mock_status)
+
+        Open3.expects(:popen3).yields(mock_stdin, mock_stdout, mock_stderr, mock_wait_thread)
+
+        result = Roast::Tools::CodingAgent.send(:run_claude_code, "Test prompt", include_context_summary: false, continue: false)
+        assert_equal("Plain text response", result)
+      ensure
+        ENV["CLAUDE_CODE_COMMAND"] = original_env
+      end
     end
   end
 end
