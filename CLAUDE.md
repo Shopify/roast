@@ -186,7 +186,7 @@ When creating GitHub issues, always check available labels, projects, and milest
 
 ```bash
 # List all available labels
-gh api repos/Shopify/roast/labels | jq '.[].name'
+gh label list --repo Shopify/roast --json name --jq '.[].name'
 
 # List all milestones
 gh api repos/Shopify/roast/milestones | jq '.[] | {title: .title, number: .number, state: .state}'

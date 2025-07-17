@@ -528,8 +528,8 @@ This feature is particularly useful when:
 - Resuming after failures in long-running workflows
 
 **Storage Locations:**
-- SQLite: `~/.roast/sessions.db` (configurable via `ROAST_SESSIONS_DB`)
-- Filesystem: `.roast/sessions/` directory in your project
+- SQLite: `$XDG_DATA_HOME/roast/sessions.db` (default: `~/.local/share/roast/sessions.db`, configurable via `ROAST_SESSIONS_DB`)
+- Filesystem: `$XDG_DATA_HOME/roast/sessions/` (default: `~/.local/share/roast/sessions/`)
 
 #### Target Option (`-t, --target`)
 
@@ -1082,10 +1082,11 @@ See the [MCP tools example](examples/mcp/) for complete documentation and more e
 
 ### Custom Tools
 
-You can create your own tools using the [Raix function dispatch pattern](https://github.com/OlympiaAI/raix-rails?tab=readme-ov-file#use-of-toolsfunctions). Custom tools should be placed in `.roast/initializers/` (subdirectories are supported):
+You can create your own tools using the [Raix function dispatch pattern](https://github.com/OlympiaAI/raix-rails?tab=readme-ov-file#use-of-toolsfunctions). Custom tools should be placed in initializers directories (subdirectories are supported):
 
 ```ruby
-# .roast/initializers/tools/git_analyzer.rb
+# ~/.config/roast/initializers/tools/git_analyzer.rb
+# OR {workflow_directory}/initializers/tools/git_analyzer.rb
 module MyProject
   module Tools
     module GitAnalyzer
@@ -1133,22 +1134,45 @@ The tool will be available to the AI model during workflow execution, and it can
 
 ### Project-specific Configuration
 
-You can extend Roast with project-specific configuration by creating initializers in `.roast/initializers/`. These are automatically loaded when workflows run, allowing you to:
+You can extend Roast with project-specific configuration by creating initializers. These are automatically loaded when workflows run, allowing you to:
 
 - Add custom instrumentation
 - Configure monitoring and metrics
 - Set up project-specific tools
 - Customize workflow behavior
 
-Example structure:
+Roast supports initializers in multiple locations (in priority order):
+
+1. **Workflow-local initializers**: Place alongside your workflow steps
+2. **Global XDG config**: Shared across all projects using XDG Base Directory specification
+
+Example structures:
 ```
-your-project/
-  ├── .roast/
-  │   └── initializers/
-  │       ├── metrics.rb
-  │       ├── logging.rb
-  │       └── custom_tools.rb
+# Workflow-local (highest priority)
+your-workflow/
+  ├── workflow.yml
+  ├── analyze_code/
+  ├── initializers/
+  │   ├── metrics.rb
+  │   ├── logging.rb
+  │   └── custom_tools.rb
   └── ...
+
+# Global XDG config (user-wide)
+~/.config/roast/
+  └── initializers/
+      ├── shopify_defaults.rb
+      └── custom_tools.rb
+```
+
+**XDG Configuration Directories:**
+- Config: `$XDG_CONFIG_HOME/roast` (default: `~/.config/roast`)
+- Cache: `$XDG_CACHE_HOME/roast` (default: `~/.cache/roast`)
+
+You can customize these locations by setting XDG environment variables:
+```bash
+export XDG_CONFIG_HOME="/custom/config"
+export XDG_CACHE_HOME="/fast/ssd/cache"
 ```
 
 ### Pre/Post Processing Framework

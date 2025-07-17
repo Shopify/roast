@@ -51,7 +51,7 @@ module Roast
             msg_string = format_message(msg)
 
             if severity == "INFO" && !msg_string.start_with?("[")
-              msg_string
+              msg_string + "\n"
             else
               "[#{datetime.strftime("%Y-%m-%d %H:%M:%S")}] #{severity}: #{msg_string.gsub(/^\[|\]$/, "").strip}\n"
             end

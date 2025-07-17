@@ -40,10 +40,28 @@ require "zeitwerk"
 
 # Set up Zeitwerk autoloader
 loader = Zeitwerk::Loader.for_gem
+
+# Configure custom inflector for XDG acronym
+loader.inflector.inflect("xdg_migration" => "XDGMigration")
+
 loader.setup
 
 module Roast
   ROOT = File.expand_path("../..", __FILE__)
+
+  # https://specifications.freedesktop.org/basedir-spec/latest/
+  XDG_CONFIG_HOME = ENV.fetch("XDG_CONFIG_HOME", File.join(Dir.home, ".config"))
+  XDG_CACHE_HOME = ENV.fetch("XDG_CACHE_HOME", File.join(Dir.home, ".cache"))
+  XDG_DATA_HOME = ENV.fetch("XDG_DATA_HOME", File.join(Dir.home, ".local", "share"))
+
+  CONFIG_DIR = File.join(XDG_CONFIG_HOME, "roast")
+  CACHE_DIR = File.join(XDG_CACHE_HOME, "roast")
+  DATA_DIR = File.join(XDG_DATA_HOME, "roast")
+
+  GLOBAL_INITIALIZERS_DIR = File.join(CONFIG_DIR, "initializers")
+  FUNCTION_CACHE_DIR = File.join(CACHE_DIR, "function_calls")
+  SESSION_DATA_DIR = File.join(DATA_DIR, "sessions")
+  SESSION_DB_PATH = ENV.fetch("ROAST_SESSIONS_DB", File.join(DATA_DIR, "sessions.db"))
 
   class CLI < Thor
     desc "execute [WORKFLOW_CONFIGURATION_FILE] [FILES...]", "Run a configured workflow"
@@ -66,6 +84,8 @@ module Roast
         File.expand_path("roast/#{workflow_path}/workflow.yml")
       end
 
+      Roast::XDGMigration.warn_if_migration_needed(expanded_workflow_path)
+
       raise Thor::Error, "Expected a Roast workflow configuration file, got directory: #{expanded_workflow_path}" if File.directory?(expanded_workflow_path)
 
       Roast::Workflow::ConfigurationParser.new(expanded_workflow_path, files, options.transform_keys(&:to_sym)).begin!
@@ -81,6 +101,8 @@ module Roast
       else
         File.expand_path("roast/#{workflow_path}/workflow.yml")
       end
+
+      Roast::XDGMigration.warn_if_migration_needed(expanded_workflow_path)
 
       unless File.exist?(expanded_workflow_path)
         raise Thor::Error, "Workflow file not found: #{expanded_workflow_path}"
@@ -141,6 +163,8 @@ module Roast
       puts "Available workflows:"
       puts
 
+      Roast::XDGMigration.warn_if_migration_needed
+
       workflow_files.each do |file|
         workflow_name = File.dirname(file.sub("#{roast_dir}/", ""))
         puts "  #{workflow_name} (from project)"
@@ -153,6 +177,8 @@ module Roast
     desc "validate [WORKFLOW_CONFIGURATION_FILE]", "Validate a workflow configuration"
     option :strict, type: :boolean, aliases: "-s", desc: "Treat warnings as errors"
     def validate(workflow_path = nil)
+      Roast::XDGMigration.warn_if_migration_needed(workflow_path)
+
       validation_command = Roast::Workflow::ValidationCommand.new(options)
       validation_command.execute(workflow_path)
     end
@@ -204,6 +230,8 @@ module Roast
 
     desc "session SESSION_ID", "Show details for a specific session"
     def session(session_id)
+      Roast::XDGMigration.warn_if_migration_needed
+
       repository = Workflow::StateRepositoryFactory.create
 
       unless repository.respond_to?(:get_session_details)
@@ -254,6 +282,8 @@ module Roast
     desc "diagram WORKFLOW_FILE", "Generate a visual diagram of a workflow"
     option :output, type: :string, aliases: "-o", desc: "Output file path (defaults to workflow_name_diagram.png)"
     def diagram(workflow_file)
+      Roast::XDGMigration.warn_if_migration_needed(workflow_file)
+
       unless File.exist?(workflow_file)
         raise Thor::Error, "Workflow file not found: #{workflow_file}"
       end
@@ -267,7 +297,58 @@ module Roast
       raise Thor::Error, "Error generating diagram: #{e.message}"
     end
 
+    desc "xdg-migrate [WORKFLOW_PATH]", "Migrate legacy .roast directories to XDG directories"
+    option :auto_confirm, type: :boolean, aliases: "-a", desc: "Automatically confirm all prompts"
+    def xdg_migrate(workflow_path = nil)
+      workflow_file_path = if workflow_path.nil?
+        Roast::Helpers::Logger.warn(::CLI::UI.fmt("{{yellow:No workflow path provided, will not be able to migrate initializers.}}"))
+        nil
+      elsif workflow_path.include?("workflow.yml")
+        File.expand_path(workflow_path)
+      else
+        File.expand_path("roast/#{workflow_path}/workflow.yml")
+      end
+
+      if workflow_file_path && !File.exist?(workflow_file_path)
+        raise Thor::Error, "Workflow file not found: #{workflow_file_path}"
+      end
+
+      workflow_context_path = File.dirname(workflow_file_path) if workflow_file_path
+
+      roast_dirs = Roast::XDGMigration.find_all_legacy_dot_roast_dirs(workflow_context_path || Dir.pwd)
+      dot_roast_path = run_roast_dir_picker(roast_dirs) unless roast_dirs.empty?
+
+      if dot_roast_path.nil?
+        Roast::Helpers::Logger.info("No legacy .roast directories found.")
+        return
+      end
+
+      # Migrate specific .roast directory
+      migration = Roast::XDGMigration.new(
+        dot_roast_path:,
+        workflow_context_path:,
+        auto_confirm: options[:auto_confirm],
+      )
+
+      migration.migrate
+    end
+
     private
+
+    def run_roast_dir_picker(roast_dirs)
+      choices = roast_dirs.map { |dir| File.dirname(dir) + "/.roast" }
+      choices << "Cancel"
+
+      selected = ::CLI::UI::Prompt.ask("Select a .roast directory to migrate:") do |handler|
+        choices.each { |choice| handler.option(choice) { |selection| selection } }
+      end
+
+      return if selected == "Cancel"
+
+      # Find the full path for the selected directory
+      selected_index = choices.index(selected)
+      roast_dirs[selected_index]
+    end
 
     def show_example_picker
       examples = available_examples

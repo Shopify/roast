@@ -5,12 +5,19 @@ require "test_helper"
 module Roast
   module Workflow
     class JsonReplayTest < ActiveSupport::TestCase
+      include XDGHelper
+
       setup do
+        stub_xdg_env(Dir.mktmpdir)
         @workflow = BaseWorkflow.new(nil, name: "test_workflow")
         @workflow.session_name = "test_session"
         @workflow.storage_type = "file" # Force file storage for this test
         @state_repository = StateRepositoryFactory.create("file")
         @state_manager = StateManager.new(@workflow, state_repository: @state_repository)
+      end
+
+      teardown do
+        unstub_xdg_env
       end
 
       test "JSON response preserved as hash through save/load cycle" do
