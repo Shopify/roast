@@ -1,0 +1,362 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# hack: Create a worktree, start Claude Code, and manage cleanup
+# Usage:
+#   hack [BRANCH]     - Create worktree and start Claude Code session
+#
+# If BRANCH is not provided, it will present an fzf picker to select a branch
+
+require 'fileutils'
+require 'open3'
+require 'io/console'
+
+# Get the current repository root and name
+def get_repo_info
+  repo_root, _status = Open3.capture2('git rev-parse --show-toplevel')
+  repo_root = repo_root.strip
+  repo_name = File.basename(repo_root)
+
+  [repo_root, repo_name]
+end
+
+# Get parent directory for worktrees (one level up from repo root)
+def get_worktree_parent_dir
+  repo_root, _repo_name = get_repo_info
+  File.dirname(repo_root)
+end
+
+# Get worktree path for a given branch
+def get_worktree_path(branch)
+  _repo_root, repo_name = get_repo_info
+  parent_dir = get_worktree_parent_dir
+  clean_branch = get_clean_branch_name(branch)
+  "#{parent_dir}/#{repo_name}@#{clean_branch}"
+end
+
+# Ensure we're in a git repository
+def ensure_git_repo
+  unless system('git rev-parse --is-inside-work-tree > /dev/null 2>&1')
+    puts "Error: Not in a git repository"
+    exit 1
+  end
+end
+
+# Check if a branch exists (local or remote)
+def branch_exists?(branch_name)
+  # Check local branches
+  local_check = system("git show-ref --verify --quiet refs/heads/#{branch_name}")
+  return true if local_check
+
+  # Check remote branches
+  remote_check = system("git show-ref --verify --quiet refs/remotes/origin/#{branch_name}")
+  return true if remote_check
+
+  false
+end
+
+# Create a new branch
+def create_branch(branch_name)
+  puts "Creating new branch '#{branch_name}' from current HEAD..."
+
+  # Create the branch but don't switch to it (so we can create a worktree for it)
+  system("git branch '#{branch_name}'")
+
+  unless $?.success?
+    puts "Failed to create branch '#{branch_name}'"
+    exit 1
+  end
+
+  puts "Branch '#{branch_name}' created successfully"
+end
+
+# Pick a branch using fzf
+def pick_branch
+  branches_cmd = "git branch --all | grep -v HEAD | sed 's/^\\s*//' | sed 's/^remotes\\/origin\\///' | sort -u"
+  branches, _status = Open3.capture2(branches_cmd)
+
+  # Exit if no branches found
+  if branches.strip.empty?
+    puts "No branches found"
+    exit 1
+  end
+
+  # Use fzf to select a branch
+  selected, _status = Open3.capture2("fzf --height 40% --reverse --no-multi --prompt='Select existing branch for hack session: '", stdin_data: branches)
+  selected.strip
+end
+
+# Prompt for new branch name
+def prompt_new_branch_name
+  print "Enter new branch name: "
+  branch_name = STDIN.gets.chomp
+
+  if branch_name.empty?
+    puts "Branch name cannot be empty"
+    exit 1
+  end
+
+  # Validate branch name (basic check)
+  if branch_name.match?(/[^a-zA-Z0-9\-_.\/]/)
+    puts "Invalid branch name. Use only letters, numbers, hyphens, underscores, dots, and forward slashes."
+    exit 1
+  end
+
+  branch_name
+end
+
+# Ask user what they want to do
+def ask_user_choice
+  puts "What would you like to do?"
+  puts "1. Create worktree for existing branch"
+  puts "2. Create new branch and worktree"
+  print "Enter choice (1 or 2): "
+
+  choice = STDIN.gets.chomp
+
+  case choice
+  when '1'
+    :existing_branch
+  when '2'
+    :new_branch
+  else
+    puts "Invalid choice. Please enter 1 or 2."
+    ask_user_choice
+  end
+end
+
+# Get clean branch name for directory
+def get_clean_branch_name(branch)
+  branch.gsub(/[^[:alnum:]-]/, '-').sub(/-*$/, '')
+end
+
+# Check if worktree is dirty
+def worktree_dirty?(path)
+  dirty_check_cmd = "git -C '#{path}' status --porcelain"
+  dirty_status, _status = Open3.capture2(dirty_check_cmd)
+  !dirty_status.strip.empty?
+end
+
+# Prompt user for yes/no answer
+def prompt_yes_no(question, default = 'n')
+  print "#{question} [y/N]: "
+  response = STDIN.gets.chomp.downcase
+  response.empty? ? (default == 'y') : (response == 'y' || response == 'yes')
+end
+
+# Create or use existing worktree
+def setup_worktree(branch, branch_created = false)
+  worktree_path = get_worktree_path(branch)
+
+  created_new = false
+
+  if Dir.exist?(worktree_path)
+    puts "Using existing worktree for '#{branch}' at '#{worktree_path}'"
+  else
+    puts "Creating worktree for '#{branch}' at '#{worktree_path}'..."
+
+    # Add the worktree
+    system("git worktree add '#{worktree_path}' '#{branch}'")
+
+    # Check if the command succeeded
+    unless $?.success?
+      FileUtils.rm_rf(worktree_path)
+      puts "Failed to create worktree"
+      exit 1
+    end
+
+    created_new = true
+  end
+
+  [worktree_path, created_new]
+end
+
+# Remove worktree if it's clean
+def cleanup_worktree(worktree_path, branch_name)
+  if worktree_dirty?(worktree_path)
+    puts "Worktree has uncommitted changes - cannot auto-cleanup"
+    return false
+  end
+
+  # Change to main worktree before removing the current one
+  repo_root, _repo_name = get_repo_info
+  current_dir = Dir.pwd
+
+  # Only change directory if we're currently in the worktree being removed
+  if current_dir.start_with?(worktree_path)
+    puts "Moving to main worktree before cleanup..."
+    Dir.chdir(repo_root)
+  end
+
+  puts "Removing worktree at '#{worktree_path}'..."
+  system("git worktree remove --force '#{worktree_path}'")
+
+  if $?.success?
+    puts "Worktree for '#{branch_name}' removed successfully"
+
+    # Ask if they want to delete the branch too
+    if prompt_yes_no("Would you also like to delete the branch '#{branch_name}'?")
+      puts "Deleting branch '#{branch_name}'..."
+      system("git branch -D '#{branch_name}'")
+      if $?.success?
+        puts "Branch '#{branch_name}' deleted successfully"
+      else
+        puts "Failed to delete branch '#{branch_name}'"
+      end
+    end
+
+    return true
+  else
+    puts "Failed to remove worktree"
+    return false
+  end
+end
+
+# Start Claude Code session
+def start_claude_session(worktree_path)
+  puts "Starting Claude Code session in #{worktree_path}..."
+  puts "Use /exit to end the session"
+  puts
+
+  # Change to worktree directory and start claude
+  Dir.chdir(worktree_path)
+  system('claude')
+
+  # Return the exit status
+  $?.success?
+end
+
+# Handle post-session cleanup
+def handle_cleanup(worktree_path, branch_name, created_new)
+  repo_root, _repo_name = get_repo_info
+
+  puts
+  puts "Claude Code session ended."
+
+  # If worktree is dirty, inform user and ask what to do
+  if worktree_dirty?(worktree_path)
+    puts "Your worktree has uncommitted changes."
+
+    if prompt_yes_no("Would you like to stay in this worktree to continue working?", 'y')
+      puts "Staying in worktree: #{worktree_path}"
+      return worktree_path
+    else
+      puts "Returning to main worktree (changes preserved in worktree)"
+      return repo_root
+    end
+  end
+
+  # Ask if they want to remove the worktree
+  if prompt_yes_no("Are you done with this worktree? (This will delete it)")
+    if cleanup_worktree(worktree_path, branch_name)
+      puts "Returning to main worktree"
+      return repo_root
+    else
+      # Cleanup failed, ask where to go
+      if prompt_yes_no("Would you like to stay in this worktree?")
+        return worktree_path
+      else
+        return repo_root
+      end
+    end
+  else
+    # User wants to keep the worktree
+    if prompt_yes_no("Would you like to stay in this worktree?")
+      puts "Staying in worktree: #{worktree_path}"
+      return worktree_path
+    else
+      puts "Returning to main worktree (worktree preserved)"
+      return repo_root
+    end
+  end
+end
+
+# Display usage information
+def show_usage
+  puts "Usage: hack [BRANCH]"
+  puts
+  puts "Create a worktree and start a Claude Code session."
+  puts "After the session ends, you'll be prompted about cleanup."
+  puts
+  puts "If BRANCH is not provided, you'll get an fzf picker to select a branch."
+  exit 0
+end
+
+# Main function
+def main
+  ensure_git_repo
+
+  # Parse arguments
+  if ARGV.include?('--help') || ARGV.include?('-h') || ARGV.include?('help')
+    show_usage
+    return
+  end
+
+  # Determine branch and whether we need to create it
+  branch = nil
+  branch_created = false
+
+  if ARGV.empty?
+    # No arguments - ask user what they want to do
+    choice = ask_user_choice
+
+    case choice
+    when :existing_branch
+      branch = pick_branch
+    when :new_branch
+      branch = prompt_new_branch_name
+      create_branch(branch)
+      branch_created = true
+    end
+  else
+    # Branch name provided as argument
+    branch = ARGV[0]
+
+    unless branch_exists?(branch)
+      if prompt_yes_no("Branch '#{branch}' doesn't exist. Create it?", 'y')
+        create_branch(branch)
+        branch_created = true
+      else
+        puts "Exiting without creating branch"
+        exit 0
+      end
+    end
+  end
+
+  # Exit if no branch selected (e.g., user pressed ESC in fzf)
+  if branch.nil? || branch.empty?
+    puts "No branch selected, exiting"
+    exit 0
+  end
+
+  # Setup worktree
+  worktree_path, created_new = setup_worktree(branch, branch_created)
+  clean_branch = get_clean_branch_name(branch)
+
+  # Ask if user wants to open a new editor window
+  if prompt_yes_no("Would you like to open a new editor window on this worktree?")
+    editor = ENV['EDITOR'] || 'vim'
+    puts "Opening editor in #{worktree_path}..."
+    system("#{editor} '#{worktree_path}'")
+  end
+
+  # Start Claude Code session
+  claude_success = start_claude_session(worktree_path)
+
+  # Handle cleanup and determine final directory
+  final_dir = handle_cleanup(worktree_path, branch, created_new)
+
+  # Change to final directory and spawn new shell
+  if Dir.exist?(final_dir)
+    puts "Changing to: #{final_dir}"
+    Dir.chdir(final_dir)
+    exec(ENV['SHELL'])
+  else
+    puts "Target directory no longer exists, falling back to main worktree"
+    repo_root, _repo_name = get_repo_info
+    Dir.chdir(repo_root)
+    exec(ENV['SHELL'])
+  end
+end
+
+main
