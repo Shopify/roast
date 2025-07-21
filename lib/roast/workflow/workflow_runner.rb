@@ -13,24 +13,24 @@ module Roast
 
       def run_for_files(files)
         if @configuration.has_target?
-          $stderr.puts "WARNING: Ignoring target parameter because files were provided: #{@configuration.target}"
+          $stderr.puts "⚠️ WARNING: Ignoring target parameter because files were provided: #{@configuration.target}"
         end
 
         # Execute pre-processing steps once before any targets
         if @configuration.pre_processing.any?
-          $stderr.puts "Running pre-processing steps..."
+          $stderr.puts "🔧 Running pre-processing steps..."
           run_pre_processing
         end
 
         # Execute main workflow for each file
         files.each do |file|
-          $stderr.puts "Running workflow for file: #{file}"
+          $stderr.puts "🗳️ Running workflow for file: #{file}"
           run_single_workflow(file.strip)
         end
 
         # Execute post-processing steps once after all targets
         if @configuration.post_processing.any?
-          $stderr.puts "Running post-processing steps..."
+          $stderr.puts "🧹 Running post-processing steps..."
           run_post_processing
         end
       end
@@ -41,29 +41,29 @@ module Roast
 
         # Execute pre-processing steps once before any targets
         if @configuration.pre_processing.any?
-          $stderr.puts "Running pre-processing steps..."
+          $stderr.puts "🔧 Running pre-processing steps..."
           run_pre_processing
         end
 
         # Execute main workflow for each target
         target_lines.each do |file|
-          $stderr.puts "Running workflow for file: #{file}"
+          $stderr.puts "🗳️ Running workflow for file: #{file}"
           run_single_workflow(file)
         end
 
         # Execute post-processing steps once after all targets
         if @configuration.post_processing.any?
-          $stderr.puts "Running post-processing steps..."
+          $stderr.puts "🧹 Running post-processing steps..."
           run_post_processing
         end
       end
 
       def run_targetless
-        $stderr.puts "Running targetless workflow"
+        $stderr.puts "🎯 Running targetless workflow"
 
         # Execute pre-processing steps
         if @configuration.pre_processing.any?
-          $stderr.puts "Running pre-processing steps..."
+          $stderr.puts "🔧 Running pre-processing steps..."
           run_pre_processing
         end
 
@@ -72,7 +72,7 @@ module Roast
 
         # Execute post-processing steps
         if @configuration.post_processing.any?
-          $stderr.puts "Running post-processing steps..."
+          $stderr.puts "🧹 Running post-processing steps..."
           run_post_processing
         end
       end
