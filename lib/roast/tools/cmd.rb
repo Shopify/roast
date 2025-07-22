@@ -71,6 +71,11 @@ module Roast
                 description: "Timeout in seconds (optional, default: 30)",
                 required: false,
               },
+              use_pgroup: {
+                type: "boolean",
+                description: "Use process group for better cleanup (optional, default: true)",
+                required: false,
+              },
             ) do |params|
               full_command = if params[:args].nil? || params[:args].empty?
                 command
@@ -78,7 +83,7 @@ module Roast
                 "#{command} #{params[:args]}"
               end
 
-              Roast::Tools::Cmd.execute_allowed_command(full_command, command, params[:timeout])
+              Roast::Tools::Cmd.execute_allowed_command(full_command, command, params[:timeout], params[:use_pgroup])
             end
           end
         end
@@ -89,16 +94,16 @@ module Roast
         end
       end
 
-      def execute_allowed_command(full_command, command_prefix, timeout = 30)
+      def execute_allowed_command(full_command, command_prefix, timeout = 30, use_pgroup = true)
         Roast::Helpers::Logger.info("🔧 Running command: #{full_command}\n")
 
-        execute_command(full_command, command_prefix, timeout)
+        execute_command(full_command, command_prefix, timeout, use_pgroup)
       rescue StandardError => e
         handle_error(e)
       end
 
       # Legacy method for backward compatibility
-      def call(command, config = {}, timeout: 30)
+      def call(command, config = {}, timeout: 30, use_pgroup: true)
         Roast::Helpers::Logger.info("🔧 Running command: #{command}\n")
 
         allowed_commands = config[CONFIG_ALLOWED_COMMANDS] || DEFAULT_ALLOWED_COMMANDS
@@ -107,7 +112,7 @@ module Roast
 
         command_prefix = command.split(" ").first
 
-        execute_command(command, command_prefix, timeout)
+        execute_command(command, command_prefix, timeout, use_pgroup)
       rescue StandardError => e
         handle_error(e)
       end
@@ -138,7 +143,7 @@ module Roast
         configuration&.tool_config("Roast::Tools::Cmd") || {}
       end
 
-      def execute_command(command, command_prefix, timeout)
+      def execute_command(command, command_prefix, timeout, use_pgroup = true)
         timeout = Roast::Helpers::TimeoutHandler.validate_timeout(timeout)
 
         full_command = if command_prefix == "dev"
@@ -151,6 +156,8 @@ module Roast
           full_command,
           timeout: timeout,
           working_directory: Dir.pwd,
+          use_pgroup: use_pgroup,
+          grace_period: 0.5,
         )
 
         format_output(command, result, exit_status)
