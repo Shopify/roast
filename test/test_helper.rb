@@ -18,8 +18,10 @@ require "vcr"
 require "webmock/minitest"
 
 # Test support files
-require "support/fixture_helpers"
 require "support/improved_assertions"
+require "support/redefine_constants"
+require "support/fixture_helpers"
+require "support/xdg_helper"
 
 # Turn on color during CI since GitHub Actions supports it
 if ENV["CI"]

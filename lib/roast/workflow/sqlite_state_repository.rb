@@ -7,8 +7,6 @@ module Roast
     # SQLite-based implementation of StateRepository
     # Provides structured, queryable session storage with better performance
     class SqliteStateRepository < StateRepository
-      DEFAULT_DB_PATH = File.expand_path("~/.roast/sessions.db")
-
       def initialize(db_path: nil, session_manager: SessionManager.new)
         super()
 
@@ -19,7 +17,17 @@ module Roast
           raise LoadError, "SQLite storage requires the 'sqlite3' gem. Please add it to your Gemfile or install it: gem install sqlite3"
         end
 
-        @db_path = db_path || ENV["ROAST_SESSIONS_DB"] || DEFAULT_DB_PATH
+        # Priority order
+        paths = [
+          db_path,
+          Roast::SESSION_DB_PATH,
+          Roast::XDGMigration.new.legacy_sessions_db_path,
+        ]
+
+        # If multiple options exist, prefer the first one that exists
+        @db_path = paths.find { |path| path && File.exist?(path) }
+        # If no options exist as paths, use the first one that is not nil
+        @db_path ||= paths.find { |path| !path.nil? }
         @session_manager = session_manager
         ensure_database
       end

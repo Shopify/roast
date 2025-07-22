@@ -4,15 +4,8 @@ module Roast
   module Tools
     extend self
 
-    # Initialize cache and ensure .gitignore exists
-    cache_dir = File.join(Dir.pwd, ".roast", "cache")
-    FileUtils.mkdir_p(cache_dir) unless File.directory?(cache_dir)
-
-    # Add .gitignore to cache directory
-    gitignore_path = File.join(cache_dir, ".gitignore")
-    File.write(gitignore_path, "*") unless File.exist?(gitignore_path)
-
-    CACHE = ActiveSupport::Cache::FileStore.new(cache_dir)
+    # Initialize cache using XDG cache directory
+    CACHE = ActiveSupport::Cache::FileStore.new(FUNCTION_CACHE_DIR)
 
     def file_to_prompt(file)
       <<~PROMPT

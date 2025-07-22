@@ -3,6 +3,14 @@
 require "test_helper"
 
 class RoastCLITest < ActiveSupport::TestCase
+  def setup
+    super
+    # Prevent XDG migration from running during CLI tests since they call cli.execute()
+    # Note: XDG migration now only shows warnings, not automatic migration
+    # Also stub warn_if_migration_needed to prevent warnings during tests
+    Roast::XDGMigration.stubs(:warn_if_migration_needed)
+  end
+
   def test_execute_with_workflow_yml_path
     workflow_path = "path/to/workflow.yml"
     expanded_path = File.expand_path(workflow_path)
