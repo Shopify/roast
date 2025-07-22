@@ -8,7 +8,7 @@ module Roast
       MCPTool = Struct.new(:name, :config, :only, :except, keyword_init: true)
 
       attr_reader :config_hash, :workflow_path, :name, :steps, :pre_processing, :post_processing, :tools, :tool_configs, :mcp_tools, :function_configs, :model, :resource, :context_management
-      attr_accessor :target
+      attr_accessor :target, :verbose
 
       delegate :api_provider, :openrouter?, :openai?, :uri_base, to: :api_configuration
 
@@ -40,6 +40,7 @@ module Roast
 
         # Process target and resource
         @target = ConfigurationLoader.extract_target(@config_hash, options)
+        @verbose = options[:verbose] || false
         process_resource
       end
 

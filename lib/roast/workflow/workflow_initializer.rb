@@ -18,7 +18,7 @@ module Roast
       private
 
       def load_roast_initializers
-        Roast::Initializers.load_all
+        Roast::Initializers.load_all(@configuration)
       end
 
       def check_raix_configuration
