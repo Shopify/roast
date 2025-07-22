@@ -17,7 +17,7 @@ module Roast
     #   output, status = TimeoutHandler.call("pwd", timeout: 10, working_directory: "/tmp")
     class TimeoutHandler
       DEFAULT_TIMEOUT = 30
-      MAX_TIMEOUT = 300
+      MAX_TIMEOUT = 3600
 
       class << self
         # Execute a command with timeout using Open3 with proper process cleanup
