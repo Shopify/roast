@@ -1,0 +1,74 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# MCP Server wrapper for Roast
+# This ensures a clean environment for the MCP protocol
+
+# Set up load path
+$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
+
+# Ensure UTF-8 encoding
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
+
+# Load dependencies
+require "bundler/setup"
+require "roast/commands/mcp_server"
+
+# Parse command line arguments
+require "optparse"
+
+log_file = nil
+workflow_dirs = []
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: roast-mcp [options] [workflow_dirs...]"
+  
+  opts.on("-l", "--log FILE", "Log to FILE instead of stderr") do |file|
+    log_file = file
+  end
+  
+  opts.on("-h", "--help", "Show this help message") do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+workflow_dirs = ARGV
+
+# Get configuration from environment variables if not provided via CLI
+log_file ||= ENV["ROAST_LOG_FILE"]
+if workflow_dirs.empty? && ENV["ROAST_WORKFLOW_DIRS"]
+  workflow_dirs = ENV["ROAST_WORKFLOW_DIRS"].split(":")
+end
+
+# Create and run the server
+begin
+  server = Roast::Commands::McpServer.new(
+    workflow_dirs: workflow_dirs,
+    log_level: ENV["ROAST_LOG_LEVEL"]  # Still support env var for log level
+  )
+  
+  # Redirect logger output if log file specified
+  if log_file
+    require "logger"
+    server.instance_variable_set(:@logger, Logger.new(log_file))
+    # Set log level from env var if provided
+    if ENV["ROAST_LOG_LEVEL"]
+      level = begin
+        Logger.const_get(ENV["ROAST_LOG_LEVEL"].upcase)
+      rescue
+        Logger::INFO
+      end
+      server.instance_variable_get(:@logger).level = level
+    end
+  end
+  
+  server.run
+rescue StandardError => e
+  # Log errors to stderr
+  $stderr.puts "MCP Server Error: #{e.message}"
+  $stderr.puts e.backtrace.join("\n")
+  exit 1
+end
