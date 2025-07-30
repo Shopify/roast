@@ -31,7 +31,51 @@ module Roast
       Signal.trap("INT") do
         puts "\n\nCaught CTRL-C! Printing before exiting:\n"
         puts JSON.pretty_generate(object_to_inspect)
-        exit(1)
+
+        # Kill any child processes
+        kill_child_processes
+
+        exit(130)
+      end
+    end
+
+    def kill_child_processes
+      current_pid = Process.pid
+
+      # Find all child processes using ps
+      begin
+        child_pids = `ps -o pid,ppid -ax`.lines[1..-1]
+          .map(&:strip)
+          .map { |line| line.split(/\s+/) }
+          .select { |pid, ppid| ppid.to_i == current_pid }
+          .map { |pid, _| pid.to_i }
+
+        return if child_pids.empty?
+
+        puts "Killing #{child_pids.length} child process(es): #{child_pids.join(', ')}"
+
+        # First try TERM signal
+        child_pids.each do |pid|
+          begin
+            Process.kill("TERM", pid)
+          rescue Errno::ESRCH
+            # Process already died, ignore
+          end
+        end
+
+        # Give processes a moment to terminate gracefully
+        sleep(0.5)
+
+        # Then use KILL for any remaining processes
+        child_pids.each do |pid|
+          begin
+            Process.kill("KILL", pid)
+          rescue Errno::ESRCH
+            # Process already died, ignore
+          end
+        end
+      rescue StandardError => e
+        puts "Error killing child processes: #{e.message}"
       end
     end
 
