@@ -111,15 +111,18 @@ module Roast
       def include_tools
         return unless @configuration.tools.present? || @configuration.mcp_tools.present?
 
-        BaseWorkflow.include(Raix::FunctionDispatch)
-        BaseWorkflow.include(Roast::Helpers::FunctionCachingInterceptor) # Add caching support
+        # Only include modules if they haven't been included already to avoid method redefinition warnings
+        BaseWorkflow.include(Raix::FunctionDispatch) unless BaseWorkflow.included_modules.include?(Raix::FunctionDispatch)
+        BaseWorkflow.include(Roast::Helpers::FunctionCachingInterceptor) unless BaseWorkflow.included_modules.include?(Roast::Helpers::FunctionCachingInterceptor)
 
         if @configuration.tools.present?
-          BaseWorkflow.include(*@configuration.tools.map(&:constantize))
+          @configuration.tools.map(&:constantize).each do |tool|
+            BaseWorkflow.include(tool) unless BaseWorkflow.included_modules.include?(tool)
+          end
         end
 
         if @configuration.mcp_tools.present?
-          BaseWorkflow.include(Raix::MCP)
+          BaseWorkflow.include(Raix::MCP) unless BaseWorkflow.included_modules.include?(Raix::MCP)
 
           # Create an interpolator for MCP tool configuration
           # We use Object.new as the context because this interpolation happens during

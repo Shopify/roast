@@ -22,7 +22,6 @@ module Roast
           file: @file,
           session_name: @session_name,
           session_timestamp: nil,
-          object_id: 12345,
         )
         @workflow.stubs(:session_timestamp=)
       end
@@ -147,7 +146,6 @@ module Roast
           file: @file,
           session_name: @session_name,
           session_timestamp: timestamp,
-          object_id: 12345,
         )
         workflow.stubs(:session_timestamp=)
 

@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require "test_helper"
-
+# These test cases depend upon objects to be included in other objects.
+# This is a global behavior, thus requires a slightly different approach.
 class RoastWorkflowInitializerTest < ActiveSupport::TestCase
   def setup
     @original_openai_key = ENV.delete("OPENAI_API_KEY")
@@ -15,6 +16,10 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
 
   def teardown
     ENV["OPENAI_API_KEY"] = @original_openai_key
+    # Remove the constant and reload; this is required because including a module is a global behavior.
+    # Some of the tests depended upon run order, this makes each test ensure the right modules are included.
+    Roast::Workflow.send(:remove_const, "BaseWorkflow") if defined?(Roast::Workflow::BaseWorkflow)
+    load("lib/roast/workflow/base_workflow.rb")
   end
 
   def test_setup_loads_initializers_and_configures_tools
@@ -27,11 +32,12 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
     @configuration.stubs(:tools).returns(["Roast::Tools::ReadFile", "Roast::Tools::Grep"])
     @configuration.stubs(:mcp_tools).returns([])
 
-    Roast::Workflow::BaseWorkflow.expects(:include).with(Raix::FunctionDispatch)
-    Roast::Workflow::BaseWorkflow.expects(:include).with(Roast::Helpers::FunctionCachingInterceptor)
-    Roast::Workflow::BaseWorkflow.expects(:include).with(Roast::Tools::ReadFile, Roast::Tools::Grep)
-
     @initializer.setup
+
+    assert(Roast::Workflow::BaseWorkflow.included_modules.include?(Raix::FunctionDispatch))
+    assert(Roast::Workflow::BaseWorkflow.included_modules.include?(Roast::Helpers::FunctionCachingInterceptor))
+    assert(Roast::Workflow::BaseWorkflow.included_modules.include?(Roast::Tools::ReadFile))
+    assert(Roast::Workflow::BaseWorkflow.included_modules.include?(Roast::Tools::Grep))
   end
 
   def test_does_not_include_local_tools_when_none_configured
@@ -61,12 +67,15 @@ class RoastWorkflowInitializerTest < ActiveSupport::TestCase
     # Stub the client creation
     Raix::MCP::StdioClient.stubs(:new).with("echo", "test", {}).returns(mock_client)
 
-    Roast::Workflow::BaseWorkflow.expects(:include).with(Raix::FunctionDispatch)
-    Roast::Workflow::BaseWorkflow.expects(:include).with(Roast::Helpers::FunctionCachingInterceptor)
-    Roast::Workflow::BaseWorkflow.expects(:include).with(Raix::MCP)
     Roast::Workflow::BaseWorkflow.expects(:mcp).with(client: mock_client, only: ["get_issue", "get_issue_comments"], except: nil)
 
     @initializer.setup
+
+    assert(Roast::Workflow::BaseWorkflow.included_modules.include?(Raix::FunctionDispatch))
+    assert(Roast::Workflow::BaseWorkflow.included_modules.include?(Roast::Helpers::FunctionCachingInterceptor))
+    assert(Roast::Workflow::BaseWorkflow.included_modules.include?(Raix::MCP))
+    # just making sure that the object, BaseWorkflow, is reset between runs
+    refute(Roast::Workflow::BaseWorkflow.included_modules.include?(Roast::Tools::Grep))
   end
 
   def test_does_not_include_mcp_tools_when_none_configured

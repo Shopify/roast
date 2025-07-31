@@ -27,6 +27,10 @@ module Roast
       def call(string)
         Roast::Helpers::Logger.info("🔍 Grepping for string: #{string}\n")
 
+        unless system("command -v rg >/dev/null 2>&1")
+          raise "ripgrep is not available. Please install it using your package manager (e.g., brew install rg) and make sure it's on your PATH."
+        end
+
         # Use Open3 to safely pass the string as an argument, avoiding shell injection
         cmd = ["rg", "-C", "4", "--trim", "--color=never", "--heading", "-F", "--", string, "."]
         stdout, _stderr, _status = Open3.capture3(*cmd)

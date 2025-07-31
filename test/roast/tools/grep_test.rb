@@ -66,6 +66,17 @@ class RoastToolsGrepTest < ActiveSupport::TestCase
     assert_match(/truncated to 100 lines/, result)
   end
 
+  test "raises error when ripgrep is not installed" do
+    # Mock system call to return false (command not found)
+    stub(:system, false) do
+      error = assert_raises(RuntimeError) do
+        Roast::Tools::Grep.call("ripgrep")
+      end
+
+      assert_match(/ripgrep is not available\./, error.message)
+    end
+  end
+
   test ".included adds function to the base class" do
     base_class = Class.new do
       class << self
