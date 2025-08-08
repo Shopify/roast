@@ -119,5 +119,37 @@ module Roast
         assert_equal(expected_output, err)
       end
     end
+
+    def test_with_numeric_prefixed_initializer_files
+      initializer_path = path_for_initializers("numeric_order")
+
+      Roast::Initializers.stub(:initializers_path, initializer_path) do
+        out, err = capture_io do
+          Roast::Initializers.load_all
+        end
+
+        # Verify files are loaded in numeric order (01, 02, 03, 10, 20)
+        # not lexicographic order (01, 02, 03, 10, 20 vs 01, 02, 03, 10, 20)
+        expected_stderr = <<~OUTPUT
+          Loading project initializers from #{initializer_path}
+          Loading initializer: #{File.join(initializer_path, "01_first.rb")}
+          Loading initializer: #{File.join(initializer_path, "02_second.rb")}
+          Loading initializer: #{File.join(initializer_path, "03_third.rb")}
+          Loading initializer: #{File.join(initializer_path, "10_tenth.rb")}
+          Loading initializer: #{File.join(initializer_path, "20_twentieth.rb")}
+        OUTPUT
+        assert_equal(expected_stderr, err)
+
+        # Verify the execution order through stdout
+        expected_stdout = <<~OUTPUT
+          Loaded: 01_first
+          Loaded: 02_second
+          Loaded: 03_third
+          Loaded: 10_tenth
+          Loaded: 20_twentieth
+        OUTPUT
+        assert_equal(expected_stdout, out)
+      end
+    end
   end
 end
