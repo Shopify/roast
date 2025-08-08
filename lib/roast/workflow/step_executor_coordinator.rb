@@ -145,9 +145,11 @@ module Roast
       def execute_command_step(step, options)
         exit_on_error = options.fetch(:exit_on_error, true)
         resource_type = @context.resource_type
+        step_key = options[:step_key]
+        display_name = step_key || step
 
-        error_handler.with_error_handling(step, resource_type: resource_type) do
-          $stderr.puts "Executing: #{step} (Resource type: #{resource_type || "unknown"})"
+        error_handler.with_error_handling(display_name, resource_type: resource_type) do
+          $stderr.puts "Executing: #{display_name} (Resource type: #{resource_type || "unknown"})"
 
           begin
             output = command_executor.execute(step, exit_on_error: exit_on_error)
@@ -169,7 +171,7 @@ module Roast
             output
           rescue CommandExecutor::CommandExecutionError => e
             # Print user-friendly error message
-            $stderr.puts "\n❌ Command failed: #{step}"
+            $stderr.puts "\n❌ Command failed: #{display_name}"
             $stderr.puts "   Exit status: #{e.exit_status}" if e.exit_status
 
             # Show command output if available
@@ -257,9 +259,10 @@ module Roast
         interpolated_step = interpolator.interpolate(step)
 
         if StepTypeResolver.command_step?(interpolated_step)
-          # Command step - execute directly, preserving any passed options
+          # Command step - execute directly, preserving any passed options including step_key
           exit_on_error = options.fetch(:exit_on_error, true)
-          execute_command_step(interpolated_step, { exit_on_error: })
+          step_key = options[:step_key]
+          execute_command_step(interpolated_step, { exit_on_error:, step_key: })
         else
           exit_on_error = options.fetch(:exit_on_error, context.exit_on_error?(step))
           execute_standard_step(interpolated_step, options.merge(exit_on_error:))

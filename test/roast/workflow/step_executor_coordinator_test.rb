@@ -212,6 +212,81 @@ module Roast
 
         @coordinator.execute(step, exit_on_error: false)
       end
+
+      def test_named_shell_step_displays_step_name_not_command
+        step = { "clear_files" => "$(rm -rf /tmp/test)" }
+        command = "$(rm -rf /tmp/test)"
+
+        # Configure exit_on_error? to return true
+        @context.stubs(:exit_on_error?).with("clear_files").returns(true)
+
+        # Interpolation happens for the hash step
+        @dependencies[:interpolator].expects(:interpolate).with("clear_files").returns("clear_files")
+        @dependencies[:interpolator].expects(:interpolate).with(command).returns(command)
+        # String step handler also interpolates
+        @dependencies[:interpolator].expects(:interpolate).with(command).returns(command)
+
+        # The important part: error_handler should receive "clear_files" as the display name
+        @dependencies[:error_handler].expects(:with_error_handling).with("clear_files", resource_type: nil).yields
+
+        # Command executor still gets the actual command
+        @dependencies[:command_executor].expects(:execute).with(command, exit_on_error: true).returns(nil)
+
+        # Expect transcript interaction
+        transcript = []
+        @workflow.expects(:transcript).returns(transcript).twice
+        @workflow.output.expects(:[]=).with("clear_files", nil)
+
+        @coordinator.execute(step)
+      end
+
+      def test_named_shell_step_error_displays_step_name
+        step = { "failing_step" => "$(exit 42)" }
+        command = "$(exit 42)"
+
+        # Configure exit_on_error? to return true
+        @context.stubs(:exit_on_error?).with("failing_step").returns(true)
+
+        # Interpolation happens for the hash step
+        @dependencies[:interpolator].expects(:interpolate).with("failing_step").returns("failing_step")
+        @dependencies[:interpolator].expects(:interpolate).with(command).returns(command)
+        # String step handler also interpolates
+        @dependencies[:interpolator].expects(:interpolate).with(command).returns(command)
+
+        # Error handler should receive "failing_step" as the display name
+        @dependencies[:error_handler].expects(:with_error_handling).with("failing_step", resource_type: nil).yields
+
+        # Command executor raises an error
+        error = CommandExecutor::CommandExecutionError.new(
+          "Command exited with non-zero status (42)",
+          command: "exit 42",
+          exit_status: 42,
+        )
+        @dependencies[:command_executor].expects(:execute).with(command, exit_on_error: true).raises(error)
+
+        # We expect the error to be re-raised after being caught
+        assert_raises(CommandExecutor::CommandExecutionError) do
+          @coordinator.execute(step)
+        end
+      end
+
+      def test_direct_command_step_displays_command
+        step = "$(echo test)"
+
+        # Command steps go through interpolation
+        @dependencies[:interpolator].expects(:interpolate).with(step).returns(step)
+
+        # For direct command steps without a name, the command itself is displayed
+        @dependencies[:error_handler].expects(:with_error_handling).with(step, resource_type: nil).yields
+
+        @dependencies[:command_executor].expects(:execute).with(step, exit_on_error: true).returns("test")
+
+        # Expect transcript interaction
+        transcript = []
+        @workflow.expects(:transcript).returns(transcript).twice
+
+        @coordinator.execute(step)
+      end
     end
   end
 end
