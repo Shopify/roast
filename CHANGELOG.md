@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Automatic retry functionality for steps**
+  - New `retries` configuration parameter allows steps to automatically retry on failure
+  - Works with both command steps and custom steps
+  - Retries only occur when `exit_on_error` is true (default behavior)
+  - Useful for handling transient failures in network requests, API calls, and file operations
+  - Example: `retries: 3` will retry a failing step up to 3 times before giving up
 - **Workflow name in step event payloads** (#333, #351)
   - Added `workflow_name` field to all step-related ActiveSupport::Notification events
   - Enables better tracking of which workflow a step belongs to in monitoring systems

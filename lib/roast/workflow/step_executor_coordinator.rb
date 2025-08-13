@@ -148,44 +148,66 @@ module Roast
         step_key = options[:step_key]
         display_name = step_key || step
 
-        error_handler.with_error_handling(display_name, resource_type: resource_type) do
-          $stderr.puts "Executing: #{display_name} (Resource type: #{resource_type || "unknown"})"
+        retry_count = step_key ? get_retry_count(step_key) : 0
+        attempts = 0
+
+        loop do
+          attempts += 1
 
           begin
-            output = command_executor.execute(step, exit_on_error: exit_on_error)
-
-            # Print command output in verbose mode
-            workflow = context.workflow
-            if workflow.verbose
-              $stderr.puts "Command output:"
-              $stderr.puts output
-              $stderr.puts
-            end
-
-            # Add to transcript
-            workflow.transcript << {
-              user: "I just executed the following command: ```\n#{step}\n```\n\nHere is the output:\n\n```\n#{output}\n```",
-            }
-            workflow.transcript << { assistant: "Noted, thank you." }
-
-            output
-          rescue CommandExecutor::CommandExecutionError => e
-            # Print user-friendly error message
-            $stderr.puts "\n❌ Command failed: #{display_name}"
-            $stderr.puts "   Exit status: #{e.exit_status}" if e.exit_status
-
-            # Show command output if available
-            if e.respond_to?(:output) && e.output && !e.output.strip.empty?
-              $stderr.puts "   Command output:"
-              e.output.strip.split("\n").each do |line|
-                $stderr.puts "     #{line}"
+            error_handler.with_error_handling(display_name, resource_type: resource_type) do
+              if attempts > 1
+                $stderr.puts "Retrying command: #{step} (attempt #{attempts}/#{retry_count + 1})"
+              else
+                $stderr.puts "Executing: #{display_name} (Resource type: #{resource_type || "unknown"})"
               end
-            elsif workflow && !workflow.verbose
-              $stderr.puts "   To see the command output, run with --verbose flag."
-            end
 
-            $stderr.puts "   This typically means the command returned an error.\n"
-            raise
+              begin
+                output = command_executor.execute(step, exit_on_error: exit_on_error)
+
+                # Print command output in verbose mode
+                workflow = context.workflow
+                if workflow.verbose
+                  $stderr.puts "Command output:"
+                  $stderr.puts output
+                  $stderr.puts
+                end
+
+                # Add to transcript
+                workflow.transcript << {
+                  user: "I just executed the following command: ```\n#{step}\n```\n\nHere is the output:\n\n```\n#{output}\n```",
+                }
+                workflow.transcript << { assistant: "Noted, thank you." }
+
+                output
+              rescue CommandExecutor::CommandExecutionError => e
+                # Print user-friendly error message
+                $stderr.puts "\n❌ Command failed: #{display_name}"
+                $stderr.puts "   Exit status: #{e.exit_status}" if e.exit_status
+
+                # Show command output if available
+                if e.respond_to?(:output) && e.output && !e.output.strip.empty?
+                  $stderr.puts "   Command output:"
+                  e.output.strip.split("\n").each do |line|
+                    $stderr.puts "     #{line}"
+                  end
+                elsif workflow && !workflow.verbose
+                  $stderr.puts "   To see the command output, run with --verbose flag."
+                end
+
+                $stderr.puts "   This typically means the command returned an error.\n"
+                raise
+              end
+            end
+          rescue => e
+            # If we have retries left and exit_on_error is true, retry
+            if attempts <= retry_count && exit_on_error
+              $stderr.puts "   Command failed, will retry (#{retry_count - attempts + 1} retries remaining)"
+              next
+            else
+              # No more retries or exit_on_error is false, re-raise the error
+              raise e
+            end
           end
         end
       end
@@ -286,25 +308,58 @@ module Roast
       def execute_custom_step(name, step_key: nil, **options)
         resource_type = @context.workflow.respond_to?(:resource) ? @context.workflow.resource&.type : nil
 
-        error_handler.with_error_handling(name, resource_type: resource_type) do
-          $stderr.puts "Executing: #{name} (Resource type: #{resource_type || "unknown"})"
+        # Get retry configuration for this step
+        retry_count = get_retry_count(step_key || name)
+        attempts = 0
+        last_error = nil
 
-          # Use step_key for loading if provided, otherwise use name
-          load_key = step_key || name
-          is_last_step = options[:is_last_step]
-          step_object = step_loader.load(name, exit_on_error: false, step_key: load_key, is_last_step:, **options)
-          step_result = step_object.call
+        loop do
+          attempts += 1
 
-          # Store result in workflow output
-          # Use step_key for output storage if provided (for hash steps)
-          output_key = step_key || name
-          @context.workflow.output[output_key] = step_result
+          begin
+            error_handler.with_error_handling(name, resource_type: resource_type) do
+              if attempts > 1
+                $stderr.puts "Retrying: #{name} (attempt #{attempts}/#{retry_count + 1})"
+              else
+                $stderr.puts "Executing: #{name} (Resource type: #{resource_type || "unknown"})"
+              end
 
-          # Save state after each step
-          state_manager.save_state(name, step_result)
+              # Use step_key for loading if provided, otherwise use name
+              load_key = step_key || name
+              is_last_step = options[:is_last_step]
+              step_object = step_loader.load(name, exit_on_error: false, step_key: load_key, is_last_step:, **options)
+              step_result = step_object.call
 
-          step_result
+              # Store result in workflow output
+              # Use step_key for output storage if provided (for hash steps)
+              output_key = step_key || name
+              @context.workflow.output[output_key] = step_result
+
+              # Save state after each step
+              state_manager.save_state(name, step_result)
+
+              return step_result
+            end
+          rescue => e
+            last_error = e
+
+            # If we have retries left and exit_on_error is true (or not set), retry
+            if attempts <= retry_count && context.exit_on_error?(step_key || name)
+              $stderr.puts "   Step failed, will retry (#{retry_count - attempts + 1} retries remaining)"
+              next
+            else
+              # No more retries or exit_on_error is false, re-raise the error
+              raise e
+            end
+          end
         end
+      end
+
+      def get_retry_count(step_name)
+        step_config = context.config_hash[step_name]
+        return 0 unless step_config.is_a?(Hash)
+
+        step_config.fetch("retries", 0).to_i
       end
     end
   end

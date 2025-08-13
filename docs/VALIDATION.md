@@ -105,6 +105,10 @@ steps:
   - fetch_data
   - process_data
   - save_results
+
+# Optional: Configure retries for specific steps
+fetch_data:
+  retries: 3  # Retry up to 3 times on failure
 ```
 
 ## Integration with CI/CD
