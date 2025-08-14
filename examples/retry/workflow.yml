@@ -1,0 +1,23 @@
+description: Demonstrate retry functionality for steps
+
+# This example shows how to configure steps to automatically retry on failure
+# The 'retries' parameter specifies how many times to retry a failing step
+
+steps:
+  - check_network: "$(curl -f -s -o /dev/null -w '%{http_code}' https://httpstat.us/500)"
+  - process_data: "Process important data that might fail transiently"
+  - flaky_command: "$(./flaky_script.sh)"
+  
+# Configuration for each step
+check_network:
+  retries: 3  # Will retry up to 3 times if it fails
+  exit_on_error: true  # Will exit workflow if all retries fail
+
+process_data:
+  model: gpt-4o-mini
+  retries: 2  # Will retry up to 2 times
+
+# Command with retries but won't exit on error after all retries fail
+flaky_command:
+  retries: 5
+  exit_on_error: false  # Continue workflow even after all retries fail

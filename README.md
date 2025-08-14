@@ -168,17 +168,24 @@ Roast supports several types of steps:
    ```
    This will execute the command and store the result in the workflow output hash. Explicit key name is optional (`rubocop` in the second line of the example).
 
-   By default, commands that exit with non-zero status will halt the workflow. You can configure steps to continue on error:
+   By default, commands that exit with non-zero status will halt the workflow. You can configure steps to continue on error or retry on failure:
    ```yaml
    steps:
      - lint_check: $(rubocop {{file}})
+     - api_call: $(curl -f https://api.example.com/data)
      - fix_issues
 
    # Step configuration
    lint_check:
      exit_on_error: false  # Continue workflow even if command fails
+   
+   api_call:
+     retries: 3  # Automatically retry up to 3 times on failure
+     exit_on_error: true  # Exit workflow if all retries fail (default)
    ```
    When `exit_on_error: false`, the command output will include the exit status, allowing subsequent steps to process error information.
+   
+   The `retries` parameter works with both command steps and custom steps. Retries only occur when `exit_on_error` is true (the default).
 
 4. **Conditional steps**: Execute different steps based on conditions using `if/unless`
    ```yaml

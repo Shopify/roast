@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Automatic retry functionality for steps**
+  - New `retries` configuration parameter allows steps to automatically retry on failure
+  - Works with both command steps and custom steps
+  - Retries only occur when `exit_on_error` is true (default behavior)
+  - Useful for handling transient failures in network requests, API calls, and file operations
+  - Example: `retries: 3` will retry a failing step up to 3 times before giving up
+
 ## [0.4.3] - 2025-07-10
 
 ### Changed
