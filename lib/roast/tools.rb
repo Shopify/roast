@@ -31,7 +31,9 @@ module Roast
       Signal.trap("INT") do
         puts "\n\nCaught CTRL-C! Printing before exiting:\n"
         puts JSON.pretty_generate(object_to_inspect)
-        exit(1)
+
+        Signal.trap("INT", "DEFAULT")
+        Process.kill("INT", Process.pid)
       end
     end
 
