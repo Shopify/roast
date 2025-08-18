@@ -18,6 +18,7 @@ agent "re-write tests"
 # (LLM configuration is custom to each LLM type / plugin - agent definitions hide all the complexity of the specific provider)
 # Roast doesn't genericize agent config across multiple providers - Roast only sees agent interface and the 
 # agent system hides the provider specific stuff
+# agent gems shouldn't directly output to cli, should pass back to Roast and Roast should decide verbosity and output
 # toy example
 agent.define :prompt do |agent|
 
