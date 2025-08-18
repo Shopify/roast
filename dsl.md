@@ -112,6 +112,7 @@ prompt :my_prompt do
   many lines
   """
 end
+# workflow_output[:my_prompt] = <output of my_prompt step>
 
 externally_defined_prompt
 
@@ -136,4 +137,10 @@ if output :my_prompt == "bleh"
 # - how to hook up plugins / extensions / frontends
 # - how to handle workflow ouput object / data
 # - how to parse json output...
+# - EXTREMELY MINIMAL STEPS CONCEPT.
+#   - roast is aware of units of work
+#   - roast provides a way to capture outputs from steps, pass state between steps, etc.
+# - basic resume functionality?
+
+
 
