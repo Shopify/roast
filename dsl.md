@@ -25,7 +25,8 @@ agent.define :prompt do |agent|
 end
 
 # user defined agents, with system prompt
-agent.define :code-writer do |agent|
+# agent_type_foo comes from roast-agent-foo gem
+agent_type_foo.define :code-writer do |agent (agent_type_foo_config_instance)|
     agent.model = "claude-opus"
     token_limit = 1m
     agent.before_prompt = "heads up"
@@ -41,6 +42,7 @@ agent.define :summarizer do |agent|
     agent.model = "gemini"
 end
 
+step_from_dir_name
 code-writer step_name
 code-analyzer do |agent|
     "WTF did you just write"
@@ -54,6 +56,8 @@ my_imported_plugin_step do |foo, bar|
     foo = output.some_other_step
     bar = 5
 end
+
+
 
 if condition
     summarizer "thing"
