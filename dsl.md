@@ -25,6 +25,7 @@ agent.define :prompt do |agent|
 end
 
 # user defined agents, with system prompt
+# target use case: three models, heavy lift, light work, summarize (opus, haiku, gemini)
 # agent_type_foo comes from roast-agent-foo gem
 agent_type_foo.define :code-writer do |agent (agent_type_foo_config_instance)|
     agent.model = "claude-opus"
@@ -32,6 +33,10 @@ agent_type_foo.define :code-writer do |agent (agent_type_foo_config_instance)|
     agent.before_prompt = "heads up"
     agent.after_prompt = "please write this json object..."
     agent.skip_permissions!
+end
+
+shell_script_step_gem.define :blah do |config|
+    config.env = blah
 end
 
 agent.extend :code-writer, :code-analyzer do |agent|
@@ -42,11 +47,14 @@ agent.define :summarizer do |agent|
     agent.model = "gemini"
 end
 
+agent = agent_claude_opus
+
 step_from_dir_name
 code-writer step_name
 code-analyzer do |agent|
     "WTF did you just write"
 end
+agent step_name
 summarizer
 
 # common agent step and common ruby step should both look like this
