@@ -30,11 +30,20 @@ module Roast
       # This avoids needless boilerplate when you don't have multiple agent types
       # and don't need to customize anything.
       #: (?Symbol) -> Roast::DSL::Agent
-      def agent(name = :default)
-        current_agent = @agent_context[name]
-        return current_agent if current_agent
+      def agent(name = :default, &block)
+        if @agent_context[name]
+          @agent_context[name]
+        else
 
-        @agent_context[name] = Roast::DSL::Agent.new(name)
+
+        @agent_context[name] = build_agent(name)
+        end
+      end
+
+      private
+
+      def build_agent(name = :default)
+        Roast::DSL::Agent.new(name)
       end
     end
   end
