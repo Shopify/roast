@@ -42,6 +42,7 @@ require "zeitwerk"
 
 # Set up Zeitwerk autoloader
 loader = Zeitwerk::Loader.for_gem
+loader.inflector.inflect("dsl" => "DSL")
 loader.setup
 
 module Roast
@@ -56,21 +57,26 @@ module Roast
     option :replay, type: :string, aliases: "-r", desc: "Resume workflow from a specific step. Format: step_name or session_timestamp:step_name"
     option :pause, type: :string, aliases: "-p", desc: "Pause workflow after a specific step. Format: step_name"
     option :file_storage, type: :boolean, aliases: "-f", desc: "Use filesystem storage for sessions instead of SQLite"
+    option :experimental_ruby_dsl, type: :boolean, desc: "EXPERIMENTAL: execute workflows via Ruby DSL. may break at any time"
 
     def execute(*paths)
       raise Thor::Error, "Workflow configuration file is required" if paths.empty?
 
       workflow_path, *files = paths
 
-      expanded_workflow_path = if workflow_path.include?("workflow.yml")
-        File.expand_path(workflow_path)
+      if options[:experimental_ruby_dsl]
+        Roast::DSL::Executor.from_file(workflow_path)
       else
-        File.expand_path("roast/#{workflow_path}/workflow.yml")
+        expanded_workflow_path = if workflow_path.include?("workflow.yml")
+          File.expand_path(workflow_path)
+        else
+          File.expand_path("roast/#{workflow_path}/workflow.yml")
+        end
+
+        raise Thor::Error, "Expected a Roast workflow configuration file, got directory: #{expanded_workflow_path}" if File.directory?(expanded_workflow_path)
+
+        Roast::Workflow::WorkflowRunner.new(expanded_workflow_path, files, options.transform_keys(&:to_sym)).begin!
       end
-
-      raise Thor::Error, "Expected a Roast workflow configuration file, got directory: #{expanded_workflow_path}" if File.directory?(expanded_workflow_path)
-
-      Roast::Workflow::WorkflowRunner.new(expanded_workflow_path, files, options.transform_keys(&:to_sym)).begin!
     rescue => e
       if options[:verbose]
         raise e
