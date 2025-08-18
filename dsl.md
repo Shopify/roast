@@ -72,7 +72,30 @@ ruby_step_type MyStepClass
 MyVeryCustiomStep.call(workflow, other_param)
 
 
+# in conditional stuff, need way to short-circuit workflow
+if condition
+    wrap_up
+    summarize_short_Result
+    stop_workflow!
+end
 
+
+
+state A do |graph|
+    step_1
+    step_2
+    if foo
+        transition graph.B
+    else
+        transition graph.C
+    end
+end
+
+graph.node A do |node|
+end
+
+grand.edge A_B do |blah|
+end
 
 
 # notes
@@ -101,3 +124,16 @@ if output :my_prompt == "bleh"
 - support for non Openrouter compatible LLMs (Ollama)
 - support for multiple models defined for different purposes
 - 
+
+# core roast = just vanilla ruby execution
+# plugin that provides graph / state machine way to write workflows
+# plugin that provides way to parse YAML workflow definitions
+
+# core roast gives you:
+# - how to execute ai agent steps
+# - how to parse results
+# - how to execute deterministic steps
+# - how to hook up plugins / extensions / frontends
+# - how to handle workflow ouput object / data
+# - how to parse json output...
+
