@@ -47,6 +47,34 @@ code-analyzer do |agent|
 end
 summarizer
 
+# common agent step and common ruby step should both look like this
+my_imported_plugin_step do |foo, bar|
+    # config for step here
+    # need: mapping for workflow output of previous steps
+    foo = output.some_other_step
+    bar = 5
+end
+
+if condition
+    summarizer "thing"
+    other_step
+else
+    # other thing
+end
+
+
+MyUtilClass.somethign_I_Think_is_useful
+
+# MyStepClass < BaseRubyStep
+# step_type :my_step
+# see above about imported step types
+ruby_step_type MyStepClass
+MyVeryCustiomStep.call(workflow, other_param)
+
+
+
+
+
 # notes
 # - library of steps where I don't care what kind they are
 # - ??? lack of confusion around which steps are ai vs deterministic
