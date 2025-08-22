@@ -27,12 +27,12 @@ module Roast
       def find_all_workflows
         roast_dir = File.join(Dir.pwd, "roast")
         unless File.directory?(roast_dir)
-          raise Thor::Error, "No roast/ directory found in current path"
+          raise CLI::Kit::Abort, "No roast/ directory found in current path"
         end
 
         workflow_files = Dir.glob(File.join(roast_dir, "**/workflow.yml")).sort
         if workflow_files.empty?
-          raise Thor::Error, "No workflow.yml files found in roast/ directory"
+          raise CLI::Kit::Abort, "No workflow.yml files found in roast/ directory"
         end
 
         workflow_files
@@ -46,7 +46,7 @@ module Roast
         end
 
         unless File.exist?(expanded_path)
-          raise Thor::Error, "Workflow file not found: #{expanded_path}"
+          raise CLI::Kit::Abort, "Workflow file not found: #{expanded_path}"
         end
 
         expanded_path
@@ -82,12 +82,12 @@ module Roast
       def display_workflow_result(workflow_name, validator, is_valid)
         if is_valid
           if validator.warnings.empty?
-            puts ::CLI::UI.fmt("{{green:✓}} {{bold:#{workflow_name}}}")
+            CLI::UI.puts("{{green:✓}} {{bold:#{workflow_name}}}")
           else
-            puts ::CLI::UI.fmt("{{green:✓}} {{bold:#{workflow_name}}} ({{yellow:#{validator.warnings.size} warning(s)}})")
+            CLI::UI.puts("{{green:✓}} {{bold:#{workflow_name}}} ({{yellow:#{validator.warnings.size} warning(s)}})")
           end
         else
-          puts ::CLI::UI.fmt("{{red:✗}} {{bold:#{workflow_name}}} ({{red:#{validator.errors.size} error(s)}})")
+          CLI::UI.puts("{{red:✗}} {{bold:#{workflow_name}}} ({{red:#{validator.errors.size} error(s)}})")
         end
       end
 
@@ -104,12 +104,12 @@ module Roast
         puts
 
         if results.total_errors == 0 && results.total_warnings == 0
-          puts ::CLI::UI.fmt("{{green:All workflows are valid!}}")
+          CLI::UI.puts("{{green:All workflows are valid!}}")
         elsif results.total_errors == 0
-          puts ::CLI::UI.fmt("{{green:All workflows are valid}} with {{yellow:#{results.total_warnings} total warning(s)}}")
+          CLI::UI.puts("{{green:All workflows are valid}} with {{yellow:#{results.total_warnings} total warning(s)}}")
           display_all_warnings(results)
         else
-          puts ::CLI::UI.fmt("{{red:Validation failed:}} #{results.total_errors} error(s), #{results.total_warnings} warning(s)")
+          CLI::UI.puts("{{red:Validation failed:}} #{results.total_errors} error(s), #{results.total_warnings} warning(s)")
           display_all_errors(results)
           display_all_warnings(results) if results.total_warnings > 0
         end

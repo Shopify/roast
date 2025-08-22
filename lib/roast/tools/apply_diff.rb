@@ -1,8 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "cli/ui"
-
 module Roast
   module Tools
     module ApplyDiff

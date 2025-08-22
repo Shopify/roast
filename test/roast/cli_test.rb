@@ -4,99 +4,116 @@ require "test_helper"
 
 class RoastCLITest < ActiveSupport::TestCase
   def test_execute_with_workflow_yml_path
-    workflow_path = "path/to/workflow.yml"
-    expanded_path = File.expand_path(workflow_path)
+    # Use a real workflow file to avoid file system issues
+    Dir.mktmpdir do |tmpdir|
+      workflow_file = File.join(tmpdir, "workflow.yml")
+      File.write(workflow_file, "name: test_workflow\nsteps: []")
 
-    # Mock the WorkflowRunner to prevent actual execution
-    mock_runner = mock("WorkflowRunner")
-    mock_runner.expects(:begin!).once
-    Roast::Workflow::WorkflowRunner.expects(:new).with(expanded_path, [], {}).returns(mock_runner)
+      # Mock the WorkflowRunner to prevent actual execution
+      mock_runner = mock("WorkflowRunner")
+      mock_runner.expects(:begin!).once
+      Roast::Workflow::WorkflowRunner.expects(:new).with(workflow_file, [], { executor: "default" }).returns(mock_runner)
 
-    # Make sure File.directory? returns false to avoid the directory error
-    File.expects(:directory?).with(expanded_path).returns(false)
-
-    # Execute the CLI command
-    cli = Roast::CLI.new
-    cli.execute(workflow_path)
+      # Execute using the new CLI::Kit entry point
+      args = ["execute", workflow_file]
+      capture_io do
+        Roast::EntryPoint.call(args)
+      end
+    end
   end
 
   def test_execute_with_conventional_path
-    workflow_name = "my_workflow"
-    conventional_path = "roast/#{workflow_name}/workflow.yml"
-    expanded_path = File.expand_path(conventional_path)
+    # Test conventional path resolution
+    Dir.mktmpdir do |tmpdir|
+      workflow_name = "my_workflow"
+      workflow_dir = File.join(tmpdir, "roast", workflow_name)
+      FileUtils.mkdir_p(workflow_dir)
+      workflow_file = File.join(workflow_dir, "workflow.yml")
+      File.write(workflow_file, "name: test_workflow\nsteps: []")
 
-    # Mock the WorkflowRunner to prevent actual execution
-    mock_runner = mock("WorkflowRunner")
-    mock_runner.expects(:begin!).once
-    Roast::Workflow::WorkflowRunner.expects(:new).with(expanded_path, [], {}).returns(mock_runner)
+      # Mock the WorkflowRunner to prevent actual execution - use realpath to match what File.expand_path returns
+      mock_runner = mock("WorkflowRunner")
+      mock_runner.expects(:begin!).once
+      Roast::Workflow::WorkflowRunner.expects(:new).with(File.realpath(workflow_file), [], { executor: "default" }).returns(mock_runner)
 
-    # Make sure File.directory? returns false to avoid the directory error
-    File.expects(:directory?).with(expanded_path).returns(false)
-
-    # Execute the CLI command
-    cli = Roast::CLI.new
-    cli.execute(workflow_name)
+      # Execute using the new CLI::Kit entry point from the tmpdir
+      Dir.chdir(tmpdir) do
+        args = ["execute", workflow_name]
+        capture_io do
+          Roast::EntryPoint.call(args)
+        end
+      end
+    end
   end
 
   def test_execute_with_directory_path_raises_error
-    workflow_path = "path/to/directory"
-    expanded_path = File.expand_path("roast/#{workflow_path}/workflow.yml")
+    # Use a real directory to trigger the error
+    Dir.mktmpdir do |tmpdir|
+      # Create a roast directory structure where workflow.yml is a directory instead of a file
+      workflow_dir = File.join(tmpdir, "roast", "test_workflow")
+      FileUtils.mkdir_p(workflow_dir)
+      # Create a workflow.yml directory instead of a file to trigger the error
+      FileUtils.mkdir_p(File.join(workflow_dir, "workflow.yml"))
 
-    # Make the directory check return true to trigger the error
-    File.expects(:directory?).with(expanded_path).returns(true)
-
-    # Execute the CLI command and expect an error
-    cli = Roast::CLI.new([], { "verbose" => true })
-    assert_raises(Thor::Error) do
-      cli.execute(workflow_path)
+      args = ["execute", "test_workflow"]
+      assert_raises(SystemExit) do
+        Dir.chdir(tmpdir) do
+          capture_io do
+            Roast::EntryPoint.call(args)
+          end
+        end
+      end
     end
   end
 
   def test_execute_with_files_passes_files_to_parser
-    workflow_path = "path/to/workflow.yml"
-    expanded_path = File.expand_path(workflow_path)
-    files = ["file1.rb", "file2.rb"]
+    # Test that files are passed through correctly
+    Dir.mktmpdir do |tmpdir|
+      workflow_file = File.join(tmpdir, "workflow.yml")
+      File.write(workflow_file, "name: test_workflow\nsteps: []")
+      files = ["file1.rb", "file2.rb"]
 
-    # Mock the WorkflowRunner to prevent actual execution
-    mock_runner = mock("WorkflowRunner")
-    mock_runner.expects(:begin!).once
-    Roast::Workflow::WorkflowRunner.expects(:new).with(expanded_path, files, {}).returns(mock_runner)
+      # Mock the WorkflowRunner to prevent actual execution
+      mock_runner = mock("WorkflowRunner")
+      mock_runner.expects(:begin!).once
+      Roast::Workflow::WorkflowRunner.expects(:new).with(workflow_file, files, { executor: "default" }).returns(mock_runner)
 
-    # Make sure File.directory? returns false to avoid the directory error
-    File.expects(:directory?).with(expanded_path).returns(false)
-
-    # Execute the CLI command
-    cli = Roast::CLI.new
-    cli.execute(workflow_path, *files)
+      # Execute using the new CLI::Kit entry point
+      args = ["execute", workflow_file, *files]
+      capture_io do
+        Roast::EntryPoint.call(args)
+      end
+    end
   end
 
   def test_execute_with_options_passes_options_to_parser
-    workflow_path = "path/to/workflow.yml"
-    expanded_path = File.expand_path(workflow_path)
-    options = { "verbose" => true, "concise" => false }
+    # Test that options are passed through correctly
+    Dir.mktmpdir do |tmpdir|
+      workflow_file = File.join(tmpdir, "workflow.yml")
+      File.write(workflow_file, "name: test_workflow\nsteps: []")
 
-    # Mock the WorkflowRunner to prevent actual execution
-    mock_runner = mock("WorkflowRunner")
-    mock_runner.expects(:begin!).once
-    Roast::Workflow::WorkflowRunner.expects(:new).with(expanded_path, [], options.transform_keys(&:to_sym)).returns(mock_runner)
+      # Mock the WorkflowRunner to prevent actual execution
+      mock_runner = mock("WorkflowRunner")
+      mock_runner.expects(:begin!).once
+      Roast::Workflow::WorkflowRunner.expects(:new).with(workflow_file, [], { executor: "default", verbose: true, concise: true }).returns(mock_runner)
 
-    # Make sure File.directory? returns false to avoid the directory error
-    File.expects(:directory?).with(expanded_path).returns(false)
-
-    # Create CLI with options
-    cli = Roast::CLI.new([], options)
-    cli.execute(workflow_path)
+      # Execute using the new CLI::Kit entry point with options
+      args = ["execute", "--verbose", "--concise", workflow_file]
+      capture_io do
+        Roast::EntryPoint.call(args)
+      end
+    end
   end
 
   def test_list_with_no_roast_directory
     # Create a temporary directory without a roast/ subdirectory
     Dir.mktmpdir do |tmpdir|
       Dir.chdir(tmpdir) do
-        cli = Roast::CLI.new
-
-        # Expect the error message
-        assert_raises(Thor::Error, "No roast/ directory found in current path") do
-          cli.list
+        # Expect an exit since CLI::Kit aborts on error
+        assert_raises(SystemExit) do
+          capture_io do
+            Roast::EntryPoint.call(["list"])
+          end
         end
       end
     end
@@ -108,11 +125,11 @@ class RoastCLITest < ActiveSupport::TestCase
       Dir.chdir(tmpdir) do
         FileUtils.mkdir_p("roast")
 
-        cli = Roast::CLI.new
-
-        # Expect the error message
-        assert_raises(Thor::Error, "No workflow.yml files found in roast/ directory") do
-          cli.list
+        # Expect an exit since CLI::Kit aborts on error
+        assert_raises(SystemExit) do
+          capture_io do
+            Roast::EntryPoint.call(["list"])
+          end
         end
       end
     end
@@ -135,11 +152,9 @@ class RoastCLITest < ActiveSupport::TestCase
         # Root workflow
         File.write("roast/workflow.yml", "name: root")
 
-        cli = Roast::CLI.new
-
         # Capture output using capture_io
         output, _err = capture_io do
-          cli.list
+          Roast::EntryPoint.call(["list"])
         end
 
         # Check the output contains expected workflows (order independent)
@@ -154,45 +169,63 @@ class RoastCLITest < ActiveSupport::TestCase
   end
 
   test "execute with verbose mode re-raises errors with full backtrace" do
-    workflow_path = "path/to/workflow.yml"
-    expanded_path = File.expand_path(workflow_path)
-    error_message = "Something went wrong!"
+    Dir.mktmpdir do |tmpdir|
+      workflow_file = File.join(tmpdir, "workflow.yml")
+      File.write(workflow_file, "name: test_workflow\nsteps: []")
+      error_message = "Something went wrong!"
 
-    # Mock the WorkflowRunner to raise an error
-    mock_runner = mock("WorkflowRunner")
-    mock_runner.expects(:begin!).raises(StandardError.new(error_message))
-    Roast::Workflow::WorkflowRunner.expects(:new).with(expanded_path, [], { verbose: true }).returns(mock_runner)
+      # Mock the WorkflowRunner to raise an error
+      mock_runner = mock("WorkflowRunner")
+      mock_runner.expects(:begin!).raises(StandardError.new(error_message))
+      Roast::Workflow::WorkflowRunner.expects(:new).with(workflow_file, [], { executor: "default", verbose: true }).returns(mock_runner)
 
-    # Create CLI with verbose option
-    cli = Roast::CLI.new([], { "verbose" => true })
-
-    # In verbose mode, the error should be re-raised
-    error = assert_raises(StandardError) do
-      cli.execute(workflow_path)
+      # In verbose mode with CLI::Kit, the error should cause a system exit
+      assert_raises(SystemExit) do
+        capture_io do
+          Roast::EntryPoint.call(["execute", "--verbose", workflow_file])
+        end
+      end
     end
-
-    assert_equal error_message, error.message
   end
 
   test "execute without verbose mode only prints error message to stderr" do
-    workflow_path = "path/to/workflow.yml"
-    expanded_path = File.expand_path(workflow_path)
-    error_message = "Something went wrong!"
+    Dir.mktmpdir do |tmpdir|
+      workflow_file = File.join(tmpdir, "workflow.yml")
+      File.write(workflow_file, "name: test_workflow\nsteps: []")
+      error_message = "Something went wrong!"
 
-    # Mock the WorkflowRunner to raise an error
-    mock_runner = mock("WorkflowRunner")
-    mock_runner.expects(:begin!).raises(StandardError.new(error_message))
-    Roast::Workflow::WorkflowRunner.expects(:new).with(expanded_path, [], {}).returns(mock_runner)
+      # Mock the WorkflowRunner to raise an error
+      mock_runner = mock("WorkflowRunner")
+      mock_runner.expects(:begin!).raises(StandardError.new(error_message))
+      Roast::Workflow::WorkflowRunner.expects(:new).with(workflow_file, [], { executor: "default" }).returns(mock_runner)
 
-    # Create CLI without verbose option
-    cli = Roast::CLI.new
+      # In non-verbose mode, the error should be printed to stderr but not cause exit in this case
+      # because the Execute command catches and prints the error
+      _out, err = capture_io do
+        Roast::EntryPoint.call(["execute", workflow_file])
+      end
 
-    # Capture stderr output
-    _out, err = capture_io do
-      cli.execute(workflow_path)
+      # The error message should be in stderr
+      assert_match(error_message, err)
+    end
+  end
+
+  test "version command outputs version" do
+    output, _err = capture_io do
+      Roast::EntryPoint.call(["version"])
     end
 
-    # In non-verbose mode, only the error message should be printed to stderr
-    assert_equal "#{error_message}\n", err
+    assert_match(/Roast version #{Roast::VERSION}/, output)
+  end
+
+  test "help command shows usage" do
+    output, _err = capture_io do
+      Roast::EntryPoint.call(["--help"])
+    end
+
+    assert_match(/Roast - A framework for executing structured AI workflows/, output)
+    assert_match(/Commands:/, output)
+    assert_match(/execute/, output)
+    assert_match(/version/, output)
   end
 end

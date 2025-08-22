@@ -8,12 +8,14 @@ Rake::TestTask.new(:minitest_all) do |t|
   t.libs << "test"
   t.libs << "lib"
   t.test_files = FileList["test/**/*_test.rb"]
+  t.warning = false
 end
 
 Rake::TestTask.new(:minitest_functional) do |t|
   t.libs << "test"
   t.libs << "lib"
   t.test_files = FileList["test/functional/**/*_test.rb"]
+  t.warning = false
 end
 
 task test: [:minitest_all]

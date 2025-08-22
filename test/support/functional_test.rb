@@ -2,8 +2,8 @@
 
 class FunctionalTest < ActiveSupport::TestCase
   def roast(*args)
-    # debug=true allows us to capture error messages in tests
-    Roast::CLI.start(args, { debug: true })
+    # Use the new CLI::Kit entry point
+    Roast::EntryPoint.call(args)
   end
 
   # Set up a roast directory structure.
@@ -28,7 +28,7 @@ class FunctionalTest < ActiveSupport::TestCase
   end
 
   def assert_cli_error(match, &block)
-    assert_raises(Thor::Error, match:, &block)
+    assert_raises(Roast::Abort, match:, &block)
   end
 
   # Set up workflow files and paths
