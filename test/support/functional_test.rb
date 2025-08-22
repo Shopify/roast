@@ -13,7 +13,9 @@ class FunctionalTest < ActiveSupport::TestCase
 
   def roast(args = [])
     output, err = capture_io do
-      Roast::CLI.start(args)
+      Roast::EntryPoint.call(args)
+    rescue SystemExit
+      # CLI::Kit exits on completion, which is expected
     end
 
     ExecutionResult.new(output, err)
