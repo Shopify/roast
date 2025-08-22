@@ -11,6 +11,7 @@ class FunctionalTest < ActiveSupport::TestCase
   def in_sandbox(with_workflow: nil)
     Dir.mktmpdir do |dir|
       Dir.chdir(dir) do |dir|
+        Dir.mkdir('.roast')
         roastdir = File.join(dir, "roast")
         Dir.mkdir(roastdir)
 
@@ -37,10 +38,10 @@ class FunctionalTest < ActiveSupport::TestCase
 
       def simple
         <<~YAML
-          name: Basic Command Functions
+          name: Simple workflow
 
           steps:
-            - print_dir: "$(pwd)"
+            - hello_world: "$(echo 'Hello world')"
         YAML
       end
     end
