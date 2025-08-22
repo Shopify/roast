@@ -12,6 +12,13 @@ module Roast
 
       class << self
         #: (*untyped, **untyped) -> [String, Process::Status]
+        def capture2(*args, **options)
+          args = args #: as untyped
+          stdout, _stderr, status = capture3(*args, **options)
+          [stdout, status]
+        end
+
+        #: (*untyped, **untyped) -> [String, Process::Status]
         def capture2e(*args, **options)
           args = args #: as untyped
           stdout, stderr, status = capture3(*args, **options)
@@ -19,23 +26,55 @@ module Roast
           [combined_output, status]
         end
 
-        #: (*untyped, **untyped) -> [String, String, Process::Status]
+        #: (*untyped, **untyped) -> [String?, String?, Process::Status?]
         def capture3(*args, **options)
+          args = args #: as untyped
+          popen3(*args, **options) do |stdin, stdout, stderr, wait_thr|
+            stdin.close # Prevent hanging on stdin-waiting commands
+
+            stdout_thread = threaded_read(stdout)
+            stderr_thread = threaded_read(stderr)
+
+            [stdout_thread.value, stderr_thread.value, wait_thr.value]
+          end
+        end
+
+        #: (*untyped, **untyped) -> bool
+        def system(*args, **options)
+          args = args #: as untyped
+          popen3(*args, **options) do |stdin, stdout, stderr, wait_thr|
+            stdin.close # Prevent hanging on stdin-waiting commands
+
+            stdout_thread = threaded_stream(from: stdout, to: $stdout)
+            stderr_thread = threaded_stream(from: stderr, to: $stderr)
+
+            stdout_thread.join
+            stderr_thread.join
+
+            wait_thr.value.success?
+          end
+        end
+
+        #: (*untyped, **untyped) ?{ (IO, IO, IO, Thread) -> untyped } -> [IO, IO, IO, Thread] | untyped
+        def popen3(*args, **options, &block)
           args = args #: as untyped
 
           timeout = options.delete(:timeout)
           validate_timeout(timeout) unless timeout.nil?
 
-          Open3.popen3(*args, **options) do |stdin, stdout, stderr, wait_thr|
-            stdin.close # Prevent hanging on stdin-waiting commands
+          raise ArgumentError, "Timeout provided but no block given" if !timeout.nil? && !block_given?
 
+          # Mirror Open3.popen3 behavior - if no block, return the IO objects and thread
+          unless block_given?
+            stdin, stdout, stderr, wait_thr = Open3.popen3(*args, **options)
+            track_child_process(wait_thr.pid, presentable_command(args))
+            return [stdin, stdout, stderr, wait_thr]
+          end
+
+          Open3.popen3(*args, **options) do |stdin, stdout, stderr, wait_thr|
             track_child_process(wait_thr.pid, presentable_command(args))
 
-            stdout_thread = threaded_read(stdout)
-            stderr_thread = threaded_read(stderr)
-
-            runnable = proc { [stdout_thread.value, stderr_thread.value, wait_thr.value] } #: Proc
-
+            runnable = proc { yield(stdin, stdout, stderr, wait_thr) } #: Proc
             timeout.nil? ? runnable.call : Timeout.timeout(timeout, &runnable)
           rescue Timeout::Error => e
             raise e.class, "Command '#{presentable_command(args)}' timed out after #{timeout} seconds: #{e.message}"
@@ -86,6 +125,17 @@ module Roast
               buffer += line
             end
             buffer
+          rescue IOError => e
+            Roast::Helpers::Logger.debug("IOError: #{e.message}")
+          end
+        end
+
+        #: (from: IO, to: IO) -> Thread
+        def threaded_stream(from:, to:)
+          Thread.new do
+            from.each_line do |line|
+              to.puts(line)
+            end
           rescue IOError => e
             Roast::Helpers::Logger.debug("IOError: #{e.message}")
           end

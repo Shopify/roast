@@ -93,7 +93,7 @@ module Roast
           File.write(temp_file, updated_content)
 
           # Run git diff
-          diff_output = %x(git diff --no-index --no-prefix "#{file_path}" "#{temp_file}" 2>/dev/null)
+          diff_output, _status = Roast::Helpers::CmdRunner.capture2e("git", "diff", "--no-index", "--no-prefix", file_path, temp_file)
 
           if diff_output.empty?
             Roast::Helpers::Logger.info("No differences found (files are identical)\n")

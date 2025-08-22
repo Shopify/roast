@@ -48,7 +48,7 @@ module Roast
         log_debug("Executing shell script: #{cmd}")
         log_debug("Environment: #{env.inspect}")
 
-        Open3.capture3(env, cmd, chdir: Dir.pwd)
+        Roast::Helpers::CmdRunner.capture3(env, cmd, chdir: Dir.pwd)
       end
 
       def build_command

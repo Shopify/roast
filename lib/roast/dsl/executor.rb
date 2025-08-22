@@ -19,7 +19,8 @@ module Roast
       # Define methods to be used in workflows below.
 
       def shell(command_string)
-        puts %x(#{command_string})
+        output, _status = Roast::Helpers::CmdRunner.capture2e(command_string)
+        puts output
       end
     end
   end

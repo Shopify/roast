@@ -85,14 +85,9 @@ module Roast
         # Build the swarm command with proper escaping
         command = build_swarm_command(prompt, config_path)
 
-        result = ""
-
         # Execute the command directly with the prompt included
-        IO.popen(command, err: [:child, :out]) do |io|
-          result = io.read
-        end
-
-        exit_status = $CHILD_STATUS.exitstatus
+        result, status = Roast::Helpers::CmdRunner.capture2e(command)
+        exit_status = status.exitstatus
 
         format_output(command, result, exit_status)
       end

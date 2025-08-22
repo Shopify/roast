@@ -64,7 +64,7 @@ module Roast
       end
 
       def test_process_shell_command_with_dollar_syntax
-        Open3.expects(:capture2e).with({}, "echo hello").returns(["hello\n", nil])
+        Roast::Helpers::CmdRunner.expects(:capture2e).with("echo hello").returns(["hello\n", nil])
         result = ResourceResolver.process_shell_command("$(echo hello)")
         assert_equal("hello", result)
       end
@@ -75,7 +75,7 @@ module Roast
       end
 
       def test_process_target_with_shell_command
-        Open3.expects(:capture2e).with({}, "pwd").returns(["/home/user\n", nil])
+        Roast::Helpers::CmdRunner.expects(:capture2e).with("pwd").returns(["/home/user\n", nil])
         processed = ResourceResolver.process_target("$(pwd)", @context_path)
         assert_equal(File.expand_path("/home/user"), processed)
       end
@@ -83,13 +83,13 @@ module Roast
       def test_process_target_preserves_simple_processed_commands
         # When a shell command returns a simple result without paths,
         # it should not be expanded to maintain backward compatibility
-        Open3.expects(:capture2e).with({}, "echo simple").returns(["simple\n", nil])
+        Roast::Helpers::CmdRunner.expects(:capture2e).with("echo simple").returns(["simple\n", nil])
         processed = ResourceResolver.process_target("$(echo simple)", @context_path)
         assert_equal("simple", processed)
       end
 
       def test_resolve_with_shell_command_target
-        Open3.expects(:capture2e).with({}, "ls test.rb").returns(["test.rb\n", nil])
+        Roast::Helpers::CmdRunner.expects(:capture2e).with("ls test.rb").returns(["test.rb\n", nil])
         resource = ResourceResolver.resolve("$(ls test.rb)", @context_path)
         assert_instance_of(Roast::Resources::FileResource, resource)
       end

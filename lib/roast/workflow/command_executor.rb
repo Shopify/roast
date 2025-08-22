@@ -24,14 +24,14 @@ module Roast
       def execute(command_string, exit_on_error: true)
         command = extract_command(command_string)
 
-        output = %x(#{command})
-        exit_status = $CHILD_STATUS.exitstatus
+        output, status = Roast::Helpers::CmdRunner.capture2e(command)
+        exit_status = status.exitstatus
 
         handle_execution_result(
           command: command,
           output: output,
           exit_status: exit_status,
-          success: $CHILD_STATUS.success?,
+          success: status.success?,
           exit_on_error: exit_on_error,
         )
       rescue ArgumentError, CommandExecutionError
