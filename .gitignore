@@ -1,3 +1,5 @@
+.DS_Store
+
 /.bundle/
 /.yardoc
 /_yardoc/
@@ -17,3 +19,7 @@ gemfiles/*.lock
 bin/claude-swarm
 *.gem
 coverage
+
+.dev
+dev.yml
+.shadowenv

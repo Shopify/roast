@@ -105,7 +105,7 @@ module Roast
           command = "cat #{temp_file.path} | #{command_to_run}"
           result = ""
 
-          Open3.popen3(command) do |stdin, stdout, stderr, wait_thread|
+          Roast::Helpers::CmdRunner.popen3(command) do |stdin, stdout, stderr, wait_thread|
             stdin.close
             if expect_json_output
               stdout.each_line do |line|

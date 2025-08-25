@@ -28,4 +28,4 @@ jest_options = [
 command = "#{detect_package_manager} run test:coverage -- #{test_file} #{jest_options.join(" ")}"
 
 $stderr.puts "Running: #{command}"
-puts system(command)
+puts Roast::Helpers::CmdRunner.system(command)

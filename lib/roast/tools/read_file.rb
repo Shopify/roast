@@ -34,7 +34,8 @@ module Roast
         path = File.expand_path(path)
         Roast::Helpers::Logger.info("📖 Reading file: #{path}\n")
         if File.directory?(path)
-          %x(ls -la #{path})
+          output, _status = Roast::Helpers::CmdRunner.capture2e("ls", "-la", path)
+          output
         else
           File.read(path)
         end

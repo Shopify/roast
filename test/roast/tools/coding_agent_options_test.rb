@@ -235,6 +235,9 @@ module Roast
         mock_stdin3.expects(:close)
         mock_status3.expects(:success?).returns(true)
         mock_wait_thread3.expects(:value).returns(mock_status3)
+        mock_wait_thread1.expects(:pid).twice.returns(12345)
+        mock_wait_thread2.expects(:pid).twice.returns(12346)
+        mock_wait_thread3.expects(:pid).twice.returns(12347)
 
         # Expect exactly 3 calls (1 initial + 2 retries)
         Open3.expects(:popen3).times(3).with { |cmd| cmd =~ /cat .* \| claude --output-format stream-json$/ }
@@ -280,6 +283,8 @@ module Roast
         mock_stdin2.expects(:close)
         mock_status2.expects(:success?).returns(true)
         mock_wait_thread2.expects(:value).returns(mock_status2)
+        mock_wait_thread1.expects(:pid).twice.returns(12345)
+        mock_wait_thread2.expects(:pid).twice.returns(12346)
 
         Open3.expects(:popen3).twice.with { |cmd| cmd =~ /cat .* \| claude --output-format stream-json$/ }
           .yields(mock_stdin1, mock_stdout1, mock_stderr1, mock_wait_thread1)
@@ -305,6 +310,7 @@ module Roast
           mock_stdin.expects(:close)
           mock_status.expects(:success?).returns(false)
           mock_wait_thread.expects(:value).returns(mock_status)
+          mock_wait_thread.expects(:pid).twice.returns(12345 + i)
 
           Open3.expects(:popen3).with { |cmd| cmd =~ /cat .* \| claude --output-format stream-json$/ }
             .yields(mock_stdin, mock_stdout, mock_stderr, mock_wait_thread)
@@ -330,6 +336,7 @@ module Roast
         mock_stdin.expects(:close)
         mock_status.expects(:success?).returns(false)
         mock_wait_thread.expects(:value).returns(mock_status)
+        mock_wait_thread.expects(:pid).twice.returns(12345)
 
         # Expect only ONE call (no retries)
         Open3.expects(:popen3).once.with { |cmd| cmd =~ /cat .* \| claude --output-format stream-json$/ }

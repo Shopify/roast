@@ -41,7 +41,7 @@ class RunCoverage < Roast::Workflow::BaseStep
 
     # Run the test_runner using shadowenv for environment consistency
     command = "shadowenv exec --dir . -- #{test_runner_path} #{resolved_test_file} #{resolved_subject_file}"
-    output, status = Open3.capture2(command)
+    output, status = Roast::Helpers::CmdRunner.capture2(command)
 
     unless status.success?
       Roast::Helpers::Logger.error("Test runner exited with non-zero status: #{status.exitstatus}")

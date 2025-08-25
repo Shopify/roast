@@ -52,7 +52,8 @@ module Roast
         def process_shell_command(command)
           # If it's a bash command with the $(command) syntax
           if command =~ /^\$\((.*)\)$/
-            return Open3.capture2e({}, ::Regexp.last_match(1).to_s).first.strip
+            output, _status = Roast::Helpers::CmdRunner.capture2e(::Regexp.last_match(1).to_s)
+            return output.strip
           end
 
           # Not a shell command, return as is

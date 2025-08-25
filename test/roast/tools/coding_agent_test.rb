@@ -39,6 +39,7 @@ module Roast
         mock_stdin.expects(:close)
         mock_status.expects(:success?).returns(true)
         mock_wait_thread.expects(:value).returns(mock_status)
+        mock_wait_thread.expects(:pid).twice.returns(12345)
 
         Open3.expects(:popen3).with { |cmd| cmd =~ /cat .* \| claude -p --verbose --output-format stream-json --dangerously-skip-permissions$/ }.yields(mock_stdin, mock_stdout, mock_stderr, mock_wait_thread)
 
@@ -61,6 +62,7 @@ module Roast
         mock_stdin.expects(:close)
         mock_status.expects(:success?).returns(true)
         mock_wait_thread.expects(:value).returns(mock_status)
+        mock_wait_thread.expects(:pid).twice.returns(12345)
 
         Open3.expects(:popen3).with { |cmd| cmd =~ /cat .* \| claude --model opus$/ }.yields(mock_stdin, mock_stdout, mock_stderr, mock_wait_thread)
 
@@ -92,6 +94,7 @@ module Roast
         mock_wait_thread.expects(:value).returns(mock_status)
 
         expected_command = /cat .* \| claude --model opus -p --allowedTools "Bash, Batch, Glob, Grep, LS, Read"$/
+        mock_wait_thread.expects(:pid).twice.returns(12345)
         Open3.expects(:popen3).with { |cmd| cmd =~ expected_command }.yields(mock_stdin, mock_stdout, mock_stderr, mock_wait_thread)
 
         result = Roast::Tools::CodingAgent.call("Test prompt")
@@ -114,6 +117,7 @@ module Roast
         mock_stdin.expects(:close)
         mock_status.expects(:success?).returns(true)
         mock_wait_thread.expects(:value).returns(mock_status)
+        mock_wait_thread.expects(:pid).twice.returns(12345)
 
         # Should use configured command, not environment variable
         Open3.expects(:popen3).with { |cmd| cmd =~ /cat .* \| claude --model opus$/ }.yields(mock_stdin, mock_stdout, mock_stderr, mock_wait_thread)
@@ -134,6 +138,7 @@ module Roast
         mock_stdin.expects(:close)
         mock_status.expects(:success?).returns(false)
         mock_wait_thread.expects(:value).returns(mock_status)
+        mock_wait_thread.expects(:pid).twice.returns(12345)
 
         Open3.expects(:popen3).yields(mock_stdin, mock_stdout, mock_stderr, mock_wait_thread)
 
@@ -306,6 +311,7 @@ module Roast
         mock_stdin.expects(:close)
         mock_status.expects(:success?).returns(true)
         mock_wait_thread.expects(:value).returns(mock_status)
+        mock_wait_thread.expects(:pid).twice.returns(12345)
 
         # Expect command with --resume flag
         Open3.expects(:popen3).with { |cmd| cmd =~ /claude --resume existing-session-456 --output-format stream-json$/ }
@@ -333,6 +339,7 @@ module Roast
         mock_stdin.expects(:close)
         mock_status.expects(:success?).returns(true)
         mock_wait_thread.expects(:value).returns(mock_status)
+        mock_wait_thread.expects(:pid).twice.returns(12345)
 
         Open3.expects(:popen3).yields(mock_stdin, mock_stdout, mock_stderr, mock_wait_thread)
 

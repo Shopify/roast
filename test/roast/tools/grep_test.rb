@@ -36,8 +36,8 @@ class RoastToolsGrepTest < ActiveSupport::TestCase
   end
 
   test "handles errors gracefully" do
-    # Mock Open3 to simulate a command failure
-    Open3.stub(:capture3, ->(*_args) { raise StandardError, "Command failed" }) do
+    # Mock CmdRunner to simulate a command failure
+    Roast::Helpers::CmdRunner.stub(:capture3, ->(*_args) { raise StandardError, "Command failed" }) do
       result = Roast::Tools::Grep.call("searchable")
       assert_equal("Error grepping for string: Command failed", result)
     end
