@@ -21,21 +21,31 @@ require "mocha/minitest"
 require "support/fixture_helpers"
 require "support/improved_assertions"
 require "support/functional_test"
+require "vcr"
+require "webmock"
 
 # Turn on color during CI since GitHub Actions supports it
 if ENV["CI"]
   Minitest::RG.rg!(color: true)
 end
 
-# Helper method to create a properly stubbed mock workflow
-def create_mock_workflow(options = {})
-  workflow = mock("workflow")
-  default_stubs = {
-    output: {},
-    pause_step_name: nil,
-    verbose: false,
-    storage_type: nil, # This is the key fix for test failures
-  }
-  workflow.stubs(default_stubs.merge(options))
-  workflow
+VCR.configure do |config|
+  config.cassette_library_dir = "test/fixtures/vcr_cassettes"
+  config.hook_into :webmock
+
+  config.filter_sensitive_data("http://mytestingproxy.local/v1/chat/completions") do |interaction|
+    interaction.request.uri
+  end
+
+  config.filter_sensitive_data("my-token") do |interaction|
+    interaction.request.headers["Authorization"].first
+  end
+
+  config.filter_sensitive_data("<FILTERED>") do |interaction|
+    interaction.request.headers["Set-Cookie"]
+  end
+
+  config.filter_sensitive_data("<FILTERED>") do |interaction|
+    interaction.response.headers["Set-Cookie"]
+  end
 end

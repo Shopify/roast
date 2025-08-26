@@ -11,12 +11,25 @@ class FunctionalTest < ActiveSupport::TestCase
   # Returns an array of strings [stdio_output, stderr_output]
   def in_sandbox(with_workflow: nil)
     # have to save our current working directory before entering sandbox
-    candidate_example_path = File.join(Dir.pwd, "examples", with_workflow.to_s)
+    root_project_path = Dir.pwd
+    project_dot_roast_path = File.join(root_project_path, ".roast")
+    candidate_example_path = File.join(root_project_path, "examples", with_workflow.to_s)
 
     capture_io do
       Dir.mktmpdir do |dir|
         Dir.chdir(dir) do |dir|
-          Dir.mkdir(".roast")
+          if Dir.exist?(project_dot_roast_path) && ENV["RECORD_VCR"]
+            FileUtils.cp_r(project_dot_roast_path, ".roast")
+          else
+            Dir.mkdir(".roast")
+            Raix.configure do |config|
+              config.openai_client = OpenAI::Client.new(
+                access_token: "dummy-key",
+                uri_base: "http://mytestingproxy.local",
+              )
+            end
+          end
+
           workflow_directory = File.join(dir, "roast")
           Dir.mkdir(workflow_directory)
 
