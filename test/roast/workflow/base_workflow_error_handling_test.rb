@@ -77,7 +77,7 @@ module Roast
         # Test with OpenAI provider
         @workflow.instance_variable_set(
           :@workflow_configuration,
-          OpenStruct.new(api_provider: :openai),
+          Struct.new(:api_provider).new(:openai),
         )
 
         error = StandardError.new("API error")
@@ -88,7 +88,7 @@ module Roast
         # Test with OpenRouter provider
         @workflow.instance_variable_set(
           :@workflow_configuration,
-          OpenStruct.new(api_provider: :openrouter),
+          Struct.new(:api_provider).new(:openrouter),
         )
 
         context = @workflow.send(:extract_api_context, error)
@@ -160,7 +160,8 @@ module Roast
         end
 
         assert_raises(MockFaradayError) do
-          @workflow.send(:log_and_raise_error, error, "Enhanced message", "gpt-4", {}, 1.5, api_context)
+          request_details = { model: "gpt-4", params: {}, execution_time: 1.5 }
+          @workflow.send(:log_and_raise_error, error, "Enhanced message", request_details, api_context)
         end
 
         assert_equal 1, events.length
@@ -189,7 +190,8 @@ module Roast
         enhanced_message = "Enhanced: Original message with more context"
 
         exception = assert_raises(StandardError) do
-          @workflow.send(:log_and_raise_error, original_error, enhanced_message, nil, {}, 0.1, {})
+          request_details = { model: nil, params: {}, execution_time: 0.1 }
+          @workflow.send(:log_and_raise_error, original_error, enhanced_message, request_details, {})
         end
 
         assert_equal enhanced_message, exception.message
@@ -201,7 +203,8 @@ module Roast
         original_error = StandardError.new("Same message")
 
         exception = assert_raises(StandardError) do
-          @workflow.send(:log_and_raise_error, original_error, "Same message", nil, {}, 0.1, {})
+          request_details = { model: nil, params: {}, execution_time: 0.1 }
+          @workflow.send(:log_and_raise_error, original_error, "Same message", request_details, {})
         end
 
         assert_same original_error, exception

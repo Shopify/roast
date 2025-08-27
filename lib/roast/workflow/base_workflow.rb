@@ -110,12 +110,22 @@ module Roast
         message = e.response.dig(:body, "error", "message") || e.message
         error = Roast::Errors::ResourceNotFoundError.new(message)
         error.set_backtrace(e.backtrace)
-        log_and_raise_error(error, message, step_model || model, kwargs, execution_time, extract_api_context(e))
+        request_details = {
+          model: step_model || model,
+          params: kwargs,
+          execution_time: execution_time,
+        }
+        log_and_raise_error(error, message, request_details, extract_api_context(e))
       rescue => e
         execution_time = Time.now - start_time
         api_context = extract_api_context(e)
         enhanced_message = enhance_error_message(e.message, api_context)
-        log_and_raise_error(e, enhanced_message, step_model || model, kwargs, execution_time, api_context)
+        request_details = {
+          model: step_model || model,
+          params: kwargs,
+          execution_time: execution_time,
+        }
+        log_and_raise_error(e, enhanced_message, request_details, api_context)
       end
 
       def with_model(model)
@@ -135,13 +145,13 @@ module Roast
 
       private
 
-      def log_and_raise_error(error, message, model, params, execution_time, api_context = {})
+      def log_and_raise_error(error, message, request_details, api_context = {})
         ActiveSupport::Notifications.instrument("roast.chat_completion.error", {
           error: error.class.name,
           message: message,
-          model: model,
-          parameters: params.except(:openai, :model),
-          execution_time: execution_time,
+          model: request_details[:model],
+          parameters: request_details[:params].except(:openai, :model),
+          execution_time: request_details[:execution_time],
           api_url: api_context[:url],
           status_code: api_context[:status],
           response_body: api_context[:response_body],
