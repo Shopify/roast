@@ -16,11 +16,15 @@ Rake::TestTask.new(:minitest_functional) do |t|
   t.test_files = FileList["test/functional/**/*_test.rb"]
 end
 
+Rake::TestTask.new(:minitest_old) do |t|
+  t.libs << "test"
+  t.libs << "lib"
+  t.test_files = FileList["test/functional/**/*_test.rb"]
+end
+
 task test: [:minitest_all]
 
 RuboCop::RakeTask.new(:rubocop_ci)
-
-task ci: [:test, :rubocop_ci]
 
 RuboCop::RakeTask.new(:rubocop) do |task|
   task.options = ["--autocorrect"]
