@@ -3,6 +3,31 @@
 
 module Roast
   module Helpers
+    # IO-like wrapper that always delegates to the current $stdout
+    # This ensures test frameworks like capture_io can properly intercept output
+    # Logger only requires write and close methods, not full IO interface
+    class StdoutWrapper
+      def write(string)
+        $stdout.write(string)
+      end
+
+      def close
+        # No-op - we don't actually close stdout
+      end
+
+      def flush
+        $stdout.flush
+      end
+
+      def sync=(value)
+        $stdout.sync = value
+      end
+
+      def sync
+        $stdout.sync
+      end
+    end
+
     # Central logger for the Roast application
     class Logger
       VALID_LOG_LEVELS = ["DEBUG", "INFO", "WARN", "ERROR", "FATAL"].freeze #: Array[String]
@@ -27,9 +52,9 @@ module Roast
 
       private
 
-      def initialize(stdout: $stdout, log_level: ENV["ROAST_LOG_LEVEL"] || "INFO")
+      def initialize(log_level: ENV["ROAST_LOG_LEVEL"] || "INFO")
         @log_level = validate_log_level(log_level)
-        @logger = create_logger(stdout)
+        @logger = create_logger
       end
 
       def validate_log_level(level)
@@ -41,8 +66,11 @@ module Roast
         level_str
       end
 
-      def create_logger(stdout)
-        ::Logger.new(stdout).tap do |logger|
+      def create_logger
+        # Use a custom IO wrapper that always delegates to the current $stdout
+        # This ensures capture_io in tests can properly intercept output
+        stdout_wrapper = StdoutWrapper.new
+        ::Logger.new(stdout_wrapper).tap do |logger|
           logger.level = ::Logger.const_get(@log_level)
           logger.formatter = proc do |severity, datetime, _progname, msg|
             msg_string = format_message(msg)
