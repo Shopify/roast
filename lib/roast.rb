@@ -68,7 +68,7 @@ module Roast
 
       if options[:executor] == "dsl"
         puts "⚠️ WARNING: This is an experimental syntax and may break at any time. Don't depend on it."
-        Roast::DSL::Executor.from_file(workflow_path)
+        Roast::DSL::Executor.call(workflow_path)
       else
         expanded_workflow_path = if workflow_path.include?("workflow.yml")
           File.expand_path(workflow_path)

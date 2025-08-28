@@ -1,10 +1,8 @@
-# typed: true
+# typed: false
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Executor
-
-# This is a dead simple workflow that calls two shell scripts
-shell <<~SHELLSTEP
+# This is a dead simple workflow that calls two commands
+cmd <<~CMDSTEP
   echo "I have no idea what's going on"
-SHELLSTEP
-shell "pwd"
+CMDSTEP
+cmd "pwd"
