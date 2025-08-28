@@ -1,7 +1,0 @@
-standard_tools: &standard_tools
-  - Roast::Tools::Grep
-  - Roast::Tools::ReadFile
-  - Roast::Tools::WriteFile
-  - Roast::Tools::SearchFile
-
-mirage: &mirage '$(echo "Oh my god. Its a mirage")'

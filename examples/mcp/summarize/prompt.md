@@ -1,1 +1,0 @@
-Generate a brief summary, with one code example, in Markdown format.

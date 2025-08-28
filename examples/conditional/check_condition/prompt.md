@@ -1,1 +1,0 @@
-Check if the OS is macOS or Linux and return true if it's macOS, false otherwise.

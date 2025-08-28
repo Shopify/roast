@@ -1,6 +1,0 @@
-name: Example with shared config
-tools: *standard_tools
-
-steps:
-  - *mirage
-  - sabotage: '$(echo "Im tellin yall, its sabotage")'
