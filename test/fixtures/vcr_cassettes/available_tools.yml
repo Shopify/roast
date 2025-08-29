@@ -34,7 +34,7 @@ http_interactions:
       Server:
       - openresty/1.25.3.2
       Date:
-      - Tue, 26 Aug 2025 20:00:34 GMT
+      - Fri, 29 Aug 2025 17:49:55 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -42,17 +42,17 @@ http_interactions:
       Connection:
       - keep-alive
       Cf-Ray:
-      - 9755ea801804a24e-YUL
+      - 976de341180da298-YUL
       Cf-Cache-Status:
       - DYNAMIC
       Access-Control-Allow-Origin:
       - "*"
       Set-Cookie:
-      - __cf_bm=XVPduvlGW_3c9pIDp.jnFrAwHsEHIHJOztuDvxzqTVM-1756238434-1.0.1.1-H3n5a.8DfShYYQoDMLxMFrrPCf882AbDP3QKYmFA4CdYYI2ef8jvXbwuOrxtPDlfErjtnhnby3ug9uE2lUCTVZEWCSWhPdRwNmIdNiAwI.I;
-        path=/; expires=Tue, 26-Aug-25 20:30:34 GMT; domain=.proxy.shopify.ai; HttpOnly;
+      - __cf_bm=S9lWxVQVKv5xBelEPy_ObXxMzjZfrXQecDJShn02WxM-1756489795-1.0.1.1-MSjCgYp5CfgYddytGjha3aeC2EX2JUz2_qsMFCdoAI8Qj9KnFeYPfpvi16KttQAzsOK.pVApgIlNGzqhngzBmXiCJku4V0xwn4p4fnjh6IQ;
+        path=/; expires=Fri, 29-Aug-25 18:19:55 GMT; domain=.proxy.shopify.ai; HttpOnly;
         Secure; SameSite=None
-      - shopify-proxy-session=1756238433298-03bekvypv4b4; Path=/; Expires=Wed, 27
-        Aug 2025 20:00:33 GMT; HttpOnly; Secure; SameSite=Lax
+      - shopify-proxy-session=1756489794743-3oz0n8fr9bu; Path=/; Expires=Sat, 30 Aug
+        2025 17:49:54 GMT; HttpOnly; Secure; SameSite=Lax
       Strict-Transport-Security:
       - max-age=15552000; includeSubDomains; preload
       Access-Control-Allow-Headers:
@@ -62,9 +62,9 @@ http_interactions:
       Access-Control-Max-Age:
       - '86400'
       Apim-Request-Id:
-      - 4bf75bed-0c3a-47be-99f2-b3f2ae10a9a2
+      - aa4f4768-63a1-40f8-a88b-6391773ceeda
       Azureml-Model-Session:
-      - d032-20250724180619
+      - d091-20250625061643
       X-Content-Type-Options:
       - nosniff
       X-Ms-Deployment-Name:
@@ -78,11 +78,11 @@ http_interactions:
       X-Ratelimit-Limit-Tokens:
       - '400000000'
       X-Ratelimit-Remaining-Requests:
-      - '3995888'
+      - '3995869'
       X-Ratelimit-Remaining-Tokens:
-      - '363826581'
+      - '391779146'
       X-Request-Id:
-      - 5872d216-c1f3-4208-b49c-d3e3d554a76e
+      - 8c318424-e20f-4ac5-9d48-55e2f8d02730
       Vary:
       - Accept-Encoding
       Alt-Svc:
@@ -91,9 +91,9 @@ http_interactions:
       encoding: ASCII-8BIT
       string: |-
         {
-          "id": "chatcmpl-C8u8HWOS73ZpIq7kycFrtSpT2CRTK",
+          "id": "chatcmpl-C9xWVmfsAZi9yjOVMhb1acR1QScNx",
           "object": "chat.completion",
-          "created": 1756238433,
+          "created": 1756489795,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -103,7 +103,7 @@ http_interactions:
                 "content": null,
                 "tool_calls": [
                   {
-                    "id": "call_OaKiuu46bspX1m2LwzEwtoX1",
+                    "id": "call_dZqUHOCOs79K9E96kyeVtBvr",
                     "type": "function",
                     "function": {
                       "name": "pwd",
@@ -111,7 +111,7 @@ http_interactions:
                     }
                   },
                   {
-                    "id": "call_RrwSGA1Gdi5ewbrj7buV9asC",
+                    "id": "call_n00nKVVQDWDoAcHZMwCNxCdh",
                     "type": "function",
                     "function": {
                       "name": "ls",
@@ -144,7 +144,7 @@ http_interactions:
           "system_fingerprint": "fp_efad92c60b",
           "service_tier": null
         }
-  recorded_at: Tue, 26 Aug 2025 20:00:34 GMT
+  recorded_at: Fri, 29 Aug 2025 17:49:55 GMT
 - request:
     method: post
     uri: http://mytestingproxy.local/v1/chat/completions
@@ -159,8 +159,8 @@ http_interactions:
         contents with options like -la, -R"}}],"model":"openai:gpt-4o-mini","messages":[{"role":"user","content":"You
         are exploring a new directory. Your task is to:\n\n1. Show the current working
         directory\n2. List all files and subdirectories\n\nNote: You only have access
-        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"101f58e4-eeea-441c-8b91","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"101f58e4-eeea-441c-8b91","name":"pwd","content":"Command:
-        pwd\nExit status: 0\nOutput:\n/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"7ce2fb47-a999-4aa5-89c7","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"7ce2fb47-a999-4aa5-89c7","name":"ls","content":"Command:
+        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"930250b5-383a-4624-b3ce","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"930250b5-383a-4624-b3ce","name":"pwd","content":"Command:
+        pwd\nExit status: 0\nOutput:\n/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"3b6927fa-785d-4d23-80c5","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"3b6927fa-785d-4d23-80c5","name":"ls","content":"Command:
         ls\nExit status: 0\nOutput:\nroast\n"}]}'
     headers:
       Content-Type:
@@ -181,7 +181,7 @@ http_interactions:
       Server:
       - openresty/1.25.3.2
       Date:
-      - Tue, 26 Aug 2025 20:00:34 GMT
+      - Fri, 29 Aug 2025 17:49:57 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -189,47 +189,53 @@ http_interactions:
       Connection:
       - keep-alive
       Cf-Ray:
-      - 9755ea861f82a24e-YUL
+      - 976de34769b8a298-YUL
       Cf-Cache-Status:
       - DYNAMIC
       Access-Control-Allow-Origin:
       - "*"
       Set-Cookie:
-      - __cf_bm=BZNGqEGNFTpPvZJBwik08kc6ndJr6ZgUj1CA_o2o5zQ-1756238435-1.0.1.1-6Xdh5hnUJTBrR_Oc7GQMxqOJzEUqVpLnjB6tLbgL5Qa46rDtxW.tCldn_RkIORXAjXmudAwONkzlX.vAOq0cn7Nxs3hSFS6VvumfBi3OlMc;
-        path=/; expires=Tue, 26-Aug-25 20:30:35 GMT; domain=.proxy.shopify.ai; HttpOnly;
+      - __cf_bm=O1YLTPlEOEs9wM3N.TGLG4G_tWcbkHiokNq1j_iuzrE-1756489797-1.0.1.1-hgnYjsSqfraTVq9fGvK.WogpruYLzgASU_9mHtnR3S32EktLPWjsJCd_AqNQ.0F2tgqg29iS1GfBdQ7I_s3z8hU6vwydhlRs4SAi9HAdyDc;
+        path=/; expires=Fri, 29-Aug-25 18:19:57 GMT; domain=.proxy.shopify.ai; HttpOnly;
         Secure; SameSite=None
-      - shopify-proxy-session=1756238434275-pyu1syblm4n; Path=/; Expires=Wed, 27 Aug
-        2025 20:00:34 GMT; HttpOnly; Secure; SameSite=Lax
+      - shopify-proxy-session=1756489795753-i6ona0ocp1b; Path=/; Expires=Sat, 30 Aug
+        2025 17:49:55 GMT; HttpOnly; Secure; SameSite=Lax
       Strict-Transport-Security:
       - max-age=15552000; includeSubDomains; preload
       Access-Control-Allow-Headers:
       - "*"
       Access-Control-Allow-Methods:
       - "*"
+      Access-Control-Expose-Headers:
+      - X-Request-ID
       Access-Control-Max-Age:
       - '86400'
-      Apim-Request-Id:
-      - 5d4bf2a7-37f5-4ea8-a11c-18e4be7fbfe4
-      Azureml-Model-Session:
-      - d093-20250625072412
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '1629'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
       X-Content-Type-Options:
       - nosniff
-      X-Ms-Deployment-Name:
-      - gpt-4o-mini
-      X-Ms-Rai-Invoked:
-      - 'false'
-      X-Ms-Region:
-      - East US
+      X-Envoy-Upstream-Service-Time:
+      - '1634'
       X-Ratelimit-Limit-Requests:
-      - '4000000'
+      - '150000'
       X-Ratelimit-Limit-Tokens:
-      - '400000000'
+      - '450000000'
       X-Ratelimit-Remaining-Requests:
-      - '3995885'
+      - '149999'
       X-Ratelimit-Remaining-Tokens:
-      - '363881400'
+      - '449999902'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
       X-Request-Id:
-      - 197f092e-1c4d-4986-a8d1-c894cc5c4d63
+      - req_a9b08a0c9eb14fb5aaabec3259c8a935
       Vary:
       - Accept-Encoding
       Alt-Svc:
@@ -238,16 +244,16 @@ http_interactions:
       encoding: ASCII-8BIT
       string: |-
         {
-          "id": "chatcmpl-C8u8InUqs2NHGdmIJpRZhY5KbtVQU",
+          "id": "chatcmpl-C9xWV370OfnvrsnUyYUwTsnPcPLbl",
           "object": "chat.completion",
-          "created": 1756238434,
+          "created": 1756489795,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "1. Current working directory: `/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6`\n\n2. Files and subdirectories:\n   - roast",
+                "content": "1. Current working directory: `/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6`\n2. Files and subdirectories: \n   - `roast`",
                 "refusal": null,
                 "annotations": []
               },
@@ -256,24 +262,24 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 274,
-            "completion_tokens": 62,
-            "total_tokens": 336,
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0,
-              "audio_tokens": 0
-            },
+            "prompt_tokens": 261,
+            "completion_tokens": 52,
+            "total_tokens": 313,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
             }
           },
-          "system_fingerprint": "fp_efad92c60b",
-          "service_tier": null
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Tue, 26 Aug 2025 20:00:35 GMT
+  recorded_at: Fri, 29 Aug 2025 17:49:57 GMT
 - request:
     method: post
     uri: http://mytestingproxy.local/v1/chat/completions
@@ -287,12 +293,12 @@ http_interactions:
         they are not useful."}}],"model":"openai:gpt-4o-mini","messages":[{"role":"user","content":"You
         are exploring a new directory. Your task is to:\n\n1. Show the current working
         directory\n2. List all files and subdirectories\n\nNote: You only have access
-        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"101f58e4-eeea-441c-8b91","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"101f58e4-eeea-441c-8b91","name":"pwd","content":"Command:
-        pwd\nExit status: 0\nOutput:\n/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"7ce2fb47-a999-4aa5-89c7","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"7ce2fb47-a999-4aa5-89c7","name":"ls","content":"Command:
+        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"930250b5-383a-4624-b3ce","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"930250b5-383a-4624-b3ce","name":"pwd","content":"Command:
+        pwd\nExit status: 0\nOutput:\n/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"3b6927fa-785d-4d23-80c5","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"3b6927fa-785d-4d23-80c5","name":"ls","content":"Command:
         ls\nExit status: 0\nOutput:\nroast\n"},{"role":"assistant","content":"1. Current
-        working directory: `/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6`\n\n2.
-        Files and subdirectories:\n   - roast"},{"role":"user","content":"Based on
-        the directory listing from the previous step, your task is to:\n\n1. Search
+        working directory: `/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6`\n2.
+        Files and subdirectories: \n   - `roast`"},{"role":"user","content":"Based
+        on the directory listing from the previous step, your task is to:\n\n1. Search
         for any Ruby files using grep\n2. Read the contents of the first Ruby file
         you find\n\nNote: You only have access to the `grep` and `read_file` tools
         for this step. You cannot use commands like `ls` or `pwd`."}]}'
@@ -315,7 +321,7 @@ http_interactions:
       Server:
       - openresty/1.25.3.2
       Date:
-      - Tue, 26 Aug 2025 20:00:35 GMT
+      - Fri, 29 Aug 2025 17:49:58 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -323,47 +329,53 @@ http_interactions:
       Connection:
       - keep-alive
       Cf-Ray:
-      - 9755ea8bad77a24e-YUL
+      - 976de3546ad4a298-YUL
       Cf-Cache-Status:
       - DYNAMIC
       Access-Control-Allow-Origin:
       - "*"
       Set-Cookie:
-      - __cf_bm=6uVdeuS__ZzgL9GiJRL0f8DPJyREar084_SO64hAJUg-1756238435-1.0.1.1-.IiW6nSUhyte44T3Zo9Fo6DGHIJMStashavOtueucCwF4cGTCM_7cC3JqT1Xk1b6KNEe.3brMhwkfA4c2K8mDpiZ4dFjQNGIESXX6LZPpfw;
-        path=/; expires=Tue, 26-Aug-25 20:30:35 GMT; domain=.proxy.shopify.ai; HttpOnly;
+      - __cf_bm=dvFwJlqhPeQnXvK3zpfKENfmySh8mCNdOZIhp3r4Eic-1756489798-1.0.1.1-fSUB3IJTH3pXt_vwznUnN9CRwGIQzy8WgZPxq5Cu5X_0kullwFcgZpcEm8Vu797k.H8sK4Lf.kKhfXj6VCns3UkNEhJh9D3qHC75G5woQ7E;
+        path=/; expires=Fri, 29-Aug-25 18:19:58 GMT; domain=.proxy.shopify.ai; HttpOnly;
         Secure; SameSite=None
-      - shopify-proxy-session=1756238435155-uod1vbqapu; Path=/; Expires=Wed, 27 Aug
-        2025 20:00:35 GMT; HttpOnly; Secure; SameSite=Lax
+      - shopify-proxy-session=1756489797830-npvdytt8oy; Path=/; Expires=Sat, 30 Aug
+        2025 17:49:57 GMT; HttpOnly; Secure; SameSite=Lax
       Strict-Transport-Security:
       - max-age=15552000; includeSubDomains; preload
       Access-Control-Allow-Headers:
       - "*"
       Access-Control-Allow-Methods:
       - "*"
+      Access-Control-Expose-Headers:
+      - X-Request-ID
       Access-Control-Max-Age:
       - '86400'
-      Apim-Request-Id:
-      - e9423ead-01b9-493b-90f7-c0aa9acf6837
-      Azureml-Model-Session:
-      - d047-20250625061559
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '831'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
       X-Content-Type-Options:
       - nosniff
-      X-Ms-Deployment-Name:
-      - gpt-4o-mini
-      X-Ms-Rai-Invoked:
-      - 'false'
-      X-Ms-Region:
-      - East US
+      X-Envoy-Upstream-Service-Time:
+      - '834'
       X-Ratelimit-Limit-Requests:
-      - '4000000'
+      - '150000'
       X-Ratelimit-Limit-Tokens:
-      - '400000000'
+      - '450000000'
       X-Ratelimit-Remaining-Requests:
-      - '3995884'
+      - '149999'
       X-Ratelimit-Remaining-Tokens:
-      - '364006102'
+      - '449999790'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
       X-Request-Id:
-      - 514db553-d18d-4277-8719-d7784a252fa6
+      - req_472e1d442c6c4edaaab0fca9c8953742
       Vary:
       - Accept-Encoding
       Alt-Svc:
@@ -372,9 +384,9 @@ http_interactions:
       encoding: ASCII-8BIT
       string: |-
         {
-          "id": "chatcmpl-C8u8JqqS8p27hEPnWo1GxMGTK3V29",
+          "id": "chatcmpl-C9xWXsrFUsTqnr2UeRHFOMVcLpYAl",
           "object": "chat.completion",
-          "created": 1756238435,
+          "created": 1756489797,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -384,152 +396,7 @@ http_interactions:
                 "content": null,
                 "tool_calls": [
                   {
-                    "id": "call_3GxaUliamWPWdtIA4x7HSBqV",
-                    "type": "function",
-                    "function": {
-                      "name": "grep",
-                      "arguments": "{\"string\":\"*.rb\"}"
-                    }
-                  }
-                ],
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "tool_calls"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 418,
-            "completion_tokens": 16,
-            "total_tokens": 434,
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0,
-              "audio_tokens": 0
-            },
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            }
-          },
-          "system_fingerprint": "fp_efad92c60b",
-          "service_tier": null
-        }
-  recorded_at: Tue, 26 Aug 2025 20:00:35 GMT
-- request:
-    method: post
-    uri: http://mytestingproxy.local/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"max_completion_tokens":16384,"tools":[{"type":"function","function":{"name":"grep","parameters":{"type":"object","properties":{"string":{"type":"string","description":"The
-        string to search for"}}},"description":"Search for a string in the project
-        using `grep -rni \"#{@search_string}\" .` in the project root"}},{"type":"function","function":{"name":"read_file","parameters":{"type":"object","properties":{"path":{"type":"string","description":"The
-        path to the file to read"}}},"description":"Read the contents of a file. (If
-        the path is a directory, list the contents.) NOTE: Do not use for .rbi files,
-        they are not useful."}}],"model":"openai:gpt-4o-mini","messages":[{"role":"user","content":"You
-        are exploring a new directory. Your task is to:\n\n1. Show the current working
-        directory\n2. List all files and subdirectories\n\nNote: You only have access
-        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"101f58e4-eeea-441c-8b91","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"101f58e4-eeea-441c-8b91","name":"pwd","content":"Command:
-        pwd\nExit status: 0\nOutput:\n/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"7ce2fb47-a999-4aa5-89c7","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"7ce2fb47-a999-4aa5-89c7","name":"ls","content":"Command:
-        ls\nExit status: 0\nOutput:\nroast\n"},{"role":"assistant","content":"1. Current
-        working directory: `/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6`\n\n2.
-        Files and subdirectories:\n   - roast"},{"role":"user","content":"Based on
-        the directory listing from the previous step, your task is to:\n\n1. Search
-        for any Ruby files using grep\n2. Read the contents of the first Ruby file
-        you find\n\nNote: You only have access to the `grep` and `read_file` tools
-        for this step. You cannot use commands like `ls` or `pwd`."},{"role":"assistant","content":null,"tool_calls":[{"id":"ff7cf3ea-36a3-4364-904b","type":"function","function":{"name":"grep","arguments":"{\"string\":\"*.rb\"}"}}]},{"role":"tool","tool_call_id":"ff7cf3ea-36a3-4364-904b","name":"grep","content":"Error
-        grepping for string: Command failed: "}]}'
-    headers:
-      Content-Type:
-      - application/json
-      Authorization:
-      - my-token
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - Ruby
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - openresty/1.25.3.2
-      Date:
-      - Tue, 26 Aug 2025 20:00:36 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Cf-Ray:
-      - 9755ea914bcba24e-YUL
-      Cf-Cache-Status:
-      - DYNAMIC
-      Access-Control-Allow-Origin:
-      - "*"
-      Set-Cookie:
-      - __cf_bm=pzmzm5WDo7dszOV5sWAsQEIjY.1c08hfqr3h2gC60SY-1756238436-1.0.1.1-g9DRbVn8JbWzQqa415Lv._QpFfY4g5.CEQ4e5VgdchKgeNoEq4jYgKlMxUlm3Xt7oedakNqhZzNpYiG_yZKlBHPGhmw0KzZR6DzWyq5SJKs;
-        path=/; expires=Tue, 26-Aug-25 20:30:36 GMT; domain=.proxy.shopify.ai; HttpOnly;
-        Secure; SameSite=None
-      - shopify-proxy-session=1756238436052-mhdf6ebxizc; Path=/; Expires=Wed, 27 Aug
-        2025 20:00:36 GMT; HttpOnly; Secure; SameSite=Lax
-      Strict-Transport-Security:
-      - max-age=15552000; includeSubDomains; preload
-      Access-Control-Allow-Headers:
-      - "*"
-      Access-Control-Allow-Methods:
-      - "*"
-      Access-Control-Max-Age:
-      - '86400'
-      Apim-Request-Id:
-      - b71a9555-7d64-4ea7-ba87-aaf92e57ba72
-      Azureml-Model-Session:
-      - d069-20250624062057
-      X-Content-Type-Options:
-      - nosniff
-      X-Ms-Deployment-Name:
-      - gpt-4o-mini
-      X-Ms-Rai-Invoked:
-      - 'false'
-      X-Ms-Region:
-      - East US
-      X-Ratelimit-Limit-Requests:
-      - '4000000'
-      X-Ratelimit-Limit-Tokens:
-      - '400000000'
-      X-Ratelimit-Remaining-Requests:
-      - '3995956'
-      X-Ratelimit-Remaining-Tokens:
-      - '364819071'
-      X-Request-Id:
-      - ac8e1c49-8cba-4879-8a2e-433b0e31063e
-      Vary:
-      - Accept-Encoding
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |-
-        {
-          "id": "chatcmpl-C8u8KNSDjQvUjgAKqISFrVfn6Nlea",
-          "object": "chat.completion",
-          "created": 1756238436,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": null,
-                "tool_calls": [
-                  {
-                    "id": "call_jXLUeryRH29sWaZ4OegcXssR",
+                    "id": "call_dcyOndm5HVl84mVOUn9v0USu",
                     "type": "function",
                     "function": {
                       "name": "grep",
@@ -545,24 +412,24 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 450,
-            "completion_tokens": 16,
-            "total_tokens": 466,
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0,
-              "audio_tokens": 0
-            },
+            "prompt_tokens": 396,
+            "completion_tokens": 15,
+            "total_tokens": 411,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
             }
           },
-          "system_fingerprint": "fp_efad92c60b",
-          "service_tier": null
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Tue, 26 Aug 2025 20:00:36 GMT
+  recorded_at: Fri, 29 Aug 2025 17:49:58 GMT
 - request:
     method: post
     uri: http://mytestingproxy.local/v1/chat/completions
@@ -576,16 +443,15 @@ http_interactions:
         they are not useful."}}],"model":"openai:gpt-4o-mini","messages":[{"role":"user","content":"You
         are exploring a new directory. Your task is to:\n\n1. Show the current working
         directory\n2. List all files and subdirectories\n\nNote: You only have access
-        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"101f58e4-eeea-441c-8b91","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"101f58e4-eeea-441c-8b91","name":"pwd","content":"Command:
-        pwd\nExit status: 0\nOutput:\n/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"7ce2fb47-a999-4aa5-89c7","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"7ce2fb47-a999-4aa5-89c7","name":"ls","content":"Command:
+        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"930250b5-383a-4624-b3ce","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"930250b5-383a-4624-b3ce","name":"pwd","content":"Command:
+        pwd\nExit status: 0\nOutput:\n/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"3b6927fa-785d-4d23-80c5","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"3b6927fa-785d-4d23-80c5","name":"ls","content":"Command:
         ls\nExit status: 0\nOutput:\nroast\n"},{"role":"assistant","content":"1. Current
-        working directory: `/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6`\n\n2.
-        Files and subdirectories:\n   - roast"},{"role":"user","content":"Based on
-        the directory listing from the previous step, your task is to:\n\n1. Search
+        working directory: `/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6`\n2.
+        Files and subdirectories: \n   - `roast`"},{"role":"user","content":"Based
+        on the directory listing from the previous step, your task is to:\n\n1. Search
         for any Ruby files using grep\n2. Read the contents of the first Ruby file
         you find\n\nNote: You only have access to the `grep` and `read_file` tools
-        for this step. You cannot use commands like `ls` or `pwd`."},{"role":"assistant","content":null,"tool_calls":[{"id":"ff7cf3ea-36a3-4364-904b","type":"function","function":{"name":"grep","arguments":"{\"string\":\"*.rb\"}"}}]},{"role":"tool","tool_call_id":"ff7cf3ea-36a3-4364-904b","name":"grep","content":"Error
-        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"342a2baa-ead6-4f00-8084","type":"function","function":{"name":"grep","arguments":"{\"string\":\".rb\"}"}}]},{"role":"tool","tool_call_id":"342a2baa-ead6-4f00-8084","name":"grep","content":"Error
+        for this step. You cannot use commands like `ls` or `pwd`."},{"role":"assistant","content":null,"tool_calls":[{"id":"b81004a4-b430-4de6-b55e","type":"function","function":{"name":"grep","arguments":"{\"string\":\".rb\"}"}}]},{"role":"tool","tool_call_id":"b81004a4-b430-4de6-b55e","name":"grep","content":"Error
         grepping for string: Command failed: "}]}'
     headers:
       Content-Type:
@@ -606,7 +472,7 @@ http_interactions:
       Server:
       - openresty/1.25.3.2
       Date:
-      - Tue, 26 Aug 2025 20:00:38 GMT
+      - Fri, 29 Aug 2025 17:49:59 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -614,53 +480,47 @@ http_interactions:
       Connection:
       - keep-alive
       Cf-Ray:
-      - 9755ea963979a24e-YUL
+      - 976de35b5c71a298-YUL
       Cf-Cache-Status:
       - DYNAMIC
       Access-Control-Allow-Origin:
       - "*"
       Set-Cookie:
-      - __cf_bm=NMF11wtXXsS4bNkj1pCnz9FaRc_zpkaylFdyiILnabI-1756238438-1.0.1.1-5bTz9gQyPUqP.TMLV57Z98EIQQttQWglIFTPximt0jRNuYa.AX56IetjW4bnNUk.ayUOFg2rCQvgMY8yoxdsLar1DKOJmZ16t41bnussAj8;
-        path=/; expires=Tue, 26-Aug-25 20:30:38 GMT; domain=.proxy.shopify.ai; HttpOnly;
+      - __cf_bm=8z.omkI7GmpZigR7b4donjSy19RXWSvgUexGtxSoSys-1756489799-1.0.1.1-nr2oX6DI1KjQJx8WbGqRqXUPIWZjhl0.s17OAeqqi6dbsHZaa0BqQ.6EpTq87ue8MZDklD.viwjgivytPdKh1MjfdJbvVcWX5vuO1P61mK8;
+        path=/; expires=Fri, 29-Aug-25 18:19:59 GMT; domain=.proxy.shopify.ai; HttpOnly;
         Secure; SameSite=None
-      - shopify-proxy-session=1756238436847-e19kqltkwu; Path=/; Expires=Wed, 27 Aug
-        2025 20:00:36 GMT; HttpOnly; Secure; SameSite=Lax
+      - shopify-proxy-session=1756489798947-xzeixd5jvqd; Path=/; Expires=Sat, 30 Aug
+        2025 17:49:58 GMT; HttpOnly; Secure; SameSite=Lax
       Strict-Transport-Security:
       - max-age=15552000; includeSubDomains; preload
       Access-Control-Allow-Headers:
       - "*"
       Access-Control-Allow-Methods:
       - "*"
-      Access-Control-Expose-Headers:
-      - X-Request-ID
       Access-Control-Max-Age:
       - '86400'
-      Openai-Organization:
-      - shopify-hack-days
-      Openai-Processing-Ms:
-      - '1675'
-      Openai-Project:
-      - proj_RHxuweUBa4b19Xbb7FCw7ryR
-      Openai-Version:
-      - '2020-10-01'
+      Apim-Request-Id:
+      - c2c4566b-d2b2-4773-8569-805ec1b4ffeb
+      Azureml-Model-Session:
+      - d033-20250625045640
       X-Content-Type-Options:
       - nosniff
-      X-Envoy-Upstream-Service-Time:
-      - '1691'
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini
+      X-Ms-Rai-Invoked:
+      - 'false'
+      X-Ms-Region:
+      - East US
       X-Ratelimit-Limit-Requests:
-      - '150000'
+      - '4000000'
       X-Ratelimit-Limit-Tokens:
-      - '450000000'
+      - '400000000'
       X-Ratelimit-Remaining-Requests:
-      - '149999'
+      - '3995562'
       X-Ratelimit-Remaining-Tokens:
-      - '449999767'
-      X-Ratelimit-Reset-Requests:
-      - 0s
-      X-Ratelimit-Reset-Tokens:
-      - 0s
+      - '391146356'
       X-Request-Id:
-      - req_10c74f5bac3c4a4fb74adee1c7a9a8c3
+      - b549ef8c-beaf-4f28-9d2c-265da42210a1
       Vary:
       - Accept-Encoding
       Alt-Svc:
@@ -669,16 +529,612 @@ http_interactions:
       encoding: ASCII-8BIT
       string: |-
         {
-          "id": "chatcmpl-C8u8LPJ5aXgyjwHYxPm3O1qz4HAEO",
+          "id": "chatcmpl-C9xWZ1w829qJHQM4a5JpjjlOgxOdn",
           "object": "chat.completion",
-          "created": 1756238437,
+          "created": 1756489799,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "It seems that there was an error while attempting to search for Ruby files using `grep`. Unfortunately, I cannot continue with reading the contents of a Ruby file as no files were found.\n\nIf you have any other instructions or need assistance with a different task, please let me know!",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_sAQyCxW6AW7jfz1p8dLfySbc",
+                    "type": "function",
+                    "function": {
+                      "name": "grep",
+                      "arguments": "{\"string\":\"*.rb\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 428,
+            "completion_tokens": 16,
+            "total_tokens": 444,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_efad92c60b",
+          "service_tier": null
+        }
+  recorded_at: Fri, 29 Aug 2025 17:49:59 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"max_completion_tokens":16384,"tools":[{"type":"function","function":{"name":"grep","parameters":{"type":"object","properties":{"string":{"type":"string","description":"The
+        string to search for"}}},"description":"Search for a string in the project
+        using `grep -rni \"#{@search_string}\" .` in the project root"}},{"type":"function","function":{"name":"read_file","parameters":{"type":"object","properties":{"path":{"type":"string","description":"The
+        path to the file to read"}}},"description":"Read the contents of a file. (If
+        the path is a directory, list the contents.) NOTE: Do not use for .rbi files,
+        they are not useful."}}],"model":"openai:gpt-4o-mini","messages":[{"role":"user","content":"You
+        are exploring a new directory. Your task is to:\n\n1. Show the current working
+        directory\n2. List all files and subdirectories\n\nNote: You only have access
+        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"930250b5-383a-4624-b3ce","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"930250b5-383a-4624-b3ce","name":"pwd","content":"Command:
+        pwd\nExit status: 0\nOutput:\n/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"3b6927fa-785d-4d23-80c5","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"3b6927fa-785d-4d23-80c5","name":"ls","content":"Command:
+        ls\nExit status: 0\nOutput:\nroast\n"},{"role":"assistant","content":"1. Current
+        working directory: `/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6`\n2.
+        Files and subdirectories: \n   - `roast`"},{"role":"user","content":"Based
+        on the directory listing from the previous step, your task is to:\n\n1. Search
+        for any Ruby files using grep\n2. Read the contents of the first Ruby file
+        you find\n\nNote: You only have access to the `grep` and `read_file` tools
+        for this step. You cannot use commands like `ls` or `pwd`."},{"role":"assistant","content":null,"tool_calls":[{"id":"b81004a4-b430-4de6-b55e","type":"function","function":{"name":"grep","arguments":"{\"string\":\".rb\"}"}}]},{"role":"tool","tool_call_id":"b81004a4-b430-4de6-b55e","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"7b39928e-537c-4977-b315","type":"function","function":{"name":"grep","arguments":"{\"string\":\"*.rb\"}"}}]},{"role":"tool","tool_call_id":"7b39928e-537c-4977-b315","name":"grep","content":"Error
+        grepping for string: Command failed: "}]}'
+    headers:
+      Content-Type:
+      - application/json
+      Authorization:
+      - my-token
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - openresty/1.25.3.2
+      Date:
+      - Fri, 29 Aug 2025 17:50:00 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 976de3615bdea298-YUL
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Set-Cookie:
+      - __cf_bm=i3DhZGsM.53k3HIU39Vdm82gchYvWWJtfYUy4H4v3Bo-1756489800-1.0.1.1-SrdXuvhUeUBWjyclnp3IaEtR5iOI8yHVgE.UsbZP_KGieagEqfkH.iVU.8xTPiRKGVTTavwQbUAF7AJPh0jz4RZ5v8Oy24aqG3CVecSaVH4;
+        path=/; expires=Fri, 29-Aug-25 18:20:00 GMT; domain=.proxy.shopify.ai; HttpOnly;
+        Secure; SameSite=None
+      - shopify-proxy-session=1756489799901-d10kgibmtbr; Path=/; Expires=Sat, 30 Aug
+        2025 17:49:59 GMT; HttpOnly; Secure; SameSite=Lax
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      Apim-Request-Id:
+      - 07b4b021-a619-4e1c-89a4-0862c60eaa81
+      Azureml-Model-Session:
+      - d033-20250625045640
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini
+      X-Ms-Rai-Invoked:
+      - 'false'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '4000000'
+      X-Ratelimit-Limit-Tokens:
+      - '400000000'
+      X-Ratelimit-Remaining-Requests:
+      - '3995489'
+      X-Ratelimit-Remaining-Tokens:
+      - '391009336'
+      X-Request-Id:
+      - 4e14e692-7258-4998-9927-ee28022784e2
+      Vary:
+      - Accept-Encoding
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-C9xWaD3rzEzH285tcMh5BZteNDpj9",
+          "object": "chat.completion",
+          "created": 1756489800,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_OzdAraDdQf0zpXkQLaSBdCmD",
+                    "type": "function",
+                    "function": {
+                      "name": "grep",
+                      "arguments": "{\"string\":\"ruby\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 460,
+            "completion_tokens": 15,
+            "total_tokens": 475,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_efad92c60b",
+          "service_tier": null
+        }
+  recorded_at: Fri, 29 Aug 2025 17:50:00 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"max_completion_tokens":16384,"tools":[{"type":"function","function":{"name":"grep","parameters":{"type":"object","properties":{"string":{"type":"string","description":"The
+        string to search for"}}},"description":"Search for a string in the project
+        using `grep -rni \"#{@search_string}\" .` in the project root"}},{"type":"function","function":{"name":"read_file","parameters":{"type":"object","properties":{"path":{"type":"string","description":"The
+        path to the file to read"}}},"description":"Read the contents of a file. (If
+        the path is a directory, list the contents.) NOTE: Do not use for .rbi files,
+        they are not useful."}}],"model":"openai:gpt-4o-mini","messages":[{"role":"user","content":"You
+        are exploring a new directory. Your task is to:\n\n1. Show the current working
+        directory\n2. List all files and subdirectories\n\nNote: You only have access
+        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"930250b5-383a-4624-b3ce","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"930250b5-383a-4624-b3ce","name":"pwd","content":"Command:
+        pwd\nExit status: 0\nOutput:\n/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"3b6927fa-785d-4d23-80c5","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"3b6927fa-785d-4d23-80c5","name":"ls","content":"Command:
+        ls\nExit status: 0\nOutput:\nroast\n"},{"role":"assistant","content":"1. Current
+        working directory: `/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6`\n2.
+        Files and subdirectories: \n   - `roast`"},{"role":"user","content":"Based
+        on the directory listing from the previous step, your task is to:\n\n1. Search
+        for any Ruby files using grep\n2. Read the contents of the first Ruby file
+        you find\n\nNote: You only have access to the `grep` and `read_file` tools
+        for this step. You cannot use commands like `ls` or `pwd`."},{"role":"assistant","content":null,"tool_calls":[{"id":"b81004a4-b430-4de6-b55e","type":"function","function":{"name":"grep","arguments":"{\"string\":\".rb\"}"}}]},{"role":"tool","tool_call_id":"b81004a4-b430-4de6-b55e","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"7b39928e-537c-4977-b315","type":"function","function":{"name":"grep","arguments":"{\"string\":\"*.rb\"}"}}]},{"role":"tool","tool_call_id":"7b39928e-537c-4977-b315","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"057fa5c9-26e2-466b-9bd2","type":"function","function":{"name":"grep","arguments":"{\"string\":\"ruby\"}"}}]},{"role":"tool","tool_call_id":"057fa5c9-26e2-466b-9bd2","name":"grep","content":"Error
+        grepping for string: Command failed: "}]}'
+    headers:
+      Content-Type:
+      - application/json
+      Authorization:
+      - my-token
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - openresty/1.25.3.2
+      Date:
+      - Fri, 29 Aug 2025 17:50:02 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 976de36609baa298-YUL
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Set-Cookie:
+      - __cf_bm=QnZ5k3yedu1pLiKMvEk_oJvbEl_MLvX02ofAvSmTyzY-1756489802-1.0.1.1-lzHqyOpYLxI5ykLIoPTTfbdxDMmhr9Hzsq4qLvVSfRGOY_Kh2kO23fRkEWk7biJHpMHaFHP6QpF.rTJHYqL822aMQWuEjbSP5DBOBX.Ho2o;
+        path=/; expires=Fri, 29-Aug-25 18:20:02 GMT; domain=.proxy.shopify.ai; HttpOnly;
+        Secure; SameSite=None
+      - shopify-proxy-session=1756489800658-4d4sq29sxt; Path=/; Expires=Sat, 30 Aug
+        2025 17:50:00 GMT; HttpOnly; Secure; SameSite=Lax
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      Apim-Request-Id:
+      - 3c8f3e8a-1cfb-46ff-bda3-e575bd397c96
+      Azureml-Model-Session:
+      - d033-20250625045640
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini
+      X-Ms-Rai-Invoked:
+      - 'false'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '4000000'
+      X-Ratelimit-Limit-Tokens:
+      - '400000000'
+      X-Ratelimit-Remaining-Requests:
+      - '3995424'
+      X-Ratelimit-Remaining-Tokens:
+      - '390855636'
+      X-Request-Id:
+      - a04a8a3a-fc1e-4795-b786-ab33842ad117
+      Vary:
+      - Accept-Encoding
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-C9xWaR60QbiqvkPRUiKedzdx7u4nV",
+          "object": "chat.completion",
+          "created": 1756489800,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "It seems that the attempts to search for Ruby files using `grep` have failed. I will attempt to read the contents of the subdirectory `roast` to find any Ruby files there.",
+                "tool_calls": [
+                  {
+                    "id": "call_9fymn0GR6gWhGtfVNZ228WVi",
+                    "type": "function",
+                    "function": {
+                      "name": "read_file",
+                      "arguments": "{\"path\":\"roast\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 491,
+            "completion_tokens": 57,
+            "total_tokens": 548,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_efad92c60b",
+          "service_tier": null
+        }
+  recorded_at: Fri, 29 Aug 2025 17:50:02 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"max_completion_tokens":16384,"tools":[{"type":"function","function":{"name":"grep","parameters":{"type":"object","properties":{"string":{"type":"string","description":"The
+        string to search for"}}},"description":"Search for a string in the project
+        using `grep -rni \"#{@search_string}\" .` in the project root"}},{"type":"function","function":{"name":"read_file","parameters":{"type":"object","properties":{"path":{"type":"string","description":"The
+        path to the file to read"}}},"description":"Read the contents of a file. (If
+        the path is a directory, list the contents.) NOTE: Do not use for .rbi files,
+        they are not useful."}}],"model":"openai:gpt-4o-mini","messages":[{"role":"user","content":"You
+        are exploring a new directory. Your task is to:\n\n1. Show the current working
+        directory\n2. List all files and subdirectories\n\nNote: You only have access
+        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"930250b5-383a-4624-b3ce","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"930250b5-383a-4624-b3ce","name":"pwd","content":"Command:
+        pwd\nExit status: 0\nOutput:\n/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"3b6927fa-785d-4d23-80c5","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"3b6927fa-785d-4d23-80c5","name":"ls","content":"Command:
+        ls\nExit status: 0\nOutput:\nroast\n"},{"role":"assistant","content":"1. Current
+        working directory: `/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6`\n2.
+        Files and subdirectories: \n   - `roast`"},{"role":"user","content":"Based
+        on the directory listing from the previous step, your task is to:\n\n1. Search
+        for any Ruby files using grep\n2. Read the contents of the first Ruby file
+        you find\n\nNote: You only have access to the `grep` and `read_file` tools
+        for this step. You cannot use commands like `ls` or `pwd`."},{"role":"assistant","content":null,"tool_calls":[{"id":"b81004a4-b430-4de6-b55e","type":"function","function":{"name":"grep","arguments":"{\"string\":\".rb\"}"}}]},{"role":"tool","tool_call_id":"b81004a4-b430-4de6-b55e","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"7b39928e-537c-4977-b315","type":"function","function":{"name":"grep","arguments":"{\"string\":\"*.rb\"}"}}]},{"role":"tool","tool_call_id":"7b39928e-537c-4977-b315","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"057fa5c9-26e2-466b-9bd2","type":"function","function":{"name":"grep","arguments":"{\"string\":\"ruby\"}"}}]},{"role":"tool","tool_call_id":"057fa5c9-26e2-466b-9bd2","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"630ec0ec-9930-4632-a075","type":"function","function":{"name":"read_file","arguments":"{\"path\":\"roast\"}"}}]},{"role":"tool","tool_call_id":"630ec0ec-9930-4632-a075","name":"read_file","content":"total
+        0\ndrwxr-xr-x 3 dersam staff  96 Aug 29 13:49 .\ndrwx------ 4 dersam staff
+        128 Aug 29 13:49 ..\ndrwxr-xr-x 7 dersam staff 224 Aug 29 13:49 available_tools_demo\n"}]}'
+    headers:
+      Content-Type:
+      - application/json
+      Authorization:
+      - my-token
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - openresty/1.25.3.2
+      Date:
+      - Fri, 29 Aug 2025 17:50:03 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 976de3724996a298-YUL
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Set-Cookie:
+      - __cf_bm=rpXIcC05yWZdw.DTxyxVRCnJm.DUALti51s9PlpfFd0-1756489803-1.0.1.1-SFZMyRqL0wHriguKGtpohV9TY0XEya2UWUK4dhIrfGM21HUJWck4AqcTdG_54xRr_hKEwXuSU_Rgr2liR03hqyDNFVgRyQUMMFiuYCd3TOk;
+        path=/; expires=Fri, 29-Aug-25 18:20:03 GMT; domain=.proxy.shopify.ai; HttpOnly;
+        Secure; SameSite=None
+      - shopify-proxy-session=1756489802621-ipcxrj3wj7; Path=/; Expires=Sat, 30 Aug
+        2025 17:50:02 GMT; HttpOnly; Secure; SameSite=Lax
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      Apim-Request-Id:
+      - 05fb178d-8eab-47dd-a3ff-6a7f683f474f
+      Azureml-Model-Session:
+      - d033-20250625045640
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini
+      X-Ms-Rai-Invoked:
+      - 'false'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '4000000'
+      X-Ratelimit-Limit-Tokens:
+      - '400000000'
+      X-Ratelimit-Remaining-Requests:
+      - '3995312'
+      X-Ratelimit-Remaining-Tokens:
+      - '390633539'
+      X-Request-Id:
+      - 15142766-0de9-40b7-b91a-194e475964e9
+      Vary:
+      - Accept-Encoding
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-C9xWcU5eIh63Bojn37Xery4XWkpLc",
+          "object": "chat.completion",
+          "created": 1756489802,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_WFo0JbsqKTDxSZD1SsgkSkyu",
+                    "type": "function",
+                    "function": {
+                      "name": "read_file",
+                      "arguments": "{\"path\":\"roast/available_tools_demo\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 582,
+            "completion_tokens": 20,
+            "total_tokens": 602,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_efad92c60b",
+          "service_tier": null
+        }
+  recorded_at: Fri, 29 Aug 2025 17:50:03 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"max_completion_tokens":16384,"tools":[{"type":"function","function":{"name":"grep","parameters":{"type":"object","properties":{"string":{"type":"string","description":"The
+        string to search for"}}},"description":"Search for a string in the project
+        using `grep -rni \"#{@search_string}\" .` in the project root"}},{"type":"function","function":{"name":"read_file","parameters":{"type":"object","properties":{"path":{"type":"string","description":"The
+        path to the file to read"}}},"description":"Read the contents of a file. (If
+        the path is a directory, list the contents.) NOTE: Do not use for .rbi files,
+        they are not useful."}}],"model":"openai:gpt-4o-mini","messages":[{"role":"user","content":"You
+        are exploring a new directory. Your task is to:\n\n1. Show the current working
+        directory\n2. List all files and subdirectories\n\nNote: You only have access
+        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"930250b5-383a-4624-b3ce","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"930250b5-383a-4624-b3ce","name":"pwd","content":"Command:
+        pwd\nExit status: 0\nOutput:\n/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"3b6927fa-785d-4d23-80c5","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"3b6927fa-785d-4d23-80c5","name":"ls","content":"Command:
+        ls\nExit status: 0\nOutput:\nroast\n"},{"role":"assistant","content":"1. Current
+        working directory: `/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6`\n2.
+        Files and subdirectories: \n   - `roast`"},{"role":"user","content":"Based
+        on the directory listing from the previous step, your task is to:\n\n1. Search
+        for any Ruby files using grep\n2. Read the contents of the first Ruby file
+        you find\n\nNote: You only have access to the `grep` and `read_file` tools
+        for this step. You cannot use commands like `ls` or `pwd`."},{"role":"assistant","content":null,"tool_calls":[{"id":"b81004a4-b430-4de6-b55e","type":"function","function":{"name":"grep","arguments":"{\"string\":\".rb\"}"}}]},{"role":"tool","tool_call_id":"b81004a4-b430-4de6-b55e","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"7b39928e-537c-4977-b315","type":"function","function":{"name":"grep","arguments":"{\"string\":\"*.rb\"}"}}]},{"role":"tool","tool_call_id":"7b39928e-537c-4977-b315","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"057fa5c9-26e2-466b-9bd2","type":"function","function":{"name":"grep","arguments":"{\"string\":\"ruby\"}"}}]},{"role":"tool","tool_call_id":"057fa5c9-26e2-466b-9bd2","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"630ec0ec-9930-4632-a075","type":"function","function":{"name":"read_file","arguments":"{\"path\":\"roast\"}"}}]},{"role":"tool","tool_call_id":"630ec0ec-9930-4632-a075","name":"read_file","content":"total
+        0\ndrwxr-xr-x 3 dersam staff  96 Aug 29 13:49 .\ndrwx------ 4 dersam staff
+        128 Aug 29 13:49 ..\ndrwxr-xr-x 7 dersam staff 224 Aug 29 13:49 available_tools_demo\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"2c469dbf-9d5b-4d61-ab7b","type":"function","function":{"name":"read_file","arguments":"{\"path\":\"roast/available_tools_demo\"}"}}]},{"role":"tool","tool_call_id":"2c469dbf-9d5b-4d61-ab7b","name":"read_file","content":"total
+        8\ndrwxr-xr-x 7 dersam staff  224 Aug 29 13:49 .\ndrwxr-xr-x 3 dersam staff   96
+        Aug 29 13:49 ..\n-rw-r--r-- 1 dersam staff 1481 Aug 29 13:49 README.md\ndrwxr-xr-x
+        3 dersam staff   96 Aug 29 13:49 analyze_files\ndrwxr-xr-x 3 dersam staff   96
+        Aug 29 13:49 explore_directory\n-rw-r--r-- 1 dersam staff  482 Aug 29 13:49
+        workflow.yml\ndrwxr-xr-x 3 dersam staff   96 Aug 29 13:49 write_summary\n"}]}'
+    headers:
+      Content-Type:
+      - application/json
+      Authorization:
+      - my-token
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - openresty/1.25.3.2
+      Date:
+      - Fri, 29 Aug 2025 17:50:04 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 976de376efb9a298-YUL
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Set-Cookie:
+      - __cf_bm=zG65j9HmM_fCy6u1u0R.__cWU0R7o1byFMliv5BpwlA-1756489804-1.0.1.1-g1r1QYdk_IbIsdjE8ghEXYv389W97xNFiP1Mr6LMJte3sFnjUhx12GySg2iJx3b1AJWAFrQ1Y7sKTjZTyOLrSX4N5ThzHnAbRWXE_pgDfwg;
+        path=/; expires=Fri, 29-Aug-25 18:20:04 GMT; domain=.proxy.shopify.ai; HttpOnly;
+        Secure; SameSite=None
+      - shopify-proxy-session=1756489803375-gppqqctqzdv; Path=/; Expires=Sat, 30 Aug
+        2025 17:50:03 GMT; HttpOnly; Secure; SameSite=Lax
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      Apim-Request-Id:
+      - 822447bd-7942-4f6b-81d1-ed43f809e1bf
+      Azureml-Model-Session:
+      - d033-20250625045640
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini
+      X-Ms-Rai-Invoked:
+      - 'false'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '4000000'
+      X-Ratelimit-Limit-Tokens:
+      - '400000000'
+      X-Ratelimit-Remaining-Requests:
+      - '3995255'
+      X-Ratelimit-Remaining-Tokens:
+      - '390564323'
+      X-Request-Id:
+      - 8ea66ed6-bf58-407d-ac08-6484b020ab23
+      Vary:
+      - Accept-Encoding
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-C9xWdO2uoTJodPpnstjaug7gREvTL",
+          "object": "chat.completion",
+          "created": 1756489803,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "It seems there are no Ruby files (.rb) in the `roast` directory or its immediate subdirectory `available_tools_demo`. I found the following files and subdirectories instead:\n\nIn `available_tools_demo`:\n- **Files:**\n  - `README.md` (1481 bytes)\n  - `workflow.yml` (482 bytes)\n  \n- **Subdirectories:**\n  - `analyze_files`\n  - `explore_directory`\n  - `write_summary`\n\nIf you would like to explore any specific file or directory, please let me know!",
                 "refusal": null,
                 "annotations": []
               },
@@ -687,52 +1143,62 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 482,
-            "completion_tokens": 57,
-            "total_tokens": 539,
+            "prompt_tokens": 777,
+            "completion_tokens": 116,
+            "total_tokens": 893,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
             }
           },
-          "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_efad92c60b",
+          "service_tier": null
         }
-  recorded_at: Tue, 26 Aug 2025 20:00:38 GMT
+  recorded_at: Fri, 29 Aug 2025 17:50:04 GMT
 - request:
     method: post
     uri: http://mytestingproxy.local/v1/chat/completions
     body:
       encoding: UTF-8
       string: '{"max_completion_tokens":16384,"tools":[{"type":"function","function":{"name":"write_file","parameters":{"type":"object","properties":{"path":{"type":"string","description":"The
-        path to the file to write, relative to the current working directory: /private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6"},"content":{"type":"string","description":"The
+        path to the file to write, relative to the current working directory: /Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6"},"content":{"type":"string","description":"The
         content to write to the file"}}},"description":"Write content to a file. Creates
         the file if it does not exist, or overwrites it if it does."}},{"type":"function","function":{"name":"echo","parameters":{"type":"object","properties":{"args":{"type":"string","description":"Arguments
         to pass to the echo command"},"timeout":{"type":"integer","description":"Timeout
         in seconds (optional, default: 30)"}}},"description":"Execute the echo command"}}],"model":"openai:gpt-4o-mini","messages":[{"role":"user","content":"You
         are exploring a new directory. Your task is to:\n\n1. Show the current working
         directory\n2. List all files and subdirectories\n\nNote: You only have access
-        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"101f58e4-eeea-441c-8b91","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"101f58e4-eeea-441c-8b91","name":"pwd","content":"Command:
-        pwd\nExit status: 0\nOutput:\n/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"7ce2fb47-a999-4aa5-89c7","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"7ce2fb47-a999-4aa5-89c7","name":"ls","content":"Command:
+        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"930250b5-383a-4624-b3ce","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"930250b5-383a-4624-b3ce","name":"pwd","content":"Command:
+        pwd\nExit status: 0\nOutput:\n/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"3b6927fa-785d-4d23-80c5","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"3b6927fa-785d-4d23-80c5","name":"ls","content":"Command:
         ls\nExit status: 0\nOutput:\nroast\n"},{"role":"assistant","content":"1. Current
-        working directory: `/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6`\n\n2.
-        Files and subdirectories:\n   - roast"},{"role":"user","content":"Based on
-        the directory listing from the previous step, your task is to:\n\n1. Search
+        working directory: `/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6`\n2.
+        Files and subdirectories: \n   - `roast`"},{"role":"user","content":"Based
+        on the directory listing from the previous step, your task is to:\n\n1. Search
         for any Ruby files using grep\n2. Read the contents of the first Ruby file
         you find\n\nNote: You only have access to the `grep` and `read_file` tools
-        for this step. You cannot use commands like `ls` or `pwd`."},{"role":"assistant","content":null,"tool_calls":[{"id":"ff7cf3ea-36a3-4364-904b","type":"function","function":{"name":"grep","arguments":"{\"string\":\"*.rb\"}"}}]},{"role":"tool","tool_call_id":"ff7cf3ea-36a3-4364-904b","name":"grep","content":"Error
-        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"342a2baa-ead6-4f00-8084","type":"function","function":{"name":"grep","arguments":"{\"string\":\".rb\"}"}}]},{"role":"tool","tool_call_id":"342a2baa-ead6-4f00-8084","name":"grep","content":"Error
-        grepping for string: Command failed: "},{"role":"assistant","content":"It
-        seems that there was an error while attempting to search for Ruby files using
-        `grep`. Unfortunately, I cannot continue with reading the contents of a Ruby
-        file as no files were found.\n\nIf you have any other instructions or need
-        assistance with a different task, please let me know!"},{"role":"user","content":"Based
+        for this step. You cannot use commands like `ls` or `pwd`."},{"role":"assistant","content":null,"tool_calls":[{"id":"b81004a4-b430-4de6-b55e","type":"function","function":{"name":"grep","arguments":"{\"string\":\".rb\"}"}}]},{"role":"tool","tool_call_id":"b81004a4-b430-4de6-b55e","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"7b39928e-537c-4977-b315","type":"function","function":{"name":"grep","arguments":"{\"string\":\"*.rb\"}"}}]},{"role":"tool","tool_call_id":"7b39928e-537c-4977-b315","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"057fa5c9-26e2-466b-9bd2","type":"function","function":{"name":"grep","arguments":"{\"string\":\"ruby\"}"}}]},{"role":"tool","tool_call_id":"057fa5c9-26e2-466b-9bd2","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"630ec0ec-9930-4632-a075","type":"function","function":{"name":"read_file","arguments":"{\"path\":\"roast\"}"}}]},{"role":"tool","tool_call_id":"630ec0ec-9930-4632-a075","name":"read_file","content":"total
+        0\ndrwxr-xr-x 3 dersam staff  96 Aug 29 13:49 .\ndrwx------ 4 dersam staff
+        128 Aug 29 13:49 ..\ndrwxr-xr-x 7 dersam staff 224 Aug 29 13:49 available_tools_demo\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"2c469dbf-9d5b-4d61-ab7b","type":"function","function":{"name":"read_file","arguments":"{\"path\":\"roast/available_tools_demo\"}"}}]},{"role":"tool","tool_call_id":"2c469dbf-9d5b-4d61-ab7b","name":"read_file","content":"total
+        8\ndrwxr-xr-x 7 dersam staff  224 Aug 29 13:49 .\ndrwxr-xr-x 3 dersam staff   96
+        Aug 29 13:49 ..\n-rw-r--r-- 1 dersam staff 1481 Aug 29 13:49 README.md\ndrwxr-xr-x
+        3 dersam staff   96 Aug 29 13:49 analyze_files\ndrwxr-xr-x 3 dersam staff   96
+        Aug 29 13:49 explore_directory\n-rw-r--r-- 1 dersam staff  482 Aug 29 13:49
+        workflow.yml\ndrwxr-xr-x 3 dersam staff   96 Aug 29 13:49 write_summary\n"},{"role":"assistant","content":"It
+        seems there are no Ruby files (.rb) in the `roast` directory or its immediate
+        subdirectory `available_tools_demo`. I found the following files and subdirectories
+        instead:\n\nIn `available_tools_demo`:\n- **Files:**\n  - `README.md` (1481
+        bytes)\n  - `workflow.yml` (482 bytes)\n  \n- **Subdirectories:**\n  - `analyze_files`\n  -
+        `explore_directory`\n  - `write_summary`\n\nIf you would like to explore any
+        specific file or directory, please let me know!"},{"role":"user","content":"Based
         on your exploration and analysis, create a summary:\n\n1. Write a brief summary
         of what you found to a file called `summary.txt`\n2. Echo a completion message\n\nNote:
         You only have access to the `write_file` and `echo` tools for this step. You
@@ -756,7 +1222,7 @@ http_interactions:
       Server:
       - openresty/1.25.3.2
       Date:
-      - Tue, 26 Aug 2025 20:00:40 GMT
+      - Fri, 29 Aug 2025 17:50:07 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -764,47 +1230,53 @@ http_interactions:
       Connection:
       - keep-alive
       Cf-Ray:
-      - 9755eaa2f852a24e-YUL
+      - 976de380ecfba298-YUL
       Cf-Cache-Status:
       - DYNAMIC
       Access-Control-Allow-Origin:
       - "*"
       Set-Cookie:
-      - __cf_bm=zSvezrjYs7_Yssjf1hy9SAA5XS1kyeZrPeE_zRHPkWU-1756238440-1.0.1.1-QNBDmAl7d9YJlEaa.cxR1aMM7urk6j9011scvwoVivx0_nkKAyOL4V9v92iZXMd4wuvS7PFe5NceDxtyhF9nDXv9MsKskhlKgHfSZLWBCes;
-        path=/; expires=Tue, 26-Aug-25 20:30:40 GMT; domain=.proxy.shopify.ai; HttpOnly;
+      - __cf_bm=YQ.tV2iU_.iQ44tgTHh0moostWlhezHlrKDjd0WVu9g-1756489807-1.0.1.1-C8bfjgmwWB94G4sjohP2GJRMSS8jaNfahd.Svtg1WMZGM_WOoTbYG4cxaJn_iwvFmu92t_xQjq2XgQQ7A86No9UCw.fTc_CBrn0QaN1gJhE;
+        path=/; expires=Fri, 29-Aug-25 18:20:07 GMT; domain=.proxy.shopify.ai; HttpOnly;
         Secure; SameSite=None
-      - shopify-proxy-session=1756238438885-avgqpp1a4is; Path=/; Expires=Wed, 27 Aug
-        2025 20:00:38 GMT; HttpOnly; Secure; SameSite=Lax
+      - shopify-proxy-session=1756489804952-5z9hxv18wmx; Path=/; Expires=Sat, 30 Aug
+        2025 17:50:04 GMT; HttpOnly; Secure; SameSite=Lax
       Strict-Transport-Security:
       - max-age=15552000; includeSubDomains; preload
       Access-Control-Allow-Headers:
       - "*"
       Access-Control-Allow-Methods:
       - "*"
+      Access-Control-Expose-Headers:
+      - X-Request-ID
       Access-Control-Max-Age:
       - '86400'
-      Apim-Request-Id:
-      - 58b911a0-e731-454a-92f7-67e22da24344
-      Azureml-Model-Session:
-      - d196-20250624062053
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '2154'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
       X-Content-Type-Options:
       - nosniff
-      X-Ms-Deployment-Name:
-      - gpt-4o-mini
-      X-Ms-Rai-Invoked:
-      - 'false'
-      X-Ms-Region:
-      - East US
+      X-Envoy-Upstream-Service-Time:
+      - '2157'
       X-Ratelimit-Limit-Requests:
-      - '4000000'
+      - '150000'
       X-Ratelimit-Limit-Tokens:
-      - '400000000'
+      - '450000000'
       X-Ratelimit-Remaining-Requests:
-      - '3996170'
+      - '149998'
       X-Ratelimit-Remaining-Tokens:
-      - '370173645'
+      - '449999422'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
       X-Request-Id:
-      - 9452195b-c5fe-44ad-80bf-e81ac04fa1dc
+      - req_e0dea17382a5445b8a748192d4d2f6aa
       Vary:
       - Accept-Encoding
       Alt-Svc:
@@ -813,9 +1285,9 @@ http_interactions:
       encoding: ASCII-8BIT
       string: |-
         {
-          "id": "chatcmpl-C8u8NL1NxPgWadqCpVvhx8uflZIKj",
+          "id": "chatcmpl-C9xWf9HaQ7NdRNW7jHfe0u0JHfLt3",
           "object": "chat.completion",
-          "created": 1756238439,
+          "created": 1756489805,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -825,19 +1297,19 @@ http_interactions:
                 "content": null,
                 "tool_calls": [
                   {
-                    "id": "call_dniKdEcXI3QcLKqppl9Ml5E7",
+                    "id": "call_LxCIqZUhX7ubXoFD3Bg6d8yQ",
                     "type": "function",
                     "function": {
                       "name": "write_file",
-                      "arguments": "{\"path\": \"summary.txt\", \"content\": \"Summary of exploration:\\n\\n- Current working directory: /private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6\\n- Found one subdirectory named 'roast'.\\n- No Ruby files were found during the search.\"}"
+                      "arguments": "{\"path\": \"summary.txt\", \"content\": \"Summary of Directory Exploration:\\n\\nIn the 'roast' directory, the only subdirectory found is 'available_tools_demo'. Within this subdirectory, two files were identified:\\n- README.md (1481 bytes)\\n- workflow.yml (482 bytes)\\n\\nAdditionally, there are three subdirectories:\\n- analyze_files\\n- explore_directory\\n- write_summary\\n\\nNo Ruby files (.rb) were found during the exploration.\"}"
                     }
                   },
                   {
-                    "id": "call_zX0xNZaBoCZLMPYZbc01UXZp",
+                    "id": "call_HCgxeKBjfzbtISsGxdnA0YW8",
                     "type": "function",
                     "function": {
                       "name": "echo",
-                      "arguments": "{\"args\": \"Summary has been written to summary.txt\"}"
+                      "arguments": "{\"args\": \"Summary written to summary.txt\"}"
                     }
                   }
                 ],
@@ -849,63 +1321,75 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 660,
-            "completion_tokens": 131,
-            "total_tokens": 791,
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0,
-              "audio_tokens": 0
-            },
+            "prompt_tokens": 1000,
+            "completion_tokens": 140,
+            "total_tokens": 1140,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
             }
           },
-          "system_fingerprint": "fp_efad92c60b",
-          "service_tier": null
+          "service_tier": "default",
+          "system_fingerprint": "fp_51db84afab"
         }
-  recorded_at: Tue, 26 Aug 2025 20:00:40 GMT
+  recorded_at: Fri, 29 Aug 2025 17:50:07 GMT
 - request:
     method: post
     uri: http://mytestingproxy.local/v1/chat/completions
     body:
       encoding: UTF-8
       string: '{"max_completion_tokens":16384,"tools":[{"type":"function","function":{"name":"write_file","parameters":{"type":"object","properties":{"path":{"type":"string","description":"The
-        path to the file to write, relative to the current working directory: /private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6"},"content":{"type":"string","description":"The
+        path to the file to write, relative to the current working directory: /Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6"},"content":{"type":"string","description":"The
         content to write to the file"}}},"description":"Write content to a file. Creates
         the file if it does not exist, or overwrites it if it does."}},{"type":"function","function":{"name":"echo","parameters":{"type":"object","properties":{"args":{"type":"string","description":"Arguments
         to pass to the echo command"},"timeout":{"type":"integer","description":"Timeout
         in seconds (optional, default: 30)"}}},"description":"Execute the echo command"}}],"model":"openai:gpt-4o-mini","messages":[{"role":"user","content":"You
         are exploring a new directory. Your task is to:\n\n1. Show the current working
         directory\n2. List all files and subdirectories\n\nNote: You only have access
-        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"101f58e4-eeea-441c-8b91","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"101f58e4-eeea-441c-8b91","name":"pwd","content":"Command:
-        pwd\nExit status: 0\nOutput:\n/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"7ce2fb47-a999-4aa5-89c7","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"7ce2fb47-a999-4aa5-89c7","name":"ls","content":"Command:
+        to the `pwd` and `ls` commands for this step."},{"role":"assistant","content":null,"tool_calls":[{"id":"930250b5-383a-4624-b3ce","type":"function","function":{"name":"pwd","arguments":"{}"}}]},{"role":"tool","tool_call_id":"930250b5-383a-4624-b3ce","name":"pwd","content":"Command:
+        pwd\nExit status: 0\nOutput:\n/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"3b6927fa-785d-4d23-80c5","type":"function","function":{"name":"ls","arguments":"{}"}}]},{"role":"tool","tool_call_id":"3b6927fa-785d-4d23-80c5","name":"ls","content":"Command:
         ls\nExit status: 0\nOutput:\nroast\n"},{"role":"assistant","content":"1. Current
-        working directory: `/private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6`\n\n2.
-        Files and subdirectories:\n   - roast"},{"role":"user","content":"Based on
-        the directory listing from the previous step, your task is to:\n\n1. Search
+        working directory: `/Users/dersam/src/github.com/Shopify/roast/tmp/sandboxes/d20250829-14212-853wz6`\n2.
+        Files and subdirectories: \n   - `roast`"},{"role":"user","content":"Based
+        on the directory listing from the previous step, your task is to:\n\n1. Search
         for any Ruby files using grep\n2. Read the contents of the first Ruby file
         you find\n\nNote: You only have access to the `grep` and `read_file` tools
-        for this step. You cannot use commands like `ls` or `pwd`."},{"role":"assistant","content":null,"tool_calls":[{"id":"ff7cf3ea-36a3-4364-904b","type":"function","function":{"name":"grep","arguments":"{\"string\":\"*.rb\"}"}}]},{"role":"tool","tool_call_id":"ff7cf3ea-36a3-4364-904b","name":"grep","content":"Error
-        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"342a2baa-ead6-4f00-8084","type":"function","function":{"name":"grep","arguments":"{\"string\":\".rb\"}"}}]},{"role":"tool","tool_call_id":"342a2baa-ead6-4f00-8084","name":"grep","content":"Error
-        grepping for string: Command failed: "},{"role":"assistant","content":"It
-        seems that there was an error while attempting to search for Ruby files using
-        `grep`. Unfortunately, I cannot continue with reading the contents of a Ruby
-        file as no files were found.\n\nIf you have any other instructions or need
-        assistance with a different task, please let me know!"},{"role":"user","content":"Based
+        for this step. You cannot use commands like `ls` or `pwd`."},{"role":"assistant","content":null,"tool_calls":[{"id":"b81004a4-b430-4de6-b55e","type":"function","function":{"name":"grep","arguments":"{\"string\":\".rb\"}"}}]},{"role":"tool","tool_call_id":"b81004a4-b430-4de6-b55e","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"7b39928e-537c-4977-b315","type":"function","function":{"name":"grep","arguments":"{\"string\":\"*.rb\"}"}}]},{"role":"tool","tool_call_id":"7b39928e-537c-4977-b315","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"057fa5c9-26e2-466b-9bd2","type":"function","function":{"name":"grep","arguments":"{\"string\":\"ruby\"}"}}]},{"role":"tool","tool_call_id":"057fa5c9-26e2-466b-9bd2","name":"grep","content":"Error
+        grepping for string: Command failed: "},{"role":"assistant","content":null,"tool_calls":[{"id":"630ec0ec-9930-4632-a075","type":"function","function":{"name":"read_file","arguments":"{\"path\":\"roast\"}"}}]},{"role":"tool","tool_call_id":"630ec0ec-9930-4632-a075","name":"read_file","content":"total
+        0\ndrwxr-xr-x 3 dersam staff  96 Aug 29 13:49 .\ndrwx------ 4 dersam staff
+        128 Aug 29 13:49 ..\ndrwxr-xr-x 7 dersam staff 224 Aug 29 13:49 available_tools_demo\n"},{"role":"assistant","content":null,"tool_calls":[{"id":"2c469dbf-9d5b-4d61-ab7b","type":"function","function":{"name":"read_file","arguments":"{\"path\":\"roast/available_tools_demo\"}"}}]},{"role":"tool","tool_call_id":"2c469dbf-9d5b-4d61-ab7b","name":"read_file","content":"total
+        8\ndrwxr-xr-x 7 dersam staff  224 Aug 29 13:49 .\ndrwxr-xr-x 3 dersam staff   96
+        Aug 29 13:49 ..\n-rw-r--r-- 1 dersam staff 1481 Aug 29 13:49 README.md\ndrwxr-xr-x
+        3 dersam staff   96 Aug 29 13:49 analyze_files\ndrwxr-xr-x 3 dersam staff   96
+        Aug 29 13:49 explore_directory\n-rw-r--r-- 1 dersam staff  482 Aug 29 13:49
+        workflow.yml\ndrwxr-xr-x 3 dersam staff   96 Aug 29 13:49 write_summary\n"},{"role":"assistant","content":"It
+        seems there are no Ruby files (.rb) in the `roast` directory or its immediate
+        subdirectory `available_tools_demo`. I found the following files and subdirectories
+        instead:\n\nIn `available_tools_demo`:\n- **Files:**\n  - `README.md` (1481
+        bytes)\n  - `workflow.yml` (482 bytes)\n  \n- **Subdirectories:**\n  - `analyze_files`\n  -
+        `explore_directory`\n  - `write_summary`\n\nIf you would like to explore any
+        specific file or directory, please let me know!"},{"role":"user","content":"Based
         on your exploration and analysis, create a summary:\n\n1. Write a brief summary
         of what you found to a file called `summary.txt`\n2. Echo a completion message\n\nNote:
         You only have access to the `write_file` and `echo` tools for this step. You
-        cannot read files or use other commands."},{"role":"assistant","content":null,"tool_calls":[{"id":"dd2df5ef-d17f-4760-a330","type":"function","function":{"name":"write_file","arguments":"{\"path\":\"summary.txt\",\"content\":\"Summary
-        of exploration:\\n\\n- Current working directory: /private/var/folders/dh/jj0r0qdd48d_3fcsl49l6_qh0000gn/T/d20250826-13677-63p5o6\\n-
-        Found one subdirectory named ''roast''.\\n- No Ruby files were found during
-        the search.\"}"}}]},{"role":"tool","tool_call_id":"dd2df5ef-d17f-4760-a330","name":"write_file","content":"Successfully
-        wrote 5 lines to summary.txt"},{"role":"assistant","content":null,"tool_calls":[{"id":"82faaaf5-8598-483b-9e62","type":"function","function":{"name":"echo","arguments":"{\"args\":\"Summary
-        has been written to summary.txt\"}"}}]},{"role":"tool","tool_call_id":"82faaaf5-8598-483b-9e62","name":"echo","content":"Command:
-        echo Summary has been written to summary.txt\nExit status: 0\nOutput:\nSummary
-        has been written to summary.txt\n"}]}'
+        cannot read files or use other commands."},{"role":"assistant","content":null,"tool_calls":[{"id":"8f2df35f-04c1-45b0-a5ac","type":"function","function":{"name":"write_file","arguments":"{\"path\":\"summary.txt\",\"content\":\"Summary
+        of Directory Exploration:\\n\\nIn the ''roast'' directory, the only subdirectory
+        found is ''available_tools_demo''. Within this subdirectory, two files were
+        identified:\\n- README.md (1481 bytes)\\n- workflow.yml (482 bytes)\\n\\nAdditionally,
+        there are three subdirectories:\\n- analyze_files\\n- explore_directory\\n-
+        write_summary\\n\\nNo Ruby files (.rb) were found during the exploration.\"}"}}]},{"role":"tool","tool_call_id":"8f2df35f-04c1-45b0-a5ac","name":"write_file","content":"Successfully
+        wrote 12 lines to summary.txt"},{"role":"assistant","content":null,"tool_calls":[{"id":"ccc75ef7-a7d1-4365-983f","type":"function","function":{"name":"echo","arguments":"{\"args\":\"Summary
+        written to summary.txt\"}"}}]},{"role":"tool","tool_call_id":"ccc75ef7-a7d1-4365-983f","name":"echo","content":"Command:
+        echo Summary written to summary.txt\nExit status: 0\nOutput:\nSummary written
+        to summary.txt\n"}]}'
     headers:
       Content-Type:
       - application/json
@@ -925,7 +1409,7 @@ http_interactions:
       Server:
       - openresty/1.25.3.2
       Date:
-      - Tue, 26 Aug 2025 20:00:42 GMT
+      - Fri, 29 Aug 2025 17:50:08 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -933,53 +1417,47 @@ http_interactions:
       Connection:
       - keep-alive
       Cf-Ray:
-      - 9755eaac7a0ca24e-YUL
+      - 976de3915a14a298-YUL
       Cf-Cache-Status:
       - DYNAMIC
       Access-Control-Allow-Origin:
       - "*"
       Set-Cookie:
-      - __cf_bm=rl8s1EVMO2xDCYnW3BISVPvHDu320o9a3Vk17mShj0w-1756238442-1.0.1.1-UjEHCfU2mcF9u0I81YMGvlI6R7a.uiIU2xQA1xKZke1b4b4ShAQ_jswtlL8.KFdd2RkmzaaakczuRdlYK26qN5m1GczX.jSAzV3dk8BHRB4;
-        path=/; expires=Tue, 26-Aug-25 20:30:42 GMT; domain=.proxy.shopify.ai; HttpOnly;
+      - __cf_bm=bfZPY07B07X.fh3uHq4U9Sg0JVjjrgV9h3daYBSBydQ-1756489808-1.0.1.1-DYkIQu6HMp50Rw3t6lAsusaAVbFOmJ_.2JIQR24JJj2cXonxO9ZxCrvgHzWHJKTcfq_JM3ju5RDx1xfpKavA0gyCFRp.2X_pe5hmAlZk674;
+        path=/; expires=Fri, 29-Aug-25 18:20:08 GMT; domain=.proxy.shopify.ai; HttpOnly;
         Secure; SameSite=None
-      - shopify-proxy-session=1756238440399-l3dw8xc604; Path=/; Expires=Wed, 27 Aug
-        2025 20:00:40 GMT; HttpOnly; Secure; SameSite=Lax
+      - shopify-proxy-session=1756489807587-p5cxqriuw2; Path=/; Expires=Sat, 30 Aug
+        2025 17:50:07 GMT; HttpOnly; Secure; SameSite=Lax
       Strict-Transport-Security:
       - max-age=15552000; includeSubDomains; preload
       Access-Control-Allow-Headers:
       - "*"
       Access-Control-Allow-Methods:
       - "*"
-      Access-Control-Expose-Headers:
-      - X-Request-ID
       Access-Control-Max-Age:
       - '86400'
-      Openai-Organization:
-      - shopify-hack-days
-      Openai-Processing-Ms:
-      - '2076'
-      Openai-Project:
-      - proj_RHxuweUBa4b19Xbb7FCw7ryR
-      Openai-Version:
-      - '2020-10-01'
+      Apim-Request-Id:
+      - 702d4dfd-44e1-42f3-b114-eacb424be6da
+      Azureml-Model-Session:
+      - d072-20250625060119
       X-Content-Type-Options:
       - nosniff
-      X-Envoy-Upstream-Service-Time:
-      - '2086'
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini
+      X-Ms-Rai-Invoked:
+      - 'false'
+      X-Ms-Region:
+      - East US
       X-Ratelimit-Limit-Requests:
-      - '150000'
+      - '4000000'
       X-Ratelimit-Limit-Tokens:
-      - '450000000'
+      - '400000000'
       X-Ratelimit-Remaining-Requests:
-      - '149998'
+      - '3995004'
       X-Ratelimit-Remaining-Tokens:
-      - '449999572'
-      X-Ratelimit-Reset-Requests:
-      - 0s
-      X-Ratelimit-Reset-Tokens:
-      - 0s
+      - '390043787'
       X-Request-Id:
-      - req_4836784c7277411cb031e070c9e78b48
+      - ba25c3dc-a1fd-4c5b-8bdd-bbf1b3f7abf8
       Vary:
       - Accept-Encoding
       Alt-Svc:
@@ -988,16 +1466,16 @@ http_interactions:
       encoding: ASCII-8BIT
       string: |-
         {
-          "id": "chatcmpl-C8u8OEEOtLgRsFfuSm9PvrBTY0fSm",
+          "id": "chatcmpl-C9xWhICgCy5fOUt4OfpvWGQWmaOOV",
           "object": "chat.completion",
-          "created": 1756238440,
+          "created": 1756489807,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "The summary of the exploration has been successfully written to `summary.txt`. \n\n### Completion Message:\nSummary has been written to `summary.txt`.",
+                "content": "The summary of the directory exploration has been successfully written to `summary.txt`. \n\nCompletion message: **Summary written to summary.txt**.",
                 "refusal": null,
                 "annotations": []
               },
@@ -1006,22 +1484,22 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 824,
+            "prompt_tokens": 1170,
             "completion_tokens": 29,
-            "total_tokens": 853,
+            "total_tokens": 1199,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
             }
           },
-          "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_efad92c60b",
+          "service_tier": null
         }
-  recorded_at: Tue, 26 Aug 2025 20:00:42 GMT
+  recorded_at: Fri, 29 Aug 2025 17:50:08 GMT
 recorded_with: VCR 6.3.1

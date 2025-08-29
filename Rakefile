@@ -31,3 +31,5 @@ RuboCop::RakeTask.new(:rubocop) do |task|
 end
 
 task default: [:test, :rubocop]
+
+task lint: [:rubocop]

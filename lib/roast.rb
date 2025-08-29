@@ -21,6 +21,7 @@ require "yaml"
 # Third-party gem requires
 require "active_support"
 require "active_support/cache"
+require "active_support/core_ext/array"
 require "active_support/core_ext/hash/indifferent_access"
 require "active_support/core_ext/module/delegation"
 require "active_support/core_ext/string"

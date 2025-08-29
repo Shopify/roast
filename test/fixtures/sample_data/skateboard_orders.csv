@@ -1,0 +1,101 @@
+order_id,customer_name,customer_email,product_name,product_category,quantity,unit_price,total_amount,order_date,shipping_address,city,state,country,payment_method
+1001,Alex Rodriguez,alex.rodriguez@email.com,Pro Street Deck 8.0,Complete Skateboard,1,149.99,149.99,2024-01-15,123 Oak Street,Los Angeles,CA,USA,Credit Card
+1002,Emma Thompson,emma.t@gmail.com,Wheels Set - 52mm,Wheels,1,39.99,39.99,2024-01-16,456 Pine Ave,New York,NY,USA,PayPal
+1003,Jake Morrison,jake.m@hotmail.com,Trick Master Complete,Complete Skateboard,1,199.99,199.99,2024-01-17,789 Elm Drive,Austin,TX,USA,Credit Card
+1004,Sofia Chen,sofia.chen@yahoo.com,Bearings ABEC-7,Bearings,2,24.99,49.98,2024-01-18,321 Maple St,Seattle,WA,USA,Debit Card
+1005,Marcus Johnson,m.johnson@outlook.com,Street Cruiser 7.75,Complete Skateboard,1,129.99,129.99,2024-01-19,654 Cedar Lane,Miami,FL,USA,Credit Card
+1006,Isabella Garcia,bella.garcia@email.com,Grip Tape Black,Grip Tape,3,12.99,38.97,2024-01-20,987 Birch Road,Denver,CO,USA,PayPal
+1007,Ryan O'Connor,ryan.oconnor@gmail.com,Pro Trucks Set,Trucks,1,89.99,89.99,2024-01-21,147 Spruce Ave,Portland,OR,USA,Credit Card
+1008,Zoe Williams,zoe.w@hotmail.com,Mini Cruiser 6.5,Complete Skateboard,1,89.99,89.99,2024-01-22,258 Willow St,Chicago,IL,USA,Apple Pay
+1009,Connor Davis,connor.d@yahoo.com,Skateboard Tool Kit,Tools,1,19.99,19.99,2024-01-23,369 Poplar Drive,Boston,MA,USA,Credit Card
+1010,Mia Martinez,mia.martinez@gmail.com,Longboard 42 inch,Complete Skateboard,1,179.99,179.99,2024-01-24,741 Ash Street,San Francisco,CA,USA,PayPal
+1011,Ethan Brown,ethan.brown@email.com,Wheels Set - 54mm,Wheels,2,42.99,85.98,2024-01-25,852 Cherry Lane,Nashville,TN,USA,Credit Card
+1012,Ava Wilson,ava.wilson@outlook.com,Safety Helmet,Safety Gear,1,49.99,49.99,2024-01-26,963 Hickory Ave,Philadelphia,PA,USA,Debit Card
+1013,Liam Taylor,liam.t@hotmail.com,Deck Only 8.25,Deck,1,69.99,69.99,2024-01-27,147 Walnut Road,Phoenix,AZ,USA,Credit Card
+1014,Olivia Anderson,olivia.a@gmail.com,Knee Pads Set,Safety Gear,1,29.99,29.99,2024-01-28,258 Pecan St,Houston,TX,USA,PayPal
+1015,Noah Moore,noah.moore@yahoo.com,Street Complete Pro,Complete Skateboard,1,219.99,219.99,2024-01-29,369 Magnolia Drive,Las Vegas,NV,USA,Credit Card
+1016,Charlotte Clark,charlotte.c@email.com,Bearings ABEC-5,Bearings,1,19.99,19.99,2024-01-30,741 Dogwood Lane,Atlanta,GA,USA,Apple Pay
+1017,Mason Lee,mason.lee@gmail.com,Cruiser Wheels 60mm,Wheels,1,49.99,49.99,2024-01-31,852 Redwood Ave,San Diego,CA,USA,Credit Card
+1018,Amelia Rodriguez,amelia.r@hotmail.com,Grip Tape Clear,Grip Tape,2,14.99,29.98,2024-02-01,963 Pine Street,Detroit,MI,USA,PayPal
+1019,Lucas Martinez,lucas.m@outlook.com,Riser Pads Set,Hardware,1,9.99,9.99,2024-02-02,147 Oak Drive,Minneapolis,MN,USA,Debit Card
+1020,Harper Davis,harper.davis@yahoo.com,Longboard Deck 44in,Deck,1,99.99,99.99,2024-02-03,258 Elm Lane,New Orleans,LA,USA,Credit Card
+1021,Benjamin Wilson,ben.wilson@gmail.com,Pro Bearings ABEC-9,Bearings,2,34.99,69.98,2024-02-04,369 Maple Ave,Salt Lake City,UT,USA,PayPal
+1022,Evelyn Thompson,evelyn.t@email.com,Mini Complete 7.0,Complete Skateboard,1,99.99,99.99,2024-02-05,741 Cedar Street,Kansas City,MO,USA,Credit Card
+1023,William Garcia,will.garcia@hotmail.com,Skateboard Bag,Accessories,1,39.99,39.99,2024-02-06,852 Birch Road,Cleveland,OH,USA,Apple Pay
+1024,Abigail Johnson,abby.j@outlook.com,Wax Blocks Set,Accessories,3,7.99,23.97,2024-02-07,963 Spruce Drive,Indianapolis,IN,USA,Credit Card
+1025,James Anderson,james.a@yahoo.com,Vert Skateboard 8.5,Complete Skateboard,1,249.99,249.99,2024-02-08,147 Willow Lane,Columbus,OH,USA,PayPal
+1026,Emily Brown,emily.brown@gmail.com,Elbow Pads,Safety Gear,1,24.99,24.99,2024-02-09,258 Poplar Street,Charlotte,NC,USA,Debit Card
+1027,Alexander Moore,alex.m@email.com,Trucks - Independent,Trucks,1,99.99,99.99,2024-02-10,369 Ash Ave,Memphis,TN,USA,Credit Card
+1028,Madison Taylor,madison.t@hotmail.com,Longboard Wheels 70mm,Wheels,1,59.99,59.99,2024-02-11,741 Cherry Road,Milwaukee,WI,USA,PayPal
+1029,Michael Clark,michael.c@outlook.com,Deck Tape Remover,Tools,1,12.99,12.99,2024-02-12,852 Hickory Drive,Albuquerque,NM,USA,Apple Pay
+1030,Elizabeth Lee,liz.lee@yahoo.com,Complete Skateboard 7.5,Complete Skateboard,1,139.99,139.99,2024-02-13,963 Walnut Lane,Tucson,AZ,USA,Credit Card
+1031,Daniel Rodriguez,dan.rodriguez@gmail.com,Bushings Soft,Hardware,2,8.99,17.98,2024-02-14,147 Pecan Street,Fresno,CA,USA,PayPal
+1032,Avery Martinez,avery.m@email.com,Street Deck 8.0,Deck,1,74.99,74.99,2024-02-15,258 Magnolia Ave,Sacramento,CA,USA,Credit Card
+1033,Matthew Davis,matt.davis@hotmail.com,Pro Wheels 53mm,Wheels,1,44.99,44.99,2024-02-16,369 Dogwood Road,Long Beach,CA,USA,Debit Card
+1034,Ella Wilson,ella.w@outlook.com,Skateboard Stickers Pack,Accessories,1,15.99,15.99,2024-02-17,741 Redwood Drive,Oakland,CA,USA,Credit Card
+1035,Joseph Thompson,joe.thompson@yahoo.com,Complete Cruiser 8.25,Complete Skateboard,1,159.99,159.99,2024-02-18,852 Pine Lane,Miami,FL,USA,PayPal
+1036,Sofia Garcia,sofia.g@gmail.com,Hardware Set - Bolts,Hardware,1,6.99,6.99,2024-02-19,963 Oak Street,Tampa,FL,USA,Apple Pay
+1037,David Johnson,david.j@email.com,Grip Tape Perforated,Grip Tape,1,16.99,16.99,2024-02-20,147 Elm Ave,Orlando,FL,USA,Credit Card
+1038,Scarlett Anderson,scarlett.a@hotmail.com,Longboard Complete 46in,Complete Skateboard,1,229.99,229.99,2024-02-21,258 Maple Drive,St. Petersburg,FL,USA,PayPal
+1039,Christopher Brown,chris.b@outlook.com,Skateboard Rails,Hardware,1,22.99,22.99,2024-02-22,369 Cedar Lane,Jacksonville,FL,USA,Debit Card
+1040,Victoria Moore,victoria.m@yahoo.com,Mini Wheels 50mm,Wheels,1,34.99,34.99,2024-02-23,741 Birch Street,Fort Lauderdale,FL,USA,Credit Card
+1041,Andrew Taylor,andrew.t@gmail.com,Pro Deck 8.125,Deck,1,79.99,79.99,2024-02-24,852 Spruce Ave,Hialeah,FL,USA,PayPal
+1042,Grace Clark,grace.clark@email.com,Skateboard Backpack,Accessories,1,69.99,69.99,2024-02-25,963 Willow Road,Pembroke Pines,FL,USA,Apple Pay
+1043,Joshua Lee,joshua.l@hotmail.com,Bearings Ceramic,Bearings,1,79.99,79.99,2024-02-26,147 Poplar Drive,Hollywood,FL,USA,Credit Card
+1044,Chloe Rodriguez,chloe.r@outlook.com,Street Complete 7.75,Complete Skateboard,1,169.99,169.99,2024-02-27,258 Ash Lane,Gainesville,FL,USA,PayPal
+1045,Ryan Martinez,ryan.m@yahoo.com,Skateboard Lock,Accessories,1,29.99,29.99,2024-02-28,369 Cherry Street,Tallahassee,FL,USA,Credit Card
+1046,Lily Davis,lily.davis@gmail.com,Grip Tape Colored,Grip Tape,2,18.99,37.98,2024-03-01,741 Hickory Ave,Clearwater,FL,USA,Debit Card
+1047,Nicholas Wilson,nick.w@email.com,Cruiser Complete 8.5,Complete Skateboard,1,189.99,189.99,2024-03-02,852 Walnut Road,Coral Springs,FL,USA,Credit Card
+1048,Zoey Thompson,zoey.t@hotmail.com,Skateboard Wheels 52mm,Wheels,2,41.99,83.98,2024-03-03,963 Pecan Drive,Cape Coral,FL,USA,PayPal
+1049,Jacob Garcia,jacob.g@outlook.com,Tool Set Complete,Tools,1,34.99,34.99,2024-03-04,147 Magnolia Lane,Port St. Lucie,FL,USA,Apple Pay
+1050,Layla Johnson,layla.j@yahoo.com,Penny Board Complete,Complete Skateboard,1,79.99,79.99,2024-03-05,258 Dogwood Street,Pompano Beach,FL,USA,Credit Card
+1051,Samuel Anderson,sam.anderson@gmail.com,Pro Trucks Hollow,Trucks,1,119.99,119.99,2024-03-06,369 Redwood Ave,West Palm Beach,FL,USA,PayPal
+1052,Nora Brown,nora.brown@email.com,Safety Gear Set,Safety Gear,1,89.99,89.99,2024-03-07,741 Pine Road,Lakeland,FL,USA,Credit Card
+1053,Logan Moore,logan.m@hotmail.com,Skateboard Deck 7.75,Deck,1,72.99,72.99,2024-03-08,852 Oak Drive,Kissimmee,FL,USA,Debit Card
+1054,Aubrey Taylor,aubrey.t@outlook.com,Longboard Bearings,Bearings,1,29.99,29.99,2024-03-09,963 Elm Lane,Boca Raton,FL,USA,Credit Card
+1055,Luke Clark,luke.clark@yahoo.com,Street Wheels 54mm,Wheels,1,46.99,46.99,2024-03-10,147 Maple Street,Deltona,FL,USA,PayPal
+1056,Hannah Lee,hannah.l@gmail.com,Skateboard Grip Cleaner,Accessories,1,11.99,11.99,2024-03-11,258 Cedar Ave,Palm Bay,FL,USA,Apple Pay
+1057,Jack Rodriguez,jack.r@email.com,Complete Board 8.0,Complete Skateboard,1,154.99,154.99,2024-03-12,369 Birch Road,Melbourne,FL,USA,Credit Card
+1058,Addison Martinez,addison.m@hotmail.com,Riser Pads 1/8 inch,Hardware,2,11.99,23.98,2024-03-13,741 Spruce Drive,Boynton Beach,FL,USA,PayPal
+1059,Carter Davis,carter.d@outlook.com,Pro Skateboard 8.25,Complete Skateboard,1,234.99,234.99,2024-03-14,852 Willow Lane,Deerfield Beach,FL,USA,Credit Card
+1060,Ellie Wilson,ellie.w@yahoo.com,Skateboard Wrist Guards,Safety Gear,1,19.99,19.99,2024-03-15,963 Poplar Street,Delray Beach,FL,USA,Debit Card
+1061,Owen Thompson,owen.t@gmail.com,Cruiser Deck 8.75,Deck,1,89.99,89.99,2024-03-16,147 Ash Ave,Sunrise,FL,USA,Credit Card
+1062,Natalie Garcia,natalie.g@email.com,Skateboard Bushings Hard,Hardware,1,9.99,9.99,2024-03-17,258 Cherry Road,Plantation,FL,USA,PayPal
+1063,Wyatt Johnson,wyatt.j@hotmail.com,Vert Wheels 56mm,Wheels,1,49.99,49.99,2024-03-18,369 Hickory Drive,Davie,FL,USA,Apple Pay
+1064,Paisley Anderson,paisley.a@outlook.com,Skateboard Multi Tool,Tools,1,24.99,24.99,2024-03-19,741 Walnut Lane,Weston,FL,USA,Credit Card
+1065,Grayson Brown,grayson.b@yahoo.com,Longboard Complete 40in,Complete Skateboard,1,199.99,199.99,2024-03-20,852 Pecan Street,Aventura,FL,USA,PayPal
+1066,Violet Moore,violet.m@gmail.com,Grip Tape Remover Tool,Tools,1,8.99,8.99,2024-03-21,963 Magnolia Ave,North Miami,FL,USA,Credit Card
+1067,Ian Taylor,ian.taylor@email.com,Street Complete 7.625,Complete Skateboard,1,144.99,144.99,2024-03-22,147 Dogwood Road,Homestead,FL,USA,Debit Card
+1068,Savannah Clark,savannah.c@hotmail.com,Pro Bearings Steel,Bearings,2,27.99,55.98,2024-03-23,258 Redwood Drive,Pinecrest,FL,USA,Credit Card
+1069,Easton Lee,easton.l@outlook.com,Skateboard Nose Guard,Hardware,1,14.99,14.99,2024-03-24,369 Pine Lane,Coral Gables,FL,USA,PayPal
+1070,Skylar Rodriguez,skylar.r@yahoo.com,Mini Complete 6.75,Complete Skateboard,1,94.99,94.99,2024-03-25,741 Oak Street,Doral,FL,USA,Apple Pay
+1071,Brayden Martinez,brayden.m@gmail.com,Longboard Trucks,Trucks,1,79.99,79.99,2024-03-26,852 Elm Ave,Kendall,FL,USA,Credit Card
+1072,Brooklyn Davis,brooklyn.d@email.com,Skateboard Wall Mount,Accessories,1,32.99,32.99,2024-03-27,963 Maple Drive,Miami Beach,FL,USA,PayPal
+1073,Camden Wilson,camden.w@hotmail.com,Complete Board 7.5,Complete Skateboard,1,129.99,129.99,2024-03-28,147 Cedar Lane,Key Biscayne,FL,USA,Credit Card
+1074,Aria Thompson,aria.t@outlook.com,Skateboard Hardware Colored,Hardware,1,12.99,12.99,2024-03-29,258 Birch Street,Fisher Island,FL,USA,Debit Card
+1075,Axel Garcia,axel.g@yahoo.com,Pro Wheels 55mm,Wheels,1,52.99,52.99,2024-03-30,369 Spruce Ave,Virginia Key,FL,USA,Credit Card
+1076,Leah Johnson,leah.j@gmail.com,Skateboard Bearing Tool,Tools,1,16.99,16.99,2024-03-31,741 Willow Road,Bal Harbour,FL,USA,PayPal
+1077,Roman Anderson,roman.a@email.com,Street Deck 8.375,Deck,1,84.99,84.99,2024-04-01,852 Poplar Drive,Bay Harbor Islands,FL,USA,Apple Pay
+1078,Maya Brown,maya.brown@hotmail.com,Complete Cruiser 9.0,Complete Skateboard,1,174.99,174.99,2024-04-02,963 Ash Lane,Surfside,FL,USA,Credit Card
+1079,Jaxon Moore,jaxon.m@outlook.com,Skateboard Tail Guard,Hardware,1,17.99,17.99,2024-04-03,147 Cherry Street,Indian Creek,FL,USA,PayPal
+1080,Stella Taylor,stella.t@yahoo.com,Longboard Wheels 75mm,Wheels,1,64.99,64.99,2024-04-04,258 Hickory Ave,North Bay Village,FL,USA,Credit Card
+1081,Maverick Clark,maverick.c@gmail.com,Pro Complete 8.125,Complete Skateboard,1,219.99,219.99,2024-04-05,369 Walnut Road,Aventura,FL,USA,Debit Card
+1082,Delilah Lee,delilah.l@email.com,Skateboard Grip Brush,Accessories,1,9.99,9.99,2024-04-06,741 Pecan Drive,Golden Beach,FL,USA,Credit Card
+1083,Cooper Rodriguez,cooper.r@hotmail.com,Mini Deck 7.25,Deck,1,67.99,67.99,2024-04-07,852 Magnolia Lane,Sunny Isles,FL,USA,PayPal
+1084,Iris Martinez,iris.m@outlook.com,Skateboard Speed Rings,Hardware,2,4.99,9.98,2024-04-08,963 Dogwood Street,Hallandale,FL,USA,Apple Pay
+1085,Kol Davis,kol.davis@yahoo.com,Vert Complete 8.5,Complete Skateboard,1,259.99,259.99,2024-04-09,147 Redwood Ave,Aventura,FL,USA,Credit Card
+1086,Willow Wilson,willow.w@gmail.com,Skateboard Cup Washers,Hardware,1,5.99,5.99,2024-04-10,258 Pine Road,North Miami Beach,FL,USA,PayPal
+1087,Silas Thompson,silas.t@email.com,Street Trucks Light,Trucks,1,94.99,94.99,2024-04-11,369 Oak Drive,Golden Glades,FL,USA,Credit Card
+1088,Ruby Garcia,ruby.g@hotmail.com,Longboard Complete 38in,Complete Skateboard,1,184.99,184.99,2024-04-12,741 Elm Lane,Opa-locka,FL,USA,Debit Card
+1089,Miles Johnson,miles.j@outlook.com,Skateboard Pivot Cups,Hardware,1,7.99,7.99,2024-04-13,852 Maple Street,Miami Lakes,FL,USA,Credit Card
+1090,Aurora Anderson,aurora.a@yahoo.com,Pro Grip Tape,Grip Tape,1,21.99,21.99,2024-04-14,963 Cedar Ave,Hialeah Gardens,FL,USA,PayPal
+1091,Felix Brown,felix.b@gmail.com,Complete Board 7.875,Complete Skateboard,1,164.99,164.99,2024-04-15,147 Birch Road,Westchester,FL,USA,Apple Pay
+1092,Luna Moore,luna.moore@email.com,Skateboard Spacers,Hardware,3,3.99,11.97,2024-04-16,258 Spruce Drive,Flagami,FL,USA,Credit Card
+1093,Asher Taylor,asher.t@hotmail.com,Cruiser Wheels 65mm,Wheels,1,54.99,54.99,2024-04-17,369 Willow Lane,Fontainebleau,FL,USA,PayPal
+1094,Nova Clark,nova.clark@outlook.com,Skateboard Bearing Spacers,Hardware,1,8.99,8.99,2024-04-18,741 Poplar Street,Sweetwater,FL,USA,Credit Card
+1095,Atlas Lee,atlas.l@yahoo.com,Street Complete 8.0,Complete Skateboard,1,179.99,179.99,2024-04-19,852 Ash Ave,Tamiami,FL,USA,Debit Card
+1096,Hazel Rodriguez,hazel.r@gmail.com,Longboard Deck 36in,Deck,1,94.99,94.99,2024-04-20,963 Cherry Road,West Flagler,FL,USA,Credit Card
+1097,Knox Martinez,knox.m@email.com,Pro Wheels 57mm,Wheels,1,57.99,57.99,2024-04-21,147 Hickory Drive,Little Havana,FL,USA,PayPal
+1098,Ophelia Davis,ophelia.d@hotmail.com,Skateboard King Pins,Hardware,1,11.99,11.99,2024-04-22,258 Walnut Lane,Overtown,FL,USA,Apple Pay
+1099,Orion Wilson,orion.w@outlook.com,Complete Mini 7.0,Complete Skateboard,1,104.99,104.99,2024-04-23,369 Pecan Street,Downtown Miami,FL,USA,Credit Card
+1100,Sage Thompson,sage.t@yahoo.com,Skateboard Y-Tool,Tools,1,22.99,22.99,2024-04-24,741 Magnolia Ave,Brickell,FL,USA,PayPal
