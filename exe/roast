@@ -12,6 +12,6 @@ unshift_path.call("lib")
 
 require "bundler/setup"
 require "roast"
+require "roast/entry_point"
 
-puts "🔥🔥🔥 Everyone loves a good roast 🔥🔥🔥\n\n"
-Roast::CLI.start(ARGV)
+Roast::EntryPoint.call(ARGV)
