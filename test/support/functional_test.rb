@@ -71,7 +71,8 @@ class FunctionalTest < ActiveSupport::TestCase
     out.gsub!(path_regex, "/fake-testing-dir")
     err.gsub!(path_regex, "/fake-testing-dir")
 
-    if ENV["PRINT_OUTPUT"]
+    if ENV["RECORD_VCR"]
+      puts "Workflow result recorded with VCR, use this for assertions:"
       puts out
     end
 
