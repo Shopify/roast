@@ -326,18 +326,18 @@ module Roast
     end
 
     def copy_example(example_name)
-    examples_dir = File.join(Roast::ROOT, "examples")
-    source_path = File.join(examples_dir, example_name)
-    
-    # Always place new workflows in roast/ so `roast list` can find them
-    roast_dir = File.join(Dir.pwd, "roast")
-    FileUtils.mkdir_p(roast_dir)
-    target_path = File.join(roast_dir, example_name)
-    
-    unless File.directory?(source_path)
-      puts "Example '#{example_name}' not found!"
-      return
-    end
+      examples_dir = File.join(Roast::ROOT, "examples")
+      source_path = File.join(examples_dir, example_name)
+
+      # Always place new workflows in roast/ so `roast list` can find them
+      roast_dir = File.join(Dir.pwd, "roast")
+      FileUtils.mkdir_p(roast_dir)
+      target_path = File.join(roast_dir, example_name)
+
+      unless File.directory?(source_path)
+        puts "Example '#{example_name}' not found!"
+        return
+      end
 
       if File.exist?(target_path)
         puts "Directory '#{example_name}' already exists in current directory!"
