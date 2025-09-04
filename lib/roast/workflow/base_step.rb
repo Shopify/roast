@@ -10,10 +10,9 @@ module Roast
       delegate :append_to_final_output, :transcript, to: :workflow
       delegate_missing_to :workflow
 
-      # TODO: is this really the model we want to default to, and is this the right place to set it?
-      def initialize(workflow, model: "anthropic:claude-opus-4", name: nil, context_path: nil)
+      def initialize(workflow, model: nil, name: nil, context_path: nil)
         @workflow = workflow
-        @model = model
+        @model = model || workflow.model || StepLoader::DEFAULT_MODEL
         @name = normalize_name(name)
         @context_path = context_path || ContextPathResolver.resolve(self.class)
         @print_response = false
