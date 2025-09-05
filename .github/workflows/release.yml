@@ -1,0 +1,287 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Create or Update Release PR
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+      
+      - name: Check for changesets
+        id: changesets
+        run: |
+          # Find all changeset files
+          changesets=$(find .changeset -name "*.md" -not -name "README.md" 2>/dev/null || true)
+          
+          if [ -z "$changesets" ]; then
+            echo "No changesets found"
+            echo "has_changesets=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "has_changesets=true" >> $GITHUB_OUTPUT
+          echo "Found changesets:"
+          echo "$changesets"
+      
+      - name: Process changesets and determine version
+        if: steps.changesets.outputs.has_changesets == 'true'
+        id: version
+        run: |
+          # Initialize version bump type
+          bump_type="patch"
+          
+          # Process all changesets
+          for file in .changeset/*.md; do
+            [ -f "$file" ] || continue
+            [ "$file" = ".changeset/README.md" ] && continue
+            
+            # Extract type from frontmatter
+            type=$(sed -n '/^---$/,/^---$/p' "$file" | grep "^type:" | sed 's/type: *//')
+            
+            # Determine highest bump type
+            if [ "$type" = "major" ]; then
+              bump_type="major"
+            elif [ "$type" = "minor" ] && [ "$bump_type" != "major" ]; then
+              bump_type="minor"
+            fi
+          done
+          
+          echo "Version bump type: $bump_type"
+          echo "bump_type=$bump_type" >> $GITHUB_OUTPUT
+          
+          # Calculate new version
+          current_version=$(grep VERSION lib/roast/version.rb | sed -E 's/.*"(.*)".*/\1/')
+          IFS='.' read -r major minor patch <<< "$current_version"
+          
+          if [ "$bump_type" = "major" ]; then
+            new_version="$((major + 1)).0.0"
+          elif [ "$bump_type" = "minor" ]; then
+            new_version="$major.$((minor + 1)).0"
+          else
+            new_version="$major.$minor.$((patch + 1))"
+          fi
+          
+          echo "Current version: $current_version"
+          echo "New version: $new_version"
+          echo "current_version=$current_version" >> $GITHUB_OUTPUT
+          echo "new_version=$new_version" >> $GITHUB_OUTPUT
+      
+      - name: Generate changelog entries
+        if: steps.changesets.outputs.has_changesets == 'true'
+        id: changelog
+        run: |
+          # Create changelog content
+          {
+            echo "## [v${{ steps.version.outputs.new_version }}] - $(date +%Y-%m-%d)"
+            echo ""
+            
+            # Collect changes by type
+            majors=""
+            minors=""
+            patches=""
+            
+            for file in .changeset/*.md; do
+              [ -f "$file" ] || continue
+              [ "$file" = ".changeset/README.md" ] && continue
+              
+              # Extract type and content
+              type=$(sed -n '/^---$/,/^---$/p' "$file" | grep "^type:" | sed 's/type: *//')
+              content=$(sed '1,/^---$/d' "$file" | sed '1,/^---$/d' | sed '/^$/d')
+              
+              case "$type" in
+                major)
+                  majors="${majors}- ${content}\n"
+                  ;;
+                minor)
+                  minors="${minors}- ${content}\n"
+                  ;;
+                patch)
+                  patches="${patches}- ${content}\n"
+                  ;;
+              esac
+            done
+            
+            # Output organized changes
+            if [ -n "$majors" ]; then
+              echo "### Breaking Changes"
+              echo -e "$majors"
+            fi
+            
+            if [ -n "$minors" ]; then
+              echo "### New Features"
+              echo -e "$minors"
+            fi
+            
+            if [ -n "$patches" ]; then
+              echo "### Bug Fixes & Improvements"
+              echo -e "$patches"
+            fi
+          } > /tmp/new_changelog_entry.md
+          
+          # Save to output
+          echo "entry<<EOF" >> $GITHUB_OUTPUT
+          cat /tmp/new_changelog_entry.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Check for existing release PR
+        if: steps.changesets.outputs.has_changesets == 'true'
+        id: pr-check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Look for existing release PR
+          pr_number=$(gh pr list --base main --head changeset-release/main --json number --jq '.[0].number // ""')
+          
+          if [ -n "$pr_number" ]; then
+            echo "Found existing release PR: #$pr_number"
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+            echo "pr_number=$pr_number" >> $GITHUB_OUTPUT
+          else
+            echo "No existing release PR found"
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create release branch
+        if: steps.changesets.outputs.has_changesets == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create or checkout release branch
+          if git show-ref --quiet refs/remotes/origin/changeset-release/main; then
+            git checkout changeset-release/main
+            git pull origin changeset-release/main
+            git reset --hard origin/main
+          else
+            git checkout -b changeset-release/main
+          fi
+      
+      - name: Update version file
+        if: steps.changesets.outputs.has_changesets == 'true'
+        run: |
+          # Update version.rb
+          sed -i "s/VERSION = \".*\"/VERSION = \"${{ steps.version.outputs.new_version }}\"/" lib/roast/version.rb
+          
+          git add lib/roast/version.rb
+      
+      - name: Update CHANGELOG
+        if: steps.changesets.outputs.has_changesets == 'true'
+        run: |
+          # Create new changelog with entry at top
+          {
+            cat /tmp/new_changelog_entry.md
+            echo ""
+            cat CHANGELOG.md
+          } > CHANGELOG.tmp
+          
+          mv CHANGELOG.tmp CHANGELOG.md
+          git add CHANGELOG.md
+      
+      - name: Remove processed changesets
+        if: steps.changesets.outputs.has_changesets == 'true'
+        run: |
+          # Remove all changeset files except README
+          find .changeset -name "*.md" -not -name "README.md" -exec git rm {} \;
+      
+      - name: Commit and push changes
+        if: steps.changesets.outputs.has_changesets == 'true'
+        run: |
+          git commit -m "Version Packages for Release v${{ steps.version.outputs.new_version }}"
+          git push origin changeset-release/main --force
+      
+      - name: Create or update PR
+        if: steps.changesets.outputs.has_changesets == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pr_body="This PR was opened by the release workflow. When merged, it will:
+          - Bump the version from ${{ steps.version.outputs.current_version }} to ${{ steps.version.outputs.new_version }}
+          - Update the CHANGELOG with the latest changes
+          - Trigger gem publication to RubyGems
+          
+          ## Changes included in this release:
+          
+          ${{ steps.changelog.outputs.entry }}
+          
+          ---
+          
+          **Merge this PR to release v${{ steps.version.outputs.new_version }}**"
+          
+          if [ "${{ steps.pr-check.outputs.pr_exists }}" = "true" ]; then
+            # Update existing PR
+            gh pr edit ${{ steps.pr-check.outputs.pr_number }} \
+              --title "Release v${{ steps.version.outputs.new_version }}" \
+              --body "$pr_body"
+          else
+            # Create new PR
+            gh pr create \
+              --title "Release v${{ steps.version.outputs.new_version }}" \
+              --body "$pr_body" \
+              --base main \
+              --head changeset-release/main \
+              --label "release"
+          fi
+  
+  publish:
+    name: Publish Gem
+    runs-on: ubuntu-latest
+    # Only run when the release PR is merged
+    if: |
+      github.event_name == 'push' && 
+      github.ref == 'refs/heads/main' &&
+      contains(github.event.head_commit.message, 'Version Packages for Release')
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+      
+      - name: Build gem
+        run: |
+          gem build roast.gemspec
+      
+      - name: Publish to RubyGems
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_AUTH_TOKEN }}
+        run: |
+          gem push *.gem
+      
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version=$(grep VERSION lib/roast/version.rb | sed -E 's/.*"(.*)".*/\1/')
+          
+          # Extract latest changelog entry
+          changelog=$(sed -n '/^## \[v'$version'\]/,/^## \[v[0-9]/p' CHANGELOG.md | sed '$d')
+          
+          gh release create "v$version" \
+            --title "v$version" \
+            --notes "$changelog" \
+            --latest
