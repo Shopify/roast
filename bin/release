@@ -1,0 +1,511 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "cli/ui"
+require "json"
+require "open3"
+require "time"
+require "tempfile"
+require "optparse"
+
+CLI::UI::StdoutRouter.enable
+
+module Release
+  REPO = "Shopify/roast"
+  
+  class Command
+    def self.help
+      "Command help"
+    end
+  end
+
+  class Generate < Command
+    def call(_args, _name)
+      CLI::UI::Frame.open("Release Generator") do
+        # Get the last release tag
+        last_tag = get_last_release_tag
+        CLI::UI.puts("Last release: #{CLI::UI.fmt("{{cyan:#{last_tag}}}")}")
+        
+        # Get merged PRs since last release
+        prs = get_merged_prs_since(last_tag)
+        
+        if prs.empty?
+          CLI::UI.puts(CLI::UI.fmt("{{yellow:No PRs merged since last release}}"))
+          return
+        end
+        
+        CLI::UI.puts("Found #{CLI::UI.fmt("{{bold:#{prs.length}}}")} PRs since last release")
+        CLI::UI.puts("")
+        
+        # Review PRs
+        reviewed_prs = review_prs(prs)
+        
+        # Determine version bump
+        version_bump = determine_version_bump
+        
+        # Calculate new version
+        current_version = get_current_version
+        new_version = calculate_new_version(current_version, version_bump)
+        
+        CLI::UI::Frame.divider("Creating Release PR")
+        CLI::UI.puts("Current version: #{CLI::UI.fmt("{{cyan:#{current_version}}}")}")
+        CLI::UI.puts("New version: #{CLI::UI.fmt("{{green:#{new_version}}}")}")
+        CLI::UI.puts("Version bump: #{CLI::UI.fmt("{{bold:#{version_bump}}}")}")
+        
+        # Update version file
+        update_version(new_version)
+        
+        # Update CHANGELOG
+        update_changelog(new_version, reviewed_prs, version_bump)
+        
+        # Create branch and commit
+        branch_name = "release-v#{new_version}"
+        create_release_branch(branch_name, new_version)
+        
+        # Create PR
+        pr_url = create_release_pr(branch_name, new_version, reviewed_prs)
+        
+        CLI::UI::Frame.divider("Success!")
+        CLI::UI.puts(CLI::UI.fmt("{{v}} Release PR created: {{underline:#{pr_url}}}"))
+        CLI::UI.puts("")
+        CLI::UI.puts("Opening in browser...")
+        system("open", pr_url)
+      end
+    end
+    
+    private
+    
+    def get_last_release_tag
+      output, = Open3.capture2("git describe --tags --abbrev=0")
+      output.strip
+    rescue
+      # If no tags exist, use initial commit
+      output, = Open3.capture2("git rev-list --max-parents=0 HEAD")
+      output.strip
+    end
+    
+    def get_merged_prs_since(since_ref)
+      # Get all merge commits since the last release
+      cmd = [
+        "gh", "pr", "list",
+        "--repo", REPO,
+        "--state", "merged",
+        "--limit", "100",
+        "--json", "number,title,author,mergedAt,url,body",
+      ]
+      
+      output, status = Open3.capture2(*cmd)
+      unless status.success?
+        CLI::UI.puts(CLI::UI.fmt("{{red:Failed to fetch PRs}}"))
+        return []
+      end
+      
+      all_prs = JSON.parse(output)
+      
+      # Get the timestamp of the last release
+      since_time_output, = Open3.capture2("git show -s --format=%ct #{since_ref}")
+      since_timestamp = Time.at(since_time_output.strip.to_i)
+      
+      # Filter PRs merged after the last release
+      all_prs.select do |pr|
+        merged_at = Time.parse(pr["mergedAt"])
+        merged_at > since_timestamp
+      end.sort_by { |pr| Time.parse(pr["mergedAt"]) }
+    end
+    
+    def review_prs(prs)
+      reviewed = []
+      
+      CLI::UI::Frame.open("Review PRs") do
+        prs.each_with_index do |pr, index|
+          CLI::UI::Frame.divider("PR #{index + 1}/#{prs.length}")
+          
+          CLI::UI.puts(CLI::UI.fmt("{{bold:##{pr['number']}}}: #{pr['title']}"))
+          CLI::UI.puts(CLI::UI.fmt("Author: {{cyan:@#{pr['author']['login']}}}"))
+          CLI::UI.puts(CLI::UI.fmt("URL: {{underline:#{pr['url']}}}"))
+          CLI::UI.puts("")
+          
+          # Show truncated body
+          if pr["body"] && !pr["body"].empty?
+            body_preview = pr["body"].lines.first(3).join.strip
+            CLI::UI.puts("Description: #{body_preview}")
+            CLI::UI.puts("")
+          end
+          
+          action = CLI::UI::Prompt.ask("What would you like to do?") do |handler|
+            handler.option("open", &:to_s)    
+            handler.option("include", &:to_s) 
+            handler.option("skip", &:to_s)    
+          end
+          
+          case action
+          when "open"
+            system("open", pr["url"])
+            # Ask again after opening
+            include = CLI::UI::Prompt.ask("Include this PR?") do |handler|
+              handler.option("yes") { true }
+              handler.option("no") { false }
+            end
+            reviewed << pr if include
+          when "include"
+            reviewed << pr
+          when "skip"
+            # Skip this PR
+          end
+        end
+      end
+      
+      reviewed
+    end
+    
+    def determine_version_bump
+      CLI::UI::Frame.open("Version Bump") do
+        CLI::UI::Prompt.ask("What type of release is this?") do |handler|
+          handler.option("patch - Bug fixes and minor improvements") { "patch" }
+          handler.option("minor - New features (backwards compatible)") { "minor" }
+          handler.option("major - Breaking changes") { "major" }
+        end
+      end
+    end
+    
+    def get_current_version
+      File.read("lib/roast/version.rb").match(/VERSION = "(.+)"/)[1]
+    end
+    
+    def calculate_new_version(current, bump_type)
+      major, minor, patch = current.split(".").map(&:to_i)
+      
+      case bump_type
+      when "major"
+        "#{major + 1}.0.0"
+      when "minor"
+        "#{major}.#{minor + 1}.0"
+      when "patch"
+        "#{major}.#{minor}.#{patch + 1}"
+      end
+    end
+    
+    def update_version(new_version)
+      content = File.read("lib/roast/version.rb")
+      updated = content.gsub(/VERSION = ".+"/, "VERSION = \"#{new_version}\"")
+      File.write("lib/roast/version.rb", updated)
+    end
+    
+    def update_changelog(version, prs, bump_type)
+      new_entry = []
+      new_entry << "## [v#{version}] - #{Time.now.strftime('%Y-%m-%d')}"
+      new_entry << ""
+      
+      # Group PRs by type (heuristic based on title/bump type)
+      breaking = []
+      features = []
+      fixes = []
+      
+      prs.each do |pr|
+        title = pr["title"].downcase
+        entry = "* #{pr['title']} (##{pr['number']}) - @#{pr['author']['login']}"
+        
+        if bump_type == "major" && prs.length == 1
+          breaking << entry
+        elsif title.include?("fix") || title.include?("bug")
+          fixes << entry
+        elsif title.include?("add") || title.include?("feat") || title.include?("new")
+          features << entry
+        else
+          fixes << entry
+        end
+      end
+      
+      if breaking.any?
+        new_entry << "### Breaking Changes"
+        new_entry.concat(breaking)
+        new_entry << ""
+      end
+      
+      if features.any?
+        new_entry << "### New Features"
+        new_entry.concat(features)
+        new_entry << ""
+      end
+      
+      if fixes.any?
+        new_entry << "### Bug Fixes & Improvements"
+        new_entry.concat(fixes)
+        new_entry << ""
+      end
+      
+      # Read existing changelog
+      existing = File.exist?("CHANGELOG.md") ? File.read("CHANGELOG.md") : ""
+      
+      # Write new changelog
+      File.write("CHANGELOG.md", new_entry.join("\n") + "\n" + existing)
+    end
+    
+    def create_release_branch(branch_name, version)
+      system("git checkout -b #{branch_name}")
+      system("git add lib/roast/version.rb CHANGELOG.md")
+      system("bundle install") # Update Gemfile.lock if needed
+      system("git add Gemfile.lock") if File.exist?("Gemfile.lock")
+      system("git commit -m 'Release v#{version}'")
+      system("git push -u origin #{branch_name}")
+    end
+    
+    def create_release_pr(branch, version, prs)
+      pr_body = []
+      pr_body << "## Release v#{version}"
+      pr_body << ""
+      pr_body << "This PR prepares the release of v#{version}."
+      pr_body << ""
+      pr_body << "### Included PRs"
+      pr_body << ""
+      
+      prs.each do |pr|
+        pr_body << "* ##{pr['number']} - #{pr['title']} (@#{pr['author']['login']})"
+      end
+      
+      pr_body << ""
+      pr_body << "### Checklist"
+      pr_body << ""
+      pr_body << "- [ ] Review included PRs"
+      pr_body << "- [ ] Verify version bump is appropriate"
+      pr_body << "- [ ] Check CHANGELOG entries"
+      pr_body << "- [ ] Tests passing"
+      pr_body << ""
+      pr_body << "After merging this PR, run `bin/release ship` to publish the gem."
+      
+      # Write body to temp file to handle complex content
+      Tempfile.create("pr-body") do |f|
+        f.write(pr_body.join("\n"))
+        f.flush
+        
+        output, = Open3.capture2(
+          "gh", "pr", "create",
+          "--repo", REPO,
+          "--title", "Release v#{version}",
+          "--body-file", f.path,
+          "--base", "main",
+          "--head", branch
+        )
+        
+        # Extract PR URL from output
+        output.strip
+      end
+    end
+    
+    def self.help
+      "Generate a new release PR"
+    end
+  end
+  
+  class Ship < Command
+    def call(_args, _name)
+      CLI::UI::Frame.open("Release Shipper") do
+        # Ensure we're on main branch
+        current_branch = Open3.capture2("git branch --show-current")[0].strip
+        
+        unless current_branch == "main"
+          CLI::UI.puts(CLI::UI.fmt("{{red:Error: Must be on main branch to ship a release}}"))
+          CLI::UI.puts("Current branch: #{current_branch}")
+          return
+        end
+        
+        # Ensure working directory is clean
+        status = Open3.capture2("git status --porcelain")[0]
+        unless status.empty?
+          CLI::UI.puts(CLI::UI.fmt("{{red:Error: Working directory has uncommitted changes}}"))
+          return
+        end
+        
+        # Pull latest
+        CLI::UI.puts("Pulling latest changes...")
+        system("git pull")
+        
+        # Get current version
+        version = get_current_version
+        tag = "v#{version}"
+        
+        CLI::UI.puts("Preparing to ship #{CLI::UI.fmt("{{green:#{tag}}}")}")
+        
+        # Check if tag already exists
+        if tag_exists?(tag)
+          CLI::UI.puts(CLI::UI.fmt("{{red:Error: Tag #{tag} already exists}}"))
+          return
+        end
+        
+        # Build gem
+        CLI::UI::Frame.open("Building Gem") do
+          system("gem build roast.gemspec")
+        end
+        
+        # Confirm before publishing
+        confirm = CLI::UI::Prompt.ask("Ready to publish #{tag} to RubyGems?") do |handler|
+          handler.option("yes") { true }
+          handler.option("no") { false }
+        end
+        
+        return unless confirm
+        
+        # Publish to RubyGems
+        CLI::UI::Frame.open("Publishing to RubyGems") do
+          gem_file = Dir.glob("*.gem").max_by { |f| File.mtime(f) }
+          success = system("gem push #{gem_file}")
+          
+          unless success
+            CLI::UI.puts(CLI::UI.fmt("{{red:Failed to publish gem}}"))
+            return
+          end
+        end
+        
+        # Create git tag
+        CLI::UI::Frame.open("Creating Git Tag") do
+          system("git tag #{tag}")
+          system("git push origin #{tag}")
+        end
+        
+        # Create GitHub release
+        CLI::UI::Frame.open("Creating GitHub Release") do
+          create_github_release(tag)
+        end
+        
+        # Generate Slack announcement
+        announcement = generate_slack_announcement(version)
+        
+        CLI::UI::Frame.divider("Success!")
+        CLI::UI.puts(CLI::UI.fmt("{{v}} Released v#{version} successfully!"))
+        CLI::UI.puts("")
+        CLI::UI.puts("Copy this announcement for #roast:")
+        CLI::UI.puts("")
+        CLI::UI.puts(CLI::UI.fmt("{{cyan:#{announcement}}}"))
+        
+        # Copy to clipboard if on macOS
+        if RUBY_PLATFORM.include?("darwin")
+          IO.popen("pbcopy", "w") { |io| io.write(announcement) }
+          CLI::UI.puts("")
+          CLI::UI.puts(CLI::UI.fmt("{{v}} Announcement copied to clipboard"))
+        end
+      end
+    end
+    
+    private
+    
+    def get_current_version
+      File.read("lib/roast/version.rb").match(/VERSION = "(.+)"/)[1]
+    end
+    
+    def tag_exists?(tag)
+      system("git rev-parse #{tag} >/dev/null 2>&1")
+    end
+    
+    def create_github_release(tag)
+      # Extract changelog for this version
+      changelog = File.read("CHANGELOG.md")
+      version_section = extract_version_section(changelog, tag)
+      
+      # Create release via gh CLI
+      Tempfile.create("release-notes") do |f|
+        f.write(version_section)
+        f.flush
+        
+        output, = Open3.capture2(
+          "gh", "release", "create", tag,
+          "--repo", REPO,
+          "--title", tag,
+          "--notes-file", f.path,
+          "--latest"
+        )
+        
+        CLI::UI.puts("Release URL: #{CLI::UI.fmt("{{underline:#{output.strip}}}")}")
+      end
+    end
+    
+    def extract_version_section(changelog, tag)
+      lines = changelog.lines
+      start_idx = lines.find_index { |l| l.include?("[#{tag}]") }
+      
+      return "No changelog entry found" unless start_idx
+      
+      # Find next version header or end of file
+      end_idx = lines[(start_idx + 1)..-1].find_index { |l| l.start_with?("## [v") }
+      end_idx = end_idx ? start_idx + end_idx : lines.length
+      
+      lines[start_idx...end_idx].join.strip
+    end
+    
+    def generate_slack_announcement(version)
+      changelog = File.read("CHANGELOG.md")
+      version_section = extract_version_section(changelog, "v#{version}")
+      
+      # Parse out the key changes
+      features = version_section.scan(/^\* (.+)$/).flatten
+      
+      announcement = []
+      announcement << ":rocket: Roast v#{version} has been released!"
+      announcement << ""
+      announcement << "**What's new:**"
+      
+      # Take first 3-5 highlights
+      features.first(5).each do |feature|
+        announcement << "• #{feature}"
+      end
+      
+      announcement << ""
+      announcement << "Gem: https://rubygems.org/gems/roast-ai/versions/#{version}"
+      announcement << "Release notes: https://github.com/#{REPO}/releases/tag/v#{version}"
+      announcement << ""
+      announcement << ":gem: `gem install roast-ai` or `bundle update roast-ai`"
+      
+      announcement.join("\n")
+    end
+    
+    def self.help
+      "Ship the current version (publish gem and create release)"
+    end
+  end
+  
+  class Version < Command
+    def call(_args, _name)
+      version = File.read("lib/roast/version.rb").match(/VERSION = "(.+)"/)[1]
+      CLI::UI.puts(version)
+    end
+    
+    def self.help
+      "Show current version"
+    end
+  end
+  
+  def self.run(args)
+    command = args.shift
+    
+    case command
+    when "generate", "gen", "g"
+      Generate.new.call(args, command)
+    when "ship", "s"
+      Ship.new.call(args, command)
+    when "version", "v"
+      Version.new.call(args, command)
+    when "--help", "-h", nil
+      show_help
+    else
+      CLI::UI.puts(CLI::UI.fmt("{{red:Unknown command: #{command}}}"))
+      show_help
+      exit 1
+    end
+  end
+  
+  def self.show_help
+    CLI::UI::Frame.open("Roast Release Tool") do
+      CLI::UI.puts("Commands:")
+      CLI::UI.puts("")
+      CLI::UI.puts(CLI::UI.fmt("  {{bold:generate}} (g)  - #{Generate.help}"))
+      CLI::UI.puts(CLI::UI.fmt("  {{bold:ship}} (s)      - #{Ship.help}"))
+      CLI::UI.puts(CLI::UI.fmt("  {{bold:version}} (v)   - #{Version.help}"))
+      CLI::UI.puts("")
+      CLI::UI.puts("Usage:")
+      CLI::UI.puts("  bin/release generate   # Review PRs and create release PR")
+      CLI::UI.puts("  bin/release ship       # Publish gem and create GitHub release")
+    end
+  end
+end
+
+Release.run(ARGV)
