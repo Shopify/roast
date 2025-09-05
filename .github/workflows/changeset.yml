@@ -1,0 +1,82 @@
+name: Changeset Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  check-changeset:
+    name: Check for changeset
+    runs-on: ubuntu-latest
+    # Skip for release PRs and PRs with skip label
+    if: |
+      !startsWith(github.head_ref, 'changeset-release/') &&
+      !contains(github.event.pull_request.labels.*.name, '🤖 Skip Changelog')
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+      
+      - name: Check for changeset files
+        id: changeset-check
+        run: |
+          # Get list of changeset files added/modified in this PR
+          changesets=$(git diff --name-only origin/main...HEAD | grep '^\.changeset/.*\.md$' | grep -v '^\.changeset/README.md$' || true)
+          
+          if [ -z "$changesets" ]; then
+            echo "❌ No changeset found!"
+            echo ""
+            echo "This PR requires a changeset file. Please run:"
+            echo ""
+            echo "  bundle exec rake changeset:add"
+            echo ""
+            echo "Or create a file manually in .changeset/ with:"
+            echo "- Filename: .changeset/your-descriptive-name.md"
+            echo "- Content format:"
+            echo "  ---"
+            echo "  type: patch|minor|major"
+            echo "  ---"
+            echo ""
+            echo "  Brief description of your changes"
+            echo ""
+            echo "If this PR doesn't require a version bump (e.g., documentation, CI changes),"
+            echo "add the '🤖 Skip Changelog' label to this PR."
+            exit 1
+          else
+            echo "✅ Changeset found:"
+            echo "$changesets"
+            
+            # Validate changeset format
+            for file in $changesets; do
+              if ! grep -q "^---$" "$file"; then
+                echo "❌ Invalid changeset format in $file"
+                echo "Missing frontmatter markers (---)"
+                exit 1
+              fi
+              
+              # Extract type from frontmatter
+              type=$(sed -n '/^---$/,/^---$/p' "$file" | grep "^type:" | sed 's/type: *//')
+              
+              if [ -z "$type" ]; then
+                echo "❌ Invalid changeset format in $file"
+                echo "Missing 'type' field in frontmatter"
+                exit 1
+              fi
+              
+              if ! echo "$type" | grep -qE "^(patch|minor|major)$"; then
+                echo "❌ Invalid changeset type in $file: $type"
+                echo "Type must be one of: patch, minor, major"
+                exit 1
+              fi
+              
+              echo "✅ Valid changeset: $file (type: $type)"
+            done
+          fi
