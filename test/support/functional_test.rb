@@ -34,7 +34,7 @@ class FunctionalTest < ActiveSupport::TestCase
     FileUtils.mkdir_p(tmpdir_root) unless Dir.exist?(tmpdir_root)
 
     out, err = capture_io do
-      Dir.mktmpdir(nil, tmpdir_root) do |dir|
+      in_tmpdir(with_workflow.to_s, tmpdir_root) do |dir|
         tmpdir = dir
         Dir.chdir(dir) do |dir|
           if Dir.exist?(project_dot_roast_path) && ENV["RECORD_VCR"]
@@ -49,11 +49,12 @@ class FunctionalTest < ActiveSupport::TestCase
             end
           end
 
+          with_sample_data.each { |file| FileUtils.cp_r(File.join(fixture_source_path, file), file) }
+
           workflow_directory = File.join(dir, "roast")
           Dir.mkdir(workflow_directory)
 
           Dir.chdir(workflow_directory) do
-            with_sample_data.each { |file| FileUtils.cp(File.join(fixture_source_path, file), file) }
             if File.exist?(candidate_example_path)
               FileUtils.cp_r(candidate_example_path, with_workflow.to_s)
             else
@@ -71,9 +72,20 @@ class FunctionalTest < ActiveSupport::TestCase
     out.gsub!(path_regex, "/fake-testing-dir")
     err.gsub!(path_regex, "/fake-testing-dir")
 
-    if ENV["RECORD_VCR"]
-      puts "Workflow result recorded with VCR, use this for assertions:"
-      puts out
+    # This output file can be used as the test fixture by moving it to `test/fixtures/workflowname.txt`
+    # It will be automatically asserted against by matching the workflow name passed to in_sandbox
+    if ENV["RECORD_VCR"] || ENV["DUMP_OUTPUT"]
+      path = File.join(root_project_path, "tmp/results")
+      puts "Workflow result recorded with VCR in #{path}, use this for assertions."
+
+      FileUtils.mkdir_p(path)
+      File.write(File.join(path, "#{with_workflow}-stdout-dump"), out)
+      File.write(File.join(path, "#{with_workflow}-stderr-dump"), err)
+    end
+
+    output_fixture_path = File.join("test", "fixtures", "output", "#{with_workflow}.txt")
+    if File.exist?(output_fixture_path)
+      assert_equal(File.read(output_fixture_path), out)
     end
 
     [out, err]
@@ -83,10 +95,13 @@ class FunctionalTest < ActiveSupport::TestCase
     assert_raises(Thor::Error, match:, &block)
   end
 
-  def assert_from_sandbox(expected_output: nil, expected_error: nil, with_workflow: nil, with_sample_data: [], &block)
-    out, err = in_sandbox(with_workflow: with_workflow, with_sample_data: with_sample_data, &block)
-    assert_equal(expected_output&.squish, out.squish) unless expected_output.nil?
-    assert_equal(expected_error&.squish, err.squish) unless expected_error.nil?
+  def in_tmpdir(prefix, tmpdir_root, &block)
+    if ENV["PRESERVE_SANDBOX"]
+      dir = Dir.mktmpdir(prefix, tmpdir_root)
+      block.call(dir)
+    else
+      Dir.mktmpdir(prefix, tmpdir_root, &block)
+    end
   end
 
   # Set up workflow files and paths
