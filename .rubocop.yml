@@ -15,6 +15,7 @@ AllCops:
     - 'bin/*'
     - 'spec/fixtures/**/*'
     - 'test/fixtures/**/*'
+    - 'examples/**/*'
   SuggestExtensions: false
   TargetRubyVersion: 3.4
   UseCache: true
