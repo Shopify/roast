@@ -100,7 +100,9 @@ module Roast
       end
 
       def test_uses_workflow_default_model
-        @config_hash["model"] = "workflow-default"
+        # With StepLoader no longer setting defaults from config_hash,
+        # the workflow-level default should be respected.
+        @workflow.model = "workflow-default"
 
         step = @step_loader.load("test")
 
@@ -111,6 +113,14 @@ module Roast
         step = @step_loader.load("test")
 
         assert_equal(StepLoader::DEFAULT_MODEL, step.model)
+      end
+
+      def test_step_model_override_workflow_model
+        @workflow.model = "workflow-default"
+        @config_hash["test"] = { "model" => "custom-model" }
+        step = @step_loader.load("test")
+
+        assert_equal("custom-model", step.model)
       end
 
       def test_applies_step_configuration

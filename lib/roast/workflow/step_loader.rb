@@ -208,8 +208,8 @@ module Roast
       def configure_step(step, step_name, is_last_step: nil)
         step_config = config_hash[step_name]
 
-        # Always set the model
-        step.model = determine_model(step_config)
+        # Only set the model if explicitly specified for this step
+        step.model = step_config["model"] if step_config&.key?("model")
 
         # Pass resource to step if supported
         step.resource = workflow.resource if step.respond_to?(:resource=)
@@ -221,11 +221,6 @@ module Roast
         if is_last_step && !step_config&.key?("print_response")
           step.print_response = true
         end
-      end
-
-      # Determine which model to use for the step
-      def determine_model(step_config)
-        step_config&.dig("model") || config_hash["model"] || DEFAULT_MODEL
       end
 
       # Apply configuration settings to a step
