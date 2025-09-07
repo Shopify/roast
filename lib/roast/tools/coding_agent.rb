@@ -7,7 +7,7 @@ module Roast
       extend self
       include Roast::Helpers::MetadataAccess
 
-      class CodingAgentError < StandardError; end
+      class CodingAgentError < Roast::Error; end
 
       CONFIG_CODING_AGENT_COMMAND = "coding_agent_command"
       private_constant :CONFIG_CODING_AGENT_COMMAND
@@ -59,7 +59,7 @@ module Roast
           Roast::Helpers::Logger.debug(e.backtrace.join("\n") + "\n") if ENV["DEBUG"]
         end
         Roast::Helpers::Logger.error("🤖 CodingAgent did not complete successfully after multiple retries")
-      rescue StandardError => e
+      rescue Roast::Error => e
         "🤖 Error running CodingAgent: #{e.message}".tap do |error_message|
           Roast::Helpers::Logger.error(error_message + "\n")
           Roast::Helpers::Logger.debug(e.backtrace.join("\n") + "\n") if ENV["DEBUG"]

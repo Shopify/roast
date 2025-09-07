@@ -160,14 +160,14 @@ class RoastCLITest < ActiveSupport::TestCase
 
     # Mock the WorkflowRunner to raise an error
     mock_runner = mock("WorkflowRunner")
-    mock_runner.expects(:begin!).raises(StandardError.new(error_message))
+    mock_runner.expects(:begin!).raises(Roast::Error.new(error_message))
     Roast::Workflow::WorkflowRunner.expects(:new).with(expanded_path, [], { verbose: true }).returns(mock_runner)
 
     # Create CLI with verbose option
     cli = Roast::CLI.new([], { "verbose" => true })
 
     # In verbose mode, the error should be re-raised
-    error = assert_raises(StandardError) do
+    error = assert_raises(Roast::Error) do
       cli.execute(workflow_path)
     end
 
@@ -181,7 +181,7 @@ class RoastCLITest < ActiveSupport::TestCase
 
     # Mock the WorkflowRunner to raise an error
     mock_runner = mock("WorkflowRunner")
-    mock_runner.expects(:begin!).raises(StandardError.new(error_message))
+    mock_runner.expects(:begin!).raises(Roast::Error.new(error_message))
     Roast::Workflow::WorkflowRunner.expects(:new).with(expanded_path, [], {}).returns(mock_runner)
 
     # Create CLI without verbose option

@@ -49,10 +49,10 @@ module Roast
       end
 
       test "does not report on execution failure" do
-        @base_executor.stubs(:execute).raises(StandardError.new("failed"))
+        @base_executor.stubs(:execute).raises(Roast::Error.new("failed"))
         @context_manager.stubs(:total_tokens).returns(100)
 
-        assert_raises(StandardError) do
+        assert_raises(Roast::Error) do
           @executor.execute("failing_step")
         end
 

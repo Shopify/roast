@@ -5,7 +5,7 @@ module Roast
   module Workflow
     # Handles loading and parsing of workflow configuration files
     class ConfigurationLoader
-      class ValidationError < StandardError; end
+      class ValidationError < Roast::Error; end
 
       class << self
         # Load configuration from a YAML file

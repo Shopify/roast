@@ -28,7 +28,7 @@ module Roast
 
         Roast::Helpers::Logger.info("User responded: #{response}\n")
         response
-      rescue StandardError => e
+      rescue Roast::Error => e
         "Error getting user input: #{e.message}".tap do |error_message|
           Roast::Helpers::Logger.error(error_message + "\n")
           Roast::Helpers::Logger.debug(e.backtrace.join("\n") + "\n") if ENV["DEBUG"]

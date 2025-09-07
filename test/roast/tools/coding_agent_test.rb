@@ -143,7 +143,7 @@ module Roast
 
       test "cleans up temporary files even on error" do
         # Force an error during command execution
-        Roast::Helpers::CmdRunner.expects(:popen3).raises(StandardError, "Execution failed")
+        Roast::Helpers::CmdRunner.expects(:popen3).raises(Roast::Error, "Execution failed")
 
         # Track temp file creation and deletion
         tempfile_deleted = false

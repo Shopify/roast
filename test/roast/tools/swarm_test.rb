@@ -78,7 +78,7 @@ module Roast
       end
 
       test "handle_error formats error messages properly" do
-        error = StandardError.new("Test error")
+        error = Roast::Error.new("Test error")
         result = Roast::Tools::Swarm.send(:handle_error, error)
         assert_equal "Error running swarm: Test error", result
       end

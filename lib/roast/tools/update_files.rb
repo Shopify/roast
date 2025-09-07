@@ -70,7 +70,7 @@ module Roast
 
         # Apply changes atomically
         apply_changes(file_changes, base_path, create_files)
-      rescue StandardError => e
+      rescue Roast::Error => e
         "Error applying patch: #{e.message}".tap do |error_message|
           Roast::Helpers::Logger.error(error_message + "\n")
           Roast::Helpers::Logger.debug(e.backtrace.join("\n") + "\n") if ENV["DEBUG"]
@@ -316,7 +316,7 @@ module Roast
           end
 
           "Successfully applied patch to #{modified_files.size} file(s): #{modified_files.join(", ")}"
-        rescue StandardError => e
+        rescue Roast::Error => e
           # Restore backups if any change fails
           backup_files.each do |path, content|
             File.write(path, content) if File.exist?(path)

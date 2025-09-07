@@ -11,7 +11,7 @@ module Roast
     # by introducing the StepRunner interface.
     class WorkflowExecutor
       # Define custom exception classes for specific error scenarios
-      class WorkflowExecutorError < StandardError
+      class WorkflowExecutorError < Roast::Error
         attr_reader :step_name, :original_error
 
         def initialize(message, step_name: nil, original_error: nil)

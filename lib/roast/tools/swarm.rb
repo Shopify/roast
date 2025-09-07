@@ -60,7 +60,7 @@ module Roast
         Roast::Helpers::Logger.info("🐝 Running Claude Swarm with config: #{config_path}\n")
 
         execute_swarm(prompt, config_path)
-      rescue StandardError => e
+      rescue Roast::Error => e
         handle_error(e)
       end
 

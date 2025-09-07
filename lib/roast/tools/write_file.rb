@@ -49,7 +49,7 @@ module Roast
           Roast::Helpers::Logger.error(restriction_message)
           "Error: Path must start with '#{restrict_path}' to use the write_file tool, try again."
         end
-      rescue StandardError => e
+      rescue Roast::Error => e
         "Error writing file: #{e.message}".tap do |error_message|
           Roast::Helpers::Logger.error(error_message + "\n")
           Roast::Helpers::Logger.debug(e.backtrace.join("\n") + "\n") if ENV["DEBUG"]

@@ -31,14 +31,14 @@ class RoastWorkflowParallelExecutorTest < ActiveSupport::TestCase
 
   def test_propagates_errors_from_threads
     steps = ["step1", "step2", "step3"]
-    error = StandardError.new("Step 2 failed")
+    error = Roast::Error.new("Step 2 failed")
 
     # Set up expectations for each step
     @executor.expects(:execute_steps).with(["step1"])
     @executor.expects(:execute_steps).with(["step2"]).raises(error)
     @executor.expects(:execute_steps).with(["step3"]).at_most_once # May not be called if step2 fails first
 
-    exception = assert_raises(StandardError) do
+    exception = assert_raises(Roast::Error) do
       Roast::Workflow::ParallelExecutor.execute(steps, @executor)
     end
     assert_equal("Step 2 failed", exception.message)

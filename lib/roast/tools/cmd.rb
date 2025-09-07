@@ -93,7 +93,7 @@ module Roast
         Roast::Helpers::Logger.info("🔧 Running command: #{full_command}\n")
 
         execute_command(full_command, command_prefix, timeout)
-      rescue StandardError => e
+      rescue Roast::Error => e
         handle_error(e)
       end
 
@@ -108,7 +108,7 @@ module Roast
         command_prefix = command.split(" ").first
 
         execute_command(command, command_prefix, timeout)
-      rescue StandardError => e
+      rescue Roast::Error => e
         handle_error(e)
       end
 

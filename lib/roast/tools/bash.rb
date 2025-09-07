@@ -43,7 +43,7 @@ module Roast
       rescue Timeout::Error => e
         Roast::Helpers::Logger.error(e.message + "\n")
         e.message
-      rescue StandardError => e
+      rescue Roast::Error => e
         handle_error(e)
       end
 
