@@ -1,0 +1,12 @@
+name: Test Enhanced Error Messages
+# Using invalid-test-key as default to trigger auth error
+api_token: invalid-test-key
+model: gpt-4
+
+steps:
+  - test_error: |
+      Test the enhanced error messaging feature.
+
+# This step will fail with API error to show enhanced message
+test_error:
+  print_response: true
