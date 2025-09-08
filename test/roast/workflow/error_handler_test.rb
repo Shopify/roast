@@ -66,7 +66,7 @@ class RoastWorkflowErrorHandlerTest < ActiveSupport::TestCase
 
   def test_generic_error_wraps_in_step_execution_error
     step_name = "broken_step"
-    original_error = StandardError.new("Something went wrong")
+    original_error = Roast::Error.new("Something went wrong")
 
     error = assert_raises(Roast::Workflow::WorkflowExecutor::StepExecutionError) do
       @handler.with_error_handling(step_name) do

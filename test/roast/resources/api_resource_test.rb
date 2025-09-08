@@ -123,7 +123,7 @@ class ApiResourceTest < ActiveSupport::TestCase
     mock_http = mock
     Net::HTTP.stubs(:new).returns(mock_http)
     mock_http.stubs(:use_ssl=)
-    mock_http.stubs(:request).raises(StandardError.new("Connection failed"))
+    mock_http.stubs(:request).raises(Roast::Error.new("Connection failed"))
     resource = Roast::Resources::ApiResource.new(@simple_url)
     refute resource.exists?
   end
@@ -189,7 +189,7 @@ class ApiResourceTest < ActiveSupport::TestCase
   end
 
   test "returns nil when HTTP request raises an error in contents" do
-    Net::HTTP.stubs(:get).raises(StandardError.new("Connection failed"))
+    Net::HTTP.stubs(:get).raises(Roast::Error.new("Connection failed"))
     resource = Roast::Resources::ApiResource.new(@simple_url)
     assert_nil resource.contents
   end

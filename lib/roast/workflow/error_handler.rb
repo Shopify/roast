@@ -27,7 +27,7 @@ module Roast
           current_attempt += 1
           result = block.call
           break
-        rescue StandardError => e
+        rescue Roast::Error => e
           remaining_attempts = maximum_attempts - current_attempt
           raise e if remaining_attempts == 0
 

@@ -44,7 +44,7 @@ module Roast
 
           results.map { |result| File.join(path, result) }.join("\n") # purposely give the AI list of actual paths so that it can read without searching first
         end
-      rescue StandardError => e
+      rescue Roast::Error => e
         "Error searching for '#{glob_pattern}' in '#{path}': #{e.message}".tap do |error_message|
           Roast::Helpers::Logger.error(error_message + "\n")
           Roast::Helpers::Logger.debug(e.backtrace.join("\n") + "\n") if ENV["DEBUG"]

@@ -23,7 +23,7 @@ module Roast
 
           # Consider 2xx and 3xx as success
           response.code.to_i < 400
-        rescue StandardError => e
+        rescue Roast::Error => e
           # Log the error but don't crash
           Roast::Helpers::Logger.error("Error checking URL existence: #{e.message}")
           false
@@ -36,7 +36,7 @@ module Roast
         begin
           uri = URI.parse(target)
           Net::HTTP.get(uri)
-        rescue StandardError => e
+        rescue Roast::Error => e
           # Log the error but don't crash
           Roast::Helpers::Logger.error("Error fetching URL contents: #{e.message}")
           nil

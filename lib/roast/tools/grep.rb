@@ -47,7 +47,7 @@ module Roast
         else
           stdout
         end
-      rescue StandardError => e
+      rescue Roast::Error => e
         "Error grepping for string: #{e.message}".tap do |error_message|
           Roast::Helpers::Logger.error(error_message + "\n")
           Roast::Helpers::Logger.debug(e.backtrace.join("\n") + "\n") if ENV["DEBUG"]

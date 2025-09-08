@@ -4,7 +4,7 @@
 module Roast
   module Workflow
     class CommandExecutor
-      class CommandExecutionError < StandardError
+      class CommandExecutionError < Roast::Error
         attr_reader :command, :exit_status, :original_error, :output
 
         def initialize(message, command:, exit_status: nil, original_error: nil)

@@ -58,7 +58,7 @@ module Roast
 
       def test_handles_save_state_errors_gracefully
         error_message = "Failed to save"
-        @state_repository.expects(:save_state).raises(StandardError.new(error_message))
+        @state_repository.expects(:save_state).raises(Roast::Error.new(error_message))
         @logger.expects(:warn).with("Failed to save workflow state: #{error_message}")
 
         # Should not raise
@@ -68,7 +68,7 @@ module Roast
       def test_logs_to_stderr_when_no_logger
         state_manager = StateManager.new(@workflow)
         error_message = "Failed to save"
-        @state_repository.expects(:save_state).raises(StandardError.new(error_message))
+        @state_repository.expects(:save_state).raises(Roast::Error.new(error_message))
 
         _, err = capture_io do
           state_manager.save_state("step1", "result")

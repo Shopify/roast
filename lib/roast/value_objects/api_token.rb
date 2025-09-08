@@ -5,7 +5,7 @@ module Roast
   module ValueObjects
     # Value object representing an API token with validation
     class ApiToken
-      class InvalidTokenError < StandardError; end
+      class InvalidTokenError < Roast::Error; end
 
       attr_reader :value
 

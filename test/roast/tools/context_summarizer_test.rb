@@ -73,7 +73,7 @@ module Roast
         summarizer = ContextSummarizer.new
         summarizer.stubs(:transcript=)
         summarizer.stubs(:prompt)
-        summarizer.stubs(:chat_completion).raises(StandardError.new("API error"))
+        summarizer.stubs(:chat_completion).raises(Roast::Error.new("API error"))
 
         result = summarizer.generate_summary(context, "Test prompt")
         assert_nil result

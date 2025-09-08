@@ -5,7 +5,7 @@ module Roast
   module ValueObjects
     # Value object representing a URI base with validation
     class UriBase
-      class InvalidUriBaseError < StandardError; end
+      class InvalidUriBaseError < Roast::Error; end
 
       attr_reader :value
 

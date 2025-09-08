@@ -280,7 +280,7 @@ module Roast
       output_path = generator.generate(options[:output])
 
       puts ::CLI::UI.fmt("{{success:✓}} Diagram generated: #{output_path}")
-    rescue StandardError => e
+    rescue Roast::Error => e
       raise Thor::Error, "Error generating diagram: #{e.message}"
     end
 

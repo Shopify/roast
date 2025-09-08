@@ -5,7 +5,7 @@ module Roast
   module ValueObjects
     # Value object representing a workflow file path with validation and resolution
     class WorkflowPath
-      class InvalidPathError < StandardError; end
+      class InvalidPathError < Roast::Error; end
 
       attr_reader :value
 

@@ -8,7 +8,7 @@ module Roast
       DEFAULT_MODEL = "gpt-4o-mini"
 
       # Custom exception classes
-      class StepLoaderError < StandardError
+      class StepLoaderError < Roast::Error
         attr_reader :step_name, :original_error
 
         def initialize(message, step_name: nil, original_error: nil)

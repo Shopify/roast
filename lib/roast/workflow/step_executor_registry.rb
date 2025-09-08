@@ -6,7 +6,7 @@ module Roast
     # Registry pattern for step executors - eliminates case statements
     # and follows Open/Closed Principle
     class StepExecutorRegistry
-      class UnknownStepTypeError < StandardError; end
+      class UnknownStepTypeError < Roast::Error; end
 
       @executors = {}
       @type_matchers = []

@@ -52,7 +52,7 @@ class RoastWorkflowOutputHandlerTest < ActiveSupport::TestCase
     @workflow.stubs(:storage_type).returns(nil)
 
     state_repository = mock("state_repository")
-    state_repository.expects(:save_final_output).raises(StandardError, "Save failed")
+    state_repository.expects(:save_final_output).raises(Roast::Error, "Save failed")
     Roast::Workflow::StateRepositoryFactory.expects(:create).with(nil).returns(state_repository)
 
     assert_output(nil, "Warning: Failed to save final output to session: Save failed\n") do
