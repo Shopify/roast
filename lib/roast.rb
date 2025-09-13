@@ -284,6 +284,74 @@ module Roast
       raise Thor::Error, "Error generating diagram: #{e.message}"
     end
 
+    desc "mcp-server [WORKFLOW_DIRS...]", "Start an MCP server that exposes workflows as tools"
+    option :workflows, type: :array, aliases: "-w", desc: "Directories to search for workflows (can be specified multiple times)"
+    option :log, type: :string, aliases: "-l", desc: "Log file path (logs to stderr by default)"
+    long_desc <<~LONGDESC
+      Start an MCP (Model Context Protocol) server that exposes Roast workflows as tools
+      that can be called by AI assistants like Claude.
+
+      The server searches for workflows in:
+        • Directories passed as arguments
+        • Directories specified with --workflows (-w)
+        • ./workflows/ in the current directory
+        • ./roast_workflows/ in the current directory
+        • .yml files in the current directory containing 'steps:'
+
+      Examples:
+        # Start with default directories
+        roast mcp-server
+
+        # Add workflow directories as arguments (best for Claude config)
+        roast mcp-server /path/to/workflows1 /path/to/workflows2
+
+        # Add a single workflow directory with flag
+        roast mcp-server -w /path/to/my/workflows
+
+        # Add multiple workflow directories with flags
+        roast mcp-server -w /path/to/workflows1 -w /path/to/workflows2
+
+        # Mix arguments and flags
+        roast mcp-server /path/to/workflows1 -w /path/to/workflows2
+
+        # With logging to file
+        roast mcp-server ~/my-workflows --log mcp.log
+
+      For Claude Desktop configuration, use:
+        {
+          "mcpServers": {
+            "roast": {
+              "command": "/path/to/roast/bin/roast",
+              "args": ["mcp-server", "/path/to/your/workflows"]
+            }
+          }
+        }
+
+      Each workflow is exposed as a tool named 'roast_<workflow_name>' with parameters
+      automatically detected from the workflow's target and variable interpolations.
+    LONGDESC
+    def mcp_server(*workflow_dirs)
+      require "roast/commands/mcp_server"
+
+      # Combine positional arguments with --workflows flag
+      all_dirs = workflow_dirs + (options[:workflows] || [])
+
+      server = Roast::Commands::McpServer.new(workflow_dirs: all_dirs)
+
+      # Redirect logger output if specified
+      if options[:log]
+        server.instance_variable_set(:@logger, Logger.new(options[:log]))
+      end
+
+      # For MCP protocol, we should not output anything to stdout before the server starts
+      # Log to stderr instead
+      $stderr.puts "Starting Roast MCP server v#{Roast::Commands::McpServer::VERSION}..."
+      $stderr.puts "Discovered #{server.tools.length} workflows"
+      $stderr.puts "Listening on stdin/stdout..."
+
+      server.run
+    end
+
     private
 
     def show_example_picker
