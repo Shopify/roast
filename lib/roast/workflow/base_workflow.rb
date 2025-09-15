@@ -110,10 +110,22 @@ module Roast
         message = e.response.dig(:body, "error", "message") || e.message
         error = Roast::Errors::ResourceNotFoundError.new(message)
         error.set_backtrace(e.backtrace)
-        log_and_raise_error(error, message, step_model || model, kwargs, execution_time)
+        request_details = {
+          model: step_model || model,
+          params: kwargs,
+          execution_time: execution_time,
+        }
+        log_and_raise_error(error, message, request_details, extract_api_context(e))
       rescue => e
         execution_time = Time.now - start_time
-        log_and_raise_error(e, e.message, step_model || model, kwargs, execution_time)
+        api_context = extract_api_context(e)
+        enhanced_message = enhance_error_message(e.message, api_context)
+        request_details = {
+          model: step_model || model,
+          params: kwargs,
+          execution_time: execution_time,
+        }
+        log_and_raise_error(e, enhanced_message, request_details, api_context)
       end
 
       def with_model(model)
@@ -133,16 +145,91 @@ module Roast
 
       private
 
-      def log_and_raise_error(error, message, model, params, execution_time)
+      def log_and_raise_error(error, message, request_details, api_context = {})
         ActiveSupport::Notifications.instrument("roast.chat_completion.error", {
           error: error.class.name,
           message: message,
-          model: model,
-          parameters: params.except(:openai, :model),
-          execution_time: execution_time,
+          model: request_details[:model],
+          parameters: request_details[:params].except(:openai, :model),
+          execution_time: request_details[:execution_time],
+          api_url: api_context[:url],
+          status_code: api_context[:status],
+          response_body: api_context[:response_body],
         })
 
-        raise error
+        # If we have an enhanced message, create a new error with the enhanced message
+        if message != error.message
+          # Create a new error with the enhanced message
+          new_error = error.class.new(message)
+          new_error.set_backtrace(error.backtrace) if error.backtrace
+          raise new_error
+        else
+          raise error
+        end
+      end
+
+      def extract_api_context(error)
+        context = {}
+
+        # Handle Faraday errors which have response methods
+        if error.respond_to?(:response_status)
+          context[:status] = error.response_status
+        end
+
+        if error.respond_to?(:response_body)
+          context[:response_body] = error.response_body
+        end
+
+        if error.respond_to?(:response_headers)
+          context[:headers] = error.response_headers
+        end
+
+        # Try to extract URL from the error message or response
+        if error.respond_to?(:response) && error.response.is_a?(Hash)
+          context[:url] = error.response[:url] if error.response[:url]
+          context[:status] ||= error.response[:status]
+          context[:response_body] ||= error.response[:body]
+        end
+
+        # For OpenRouter/OpenAI, try to determine the API endpoint
+        if context[:url].nil? && @workflow_configuration
+          provider = @workflow_configuration.api_provider
+          if provider == :openrouter
+            context[:url] = "https://openrouter.ai/api/v1/chat/completions"
+          elsif provider == :openai
+            context[:url] = "https://api.openai.com/v1/chat/completions"
+          end
+        end
+
+        context
+      end
+
+      def enhance_error_message(original_message, api_context)
+        return original_message if api_context.empty?
+
+        # Build an enhanced error message with available context
+        enhanced = original_message.dup
+
+        if api_context[:url] && api_context[:status]
+          enhanced = "API call to #{api_context[:url]} failed with status #{api_context[:status]}: #{original_message}"
+        elsif api_context[:status]
+          enhanced = "API call failed with status #{api_context[:status]}: #{original_message}"
+        end
+
+        # Add response body details if available and not already in the message
+        if api_context[:response_body] && !original_message.include?(api_context[:response_body].to_s)
+          body_str = if api_context[:response_body].is_a?(Hash)
+            api_context[:response_body].dig("error", "message") || api_context[:response_body].to_json
+          else
+            api_context[:response_body].to_s
+          end
+
+          if body_str && !body_str.empty? && body_str.length < 500
+            enhanced += " (Response: #{body_str})"
+          end
+        end
+
+        enhanced
       end
 
       def read_sidecar_prompt
