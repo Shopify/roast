@@ -1,0 +1,23 @@
+name: Test All Error Types with Unified Server
+# Run the unified mock server first: ruby examples/test_errors/unified_mock_server.rb
+# Then run this workflow with different ENDPOINT values
+
+api_token: test-key
+model: gpt-3.5-turbo
+
+# To test different errors, set ENDPOINT environment variable:
+# export ENDPOINT=500  # for 500 error
+# export ENDPOINT=503  # for 503 error
+# export ENDPOINT=429  # for 429 error
+# export ENDPOINT=502  # for 502 error
+# export ENDPOINT=401  # for 401 error
+# export ENDPOINT=404  # for 404 error
+
+api_base_url: http://localhost:8080/v1/${ENDPOINT:-500}
+
+steps:
+  - test_error: |
+      Make an API call to trigger the error.
+
+test_error:
+  print_response: true
