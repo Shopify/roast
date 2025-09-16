@@ -113,7 +113,8 @@ module Roast
         log_and_raise_error(error, message, step_model || model, kwargs, execution_time)
       rescue => e
         execution_time = Time.now - start_time
-        log_and_raise_error(e, e.message, step_model || model, kwargs, execution_time)
+        enhanced_message = build_error_message(e)
+        log_and_raise_error(e, enhanced_message, step_model || model, kwargs, execution_time)
       end
 
       def with_model(model)
@@ -142,7 +143,48 @@ module Roast
           execution_time: execution_time,
         })
 
-        raise error
+        # If we have an enhanced message, create a new error with it
+        if message != error.message
+          new_error = error.class.new(message)
+          new_error.set_backtrace(error.backtrace) if error.backtrace
+          raise new_error
+        else
+          raise error
+        end
+      end
+
+      def build_error_message(error)
+        message = error.message
+
+        # Extract URL and status from Faraday errors
+        url = nil
+        status = nil
+
+        if error.respond_to?(:response) && error.response.is_a?(Hash)
+          url = error.response[:url]
+          status = error.response[:status]
+        elsif error.respond_to?(:response_status)
+          status = error.response_status
+        end
+
+        # Build enhanced message with URL and status if available
+        if url && status
+          message = "API call to #{url} failed with status #{status}: #{message}"
+        elsif status
+          message = "API call failed with status #{status}: #{message}"
+        end
+
+        # Add the actual error detail from response body
+        if error.respond_to?(:response_body)
+          body = error.response_body
+          error_detail = body.is_a?(Hash) ? body.dig("error", "message") : body.to_s
+
+          if error_detail && !error_detail.empty? && !message.include?(error_detail)
+            message += " (#{error_detail})"
+          end
+        end
+
+        message
       end
 
       def read_sidecar_prompt
