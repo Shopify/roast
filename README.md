@@ -374,20 +374,24 @@ Roast supports several types of steps:
     ```yaml
     steps:
       - analyze_code
-      - get_user_feedback:
+      - input:
+          name: get_user_feedback
           prompt: "Should we proceed with the refactoring? (yes/no)"
           type: confirm
-      - review_changes:
+      - input:
+          name: review_changes
           prompt: "Enter your review comments"
           type: text
-      - select_strategy:
+      - input:
+          name: select_strategy
           prompt: "Choose optimization strategy"
-          type: select
+          type: choice
           options:
             - "Performance optimization"
             - "Memory optimization"
             - "Code clarity"
-      - api_configuration:
+      - input:
+          name: api_configuration
           prompt: "Enter API key"
           type: password
     ```
