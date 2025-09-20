@@ -385,7 +385,7 @@ Roast supports several types of steps:
       - input:
           name: select_strategy
           prompt: "Choose optimization strategy"
-          type: select
+          type: choice
           options:
             - "Performance optimization"
             - "Memory optimization"
