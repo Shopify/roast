@@ -113,7 +113,7 @@ module Roast
         log_and_raise_error(error, message, step_model || model, kwargs, execution_time)
       rescue => e
         execution_time = Time.now - start_time
-        log_and_raise_error(e, e.message, step_model || model, kwargs, execution_time)
+        log_and_raise_error(e, enhanced_message(e), step_model || model, kwargs, execution_time)
       end
 
       def with_model(model)
@@ -142,7 +142,43 @@ module Roast
           execution_time: execution_time,
         })
 
-        raise error
+        # If we have an enhanced message, create a new error with it
+        if message != error.message
+          new_error = error.class.new(message)
+          new_error.set_backtrace(error.backtrace) if error.backtrace
+          raise new_error
+        else
+          raise error
+        end
+      end
+
+      def enhanced_message(error)
+        original_message = error.message
+
+        url, status = if error.respond_to?(:response) && error.response.is_a?(Hash)
+          [error.response[:url], error.response[:status]]
+        elsif error.respond_to?(:response_status)
+          [nil, error.response_status]
+        end
+
+        message = if url && status
+          "API call to #{url} failed with status #{status}: #{original_message}"
+        elsif status
+          "API call failed with status #{status}: #{original_message}"
+        else
+          original_message
+        end
+
+        message += if error.respond_to?(:response_body)
+          body = error.response_body
+          error_detail = body.is_a?(Hash) ? body.dig("error", "message") : body.to_s
+
+          if error_detail && !error_detail.empty? && !message.include?(error_detail)
+            " (#{error_detail})"
+          end
+        end
+
+        message
       end
 
       def read_sidecar_prompt
