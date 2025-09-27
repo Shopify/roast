@@ -4,6 +4,9 @@ require "bundler/gem_tasks"
 require "rubocop/rake_task"
 require "rake/testtask"
 
+# Load custom rake tasks
+Dir.glob("lib/roast/tasks/*.rake").each { |file| load file }
+
 Rake::TestTask.new(:minitest_all) do |t|
   t.libs << "test"
   t.libs << "lib"
