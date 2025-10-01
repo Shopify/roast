@@ -4,8 +4,6 @@
 module Roast
   module DSL
     class Cog
-      autoload :Store, "roast/dsl/cog/store"
-
       class << self
         #: () -> Symbol
         def method_name
