@@ -32,7 +32,7 @@ module Roast
 
         @config_context = ConfigContext.new(@cogs, @config_proc)
         @config_context.prepare!
-        @execution_context = ExecutionContext.new(@cogs, @cog_stack, @execution_proc)
+        @execution_context = WorkflowExecutionContext.new(@cogs, @cog_stack, @execution_proc)
         @execution_context.prepare!
 
         @prepared = true
@@ -44,7 +44,10 @@ module Roast
         raise ExecutorAlreadyCompletedError if @completed
 
         @cog_stack.map do |name, cog|
-          cog.run!(@config_context.fetch_merged_config(cog.class, name.to_sym))
+          cog.run!(
+            @config_context.fetch_merged_config(cog.class, name.to_sym),
+            @execution_context.cog_execution_context,
+          )
         end
 
         @completed = true
@@ -63,7 +66,7 @@ module Roast
         @config_proc = block
       end
 
-      #: { () [self: ExecutionContext] -> void} -> void
+      #: { () [self: WorkflowExecutionContext] -> void} -> void
       def execute(&block)
         @execution_proc = block
       end

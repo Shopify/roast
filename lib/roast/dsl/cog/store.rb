@@ -7,10 +7,7 @@ module Roast
       class Store
         class CogAlreadyDefinedError < Roast::Error; end
 
-        #: (Symbol) -> Roast::DSL::Cog?
-        def find(id)
-          store[id]
-        end
+        delegate :[], to: :store
 
         #: (Symbol, Roast::DSL::Cog) -> Roast::DSL::Cog
         def insert(id, inst)
