@@ -4,63 +4,73 @@
 module Roast
   module DSL
     class Executor
+      class ExecutorError < Roast::Error; end
+      class ExecutorAlreadyPreparedError < ExecutorError; end
+      class ExecutorAlreadyCompletedError < ExecutorError; end
+
       class << self
-        #: (?String?) -> void
-        def call(file_path = nil)
-          new(file_path).call
+        def from_file(workflow_path)
+          run!(File.read(workflow_path))
+        end
+
+        private
+
+        def run!(workflow_definition)
+          executor = new
+          executor.prepare!(workflow_definition)
+          executor.start!
         end
       end
 
-      attr_reader :file_path
+      def prepare!(input)
+        # You can only initialize an executor once.
+        raise ExecutorAlreadyPreparedError if @prepared
 
-      #: (?String?) -> void
-      def initialize(file_path = nil)
-        @file_path = file_path
+        extract_dsl_procs(input)
+        @cogs = Cog::Store.new
+        @cog_stack = Cog::Stack.new
+
+        @config_context = ConfigContext.new(@cogs, @config_proc)
+        @config_context.prepare!
+        @execution_context = ExecutionContext.new(@cogs, @cog_stack, @execution_proc)
+        @execution_context.prepare!
+
+        @prepared = true
       end
 
-      #: () -> void
-      def call
-        if dsl_file_path.nil?
-          Roast::Helpers::Logger.error(<<~NO_FILE)
-            No roast DSL file found in current directory
-          NO_FILE
+      def start!
+        # Now we run the cogs!
+        # You can only do this once, executors are not reusable to avoid state pollution
+        raise ExecutorAlreadyCompletedError if @completed
 
-          exit(1)
+        @cog_stack.map do |name, cog|
+          cog.run!(@config_context.fetch_merged_config(cog.class, name.to_sym))
         end
 
-        execute_file
+        @completed = true
       end
 
-      #: () -> String
-      def dsl_file_path
-        @dsl_file_path ||= begin
-          fpath = File.expand_path(@file_path)
-          unless File.exist?(fpath)
-            raise Roast::Error, "DSL file not found: #{fpath}"
-          end
-
-          fpath
-        end
+      def prepared?
+        @prepared ||= false
       end
 
-      #: () -> void
-      def execute_file
-        load_all_cogs
-
-        load(dsl_file_path)
-      rescue => e
-        Roast::Helpers::Logger.error(<<~ERROR)
-          #{e.class.name}: #{e.message}
-          Backtrace:
-          #{e.backtrace&.join("\n")}
-        ERROR
-
-        exit(1)
+      def completed?
+        @completed ||= false
       end
 
-      #: () -> void
-      def load_all_cogs
-        Roast::DSL::Cogs.load_all_for(dsl_file_path)
+      def config(&block)
+        @config_proc = block
+      end
+
+      def execute(&block)
+        @execution_proc = block
+      end
+
+      # Separating the instance evals ensures that we can reuse the same cog method
+      # names between config and execute, while have the backing objects be completely
+      # different. This means we have an enforced separation between configuring and running.
+      def extract_dsl_procs(input)
+        instance_eval(input)
       end
     end
   end

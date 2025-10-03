@@ -5,9 +5,6 @@ module Roast
   module DSL
     module Cogs
       class Graph < Roast::DSL::Cog
-        include Storable
-        include Updatable
-
         #: Proc
         attr_reader :block
 
@@ -16,22 +13,19 @@ module Roast
           @name = name
           @block = block
           @graph = Roast::Graph.new
-          super()
+          super(nil)
         end
 
-        # @override
         #: () -> void
         def on_invoke
           populate!(@graph)
         end
 
-        # @override
         #: () -> Symbol
         def store_id
           @name.to_sym
         end
 
-        # @override
         #: (Roast::DSL::Cog) -> void
         def update(other)
           return unless other.is_a?(Roast::DSL::Cogs::Graph)

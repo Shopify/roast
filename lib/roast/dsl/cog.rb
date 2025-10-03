@@ -4,62 +4,54 @@
 module Roast
   module DSL
     class Cog
-      autoload :Store, "roast/dsl/cog/store"
-
       class << self
-        #: () -> Symbol
-        def method_name
-          # TODO: nicer err handling
-          raise "Cog class #{name} must implement method_name" if name.nil?
-
-          class_name_parts = T.must(name).split("::")
-          raise "Cog class #{name} must have a name" if class_name_parts.empty?
-
-          last_part = class_name_parts.last
-          raise "Cog class #{name} must have a name" if last_part.nil?
-
-          last_part.downcase.to_sym
-        end
-
-        #: (*untyped, **untyped) { (*untyped) -> void } -> Roast::DSL::Cog
-        def invoke(*args, **kwargs, &block)
-          # TODO: This should go away with the block interface, I hope.
-          inst = self #: as untyped # rubocop:disable Style/RedundantSelf
-            .new(*args, **kwargs, &block)
-
-          # Retrieve existing if possible
-          found_inst = inst.find if inst.class.include?(Storable)
-
-          # If there is an existing one, and its updatable, update it
-          unless found_inst.nil?
-            found_inst.update(inst) if found_inst.class.include?(Updatable)
-            inst = found_inst
+        def on_create
+          eigen = self
+          proc do |instance_name = Random.uuid, &action|
+            #: self as Roast::DSL::ExecutionContext
+            add_cog_instance(instance_name, eigen.new(action))
           end
-
-          # Store it if we can
-          inst.store if inst.class.include?(Storable)
-
-          inst.on_invoke
-          inst.invoke_return
         end
+
+        def on_config
+          eigen = self
+          proc do |cog_name = nil, &configuration|
+            #: self as Roast::DSL::ConfigContext
+            config_object = if cog_name.nil?
+              fetch_execution_scope(eigen)
+            else
+              fetch_or_create_cog_config(eigen, cog_name)
+            end
+
+            config_object.instance_exec(&configuration) if configuration
+          end
+        end
+
+        def use_config_class(config_class)
+          @config_class = config_class
+        end
+
+        attr_reader :config_class
       end
 
-      # TODO: This is slightly gross being untyped
-      #: () -> untyped
-      def invoke_return
-        self # Optional override
+      attr_reader :output
+
+      def initialize(cog_input_proc)
+        @cog_input_proc = cog_input_proc
       end
 
-      # TODO: Probably some sort of Runnable module we can include.
-      # TODO: Support custom output types.
-      #: () -> String
-      def output
-        raise NotImplementedError, "Subclass must implement output"
+      def input
+        @cog_input_proc.call
       end
 
-      #: () -> void
-      def on_invoke
-        # noop, override in subclass if needed.
+      def run!(config)
+        @config = config
+        @output = execute
+      end
+
+      # Inheriting cog must implement this
+      def execute
+        raise NotImplementedError
       end
     end
   end
