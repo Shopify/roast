@@ -15,8 +15,15 @@ module Roast
           self.class.new(values.merge(config_object.values))
         end
 
-        def configure!(&block)
-          instance_exec(&block)
+        # It is recommended to implement a custom config object for a nicer interface,
+        # but for simple cases where it would just be a key value store we provide one by default.
+
+        def []=(key, value)
+          @values[key] = value
+        end
+
+        def [](key)
+          @values[key]
         end
       end
     end
