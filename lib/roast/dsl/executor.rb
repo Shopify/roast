@@ -58,10 +58,12 @@ module Roast
         @completed ||= false
       end
 
+      #: { () [self: ConfigContext] -> void} -> void
       def config(&block)
         @config_proc = block
       end
 
+      #: { () [self: ExecutionContext] -> void} -> void
       def execute(&block)
         @execution_proc = block
       end
