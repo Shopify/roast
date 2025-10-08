@@ -42,7 +42,7 @@ module Roast
 
         use_config_class Config
 
-        #: () -> void
+        #: () -> Output
         def execute
           result = Output.new(*Roast::Helpers::CmdRunner.capture3(input))
           puts result.output if @config.print_all?
