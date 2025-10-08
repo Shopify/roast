@@ -27,11 +27,16 @@ module Roast
           end
         end
 
-        def use_config_class(config_class)
-          @config_class = config_class
+        def config_class
+          @config_class ||= find_child_config_or_default
         end
 
-        attr_reader :config_class
+        private
+
+        def find_child_config_or_default
+          config_constant = "#{name}::Config"
+          const_defined?(config_constant) ? const_get(config_constant) : Cog::Config # rubocop:disable Sorbet/ConstantsFromStrings
+        end
       end
 
       attr_reader :output

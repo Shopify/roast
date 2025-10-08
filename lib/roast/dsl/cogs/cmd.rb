@@ -15,7 +15,6 @@ module Roast
           #: Process::Status?
           attr_reader :status
 
-
           #: (
           #|  String? output,
           #|  String? error,
@@ -39,8 +38,6 @@ module Roast
             !!@values[:print_all]
           end
         end
-
-        use_config_class Config
 
         #: () -> Output
         def execute
