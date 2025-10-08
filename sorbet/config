@@ -1,5 +1,7 @@
 --dir
 .
+--ignore=.git/
+--ignore=.idea/
 --ignore=tmp/
 --ignore=vendor/
 --ignore=test/
