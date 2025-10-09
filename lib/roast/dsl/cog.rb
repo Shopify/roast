@@ -4,12 +4,14 @@
 module Roast
   module DSL
     class Cog
+      class CogAlreadyRanError < StandardError; end
+
       class << self
         def on_create
           eigen = self
           proc do |instance_name = Random.uuid, &action|
-            #: self as Roast::DSL::ExecutionContext
-            add_cog_instance(instance_name, eigen.new(action))
+            #: self as Roast::DSL::WorkflowExecutionContext
+            add_cog_instance(instance_name, eigen.new(instance_name, action))
           end
         end
 
@@ -39,23 +41,28 @@ module Roast
         end
       end
 
-      attr_reader :output
+      attr_reader :name, :output
 
-      def initialize(cog_input_proc)
+      def initialize(name, cog_input_proc)
+        @name = name
         @cog_input_proc = cog_input_proc
+        @finished = false
       end
 
-      def input
-        @cog_input_proc.call
-      end
+      def run!(config, cog_execution_context)
+        raise CogAlreadyRanError if ran?
 
-      def run!(config)
         @config = config
-        @output = execute
+        @output = execute(cog_execution_context.instance_exec(&@cog_input_proc))
+        @finished = true
+      end
+
+      def ran?
+        @finished
       end
 
       # Inheriting cog must implement this
-      def execute
+      def execute(input)
         raise NotImplementedError
       end
     end

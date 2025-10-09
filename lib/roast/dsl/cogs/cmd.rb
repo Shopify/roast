@@ -7,7 +7,7 @@ module Roast
       class Cmd < Cog
         class Output
           #: String?
-          attr_reader :output
+          attr_reader :command_output
 
           #: String?
           attr_reader :err
@@ -21,7 +21,7 @@ module Roast
           #|  Process::Status? status
           #| ) -> void
           def initialize(output, error, status)
-            @output = output
+            @command_output = output
             @err = error
             @status = status
           end
@@ -37,12 +37,16 @@ module Roast
           def print_all?
             !!@values[:print_all]
           end
+
+          def display!
+            print_all!
+          end
         end
 
-        #: () -> Output
-        def execute
+        #: (String) -> Output
+        def execute(input)
           result = Output.new(*Roast::Helpers::CmdRunner.capture3(input))
-          puts result.output if @config.print_all?
+          puts result.command_output if @config.print_all?
           result
         end
       end
