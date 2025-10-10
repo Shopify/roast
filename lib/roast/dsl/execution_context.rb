@@ -3,10 +3,12 @@
 
 module Roast
   module DSL
-    class WorkflowExecutionContext
-      class WorkflowExecutionContextError < Roast::Error; end
-      class WorkflowExecutionContextNotPreparedError < WorkflowExecutionContextError; end
-      class WorkflowExecutionContextAlreadyPreparedError < WorkflowExecutionContextError; end
+    # Context in which the `execute` block of a workflow is evaluated
+    class ExecutionContext
+
+      class ExecutionContextError < Roast::Error; end
+      class ExecutionContextNotPreparedError < ExecutionContextError; end
+      class ExecutionContextAlreadyPreparedError < ExecutionContextError; end
 
       #: (Cog::Store, Cog::Stack, Array[^() -> void]) -> void
       def initialize(cogs, cog_stack, execution_procs)
@@ -18,7 +20,7 @@ module Roast
 
       #: () -> void
       def prepare!
-        raise WorkflowExecutionContextAlreadyPreparedError if prepared?
+        raise ExecutionContextAlreadyPreparedError if prepared?
 
         bind_default_cogs
         @execution_procs.each { |ep| instance_eval(&ep) }
@@ -30,11 +32,11 @@ module Roast
         @prepared ||= false #: bool?
       end
 
-      #: () -> CogExecutionContext
-      def cog_execution_context
-        raise WorkflowExecutionContextNotPreparedError unless prepared?
+      #: () -> CogInputContext
+      def cog_input_context
+        raise ExecutionContextNotPreparedError unless prepared?
 
-        @cog_execution_context ||= CogExecutionContext.new(@cogs, @bound_names) #: CogExecutionContext?
+        @cog_execution_context ||= CogInputContext.new(@cogs, @bound_names) #: CogInputContext?
       end
 
       private

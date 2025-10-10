@@ -3,7 +3,7 @@
 
 module Roast
   module DSL
-    class WorkflowExecutionContext
+    class ExecutionContext
       #: (?Symbol?) {() [self: Roast::DSL::Cogs::Cmd] -> String} -> void
       def cmd(name = nil, &block); end
     end
