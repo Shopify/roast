@@ -2305,57 +2305,65 @@ class Rack::Multipart::MultipartTotalPartLimitError < ::StandardError; end
 class Rack::Multipart::Parser
   # @return [Parser] a new instance of Parser
   #
-  # source://rack//lib/rack/multipart/parser.rb#180
+  # source://rack//lib/rack/multipart/parser.rb#201
   def initialize(boundary, tempfile, bufsize, query_parser); end
 
-  # source://rack//lib/rack/multipart/parser.rb#199
+  # source://rack//lib/rack/multipart/parser.rb#222
   def on_read(content); end
 
-  # source://rack//lib/rack/multipart/parser.rb#205
+  # source://rack//lib/rack/multipart/parser.rb#228
   def result; end
 
   # Returns the value of attribute state.
   #
-  # source://rack//lib/rack/multipart/parser.rb#178
+  # source://rack//lib/rack/multipart/parser.rb#199
   def state; end
 
   private
 
-  # source://rack//lib/rack/multipart/parser.rb#302
+  # Scan until the we find the start or end of the boundary.
+  # If we find it, return the appropriate symbol for the start or
+  # end of the boundary.  If we don't find the start or end of the
+  # boundary, clear the buffer and return nil.
+  #
+  # source://rack//lib/rack/multipart/parser.rb#358
   def consume_boundary; end
 
-  # source://rack//lib/rack/multipart/parser.rb#300
+  # source://rack//lib/rack/multipart/parser.rb#345
   def full_boundary; end
 
-  # source://rack//lib/rack/multipart/parser.rb#312
+  # source://rack//lib/rack/multipart/parser.rb#368
   def get_filename(head); end
 
-  # source://rack//lib/rack/multipart/parser.rb#248
+  # source://rack//lib/rack/multipart/parser.rb#277
   def handle_consume_token; end
 
-  # source://rack//lib/rack/multipart/parser.rb#377
+  # source://rack//lib/rack/multipart/parser.rb#433
   def handle_empty_content!(content); end
 
-  # source://rack//lib/rack/multipart/parser.rb#234
+  # source://rack//lib/rack/multipart/parser.rb#257
   def handle_fast_forward; end
 
-  # source://rack//lib/rack/multipart/parser.rb#281
+  # source://rack//lib/rack/multipart/parser.rb#323
   def handle_mime_body; end
 
-  # source://rack//lib/rack/multipart/parser.rb#258
+  # source://rack//lib/rack/multipart/parser.rb#287
   def handle_mime_head; end
 
-  # source://rack//lib/rack/multipart/parser.rb#217
+  # source://rack//lib/rack/multipart/parser.rb#240
   def run_parser; end
 
-  # source://rack//lib/rack/multipart/parser.rb#349
+  # source://rack//lib/rack/multipart/parser.rb#405
   def tag_multipart_encoding(filename, content_type, name, body); end
 
+  # source://rack//lib/rack/multipart/parser.rb#347
+  def update_retained_size(size); end
+
   class << self
-    # source://rack//lib/rack/multipart/parser.rb#66
+    # source://rack//lib/rack/multipart/parser.rb#87
     def parse(io, content_length, content_type, tmpfile, bufsize, qp); end
 
-    # source://rack//lib/rack/multipart/parser.rb#59
+    # source://rack//lib/rack/multipart/parser.rb#80
     def parse_boundary(content_type); end
   end
 end
@@ -2363,87 +2371,96 @@ end
 # source://rack//lib/rack/multipart/parser.rb#21
 Rack::Multipart::Parser::BOUNDARY_REGEX = T.let(T.unsafe(nil), Regexp)
 
+# source://rack//lib/rack/multipart/parser.rb#23
+Rack::Multipart::Parser::BOUNDARY_START_LIMIT = T.let(T.unsafe(nil), Integer)
+
+# source://rack//lib/rack/multipart/parser.rb#41
+Rack::Multipart::Parser::BUFFERED_UPLOAD_BYTESIZE_LIMIT = T.let(T.unsafe(nil), Integer)
+
 # source://rack//lib/rack/multipart/parser.rb#13
 Rack::Multipart::Parser::BUFSIZE = T.let(T.unsafe(nil), Integer)
 
-# source://rack//lib/rack/multipart/parser.rb#23
+# source://rack//lib/rack/multipart/parser.rb#44
 class Rack::Multipart::Parser::BoundedIO
   # @return [BoundedIO] a new instance of BoundedIO
   #
-  # source://rack//lib/rack/multipart/parser.rb#24
+  # source://rack//lib/rack/multipart/parser.rb#45
   def initialize(io, content_length); end
 
-  # source://rack//lib/rack/multipart/parser.rb#30
+  # source://rack//lib/rack/multipart/parser.rb#51
   def read(size, outbuf = T.unsafe(nil)); end
 
-  # source://rack//lib/rack/multipart/parser.rb#51
+  # source://rack//lib/rack/multipart/parser.rb#72
   def rewind; end
 end
 
-# source://rack//lib/rack/multipart/parser.rb#347
+# source://rack//lib/rack/multipart/parser.rb#403
 Rack::Multipart::Parser::CHARSET = T.let(T.unsafe(nil), String)
 
-# source://rack//lib/rack/multipart/parser.rb#87
+# source://rack//lib/rack/multipart/parser.rb#108
 class Rack::Multipart::Parser::Collector
   include ::Enumerable
 
   # @return [Collector] a new instance of Collector
   #
-  # source://rack//lib/rack/multipart/parser.rb#123
+  # source://rack//lib/rack/multipart/parser.rb#144
   def initialize(tempfile); end
 
-  # source://rack//lib/rack/multipart/parser.rb#129
+  # source://rack//lib/rack/multipart/parser.rb#150
   def each; end
 
-  # source://rack//lib/rack/multipart/parser.rb#149
+  # source://rack//lib/rack/multipart/parser.rb#170
   def on_mime_body(mime_index, content); end
 
-  # source://rack//lib/rack/multipart/parser.rb#153
+  # source://rack//lib/rack/multipart/parser.rb#174
   def on_mime_finish(mime_index); end
 
-  # source://rack//lib/rack/multipart/parser.rb#133
+  # source://rack//lib/rack/multipart/parser.rb#154
   def on_mime_head(mime_index, head, filename, content_type, name); end
 
   private
 
-  # source://rack//lib/rack/multipart/parser.rb#158
+  # source://rack//lib/rack/multipart/parser.rb#179
   def check_part_limits; end
 end
 
-# source://rack//lib/rack/multipart/parser.rb#111
+# source://rack//lib/rack/multipart/parser.rb#132
 class Rack::Multipart::Parser::Collector::BufferPart < ::Rack::Multipart::Parser::Collector::MimePart
-  # source://rack//lib/rack/multipart/parser.rb#113
+  # source://rack//lib/rack/multipart/parser.rb#134
   def close; end
 
   # @return [Boolean]
   #
-  # source://rack//lib/rack/multipart/parser.rb#112
+  # source://rack//lib/rack/multipart/parser.rb#133
   def file?; end
 end
 
-# source://rack//lib/rack/multipart/parser.rb#88
+# source://rack//lib/rack/multipart/parser.rb#109
 class Rack::Multipart::Parser::Collector::MimePart < ::Struct
   # @yield [data]
   #
-  # source://rack//lib/rack/multipart/parser.rb#89
+  # source://rack//lib/rack/multipart/parser.rb#110
   def get_data; end
 end
 
-# source://rack//lib/rack/multipart/parser.rb#116
+# source://rack//lib/rack/multipart/parser.rb#137
 class Rack::Multipart::Parser::Collector::TempfilePart < ::Rack::Multipart::Parser::Collector::MimePart
-  # source://rack//lib/rack/multipart/parser.rb#118
+  # source://rack//lib/rack/multipart/parser.rb#139
   def close; end
 
   # @return [Boolean]
   #
-  # source://rack//lib/rack/multipart/parser.rb#117
+  # source://rack//lib/rack/multipart/parser.rb#138
   def file?; end
 end
 
-# source://rack//lib/rack/multipart/parser.rb#57
+# source://rack//lib/rack/multipart/parser.rb#78
 Rack::Multipart::Parser::EMPTY = T.let(T.unsafe(nil), Rack::Multipart::Parser::MultipartInfo)
 
-# source://rack//lib/rack/multipart/parser.rb#56
+# source://rack//lib/rack/multipart/parser.rb#26
+Rack::Multipart::Parser::MIME_HEADER_BYTESIZE_LIMIT = T.let(T.unsafe(nil), Integer)
+
+# source://rack//lib/rack/multipart/parser.rb#77
 class Rack::Multipart::Parser::MultipartInfo < ::Struct
   # Returns the value of attribute params
   #
