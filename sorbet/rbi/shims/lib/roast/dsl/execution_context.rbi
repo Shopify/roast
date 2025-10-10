@@ -4,7 +4,7 @@
 module Roast
   module DSL
     class ExecutionContext
-      #: (?Symbol?) {() [self: Roast::DSL::Cogs::Cmd] -> String} -> void
+      #: (?Symbol?) {(Roast::DSL::Cogs::Cmd::Input) [self: Roast::DSL::CogInputContext] -> (String | Array[String] | nil)} -> void
       def cmd(name = nil, &block); end
     end
   end

@@ -8,12 +8,12 @@ module Roast
         #: Proc
         attr_reader :block
 
-        #: (Symbol) { (Method) -> untyped } -> void
+        #: (Symbol) { (Cog::Input) -> untyped } -> void
         def initialize(name, &block)
           @name = name
           @block = block
           @graph = Roast::Graph.new
-          super(name, proc {})
+          super(name, block)
         end
 
         #: () -> void
@@ -36,7 +36,7 @@ module Roast
         end
 
         # Populates the provided graph in-place, with the definition of how to populate in the block
-        #: (Method) -> void
+        #: (Cog::Input) -> void
         def populate!(graph)
           return if @block.nil?
 
