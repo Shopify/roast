@@ -25,11 +25,57 @@
   * For updating [Roast documentation](https://shopify.github.io/roast/), create it from `gh-pages` branch. (You can skip tests.)
 * If it makes sense, add tests for your code and/or run a performance benchmark
 * Make sure all tests pass (`bundle exec rake`)
+* **Create a changeset for your changes** (see [Changeset Requirements](#changeset-requirements) below)
 * Create a pull request
+
+## Changeset Requirements
+
+All pull requests that modify the gem's functionality require a changeset file. This helps us automate version bumping and changelog generation.
+
+### Creating a Changeset
+
+Run the following command and follow the prompts:
+
+```bash
+bundle exec rake changeset:add
+```
+
+This will ask you to:
+1. Select the type of change (patch/minor/major)
+2. Provide a brief description of your changes
+
+### Version Bump Guidelines
+
+* **patch**: Bug fixes, minor improvements, documentation updates
+* **minor**: New features that are backwards compatible
+* **major**: Breaking changes that are not backwards compatible
+
+### Skipping Changesets
+
+Some changes don't require version bumps:
+* CI/CD configuration changes
+* Development tooling updates
+* Test-only changes
+* Documentation typo fixes
+
+To skip the changeset requirement, add the `🤖 Skip Changelog` label to your PR.
+
+### Multiple Changes
+
+If your PR includes multiple distinct changes, you can create multiple changeset files by running `bundle exec rake changeset:add` multiple times.
 
 ## Releasing
 
-* Bump the version in `lib/roast/version.rb`
-* Update the `CHANGELOG.md` file
-* Open a PR like and merge it to `main`
-* Create a new release using the [GitHub UI](https://github.com/Shopify/roast/releases/new)
+Releases are now automated! When PRs with changesets are merged to `main`:
+
+1. A "Release PR" is automatically created/updated that:
+   * Collects all pending changesets
+   * Determines the appropriate version bump
+   * Updates `lib/roast/version.rb`
+   * Updates `CHANGELOG.md`
+
+2. When the Release PR is merged:
+   * The gem is automatically built and published to RubyGems
+   * A GitHub release is created with the changelog
+
+No manual version bumping or changelog editing required!
