@@ -6,8 +6,11 @@ module Roast
     # Context in which an individual cog block within the `execute` block of a workflow is evaluated
     class CogInputContext
       class CogExecutionAccessError < Roast::Error; end
+
       # Raises if you access a cog in an execution block that hasn't already been run.
       class IncompleteCogExecutionAccessError < CogExecutionAccessError; end
+
+      class MissingCogOutputError < CogExecutionAccessError; end
 
       #: (Cog::Store, Array[Symbol]) -> void
       def initialize(cogs, bound_names)
@@ -23,6 +26,7 @@ module Roast
           define_singleton_method(name, ->(name) do
             @cogs[name].tap do |cog|
               raise IncompleteCogExecutionAccessError unless cog.ran?
+              raise MissingCogOutputError unless cog.output.present?
             end.output
           end)
         end
