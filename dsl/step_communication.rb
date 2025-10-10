@@ -12,7 +12,7 @@ execute do
   cmd(:ls) { "ls -al" }
   cmd(:echo) do
     # TODO: this is a bespoke output object for cmd, is there a generic one we can offer
-    first_line = cmd(:ls).command_output.split("\n").second
+    first_line = cmd(:ls).out.split("\n").second
     "echo '#{first_line}'"
   end
 end
