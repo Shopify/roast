@@ -9,16 +9,19 @@ module Roast
 
         delegate :[], to: :store
 
+        #: Hash[Symbol, Cog]
+        attr_reader :store
+
+        #: () -> void
+        def initialize
+          @store = {}
+        end
+
         #: (Symbol, Roast::DSL::Cog) -> Roast::DSL::Cog
         def insert(id, inst)
           raise CogAlreadyDefinedError if store.key?(id)
 
           store[id] = inst
-        end
-
-        #: () -> Hash[Symbol, Roast::DSL::Cog]
-        def store
-          @store ||= {}
         end
       end
     end
