@@ -133,6 +133,7 @@ GEM
       rb-inotify (~> 0.9, >= 0.9.10)
     logger (1.7.0)
     lumberjack (1.2.10)
+    marcel (1.1.0)
     method_source (1.1.0)
     mime-types (3.7.0)
       logger
@@ -213,6 +214,15 @@ GEM
       faraday-multipart (>= 1)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
+    ruby_llm (1.8.2)
+      base64
+      event_stream_parser (~> 1)
+      faraday (>= 1.10.0)
+      faraday-multipart (>= 1)
+      faraday-net_http (>= 1)
+      faraday-retry (>= 1)
+      marcel (~> 1.0)
+      zeitwerk (~> 2)
     securerandom (0.4.1)
     shellany (0.0.1)
     simplecov (0.22.0)
@@ -284,6 +294,7 @@ DEPENDENCIES
   roast-ai!
   rubocop-shopify
   rubocop-sorbet
+  ruby_llm (~> 1.8)
   simplecov
   sorbet
   tapioca

@@ -25,3 +25,5 @@ gem "sorbet", require: false
 gem "tapioca", require: false
 
 gem "claude_swarm"
+
+gem "ruby_llm", "~> 1.8"
