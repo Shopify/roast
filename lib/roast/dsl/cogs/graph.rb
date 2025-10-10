@@ -13,7 +13,7 @@ module Roast
           @name = name
           @block = block
           @graph = Roast::Graph.new
-          super(nil)
+          super(name, proc {})
         end
 
         #: () -> void
