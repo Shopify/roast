@@ -36,6 +36,7 @@ require "raix"
 require "raix/chat_completion"
 require "raix/function_dispatch"
 require "ruby-graphviz"
+require "ruby_llm"
 require "thor"
 require "timeout"
 
@@ -45,6 +46,7 @@ require "zeitwerk"
 # Set up Zeitwerk autoloader
 loader = Zeitwerk::Loader.for_gem
 loader.inflector.inflect("dsl" => "DSL")
+loader.inflector.inflect("llm" => "LLM")
 loader.setup
 
 module Roast
