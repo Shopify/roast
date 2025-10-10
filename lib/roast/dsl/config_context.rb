@@ -3,6 +3,7 @@
 
 module Roast
   module DSL
+    # Context in which the `config` block of a workflow is evaluated
     class ConfigContext
       class ConfigContextError < Roast::Error; end
       class ConfigContextNotPreparedError < ConfigContextError; end
