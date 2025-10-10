@@ -5,6 +5,10 @@
 
 config do
   cmd(:echo) { print_all! }
+  chat(:hello) do
+    self.model = :claude_opus_4 # TODO: self.model feels weird
+    print_all!
+  end
 end
 
 execute do
@@ -14,4 +18,6 @@ execute do
 
   # Named cog. Configuration for this specific instance will be looked up from config block
   cmd(:echo) { "echo 'Hello World!'" }
+
+  chat(:hello) { "say 'whats up'" }
 end
