@@ -17,15 +17,15 @@ module Roast
 
         def on_config
           eigen = self
-          proc do |cog_name = nil, &configuration|
+          proc do |cog_name = nil, &configuration_proc|
             #: self as Roast::DSL::ConfigContext
             config_object = if cog_name.nil?
-              fetch_execution_scope(eigen)
+              fetch_general_config(eigen)
             else
-              fetch_or_create_cog_config(eigen, cog_name)
+              fetch_name_scoped_config(eigen, cog_name)
             end
-
-            config_object.instance_exec(&configuration) if configuration
+            config_object.instance_exec(&configuration_proc) if configuration_proc
+            config_object
           end
         end
 
