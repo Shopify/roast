@@ -4,29 +4,49 @@
 module Roast
   module DSL
     class WorkflowExecutionContext
-      def initialize(cogs, cog_stack, execution_proc)
-        @cogs = cogs
-        @cog_stack = cog_stack
-        @execution_proc = execution_proc
-        @bound_names = []
+      class WorkflowExecutionContextError < Roast::Error; end
+      class WorkflowExecutionContextNotPreparedError < WorkflowExecutionContextError; end
+      class WorkflowExecutionContextAlreadyPreparedError < WorkflowExecutionContextError; end
+
+      #: (Cog::Store, Cog::Stack, Array[^() -> void]) -> void
+      def initialize(cogs, cog_stack, execution_procs)
+        @cogs = cogs #: Cog::Store
+        @cog_stack = cog_stack #: Cog::Stack
+        @execution_procs = execution_procs #: Array[^() -> void]
+        @bound_names = [] #: Array[Symbol]
       end
 
+      #: () -> void
       def prepare!
+        raise WorkflowExecutionContextAlreadyPreparedError if prepared?
+
         bind_default_cogs
-        instance_eval(&@execution_proc)
+        @execution_procs.each { |ep| instance_eval(&ep) }
+        @prepared = true
       end
 
+      #: () -> bool
+      def prepared?
+        @prepared ||= false #: bool?
+      end
+
+      #: () -> CogExecutionContext
       def cog_execution_context
-        @cog_execution_context ||= CogExecutionContext.new(@cogs, @bound_names)
+        raise WorkflowExecutionContextNotPreparedError unless prepared?
+
+        @cog_execution_context ||= CogExecutionContext.new(@cogs, @bound_names) #: CogExecutionContext?
       end
 
       private
 
+      #: (Symbol, Cog) -> void
       def add_cog_instance(name, cog)
         @cogs.insert(name, cog)
         @cog_stack.push([name, cog])
       end
 
+      # TODO: add typing for output
+      #: (Symbol) -> untyped
       def output(name)
         @cogs[name].output
       end
@@ -36,6 +56,7 @@ module Roast
         bind_cog(Cogs::Cmd, :cmd)
       end
 
+      #: (singleton(Cog), Symbol) -> void
       def bind_cog(cog_class, name)
         @bound_names << name
         instance_eval do
