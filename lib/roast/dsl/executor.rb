@@ -32,7 +32,7 @@ module Roast
         @config_procs = [] #: Array[^() -> void]
         @execution_procs = [] #: Array[^() -> void]
         @config_context = nil #: ConfigContext?
-        @execution_context = nil #: WorkflowExecutionContext?
+        @execution_context = nil #: ExecutionContext?
       end
 
       #: (String) -> void
@@ -44,7 +44,7 @@ module Roast
 
         @config_context = ConfigContext.new(@cogs, @config_procs)
         @config_context.prepare!
-        @execution_context = WorkflowExecutionContext.new(@cogs, @cog_stack, @execution_procs)
+        @execution_context = ExecutionContext.new(@cogs, @cog_stack, @execution_procs)
         @execution_context.prepare!
 
         @prepared = true
@@ -60,7 +60,7 @@ module Roast
         @cog_stack.map do |name, cog|
           cog.run!(
             @config_context.fetch_merged_config(cog.class, name.to_sym),
-            @execution_context.cog_execution_context,
+            @execution_context.cog_input_context,
           )
         end
 
@@ -82,7 +82,7 @@ module Roast
         @config_procs << block
       end
 
-      #: { () [self: WorkflowExecutionContext] -> void } -> void
+      #: { () [self: ExecutionContext] -> void } -> void
       def execute(&block)
         @execution_procs << block
       end

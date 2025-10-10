@@ -10,7 +10,7 @@ module Roast
         def on_create
           eigen = self
           proc do |instance_name = Random.uuid, &action|
-            #: self as Roast::DSL::WorkflowExecutionContext
+            #: self as Roast::DSL::ExecutionContext
             add_cog_instance(instance_name, eigen.new(instance_name, action))
           end
         end
@@ -49,11 +49,11 @@ module Roast
         @finished = false
       end
 
-      def run!(config, cog_execution_context)
+      def run!(config, input_context)
         raise CogAlreadyRanError if ran?
 
         @config = config
-        @output = execute(cog_execution_context.instance_exec(&@cog_input_proc))
+        @output = execute(input_context.instance_exec(&@cog_input_proc))
         @finished = true
       end
 
