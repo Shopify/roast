@@ -13,10 +13,10 @@ module Roast
         #: bool
         attr_reader :abort
 
-        #: (?success: bool, ?abort: bool) -> void
-        def initialize(success: true, abort: false)
+        #: (?success: bool, ?abort_workflow: bool) -> void
+        def initialize(success: true, abort_workflow: false)
           @success = success #: bool
-          @abort = abort #: bool
+          @abort = abort_workflow #: bool
         end
       end
     end
