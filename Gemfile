@@ -18,6 +18,7 @@ gem "mocha"
 gem "rake", require: false
 gem "rubocop-shopify", require: false
 gem "rubocop-sorbet", require: false
+gem "ruby_llm"
 gem "simplecov", require: false
 gem "sorbet", require: false
 gem "tapioca", require: false
