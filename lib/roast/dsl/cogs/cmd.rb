@@ -45,8 +45,9 @@ module Roast
 
         #: (String) -> Output
         def execute(input)
+          config = @config #: as Config
           result = Output.new(*Roast::Helpers::CmdRunner.capture3(input))
-          puts result.command_output if @config.print_all?
+          puts result.command_output if config.print_all?
           result
         end
       end
