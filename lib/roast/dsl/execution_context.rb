@@ -36,7 +36,7 @@ module Roast
       def cog_input_context
         raise ExecutionContextNotPreparedError unless prepared?
 
-        @cog_execution_context ||= CogInputContext.new(@cogs, @bound_names) #: CogInputContext?
+        @cog_input_context ||= CogInputContext.new(@cogs, @bound_names) #: CogInputContext?
       end
 
       private
@@ -62,7 +62,7 @@ module Roast
       def bind_cog(cog_class, name)
         @bound_names << name
         instance_eval do
-          define_singleton_method(name, &cog_class.on_create)
+          define_singleton_method(name, &cog_class.on_execute)
         end
       end
     end
