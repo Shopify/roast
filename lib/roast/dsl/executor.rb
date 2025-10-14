@@ -29,6 +29,8 @@ module Roast
       def initialize
         @cogs = Cog::Store.new #: Cog::Store
         @cog_stack = Cog::Stack.new #: Cog::Stack
+        @config_procs = [] #: Array[^() -> void]
+        @execution_procs = [] #: Array[^() -> void]
         @config_context = nil #: ConfigContext?
         @execution_context = nil #: WorkflowExecutionContext?
       end
@@ -39,9 +41,10 @@ module Roast
         raise ExecutorAlreadyPreparedError if prepared?
 
         extract_dsl_procs!(workflow_definition)
-        @config_context = ConfigContext.new(@cogs, @config_proc)
+
+        @config_context = ConfigContext.new(@cogs, @config_procs)
         @config_context.prepare!
-        @execution_context = WorkflowExecutionContext.new(@cogs, @cog_stack, @execution_proc)
+        @execution_context = WorkflowExecutionContext.new(@cogs, @cog_stack, @execution_procs)
         @execution_context.prepare!
 
         @prepared = true
@@ -74,14 +77,14 @@ module Roast
         @completed ||= false
       end
 
-      #: { () [self: ConfigContext] -> void } -> ^() -> void
+      #: { () [self: ConfigContext] -> void } -> void
       def config(&block)
-        @config_proc = block
+        @config_procs << block
       end
 
       #: { () [self: WorkflowExecutionContext] -> void } -> void
       def execute(&block)
-        @execution_proc = block
+        @execution_procs << block
       end
 
       private
