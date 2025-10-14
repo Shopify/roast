@@ -1,5 +1,6 @@
 # typed: true
 # frozen_string_literal: true
+
 #: self as Roast::DSL::Executor
 
 # How do we pass information between steps?

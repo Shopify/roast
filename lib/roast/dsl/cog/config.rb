@@ -5,7 +5,6 @@ module Roast
   module DSL
     class Cog
       class Config
-
         #: Hash[Symbol, untyped]
         attr_reader :values
 

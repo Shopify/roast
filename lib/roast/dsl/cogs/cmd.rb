@@ -49,6 +49,7 @@ module Roast
 
           #: ( String, String, Process::Status) -> void
           def initialize(out, err, status)
+            super()
             @out = out #: String
             @err = err #: String
             @status = status #: Process::Status
