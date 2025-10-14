@@ -195,4 +195,71 @@ class RoastCLITest < ActiveSupport::TestCase
     # In non-verbose mode, only the error message should be printed to stderr
     assert_equal "#{error_message}\n", err
   end
+
+  test "init with no examples shows error message" do
+    # Mock available_examples to return an empty array
+    cli = Roast::CLI.new
+
+    # Stub the examples directory to be empty
+    Dir.expects(:entries).returns([".", ".."])
+
+    output, _err = capture_io do
+      cli.init
+    end
+
+    assert_match(/No examples found!/, output)
+  end
+
+  test "init with example option copies example directly" do
+    Dir.mktmpdir do |tmpdir|
+      Dir.chdir(tmpdir) do
+        # Create a real example directory in the temp location
+        example_name = "test_example"
+        FileUtils.mkdir_p(File.join(Roast::ROOT, "examples", example_name))
+        File.write(File.join(Roast::ROOT, "examples", example_name, "workflow.yml"), "name: test")
+
+        cli = Roast::CLI.new([], { "example" => example_name })
+
+        output, _err = capture_io do
+          cli.init
+        end
+
+        assert_match(/Successfully copied example/, output)
+        assert File.exist?(File.join(tmpdir, "roast", example_name, "workflow.yml"))
+      ensure
+        # Cleanup
+        FileUtils.rm_rf(File.join(Roast::ROOT, "examples", example_name))
+      end
+    end
+  end
+
+  test "init shows example picker when user selects 'Pick from examples'" do
+    cli = Roast::CLI.new
+
+    # Mock the run_picker to return "Pick from examples" first, then nil (user cancels example selection)
+    cli.expects(:run_picker).twice.returns("Pick from examples", nil)
+
+    output, _err = capture_io do
+      cli.init
+    end
+
+    assert_match(/Select an option:/, output)
+    assert_kind_of String, output
+  end
+
+  test "init shows coming soon message when user selects 'New from prompt (coming soon)'" do
+    cli = Roast::CLI.new
+
+    # Mock the run_picker to return "New from prompt (coming soon)"
+    cli.expects(:run_picker).returns("New from prompt (coming soon)")
+
+    output, _err = capture_io do
+      cli.init
+    end
+
+    assert_match(/Workflow Generator - Coming Soon/, output)
+    assert_match(/being rebuilt to ensure/, output)
+    assert_match(/Better AI-generated workflow quality/, output)
+    assert_match(/Integration with Roast's upcoming DSL features/, output)
+  end
 end
