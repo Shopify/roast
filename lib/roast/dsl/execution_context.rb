@@ -5,7 +5,6 @@ module Roast
   module DSL
     # Context in which the `execute` block of a workflow is evaluated
     class ExecutionContext
-
       class ExecutionContextError < Roast::Error; end
       class ExecutionContextNotPreparedError < ExecutionContextError; end
       class ExecutionContextAlreadyPreparedError < ExecutionContextError; end
