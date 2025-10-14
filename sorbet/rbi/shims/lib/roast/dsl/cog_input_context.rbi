@@ -6,6 +6,9 @@ module Roast
     class CogInputContext
       #: (Symbol) -> Roast::DSL::Cogs::Cmd::Output
       def cmd(name); end
+
+      #: (Symbol) -> Roast::DSL::Cogs::Chat::Output
+      def chat(name); end
     end
   end
 end

@@ -36,6 +36,7 @@ require "raix"
 require "raix/chat_completion"
 require "raix/function_dispatch"
 require "ruby-graphviz"
+require "ruby_llm"
 require "thor"
 require "timeout"
 

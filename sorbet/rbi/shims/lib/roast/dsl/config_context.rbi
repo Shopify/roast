@@ -6,6 +6,9 @@ module Roast
     class ConfigContext
       #: (?Symbol?) {() [self: Roast::DSL::Cogs::Cmd::Config] -> void} -> void
       def cmd(name = nil, &block); end
+
+      #: (?Symbol?) {() [self: Roast::DSL::Cogs::Chat::Config] -> void} -> void
+      def chat(name = nil, &block); end
     end
   end
 end
