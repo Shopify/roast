@@ -3,7 +3,7 @@
 
 module Roast
   class Graph
-    class Error < StandardError; end
+    class Error < Roast::Error; end
     class AddEdgeError < Error; end
     class EdgeTopologyError < Error; end
 
