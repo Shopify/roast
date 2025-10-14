@@ -303,7 +303,7 @@ module Roast
       end
 
       puts "Select an option:"
-      choices = ["Pick from examples", "New from prompt (beta)"]
+      choices = ["Pick from examples", "New from prompt (coming soon)"]
 
       selected = run_picker(choices, "Select initialization method:")
 
@@ -311,8 +311,8 @@ module Roast
       when "Pick from examples"
         example_choice = run_picker(examples, "Select an example:")
         copy_example(example_choice) if example_choice
-      when "New from prompt (beta)"
-        create_from_prompt
+      when "New from prompt (coming soon)"
+        show_coming_soon_message
       end
     end
 
@@ -356,22 +356,21 @@ module Roast
       puts "Successfully copied example '#{example_name}' to current directory."
     end
 
-    def create_from_prompt
-      puts("Create a new workflow from a description")
+    def show_coming_soon_message
       puts
-
-      # Execute the workflow generator
-      generator_path = File.join(Roast::ROOT, "examples", "workflow_generator", "workflow.yml")
-
-      begin
-        # Execute the workflow generator (it will handle user input)
-        Roast::Workflow::WorkflowRunner.new(generator_path, [], {}).begin!
-
-        puts
-        puts("Workflow generation complete!")
-      rescue => e
-        puts("Error generating workflow: #{e.message}")
-      end
+      puts ::CLI::UI.fmt("{{bold:Workflow Generator - Coming Soon}}")
+      puts
+      puts "The 'New from prompt' workflow generator is being rebuilt to ensure"
+      puts "generated workflows are reliable and properly validated."
+      puts
+      puts "This feature will return with:"
+      puts "  • Better AI-generated workflow quality"
+      puts "  • Validation to ensure generated workflows actually work"
+      puts "  • Integration with Roast's upcoming DSL features"
+      puts
+      puts "For now, please use 'Pick from examples' to get started."
+      puts "You can then customize the example workflow for your needs."
+      puts
     end
 
     class << self
