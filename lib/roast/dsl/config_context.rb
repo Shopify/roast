@@ -58,6 +58,7 @@ module Roast
       #: () -> void
       def bind_default_cogs
         bind_cog(Cogs::Cmd, :cmd)
+        bind_cog(Cogs::Chat, :chat)
       end
 
       #: (singleton(Cog), Symbol) -> void
