@@ -5,7 +5,7 @@
 
 config do
   chat(:lake) do
-    model "gpt-4o-mini"
+    model("gpt-4o-mini")
   end
 end
 
