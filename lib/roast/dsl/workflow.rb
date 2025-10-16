@@ -28,10 +28,9 @@ module Roast
       #: () -> void
       def initialize
         @cogs = Cog::Store.new #: Cog::Store
-        @cog_stack = Cog::Stack.new #: Cog::Stack
         @cog_registry = Cog::Registry.new #: Cog::Registry
         @config_procs = [] #: Array[^() -> void]
-        @execution_procs = [] #: Array[^() -> void]
+        @execution_procs = { nil: [] } #: Hash[Symbol?, Array[^() -> void]]
         @config_manager = nil #: ConfigManager?
         @execution_manager = nil #: ExecutionManager?
       end
@@ -44,8 +43,9 @@ module Roast
         extract_dsl_procs!(workflow_definition)
         @config_manager = ConfigManager.new(@cog_registry, @config_procs)
         @config_manager.prepare!
-        @execution_manager = ExecutionManager.new(@cog_registry, @cogs, @cog_stack, @execution_procs)
+        @execution_manager = ExecutionManager.new(@cog_registry, @config_manager, @execution_procs[nil] || [])
         @execution_manager.prepare!
+
         @prepared = true
       end
 
@@ -55,12 +55,7 @@ module Roast
         raise WorkflowAlreadyStartedError if started? || completed?
 
         @started = true
-        @cog_stack.map do |name, cog|
-          cog.run!(
-            @config_manager.config_for(cog.class, name.to_sym),
-            @execution_manager.cog_input_context,
-          )
-        end
+        @execution_manager.run!
         @completed = true
       end
 
@@ -89,9 +84,9 @@ module Roast
         @config_procs << block
       end
 
-      #: { () [self: ExecutionContext] -> void } -> void
-      def execute(&block)
-        @execution_procs << block
+      #: (?Symbol?) { () [self: ExecutionContext] -> void } -> void
+      def execute(scope = nil, &block)
+        (@execution_procs[scope] ||= []) << block
       end
 
       private
