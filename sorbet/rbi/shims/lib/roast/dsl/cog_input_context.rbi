@@ -9,6 +9,9 @@ module Roast
 
       #: (Symbol) -> Roast::DSL::Cogs::Chat::Output
       def chat(name); end
+
+      #: (Symbol) -> Roast::DSL::Cog::Output
+      def execute(name); end
     end
   end
 end

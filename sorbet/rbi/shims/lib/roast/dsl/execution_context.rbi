@@ -9,6 +9,9 @@ module Roast
 
       #: (?Symbol?) {(Roast::DSL::Cogs::Chat::Input) [self: Roast::DSL::CogInputContext] -> String?} -> void
       def chat(name = nil, &block); end
+
+      #: (?Symbol?) {(Roast::DSL::Cogs::Execute::Input) [self: Roast::DSL::CogInputContext] -> (Symbol | nil)} -> void
+      def execute(name = nil, &block); end
     end
   end
 end

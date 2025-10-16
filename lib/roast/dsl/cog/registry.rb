@@ -14,6 +14,7 @@ module Roast
           [
             Cogs::Cmd,
             Cogs::Chat,
+            Cogs::Execute,
           ].to_h do |cog_class|
             cog_class_name = cog_class.name
             raise CouldNotDeriveCogNameError if cog_class_name.nil?

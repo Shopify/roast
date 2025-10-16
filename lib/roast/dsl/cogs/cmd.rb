@@ -15,8 +15,8 @@ module Roast
           #: () -> void
           def initialize
             super
-            @command = nil #: String?
-            @args = [] #: Array[String]
+            @command = nil
+            @args = []
           end
 
           #: () -> void
