@@ -30,6 +30,24 @@ module Roast
         def [](key)
           @values[key]
         end
+
+        class << self
+          def field(key, types, default = nil)
+            types = [types] unless types.is_a?(Array)
+
+            define_method(key) do |value = default|
+              unless value.nil?
+                if types.none? { |type| value.is_a?(type) }
+                  raise TypeError, "Expected #{types.join(", ")}, got #{value.class} #{value} for #{key}"
+                end
+
+                @values[key] = value
+              end
+
+              @values[key]
+            end
+          end
+        end
       end
     end
   end
