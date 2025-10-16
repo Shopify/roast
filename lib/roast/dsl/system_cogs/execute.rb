@@ -3,20 +3,14 @@
 
 module Roast
   module DSL
-    module Cogs
-      class Execute < Cog
+    module SystemCogs
+      class Execute < SystemCog
         class Input < Cog::Input
           #: Symbol?
           attr_accessor :scope
 
           #: untyped
           attr_accessor :value
-
-          #: () -> void
-          def initialize
-            super
-            @scope = nil
-          end
 
           #: () -> void
           def validate!
@@ -36,21 +30,6 @@ module Roast
               # TODO: log a warning if there are more than two elements in the array
             end
           end
-        end
-
-        #: (Symbol, ^(Input) -> untyped, ^(Input) -> void) -> void
-        def initialize(name, cog_input_proc, trigger)
-          # NOTE: Sorbet expects the proc passed to super to be declared as taking a Cog::Input explicitly,
-          # not a subclass of Cog::Input.
-          cog_input_proc = cog_input_proc #: as ^(Cog::Input) -> untyped
-          super(name, cog_input_proc)
-          @trigger = trigger
-        end
-
-        #: (Input) -> Cog::Output
-        def execute(input)
-          @trigger.call(input)
-          Cog::Output.new
         end
       end
     end

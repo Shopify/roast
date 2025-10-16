@@ -5,6 +5,8 @@ module Roast
   module DSL
     # Context in which the `execute` block of a workflow is evaluated
     class ExecutionManager
+      include SystemCogManager
+
       class ExecutionManagerError < Roast::Error; end
 
       class ExecutionManagerNotPreparedError < ExecutionManagerError; end
@@ -113,37 +115,23 @@ module Roast
       def bind_cog(cog_method_name, cog_class)
         on_execute_method = method(:on_execute)
         cog_method = proc do |cog_name = Random.uuid, &cog_input_proc|
-          on_execute_method.call(cog_class, cog_name, &cog_input_proc)
+          on_execute_method.call(cog_class, cog_name, cog_input_proc)
         end
         @execution_context.instance_eval do
           define_singleton_method(cog_method_name, cog_method)
         end
       end
 
-      #: (singleton(Cog), Symbol) { (Cog::Input) -> untyped } -> void
-      def on_execute(cog_class, cog_name, &cog_input_proc)
+      #: (singleton(Cog), Symbol, ^(Cog::Input) -> untyped) -> void
+      def on_execute(cog_class, cog_name, cog_input_proc)
         # Called when the cog method is invoked in the workflow's 'execute' block.
         # This creates the cog instance and prepares it for execution.
-        cog_instance = if cog_class == Cogs::Execute
-          create_special_execute_cog(cog_name, cog_input_proc)
+        cog_instance = if cog_class <= SystemCog
+          create_system_cog(cog_class, cog_name, cog_input_proc)
         else
           cog_class.new(cog_name, cog_input_proc)
         end
         add_cog_instance(cog_name, cog_instance)
-      end
-
-      #: (Symbol, ^(Cogs::Execute::Input) -> untyped) -> Cogs::Execute
-      def create_special_execute_cog(cog_name, cog_input_proc)
-        trigger = proc do |input|
-          raise ExecutionScopeNotSpecifiedError unless input.scope.present?
-
-          em = ExecutionManager.new(@cog_registry, @config_manager, @all_execution_procs, input.scope, input.value)
-          em.prepare!
-          em.run!
-
-          # TODO: collect the outputs of the cogs in the execution manager that just ran and do something with them
-        end
-        Cogs::Execute.new(cog_name, cog_input_proc, trigger)
       end
     end
   end
