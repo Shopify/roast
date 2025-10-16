@@ -1,13 +1,13 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Executor
+#: self as Roast::DSL::Workflow
 
 config do
   # TODO: make a way to do print_all on all and turn off printing on one
   cmd(:echo) { print_all! }
   cmd(:date) { print_stdout! }
-  cmd(:date2) { print_all! }
+  chat { "" }
   # TODO: add a way to apply config to a subset of named cog by pattern
   # cmd(/^date.*/) { print_all! }
 end
@@ -22,5 +22,4 @@ execute do
 
   # Cogs can implement input coercion for simple return values
   cmd(:date) { "date" }
-  cmd(:date1) { ["date", "-h"] }
 end

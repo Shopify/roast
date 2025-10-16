@@ -9,34 +9,6 @@ module Roast
       class CogAlreadyRanError < CogError; end
 
       class << self
-        #: () -> void
-        def on_config
-          # Called when the cog method is invoked in the workflow's 'config' block.
-          # This allows configuration parameters to be set for the cog generally or for a specific named instance
-          eigen = self
-          proc do |cog_name = nil, &configuration_proc|
-            #: self as Roast::DSL::ConfigContext
-            config_object = if cog_name.nil?
-              fetch_general_config(eigen)
-            else
-              fetch_name_scoped_config(eigen, cog_name)
-            end
-            config_object.instance_exec(&configuration_proc) if configuration_proc
-            config_object
-          end
-        end
-
-        #: () -> void
-        def on_execute
-          # Called when the cog method is invoked in the workflow's 'execute' block.
-          # This creates the cog instance and prepares it for execution.
-          eigen = self
-          proc do |instance_name = Random.uuid, &cog_input_proc|
-            #: self as Roast::DSL::ExecutionContext
-            add_cog_instance(instance_name, eigen.new(instance_name, cog_input_proc))
-          end
-        end
-
         #: () -> singleton(Cog::Config)
         def config_class
           @config_class ||= find_child_config_or_default
