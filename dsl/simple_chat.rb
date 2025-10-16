@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Executor
+#: self as Roast::DSL::Workflow
 
 config do
   # ...
