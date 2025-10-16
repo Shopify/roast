@@ -53,7 +53,7 @@ module Roast
         @finished = false #: bool
 
         # Make sure a config is always defined, so we don't have to worry about nils
-        @config = self.class.config_class.new #: Cog::Config
+        @config = self.class.config_class.new #: untyped
       end
 
       #: (Cog::Config, CogInputContext, untyped) -> void
