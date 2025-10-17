@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    roast-ai (0.4.9)
+    roast-ai (0.4.10)
       activesupport (>= 7.0)
       cli-kit (~> 5.0)
       cli-ui (= 2.3.0)
