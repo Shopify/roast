@@ -9,12 +9,14 @@ module Roast
       class ExecutionManagerNotPreparedError < ExecutionManagerError; end
       class ExecutionManagerAlreadyPreparedError < ExecutionManagerError; end
       class ExecutionManagerCurrentlyRunningError < ExecutionManagerError; end
+      class ExecutionScopeDoesNotExistError < ExecutionManagerError; end
+      class ExecutionScopeNotSpecifiedError < ExecutionManagerError; end
 
-      #: (Cog::Registry, ConfigManager, Array[^() -> void], ?Symbol?) -> void
-      def initialize(cog_registry, config_manager, execution_procs, scope = nil)
+      #: (Cog::Registry, ConfigManager, Hash[Symbol?, Array[^() -> void]], ?Symbol?) -> void
+      def initialize(cog_registry, config_manager, all_execution_procs, scope = nil)
         @cog_registry = cog_registry
         @config_manager = config_manager
-        @execution_procs = execution_procs
+        @all_execution_procs = all_execution_procs
         @scope = scope
         @cogs = Cog::Store.new #: Cog::Store
         @cog_stack = Cog::Stack.new #: Cog::Stack
@@ -28,7 +30,7 @@ module Roast
 
         @preparing = true
         bind_registered_cogs
-        @execution_procs.each { |ep| @execution_context.instance_eval(&ep) }
+        my_execution_procs.each { |ep| @execution_context.instance_eval(&ep) }
         @prepared = true
       end
 
@@ -70,6 +72,13 @@ module Roast
 
       private
 
+      #: () -> Array[^() -> void]
+      def my_execution_procs
+        raise ExecutionScopeDoesNotExistError unless @all_execution_procs.key?(@scope)
+
+        @all_execution_procs[@scope] || []
+      end
+
       #: (Symbol, Cog) -> void
       def add_cog_instance(name, cog)
         @cogs.insert(name, cog)
@@ -102,7 +111,26 @@ module Roast
       def on_execute(cog_class, cog_name, &cog_input_proc)
         # Called when the cog method is invoked in the workflow's 'execute' block.
         # This creates the cog instance and prepares it for execution.
-        add_cog_instance(cog_name, cog_class.new(cog_name, cog_input_proc))
+        cog_instance = if cog_class == Cogs::Execute
+          create_special_execute_cog(cog_name, cog_input_proc)
+        else
+          cog_class.new(cog_name, cog_input_proc)
+        end
+        add_cog_instance(cog_name, cog_instance)
+      end
+
+      #: (Symbol, ^(Cogs::Execute::Input) -> untyped) -> Cogs::Execute
+      def create_special_execute_cog(cog_name, cog_input_proc)
+        trigger = proc do |input|
+          raise ExecutionScopeNotSpecifiedError unless input.scope.present?
+
+          em = ExecutionManager.new(@cog_registry, @config_manager, @all_execution_procs, input.scope)
+          em.prepare!
+          em.run!
+
+          # TODO: collect the outputs of the cogs in the execution manager that just ran and do something with them
+        end
+        Cogs::Execute.new(cog_name, cog_input_proc, trigger)
       end
     end
   end

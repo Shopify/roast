@@ -9,7 +9,6 @@ config do
   end
 end
 
-# TODO: there is no way to execute this block yet...
 execute(:capitalize_a_random_word) do
   cmd(:word) { "shuf /usr/share/dict/words -n 1" }
   cmd(:capitalize) do |my|
@@ -21,5 +20,9 @@ execute(:capitalize_a_random_word) do
 end
 
 execute do
-  cmd(:whatever) { "echo whatever" }
+  cmd(:before) { "echo '--> before'" }
+  execute { :capitalize_a_random_word }
+  execute { :capitalize_a_random_word }
+  execute { :capitalize_a_random_word }
+  cmd(:after) { "echo '--> after'" }
 end

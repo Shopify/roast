@@ -27,7 +27,6 @@ module Roast
 
       #: () -> void
       def initialize
-        @cogs = Cog::Store.new #: Cog::Store
         @cog_registry = Cog::Registry.new #: Cog::Registry
         @config_procs = [] #: Array[^() -> void]
         @execution_procs = { nil: [] } #: Hash[Symbol?, Array[^() -> void]]
@@ -43,7 +42,7 @@ module Roast
         extract_dsl_procs!(workflow_definition)
         @config_manager = ConfigManager.new(@cog_registry, @config_procs)
         @config_manager.prepare!
-        @execution_manager = ExecutionManager.new(@cog_registry, @config_manager, @execution_procs[nil] || [])
+        @execution_manager = ExecutionManager.new(@cog_registry, @config_manager, @execution_procs)
         @execution_manager.prepare!
 
         @prepared = true
