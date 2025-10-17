@@ -12,6 +12,9 @@ module Roast
 
       #: (?Symbol?) {() [self: Roast::DSL::Cog::Config] -> void} -> void
       def execute(name = nil, &block); end
+
+      #: (?Symbol?) {() [self: Roast::DSL::Cog::Config] -> void} -> void
+      def map(name = nil, &block); end
     end
   end
 end

@@ -12,6 +12,9 @@ module Roast
 
       #: (Symbol) -> Roast::DSL::Cog::Output
       def execute(name); end
+
+      #: (Symbol) -> Roast::DSL::Cog::Output
+      def map(name); end
     end
   end
 end

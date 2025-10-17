@@ -9,6 +9,7 @@ module Roast
       class CogAlreadyRanError < CogError; end
 
       class << self
+
         #: () -> singleton(Cog::Config)
         def config_class
           @config_class ||= find_child_config_or_default

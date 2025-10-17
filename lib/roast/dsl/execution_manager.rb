@@ -114,22 +114,22 @@ module Roast
       #: (Symbol, singleton(Cog)) -> void
       def bind_cog(cog_method_name, cog_class)
         on_execute_method = method(:on_execute)
-        cog_method = proc do |cog_name = Random.uuid, &cog_input_proc|
-          on_execute_method.call(cog_class, cog_name, cog_input_proc)
+        cog_method = proc do |cog_name = Random.uuid, *args, **kwargs, &cog_input_proc|
+          on_execute_method.call(cog_class, cog_name, args, kwargs, cog_input_proc)
         end
         @execution_context.instance_eval do
           define_singleton_method(cog_method_name, cog_method)
         end
       end
 
-      #: (singleton(Cog), Symbol, ^(Cog::Input) -> untyped) -> void
-      def on_execute(cog_class, cog_name, cog_input_proc)
+      #: (singleton(Cog), Symbol, Array[untyped], Hash[Symbol, untyped], ^(Cog::Input) -> untyped) -> void
+      def on_execute(cog_class, cog_name, cog_args, cog_kwargs, cog_input_proc)
         # Called when the cog method is invoked in the workflow's 'execute' block.
         # This creates the cog instance and prepares it for execution.
         cog_instance = if cog_class <= SystemCog
-          create_system_cog(cog_class, cog_name, cog_input_proc)
+          create_system_cog(cog_class, cog_name, cog_args, cog_kwargs, cog_input_proc)
         else
-          cog_class.new(cog_name, cog_input_proc)
+          T.unsafe(cog_class).new(cog_name, cog_input_proc)
         end
         add_cog_instance(cog_name, cog_instance)
       end
