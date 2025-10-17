@@ -86,7 +86,7 @@ module Roast
         else
           fetch_name_scoped_config(cog_class, cog_name)
         end
-        # Note: Sorbet expects the proc passed to instance_exec to be declared as taking an argument
+        # NOTE: Sorbet expects the proc passed to instance_exec to be declared as taking an argument
         # but our cog_config_proc does not get an argument
         config_object.instance_exec(&T.unsafe(cog_config_proc)) if cog_config_proc
         config_object

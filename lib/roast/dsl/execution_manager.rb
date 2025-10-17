@@ -8,13 +8,16 @@ module Roast
       class ExecutionManagerError < Roast::Error; end
       class ExecutionManagerNotPreparedError < ExecutionManagerError; end
       class ExecutionManagerAlreadyPreparedError < ExecutionManagerError; end
+      class ExecutionManagerCurrentlyRunningError < ExecutionManagerError; end
 
-      #: (Cog::Registry, Cog::Store, Cog::Stack, Array[^() -> void]) -> void
-      def initialize(cog_registry, cogs, cog_stack, execution_procs)
+      #: (Cog::Registry, ConfigManager, Array[^() -> void], ?Symbol?) -> void
+      def initialize(cog_registry, config_manager, execution_procs, scope = nil)
         @cog_registry = cog_registry
-        @cogs = cogs
-        @cog_stack = cog_stack
+        @config_manager = config_manager
         @execution_procs = execution_procs
+        @scope = scope
+        @cogs = Cog::Store.new #: Cog::Store
+        @cog_stack = Cog::Stack.new #: Cog::Stack
         @execution_context = ExecutionContext.new #: ExecutionContext
         @cog_input_manager = CogInputManager.new(@cog_registry, @cogs) #: CogInputManager
       end
@@ -29,6 +32,20 @@ module Roast
         @prepared = true
       end
 
+      def run!
+        raise ExecutionManagerNotPreparedError unless prepared?
+        raise ExecutionManagerCurrentlyRunningError if running?
+
+        @running = true
+        @cog_stack.map do |name, cog|
+          cog.run!(
+            @config_manager.config_for(cog.class, name.to_sym),
+            cog_input_manager,
+          )
+        end
+        @running = false
+      end
+
       #: () -> bool
       def preparing?
         @preparing ||= false
@@ -39,8 +56,13 @@ module Roast
         @prepared ||= false
       end
 
+      #: () -> bool
+      def running?
+        @running ||= false
+      end
+
       #: () -> CogInputContext
-      def cog_input_context
+      def cog_input_manager
         raise ExecutionManagerNotPreparedError unless prepared?
 
         @cog_input_manager.context
