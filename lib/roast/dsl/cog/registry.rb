@@ -13,6 +13,7 @@ module Roast
           # Hard-coded for now; these cogs are available for workflows
           [
             SystemCogs::Execute,
+            SystemCogs::Map,
             Cogs::Cmd,
             Cogs::Chat,
           ].to_h do |cog_class|

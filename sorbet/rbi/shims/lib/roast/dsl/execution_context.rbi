@@ -19,6 +19,9 @@ module Roast
       #   Should we define an overload signature instead of a redundant union?
       #: (?Symbol?) {(Roast::DSL::SystemCogs::Execute::Input, ?untyped) [self: Roast::DSL::CogInputContext] -> (Symbol | Array[untyped] | untyped )} -> void
       def execute(name = nil, &block); end
+
+      #: (?Symbol?, ?Symbol?) {(Roast::DSL::SystemCogs::Map::Input, ?untyped) [self: Roast::DSL::CogInputContext] -> untyped} -> void
+      def map(name = nil, map_executor_scope = nil, &block); end
     end
   end
 end
