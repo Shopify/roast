@@ -1,0 +1,4 @@
+# frozen_string_literal: true
+
+gem "roast-ai", path: "../.."
+gem "plugin-gem-example", path: "../plugin-gem-example"
