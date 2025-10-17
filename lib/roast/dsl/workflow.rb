@@ -8,25 +8,21 @@ module Roast
       class WorkflowNotPreparedError < WorkflowError; end
       class WorkflowAlreadyPreparedError < WorkflowError; end
       class WorkflowAlreadyStartedError < WorkflowError; end
+      class InvalidCogReference < WorkflowError; end
 
       class << self
         #: (String) -> void
         def from_file(workflow_path)
-          run!(File.read(workflow_path))
-        end
-
-        private
-
-        #: (String) -> void
-        def run!(workflow_definition)
-          workflow = new
-          workflow.prepare!(workflow_definition)
+          workflow = new(workflow_path)
+          workflow.prepare!
           workflow.start!
         end
       end
 
-      #: () -> void
-      def initialize
+      #: (String) -> void
+      def initialize(workflow_path)
+        @workflow_path = Pathname.new(workflow_path)
+        @workflow_definition = File.read(workflow_path)
         @cog_registry = Cog::Registry.new #: Cog::Registry
         @config_procs = [] #: Array[^() -> void]
         @execution_procs = { nil: [] } #: Hash[Symbol?, Array[^() -> void]]
@@ -34,12 +30,12 @@ module Roast
         @execution_manager = nil #: ExecutionManager?
       end
 
-      #: (String) -> void
-      def prepare!(workflow_definition)
+      #: () -> void
+      def prepare!
         raise WorkflowAlreadyPreparedError if preparing? || prepared?
 
         @preparing = true
-        extract_dsl_procs!(workflow_definition)
+        extract_dsl_procs!
         @config_manager = ConfigManager.new(@cog_registry, @config_procs)
         @config_manager.prepare!
         @execution_manager = ExecutionManager.new(@cog_registry, @config_manager, @execution_procs)
@@ -88,14 +84,29 @@ module Roast
         (@execution_procs[scope] ||= []) << block
       end
 
+      def use(cogs = [], from: nil)
+        require from if from
+
+        Array.wrap(cogs).each do |cog_name|
+          path = @workflow_path.realdirpath.dirname.join("cogs/#{cog_name}")
+          require path.to_s if from.nil?
+
+          cog_class_name = cog_name.camelize
+          raise InvalidCogReference, "Expected #{cog_class_name} class, not found in #{path}" unless Object.const_defined?(cog_class_name)
+
+          cog_class = cog_class_name.constantize # rubocop:disable Sorbet/ConstantsFromStrings
+          @cog_registry.use(cog_class)
+        end
+      end
+
       private
 
       # Evaluate the top-level workflow definition
       # This collects the procs passed to `config` and `execute` calls in the workflow definition,
       # but does not evaluate any of them individually yet.
-      #: (String) -> void
-      def extract_dsl_procs!(workflow_definition)
-        instance_eval(workflow_definition)
+      #: () -> void
+      def extract_dsl_procs!
+        instance_eval(@workflow_definition)
       end
     end
   end
