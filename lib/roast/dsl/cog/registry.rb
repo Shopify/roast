@@ -12,9 +12,9 @@ module Roast
         def cogs
           # Hard-coded for now; these cogs are available for workflows
           [
+            SystemCogs::Execute,
             Cogs::Cmd,
             Cogs::Chat,
-            Cogs::Execute,
           ].to_h do |cog_class|
             cog_class_name = cog_class.name
             raise CouldNotDeriveCogNameError if cog_class_name.nil?

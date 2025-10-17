@@ -70,15 +70,15 @@ module Roast
       def bind_cog(cog_method_name, cog_class)
         on_config_method = method(:on_config)
         cog_method = proc do |cog_name = nil, &cog_config_proc|
-          on_config_method.call(cog_class, cog_name, &cog_config_proc)
+          on_config_method.call(cog_class, cog_name, cog_config_proc)
         end
         @config_context.instance_eval do
           define_singleton_method(cog_method_name, cog_method)
         end
       end
 
-      #: (singleton(Cog), Symbol) { () -> void } -> void
-      def on_config(cog_class, cog_name, &cog_config_proc)
+      #: (singleton(Cog), Symbol, ^() -> void ) -> void
+      def on_config(cog_class, cog_name, cog_config_proc)
         # Called when the cog method is invoked in the workflow's 'config' block.
         # This allows configuration parameters to be set for the cog generally or for a specific named instance
         config_object = if cog_name.nil?
