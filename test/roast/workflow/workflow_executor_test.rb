@@ -9,7 +9,7 @@ class RoastWorkflowWorkflowExecutorTest < ActiveSupport::TestCase
     @context_manager = mock("context_manager")
     @context_manager.stubs(:total_tokens).returns(0)
     @metadata = Roast::Workflow::DotAccessHash.new({})
-    @workflow.stubs(name: "test_workflow", output: @output, pause_step_name: nil, verbose: false, storage_type: nil, context_manager: @context_manager, metadata: @metadata)
+    @workflow.stubs(name: "test_workflow", output: @output, pause_step_name: nil, verbose: false, storage_type: nil, context_manager: @context_manager, metadata: @metadata, model: nil)
     @config_hash = { "step1" => { "model" => "test-model" } }
     @context_path = "/tmp/test"
     @executor = Roast::Workflow::WorkflowExecutor.new(@workflow, @config_hash, @context_path)
@@ -54,6 +54,7 @@ class RoastWorkflowWorkflowExecutorTest < ActiveSupport::TestCase
     @workflow.stubs(:openai?).returns(true)
     @workflow.stubs(:storage_type).returns(nil)
     @workflow.stubs(:tools).returns(nil)
+    @workflow.stubs(:model).returns("gpt-4o")
 
     # Expect chat_completion to be called with the configured model
     # Now expects loop: false due to new BaseStep behavior

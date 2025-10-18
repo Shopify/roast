@@ -9,6 +9,7 @@ module Roast
         @workflow = mock("workflow")
         @workflow.stubs(:metadata).returns({})
         @workflow.stubs(:output).returns({})
+        @workflow.stubs(:model).returns(nil)
         @state_manager = mock("state_manager")
         @state_manager.stubs(:save_state)
 

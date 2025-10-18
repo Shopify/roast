@@ -274,6 +274,10 @@ module Roast
           @appended_output = []
         end
 
+        def model
+          nil
+        end
+
         def append_to_final_output(text)
           @appended_output << text
         end

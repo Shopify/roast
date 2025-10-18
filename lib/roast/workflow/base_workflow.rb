@@ -175,7 +175,11 @@ module Roast
 
           if error_detail && !error_detail.empty? && !message.include?(error_detail)
             " (#{error_detail})"
+          else
+            ""
           end
+        else
+          ""
         end
 
         message

@@ -10,6 +10,7 @@ module Roast
         @workflow.stubs(:output).returns({})
         @workflow.stubs(:metadata).returns({})
         @workflow.stubs(:transcript).returns([])
+        @workflow.stubs(:model).returns(nil)
         @context_path = "/tmp/test"
         @state_manager = mock("state_manager")
         @state_manager.stubs(:save_state)

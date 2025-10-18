@@ -64,7 +64,7 @@ module Roast
           Roast::Helpers::Logger.info(cancel_msg + "\n")
           cancel_msg
         end
-      rescue Roast::Error => e
+      rescue Roast::Error, Errno::EACCES, Errno::ENOENT => e
         error_message = "Error applying diff: #{e.message}"
         Roast::Helpers::Logger.error(error_message + "\n")
         Roast::Helpers::Logger.debug(e.backtrace.join("\n") + "\n") if ENV["DEBUG"]

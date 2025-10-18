@@ -12,6 +12,7 @@ module Roast
         @workflow.stubs(:state).returns({})
         @workflow.stubs(:respond_to?).with(:state).returns(true)
         @workflow.stubs(:respond_to?).with(:resource).returns(false)
+        @workflow.stubs(:model).returns(nil)
       end
 
       test "initializes with required prompt" do

@@ -45,6 +45,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:resource).returns(nil)
     workflow.stubs(:output).returns({})
     workflow.stubs(:transcript).returns([])
+    workflow.stubs(:model).returns(nil)
 
     # Create a temporary directory structure for the test
     Dir.mktmpdir do |tmpdir|
@@ -80,6 +81,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Create agent step
     agent_step = Roast::Workflow::AgentStep.new(workflow, name: "test_agent")
@@ -189,6 +191,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Create agent step with inline prompt
     inline_prompt = "Review this code and identify performance bottlenecks"
@@ -281,6 +284,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Create agent step with json: true
     agent_step = Roast::Workflow::AgentStep.new(workflow, name: "test_agent")
@@ -311,6 +315,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Create agent step with json: true
     agent_step = Roast::Workflow::AgentStep.new(workflow, name: "test_agent")
@@ -349,6 +354,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Create agent step with json: true
     agent_step = Roast::Workflow::AgentStep.new(workflow, name: "test_agent")
@@ -383,6 +389,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Create agent step with json: true
     agent_step = Roast::Workflow::AgentStep.new(workflow, name: "test_agent")
@@ -411,6 +418,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Create agent step with json: true
     agent_step = Roast::Workflow::AgentStep.new(workflow, name: "test_agent")
@@ -440,6 +448,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Create agent step with json: false (default)
     agent_step = Roast::Workflow::AgentStep.new(workflow, name: "test_agent")
@@ -469,6 +478,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Create agent step with json: true
     agent_step = Roast::Workflow::AgentStep.new(workflow, name: "test_agent")
@@ -515,6 +525,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Set up metadata with session ID from previous step
     metadata = {
@@ -555,6 +566,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Metadata without session ID
     metadata = {
@@ -596,6 +608,7 @@ class RoastWorkflowAgentStepTest < ActiveSupport::TestCase
     workflow.stubs(:append_to_final_output)
     workflow.stubs(:file).returns(nil)
     workflow.stubs(:config).returns({})
+    workflow.stubs(:model).returns(nil)
 
     # Create metadata with session ID for "some_step"
     metadata_with_session = {

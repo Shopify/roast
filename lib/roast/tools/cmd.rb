@@ -153,9 +153,10 @@ module Roast
         )
 
         format_output(command, result, status.exitstatus)
-      rescue Timeout::Error => e
-        Roast::Helpers::Logger.error(e.message + "\n")
-        e.message
+      rescue Timeout::Error, Errno::ENOENT => e
+        error_message = "Error running command: #{e.message}"
+        Roast::Helpers::Logger.error(error_message + "\n")
+        error_message
       end
 
       def format_output(command, result, exit_status)

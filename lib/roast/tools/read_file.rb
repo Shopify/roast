@@ -39,7 +39,7 @@ module Roast
         else
           File.read(path)
         end
-      rescue Roast::Error => e
+      rescue Roast::Error, Errno::ENOENT, Errno::EACCES => e
         "Error reading file: #{e.message}".tap do |error_message|
           Roast::Helpers::Logger.error(error_message + "\n")
           Roast::Helpers::Logger.debug(e.backtrace.join("\n") + "\n") if ENV["DEBUG"]

@@ -34,6 +34,10 @@ module Roast
         def tools
           nil
         end
+
+        def model
+          nil
+        end
       end
 
       test "print_response true appends response to final output" do
@@ -51,7 +55,7 @@ module Roast
         assert_equal(
           {
             openai: false,
-            model: "anthropic:claude-opus-4",
+            model: "gpt-4o-mini",
             json: false,
             params: {},
             available_tools: nil,
@@ -88,7 +92,7 @@ module Roast
         assert_equal(
           {
             openai: false,
-            model: "anthropic:claude-opus-4",
+            model: "gpt-4o-mini",
             json: true,
             params: { temperature: 0.5 },
             available_tools: nil,

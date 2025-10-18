@@ -306,7 +306,7 @@ module Roast
               if new_content_lines
                 content_lines = new_content_lines
               else
-                raise "Hunk could not be applied cleanly: #{hunk[:header]}"
+                raise Roast::Error, "Hunk could not be applied cleanly: #{hunk[:header]}"
               end
             end
 
