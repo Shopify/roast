@@ -4,16 +4,10 @@
 module Roast
   module DSL
     module Cogs
-      class Execute < Cog
+      class Call < Cog
         class Input < Cog::Input
           #: Symbol?
           attr_accessor :scope
-
-          #: () -> void
-          def initialize
-            super
-            @scope = nil
-          end
 
           #: () -> void
           def validate!
@@ -22,7 +16,10 @@ module Roast
 
           #: (Symbol) -> void
           def coerce(input_return_value)
-            self.scope = input_return_value
+            case input_return_value
+            when Symbol
+              self.scope = input_return_value
+            end
           end
         end
 
