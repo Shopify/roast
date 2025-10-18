@@ -10,9 +10,9 @@ module Roast
 
         def initialize
           @cogs = {}
-          create_registration(Cogs::Cmd)
-          create_registration(Cogs::Chat)
-          create_registration(Cogs::Execute)
+          use(Cogs::Cmd)
+          use(Cogs::Chat)
+          use(Cogs::Execute)
         end
 
         #: Hash[Symbol, singleton(Cog)]

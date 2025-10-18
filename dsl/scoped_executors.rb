@@ -13,9 +13,9 @@ execute(:capitalize_a_random_word) do
   cmd(:word) { "shuf /usr/share/dict/words -n 1" }
   cmd(:capitalize) do |my|
     word = cmd(:word).out.strip
-    my.command = "sh"
+    my.command = "/bin/sh"
     my.args << "-c"
-    my.args << "echo '#{word}' | tr '[:lower:]' '[:upper:]'"
+    my.args << "/bin/echo \"#{word}\" | tr '[:lower:]' '[:upper:]'"
   end
 end
 

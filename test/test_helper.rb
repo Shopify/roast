@@ -21,6 +21,7 @@ require "mocha/minitest"
 require "support/fixture_helpers"
 require "support/improved_assertions"
 require "support/functional_test"
+require "dsl/support/functional_test"
 require "vcr"
 require "webmock"
 
