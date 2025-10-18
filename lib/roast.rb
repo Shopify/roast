@@ -40,6 +40,13 @@ require "ruby_llm"
 require "thor"
 require "timeout"
 
+unless defined?(T)
+  # NOTE: stubs for sorbet-runtime were being imported from cli-kit. They were removed in cli-kit v5.2
+  # Ideally we will not need them at all in the future, but for now I have brought them into the project
+  # because a large quantity of legacy code is using sorbet runtime assertions.
+  require("roast/sorbet_runtime_stub")
+end
+
 # Autoloading setup
 require "zeitwerk"
 

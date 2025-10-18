@@ -27,6 +27,7 @@ Sorbet/FalseSigil:
   Exclude:
     - "test/**/*"
     - "examples/**/*"
+    - "lib/roast/sorbet_runtime_stub.rb"
 
 Roast/UseCmdRunner:
   Enabled: true
