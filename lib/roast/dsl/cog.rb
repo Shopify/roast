@@ -19,6 +19,11 @@ module Roast
           @input_class ||= find_child_input_or_default #: singleton(Cog::Input)?
         end
 
+        #: () -> Symbol
+        def generate_fallback_name
+          Random.uuid.to_sym
+        end
+
         private
 
         #: () -> singleton(Cog::Config)

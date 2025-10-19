@@ -21,8 +21,10 @@ end
 
 execute do
   cmd(:before) { "echo '--> before'" }
-  call { :capitalize_a_random_word }
-  call { :capitalize_a_random_word }
-  call { :capitalize_a_random_word }
+  # First argument to `call` is the executor scope to run
+  # Second argument is the (optional) cog name
+  call(:capitalize_a_random_word, :first_call)
+  call(:capitalize_a_random_word, :other_named_call)
+  call(:capitalize_a_random_word) # anonymous call cog
   cmd(:after) { "echo '--> after'" }
 end

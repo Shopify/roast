@@ -17,11 +17,11 @@ module Roast
           @store = {}
         end
 
-        #: (Symbol, Roast::DSL::Cog) -> Roast::DSL::Cog
-        def insert(id, inst)
-          raise CogAlreadyDefinedError if store.key?(id)
+        #: (Cog) -> Roast::DSL::Cog
+        def insert(cog)
+          raise CogAlreadyDefinedError, cog.name if store.key?(cog.name)
 
-          store[id] = inst
+          store[cog.name] = cog
         end
       end
     end
