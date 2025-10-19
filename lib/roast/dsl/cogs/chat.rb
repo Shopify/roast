@@ -10,12 +10,6 @@ module Roast
           attr_accessor :prompt
 
           #: () -> void
-          def initialize
-            super
-            @prompt = nil #: String?
-          end
-
-          #: () -> void
           def validate!
             raise Cog::Input::InvalidInputError, "'prompt' is required" unless prompt.present?
           end

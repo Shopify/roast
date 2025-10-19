@@ -15,7 +15,6 @@ module Roast
           #: () -> void
           def initialize
             super
-            @command = nil
             @args = []
           end
 
