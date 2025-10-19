@@ -7,6 +7,9 @@ module Roast
       #: (Symbol, ?Symbol?) ?{(Roast::DSL::SystemCogs::Call::Input, untyped) [self: Roast::DSL::CogInputContext] -> untyped} -> void
       def call(scope, name = nil, &block); end
 
+      #: (Symbol, ?Symbol?) {(Roast::DSL::SystemCogs::Map::Input, untyped) [self: Roast::DSL::CogInputContext] -> untyped} -> void
+      def map(scope, name = nil, &block); end
+
       #: (?Symbol?) {(Roast::DSL::Cogs::Cmd::Input, untyped) [self: Roast::DSL::CogInputContext] -> (String | Array[String] | void)} -> void
       def cmd(name = nil, &block); end
 

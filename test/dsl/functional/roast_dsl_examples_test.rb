@@ -6,6 +6,30 @@ require "test_helper"
 module DSL
   module Functional
     class RoastDSLExamplesTest < FunctionalTest
+      test "map.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :prototype do
+          Roast::DSL::Workflow.from_file("dsl/map.rb")
+        end
+        expected_stdout = <<~EOF
+          HELLO
+          WORLD
+          GOODNIGHT
+          MOON
+
+          HELLO
+          WORLD
+          GOODNIGHT
+          MOON
+
+          MOON
+          GOODNIGHT
+          WORLD
+          HELLO
+        EOF
+        assert_equal expected_stdout, stdout
+        assert_empty stderr
+      end
+
       test "prototype.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
           Roast::DSL::Workflow.from_file("dsl/prototype.rb")
