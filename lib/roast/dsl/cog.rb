@@ -56,13 +56,13 @@ module Roast
         @config = self.class.config_class.new #: Cog::Config
       end
 
-      #: (Cog::Config, CogInputContext) -> void
-      def run!(config, input_context)
+      #: (Cog::Config, CogInputContext, untyped) -> void
+      def run!(config, input_context, executor_scope_value)
         raise CogAlreadyRanError if ran?
 
         @config = config
         input_instance = self.class.input_class.new
-        input_return = input_context.instance_exec(input_instance, &@cog_input_proc) if @cog_input_proc
+        input_return = input_context.instance_exec(input_instance, executor_scope_value, &@cog_input_proc) if @cog_input_proc
         coerce_and_validate_input!(input_instance, input_return)
         @output = execute(input_instance)
         @finished = true

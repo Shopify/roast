@@ -19,12 +19,19 @@ module Roast
 
       class ExecutionScopeNotSpecifiedError < ExecutionManagerError; end
 
-      #: (Cog::Registry, ConfigManager, Hash[Symbol?, Array[^() -> void]], ?Symbol?) -> void
-      def initialize(cog_registry, config_manager, all_execution_procs, scope = nil)
+      #: (Cog::Registry, ConfigManager, Hash[Symbol?, Array[^() -> void]], ?Symbol?, ?untyped?) -> void
+      def initialize(
+        cog_registry,
+        config_manager,
+        all_execution_procs,
+        scope = nil,
+        scope_value = nil
+      )
         @cog_registry = cog_registry
         @config_manager = config_manager
         @all_execution_procs = all_execution_procs
         @scope = scope
+        @scope_value = scope_value
         @cogs = Cog::Store.new #: Cog::Store
         @cog_stack = Cog::Stack.new #: Cog::Stack
         @execution_context = ExecutionContext.new #: ExecutionContext
@@ -50,6 +57,7 @@ module Roast
           cog.run!(
             @config_manager.config_for(cog.class, cog.name),
             cog_input_manager,
+            @scope_value.deep_dup, # Pass a copy to each cog to guard against mutated values being passed between cogs
           )
         end
         @running = false
