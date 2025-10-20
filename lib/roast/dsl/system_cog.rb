@@ -4,6 +4,21 @@
 module Roast
   module DSL
     class SystemCog < Cog
+      class << self
+        #: () -> singleton(SystemCog::Params)
+        def params_class
+          @params_class ||= find_child_params_or_default
+        end
+
+        private
+
+        #: () -> singleton(SystemCog::Params)
+        def find_child_params_or_default
+          config_constant = "#{name}::Params"
+          const_defined?(config_constant) ? const_get(config_constant) : SystemCog::Params # rubocop:disable Sorbet/ConstantsFromStrings
+        end
+      end
+
       #: (Symbol, ^(Cog::Input) -> untyped) { (Cog::Input) -> Cog::Output } -> void
       def initialize(name, cog_input_proc, &on_execute)
         super(name, cog_input_proc)
