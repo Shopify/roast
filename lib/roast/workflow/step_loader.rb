@@ -208,7 +208,12 @@ module Roast
       def configure_step(step, step_name, is_last_step: nil)
         step_config = config_hash[step_name]
 
-        # Only set the model if explicitly specified for this step
+        # Apply global model if no step-specific model is configured
+        if config_hash.key?("model") && !step_config&.key?("model")
+          step.model = config_hash["model"]
+        end
+
+        # Apply step-specific model (overrides global model)
         step.model = step_config["model"] if step_config&.key?("model")
 
         # Pass resource to step if supported

@@ -8,6 +8,7 @@ module Roast
       test "executes then branch for simple true condition" do
         workflow = Object.new
         workflow.define_singleton_method(:output) { {} }
+        workflow.define_singleton_method(:model) { nil }
 
         # Mock instance_eval to return true
         workflow.define_singleton_method(:instance_eval) do |expr|
@@ -41,6 +42,7 @@ module Roast
       test "executes else branch for simple false condition" do
         workflow = Object.new
         workflow.define_singleton_method(:output) { {} }
+        workflow.define_singleton_method(:model) { nil }
 
         # Mock instance_eval to return false
         workflow.define_singleton_method(:instance_eval) do |expr|
@@ -74,6 +76,7 @@ module Roast
       test "unless inverts the condition" do
         workflow = Object.new
         workflow.define_singleton_method(:output) { {} }
+        workflow.define_singleton_method(:model) { nil }
 
         # Mock instance_eval to return false
         workflow.define_singleton_method(:instance_eval) do |expr|
@@ -106,6 +109,7 @@ module Roast
       test "handles missing else branch" do
         workflow = Object.new
         workflow.define_singleton_method(:output) { {} }
+        workflow.define_singleton_method(:model) { nil }
 
         # Mock instance_eval to return false
         workflow.define_singleton_method(:instance_eval) do |expr|

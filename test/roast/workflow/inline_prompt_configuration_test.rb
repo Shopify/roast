@@ -18,6 +18,7 @@ module Roast
         @workflow.stubs(:tools).returns(nil)
         @workflow.stubs(:storage_type).returns(nil)
         @workflow.stubs(:metadata).returns({})
+        @workflow.stubs(:model).returns(nil)
 
         @config_hash = {
           "analyze the code" => {
@@ -68,6 +69,9 @@ module Roast
           "model" => "claude-3-opus",
         }
         executor = WorkflowExecutor.new(@workflow, config_with_global_model, @context_path)
+
+        # Stub workflow to return the global model
+        @workflow.stubs(:model).returns("claude-3-opus")
 
         # Now expects loop: false due to new BaseStep behavior
         @workflow.expects(:chat_completion).with(

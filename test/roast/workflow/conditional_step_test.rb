@@ -11,6 +11,7 @@ module Roast
         @output = {}
         @workflow.stubs(:output).returns(@output)
         @workflow.stubs(:metadata).returns({})
+        @workflow.stubs(:model).returns(nil)
         @context_path = "/path/to/workflow.yml"
       end
 
