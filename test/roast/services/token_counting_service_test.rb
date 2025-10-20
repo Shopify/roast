@@ -76,6 +76,22 @@ module Roast
 
         assert token_count > 0
       end
+
+      test "counts tokens for agent calls with prompt and response" do
+        prompt = "Review this code and suggest improvements"
+        response = "I found several issues that need attention. Consider refactoring the main loop."
+
+        token_count = @service.count_agent_call(prompt, response)
+
+        assert token_count > 0
+        assert_kind_of Integer, token_count
+      end
+
+      test "returns zero for nil agent call prompt" do
+        token_count = @service.count_agent_call(nil)
+
+        assert_equal 0, token_count
+      end
     end
   end
 end

@@ -10,7 +10,9 @@ module Roast
         @token_counter = token_counter || Services::TokenCountingService.new
         @threshold_checker = threshold_checker || Services::ContextThresholdChecker.new
         @total_tokens = 0
+        @agent_tokens = 0
         @message_count = 0
+        @agent_call_count = 0
         @config = default_config
         @last_actual_update = nil
         @estimated_tokens_since_update = 0
@@ -27,6 +29,19 @@ module Roast
 
         {
           current_tokens: current_tokens,
+          total_tokens: @total_tokens,
+        }
+      end
+
+      def track_agent_usage(prompt, response = nil)
+        agent_tokens = @token_counter.count_agent_call(prompt, response)
+        @agent_tokens += agent_tokens
+        @total_tokens += agent_tokens
+        @agent_call_count += 1
+
+        {
+          current_agent_tokens: agent_tokens,
+          total_agent_tokens: @agent_tokens,
           total_tokens: @total_tokens,
         }
       end
@@ -57,14 +72,21 @@ module Roast
 
       def reset
         @total_tokens = 0
+        @agent_tokens = 0
         @message_count = 0
+        @agent_call_count = 0
       end
 
       def statistics
+        general_tokens = @total_tokens - @agent_tokens
         {
           total_tokens: @total_tokens,
+          general_tokens: general_tokens,
+          agent_tokens: @agent_tokens,
           message_count: @message_count,
-          average_tokens_per_message: @message_count > 0 ? @total_tokens / @message_count : 0,
+          agent_call_count: @agent_call_count,
+          average_tokens_per_message: @message_count > 0 ? general_tokens / @message_count : 0,
+          average_tokens_per_agent_call: @agent_call_count > 0 ? @agent_tokens / @agent_call_count : 0,
         }
       end
 

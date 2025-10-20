@@ -25,7 +25,7 @@ module Roast
 
         step_type = StepTypeResolver.resolve(step, @context)
         step_name = @name_extractor.extract(step, step_type)
-        @reporter.report(step_name, tokens_consumed, tokens_after)
+        @reporter.report(step_name, tokens_consumed, tokens_after, context_manager: @context.workflow.context_manager)
 
         result
       end

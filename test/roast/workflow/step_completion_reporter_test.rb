@@ -42,6 +42,26 @@ module Roast
       ensure
         $stderr = original_stderr
       end
+
+      test "includes agent token breakdown when context manager provided with agent usage" do
+        context_manager = mock("context_manager")
+        context_manager.expects(:statistics).returns(total_tokens: 500, general_tokens: 300, agent_tokens: 200)
+
+        @reporter.report("step_with_agents", 150, 500, context_manager: context_manager)
+
+        expected = "✓ Complete: step_with_agents (consumed 150 tokens, total 500) [general: 300, agent: 200]\n\n\n"
+        assert_equal expected, @output.string
+      end
+
+      test "does not include breakdown when no agent tokens used" do
+        context_manager = mock("context_manager")
+        context_manager.expects(:statistics).returns(total_tokens: 300, general_tokens: 300, agent_tokens: 0)
+
+        @reporter.report("step_no_agents", 100, 300, context_manager: context_manager)
+
+        expected = "✓ Complete: step_no_agents (consumed 100 tokens, total 300)\n\n\n"
+        assert_equal expected, @output.string
+      end
     end
   end
 end

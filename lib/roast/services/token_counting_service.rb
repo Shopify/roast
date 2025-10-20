@@ -11,12 +11,24 @@ module Roast
       # Base token overhead for message structure
       MESSAGE_OVERHEAD_TOKENS = 3
 
+      # Additional overhead for agent system prompts and structure. Maybe there's a better way to estimate this?
+      AGENT_OVERHEAD = 10
+
       def count_messages(messages)
         return 0 if messages.nil? || messages.empty?
 
         messages.sum do |message|
           count_message(message)
         end
+      end
+
+      def count_agent_call(prompt, response = nil)
+        return 0 if prompt.nil? || prompt.empty?
+
+        prompt_tokens = estimate_tokens(prompt.to_s)
+        response_tokens = response ? estimate_tokens(response.to_s) : 0
+
+        prompt_tokens + response_tokens + AGENT_OVERHEAD
       end
 
       private

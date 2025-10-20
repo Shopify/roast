@@ -49,9 +49,15 @@ module Roast
       def call(prompt, include_context_summary: false, continue: false, retries: nil)
         # Use configured retries as default, fall back to 0 if not configured
         retries ||= CodingAgent.configured_options[:retries] || CodingAgent.configured_options["retries"] || 0
+
+        result = nil
         (retries + 1).times do |iteration|
           Roast::Helpers::Logger.info("🤖 Running CodingAgent#{iteration > 0 ? ", attempt #{iteration + 1} of #{retries + 1}" : ""}\n")
-          return run_claude_code(prompt, include_context_summary:, continue:)
+          result = run_claude_code(prompt, include_context_summary:, continue:)
+
+          track_agent_token_usage(prompt, result)
+
+          return result
         rescue CodingAgentError => e
           raise e if iteration >= retries
 
@@ -60,8 +66,10 @@ module Roast
         end
         Roast::Helpers::Logger.error("🤖 CodingAgent did not complete successfully after multiple retries")
       rescue Roast::Error => e
-        "🤖 Error running CodingAgent: #{e.message}".tap do |error_message|
-          Roast::Helpers::Logger.error(error_message + "\n")
+        error_message = "🤖 Error running CodingAgent: #{e.message}"
+        track_agent_token_usage(prompt, nil) if prompt
+        error_message.tap do |msg|
+          Roast::Helpers::Logger.error(msg + "\n")
           Roast::Helpers::Logger.debug(e.backtrace.join("\n") + "\n") if ENV["DEBUG"]
         end
       end
@@ -263,6 +271,27 @@ module Roast
       rescue => e
         Roast::Helpers::Logger.debug("Failed to generate context summary: #{e.message}\n")
         nil
+      end
+
+      def track_agent_token_usage(prompt, response)
+        workflow_context = Thread.current[:workflow_context]
+        return unless workflow_context
+
+        workflow = if workflow_context.respond_to?(:workflow)
+          workflow_context.workflow
+        elsif workflow_context.respond_to?(:[])
+          workflow_context[:workflow] || workflow_context["workflow"]
+        end
+        return unless workflow&.respond_to?(:context_manager)
+
+        context_manager = workflow.context_manager
+        return unless context_manager&.respond_to?(:track_agent_usage)
+
+        context_manager.track_agent_usage(prompt, response)
+
+        Roast::Helpers::Logger.debug("🤖 Tracked agent token usage for prompt length: #{prompt&.length || 0}, response length: #{response&.length || 0}\n")
+      rescue => e
+        Roast::Helpers::Logger.debug("Failed to track agent token usage: #{e.message}\n")
       end
     end
   end

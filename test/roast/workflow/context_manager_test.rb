@@ -124,8 +124,40 @@ module Roast
         stats = @manager.statistics
 
         assert_equal 1000, stats[:total_tokens]
+        assert_equal 1000, stats[:general_tokens]
+        assert_equal 0, stats[:agent_tokens]
         assert_equal 2, stats[:message_count]
+        assert_equal 0, stats[:agent_call_count]
         assert_equal 500, stats[:average_tokens_per_message]
+        assert_equal 0, stats[:average_tokens_per_agent_call]
+      end
+
+      test "tracks agent usage with prompt and response" do
+        prompt = "Test prompt"
+        response = "Test response"
+        @token_counter.expects(:count_agent_call).with(prompt, response).returns(300)
+
+        result = @manager.track_agent_usage(prompt, response)
+
+        assert_equal 300, result[:current_agent_tokens]
+        assert_equal 300, result[:total_agent_tokens]
+        assert_equal 300, result[:total_tokens]
+      end
+
+      test "tracks both general and agent usage together" do
+        messages = [{ role: "user", content: "Hello" }]
+        @token_counter.expects(:count_messages).with(messages).returns(100)
+        @token_counter.expects(:count_agent_call).with("prompt", "response").returns(200)
+
+        @manager.track_usage(messages)
+        @manager.track_agent_usage("prompt", "response")
+
+        stats = @manager.statistics
+        assert_equal 300, stats[:total_tokens]
+        assert_equal 100, stats[:general_tokens]
+        assert_equal 200, stats[:agent_tokens]
+        assert_equal 1, stats[:message_count]
+        assert_equal 1, stats[:agent_call_count]
       end
     end
   end
