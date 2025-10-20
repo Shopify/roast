@@ -5,11 +5,18 @@ module Roast
   module DSL
     # Context in which the `execute` block of a workflow is evaluated
     class ExecutionManager
+      include SystemCogs::Call::Manager
+
       class ExecutionManagerError < Roast::Error; end
+
       class ExecutionManagerNotPreparedError < ExecutionManagerError; end
+
       class ExecutionManagerAlreadyPreparedError < ExecutionManagerError; end
+
       class ExecutionManagerCurrentlyRunningError < ExecutionManagerError; end
+
       class ExecutionScopeDoesNotExistError < ExecutionManagerError; end
+
       class ExecutionScopeNotSpecifiedError < ExecutionManagerError; end
 
       #: (Cog::Registry, ConfigManager, Hash[Symbol?, Array[^() -> void]], ?Symbol?) -> void
@@ -100,37 +107,25 @@ module Roast
       def bind_cog(cog_method_name, cog_class)
         on_execute_method = method(:on_execute)
         cog_method = proc do |cog_name = Random.uuid, &cog_input_proc|
-          on_execute_method.call(cog_class, cog_name, &cog_input_proc)
+          on_execute_method.call(cog_class, cog_name, cog_input_proc)
         end
         @execution_context.instance_eval do
           define_singleton_method(cog_method_name, cog_method)
         end
       end
 
-      #: (singleton(Cog), Symbol) { (Cog::Input) -> untyped } -> void
-      def on_execute(cog_class, cog_name, &cog_input_proc)
+      #: (singleton(Cog), Symbol, ^(Cog::Input) -> untyped) -> void
+      def on_execute(cog_class, cog_name, cog_input_proc)
         # Called when the cog method is invoked in the workflow's 'execute' block.
         # This creates the cog instance and prepares it for execution.
-        cog_instance = if cog_class == Cogs::Call
-          create_special_call_cog(cog_name, cog_input_proc)
+        cog_instance = if cog_class == SystemCogs::Call
+          create_call_system_cog(cog_name, cog_input_proc)
+        elsif cog_class <= SystemCog
+          raise NotImplementedError, "No system cog manager defined for #{cog_class}"
         else
-          cog_class.new(cog_name, cog_input_proc)
+          T.unsafe(cog_class).new(cog_name, cog_input_proc)
         end
         add_cog_instance(cog_name, cog_instance)
-      end
-
-      #: (Symbol, ^(Cogs::Call::Input) -> untyped) -> Cogs::Call
-      def create_special_call_cog(cog_name, cog_input_proc)
-        trigger = proc do |input|
-          raise ExecutionScopeNotSpecifiedError unless input.scope.present?
-
-          em = ExecutionManager.new(@cog_registry, @config_manager, @all_execution_procs, input.scope)
-          em.prepare!
-          em.run!
-
-          # TODO: collect the outputs of the cogs in the execution manager that just ran and do something with them
-        end
-        Cogs::Call.new(cog_name, cog_input_proc, trigger)
       end
     end
   end

@@ -4,7 +4,7 @@
 module Roast
   module DSL
     class ExecutionContext
-      #: (?Symbol?) {(Roast::DSL::Cogs::Call::Input) [self: Roast::DSL::CogInputContext] -> Symbol?} -> void
+      #: (?Symbol?) {(Roast::DSL::SystemCogs::Call::Input) [self: Roast::DSL::CogInputContext] -> Symbol?} -> void
       def call(name = nil, &block); end
 
       #: (?Symbol?) {(Roast::DSL::Cogs::Cmd::Input) [self: Roast::DSL::CogInputContext] -> (String | Array[String] | nil)} -> void

@@ -10,9 +10,9 @@ module Roast
 
         def initialize
           @cogs = {}
+          use(SystemCogs::Call)
           use(Cogs::Cmd)
           use(Cogs::Chat)
-          use(Cogs::Call)
         end
 
         #: Hash[Symbol, singleton(Cog)]
