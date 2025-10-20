@@ -6,6 +6,8 @@ module Roast
     # File-based implementation of StateRepository
     # Handles state persistence to the filesystem in a thread-safe manner
     class FileStateRepository < StateRepository
+      MAX_FILENAME_LENGTH = 255
+
       def initialize(session_manager = SessionManager.new)
         super()
         @state_mutex = Mutex.new
@@ -90,9 +92,9 @@ module Roast
       end
 
       def find_step_before(step_files, target_step_name)
-        # First try to find if we have the exact previous step
         step_files.each_with_index do |file, index|
-          next unless file.end_with?("_#{target_step_name}.json")
+          state_data = load_state_file(file)
+          next unless state_data[:step_name] == target_step_name.to_s
           return index - 1 if index > 0
 
           return nil # We found the target step but it's the first step
@@ -145,7 +147,53 @@ module Roast
       end
 
       def format_step_filename(order, step_name)
-        "step_#{order.to_s.rjust(3, "0")}_#{step_name}.json"
+        safe_name = sanitize_step_name(step_name.to_s)
+        "step_#{order.to_s.rjust(3, "0")}_#{safe_name}.json"
+      end
+
+      # Truncates long file names and adds a hash suffix to ensure uniqueness
+      #
+      # @param step_name [String] The step name to sanitize
+      # @param suffix [String] The file suffix (e.g., ".json")
+      # @return [String] A safe filename-compatible step name
+      def sanitize_step_name(step_name, suffix: ".json")
+        # Reserve space for file extensions and step prefixes
+        # Format: "step_XXX_<name><suffix>" where XXX is a 3-digit number
+        # So we need: 5 (step_) + 3 (number) + 1 (_) + name + suffix.length
+        reserved_length = 9 + suffix.bytesize
+        max_step_name_length = MAX_FILENAME_LENGTH - reserved_length
+
+        parts = step_name.to_s.split("/")
+
+        sanitized_parts = parts.map do |part|
+          next part if part.bytesize <= max_step_name_length
+
+          hash = Digest::MD5.hexdigest(part)[0..7]
+
+          # Reserve space for the hash suffix (8 chars + 1 underscore)
+          max_truncated_length = max_step_name_length - 9
+
+          # Truncate the name, ensuring we don't cut in the middle of a multi-byte character
+          truncated = truncate_safely(part, max_truncated_length)
+
+          "#{truncated}_#{hash}"
+        end
+
+        sanitized_parts.join("/")
+      end
+
+      # Safely truncate a string to a maximum byte length
+      # Ruby's character-based slicing handles UTF-8 correctly
+      #
+      # @param str [String] The string to truncate
+      # @param max_bytes [Integer] Maximum byte length
+      # @return [String] The truncated string
+      def truncate_safely(str, max_bytes)
+        return str if str.bytesize <= max_bytes
+
+        truncated = str[0...max_bytes]
+        truncated = truncated[0...-1] while truncated.bytesize > max_bytes
+        truncated
       end
     end
   end
