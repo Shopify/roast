@@ -12,7 +12,7 @@ module Roast
           @cogs = {}
           use(Cogs::Cmd)
           use(Cogs::Chat)
-          use(Cogs::Execute)
+          use(Cogs::Call)
         end
 
         #: Hash[Symbol, singleton(Cog)]

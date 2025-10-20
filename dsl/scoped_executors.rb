@@ -21,8 +21,8 @@ end
 
 execute do
   cmd(:before) { "echo '--> before'" }
-  execute { :capitalize_a_random_word }
-  execute { :capitalize_a_random_word }
-  execute { :capitalize_a_random_word }
+  call { :capitalize_a_random_word }
+  call { :capitalize_a_random_word }
+  call { :capitalize_a_random_word }
   cmd(:after) { "echo '--> after'" }
 end

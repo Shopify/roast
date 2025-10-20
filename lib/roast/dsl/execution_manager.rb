@@ -111,16 +111,16 @@ module Roast
       def on_execute(cog_class, cog_name, &cog_input_proc)
         # Called when the cog method is invoked in the workflow's 'execute' block.
         # This creates the cog instance and prepares it for execution.
-        cog_instance = if cog_class == Cogs::Execute
-          create_special_execute_cog(cog_name, cog_input_proc)
+        cog_instance = if cog_class == Cogs::Call
+          create_special_call_cog(cog_name, cog_input_proc)
         else
           cog_class.new(cog_name, cog_input_proc)
         end
         add_cog_instance(cog_name, cog_instance)
       end
 
-      #: (Symbol, ^(Cogs::Execute::Input) -> untyped) -> Cogs::Execute
-      def create_special_execute_cog(cog_name, cog_input_proc)
+      #: (Symbol, ^(Cogs::Call::Input) -> untyped) -> Cogs::Call
+      def create_special_call_cog(cog_name, cog_input_proc)
         trigger = proc do |input|
           raise ExecutionScopeNotSpecifiedError unless input.scope.present?
 
@@ -130,7 +130,7 @@ module Roast
 
           # TODO: collect the outputs of the cogs in the execution manager that just ran and do something with them
         end
-        Cogs::Execute.new(cog_name, cog_input_proc, trigger)
+        Cogs::Call.new(cog_name, cog_input_proc, trigger)
       end
     end
   end
