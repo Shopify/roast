@@ -22,6 +22,12 @@ Rake::TestTask.new(:minitest_old) do |t|
   t.test_files = FileList["test/functional/**/*_test.rb"]
 end
 
+Rake::TestTask.new(:minitest_dsl) do |t|
+  t.libs << "test"
+  t.libs << "lib"
+  t.test_files = FileList["test/dsl/**/*_test.rb"]
+end
+
 task test: [:minitest_all]
 
 RuboCop::RakeTask.new(:rubocop_ci)

@@ -7,7 +7,6 @@ config do
   # TODO: make a way to do print_all on all and turn off printing on one
   cmd(:echo) { print_all! }
   cmd(:date) { print_stdout! }
-  chat { "" }
   # TODO: add a way to apply config to a subset of named cog by pattern
   # cmd(/^date.*/) { print_all! }
 end
