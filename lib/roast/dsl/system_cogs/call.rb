@@ -17,8 +17,27 @@ module Roast
         end
 
         class Input < Cog::Input
+          #: untyped
+          attr_accessor :value
+
           #: () -> void
-          def validate!; end
+          def validate!
+            # raise a validation error if value is nil and coercion has not been run, to allow coercion to proceed
+            raise Cog::Input::InvalidInputError, "'value' is required" if value.nil? && !permit_nil_value?
+          end
+
+          def coerce(input_return_value)
+            # Do not raise a validation error if value is nil when validation is called *after* coercion.
+            @permit_nil_value = true
+            @value = input_return_value unless @value.present?
+          end
+
+          private
+
+          #: () -> bool
+          def permit_nil_value?
+            @permit_nil_value ||= false
+          end
         end
 
         # @requires_ancestor: ExecutionManager
@@ -27,10 +46,11 @@ module Roast
 
           #: (Params, ^(Cog::Input) -> untyped) -> SystemCogs::Call
           def create_call_system_cog(params, input_proc)
-            SystemCogs::Call.new(params.name, input_proc) do |_input|
+            SystemCogs::Call.new(params.name, input_proc) do |input|
+              input = input #: as Input
               raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.scope.present?
 
-              em = ExecutionManager.new(@cog_registry, @config_manager, @all_execution_procs, params.scope)
+              em = ExecutionManager.new(@cog_registry, @config_manager, @all_execution_procs, params.scope, input.value)
               em.prepare!
               em.run!
 
