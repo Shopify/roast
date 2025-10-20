@@ -169,7 +169,14 @@ module Roast
           raise StepExecutionError.new("Syntax error in step file: #{e.message}", step_name: step_name, original_error: e)
         end
 
-        step_class = step_name.classify.constantize
+        step_class = if Object.const_defined?(step_name.camelize, false)
+          step_name.camelize.constantize
+        elsif Object.const_defined?(step_name.classify, false)
+          step_name.classify.constantize
+        else
+          raise StepExecutionError.new("No class named #{step_name.camelize} found in step file #{file_path}", step_name: step_name)
+        end
+
         context = File.dirname(file_path)
         # For Ruby steps, we instantiate the specific class directly
         # Convert step_name to StepName value object
