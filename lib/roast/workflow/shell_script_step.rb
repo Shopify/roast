@@ -33,11 +33,11 @@ module Roast
 
       def validate_script!
         unless File.exist?(script_path)
-          raise ::CLI::Kit::Abort, "Shell script not found: #{script_path}"
+          raise Thor::Error, "Shell script not found: #{script_path}"
         end
 
         unless File.executable?(script_path)
-          raise ::CLI::Kit::Abort, "Shell script is not executable: #{script_path}. Run: chmod +x #{script_path}"
+          raise Thor::Error, "Shell script is not executable: #{script_path}. Run: chmod +x #{script_path}"
         end
       end
 
@@ -100,7 +100,7 @@ module Roast
           # Return stderr as the result when not exiting on error
           stderr.strip.empty? ? "" : stderr.strip
         else
-          raise ::CLI::Kit::Abort, error_message
+          raise Thor::Error, error_message
         end
       end
 

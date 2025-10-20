@@ -37,7 +37,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency("activesupport", ">= 7.0")
-  spec.add_dependency("cli-kit", "~> 5.0")
   spec.add_dependency("cli-ui", "2.3.0")
   spec.add_dependency("diff-lcs", "~> 1.5")
   spec.add_dependency("json-schema")

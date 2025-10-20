@@ -43,7 +43,7 @@ module Roast
           )
           step.exit_on_error = true
 
-          assert_raises(::CLI::Kit::Abort) do
+          assert_raises(Thor::Error) do
             step.call
           end
         end
@@ -175,7 +175,7 @@ module Roast
           context_path: "/",
         )
 
-        assert_raises(::CLI::Kit::Abort) do
+        assert_raises(Thor::Error) do
           step.call
         end
       end
@@ -193,7 +193,7 @@ module Roast
             context_path: dir,
           )
 
-          error = assert_raises(::CLI::Kit::Abort) do
+          error = assert_raises(Thor::Error) do
             step.call
           end
           assert_match(/not executable/, error.message)
