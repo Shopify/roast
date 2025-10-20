@@ -2669,21 +2669,26 @@ Rack::QUERY_STRING = T.let(T.unsafe(nil), String)
 class Rack::QueryParser
   # @return [QueryParser] a new instance of QueryParser
   #
-  # source://rack//lib/rack/query_parser.rb#54
+  # source://rack//lib/rack/query_parser.rb#56
   def initialize(params_class, key_space_limit, param_depth_limit, bytesize_limit: T.unsafe(nil), params_limit: T.unsafe(nil)); end
+
+  # Returns the value of attribute bytesize_limit.
+  #
+  # source://rack//lib/rack/query_parser.rb#54
+  def bytesize_limit; end
 
   # Returns the value of attribute key_space_limit.
   #
   # source://rack//lib/rack/query_parser.rb#34
   def key_space_limit; end
 
-  # source://rack//lib/rack/query_parser.rb#155
+  # source://rack//lib/rack/query_parser.rb#157
   def make_params; end
 
-  # source://rack//lib/rack/query_parser.rb#163
+  # source://rack//lib/rack/query_parser.rb#165
   def new_depth_limit(param_depth_limit); end
 
-  # source://rack//lib/rack/query_parser.rb#159
+  # source://rack//lib/rack/query_parser.rb#161
   def new_space_limit(key_space_limit); end
 
   # normalize_params recursively expands parameters into structural types. If
@@ -2692,7 +2697,7 @@ class Rack::QueryParser
   #
   # @raise [ParamsTooDeepError]
   #
-  # source://rack//lib/rack/query_parser.rb#114
+  # source://rack//lib/rack/query_parser.rb#116
   def normalize_params(params, name, v, depth); end
 
   # Returns the value of attribute param_depth_limit.
@@ -2706,7 +2711,7 @@ class Rack::QueryParser
   # ParameterTypeError is raised. Users are encouraged to return a 400 in this
   # case.
   #
-  # source://rack//lib/rack/query_parser.rb#95
+  # source://rack//lib/rack/query_parser.rb#97
   def parse_nested_query(qs, d = T.unsafe(nil)); end
 
   # Stolen from Mongrel, with some small modifications:
@@ -2715,25 +2720,25 @@ class Rack::QueryParser
   # cookies by changing the characters used in the second
   # parameter (which defaults to '&;').
   #
-  # source://rack//lib/rack/query_parser.rb#67
+  # source://rack//lib/rack/query_parser.rb#69
   def parse_query(qs, d = T.unsafe(nil), &unescaper); end
 
   private
 
-  # source://rack//lib/rack/query_parser.rb#185
+  # source://rack//lib/rack/query_parser.rb#187
   def check_query_string(qs, sep); end
 
   # @return [Boolean]
   #
-  # source://rack//lib/rack/query_parser.rb#173
+  # source://rack//lib/rack/query_parser.rb#175
   def params_hash_has_key?(hash, key); end
 
   # @return [Boolean]
   #
-  # source://rack//lib/rack/query_parser.rb#169
+  # source://rack//lib/rack/query_parser.rb#171
   def params_hash_type?(obj); end
 
-  # source://rack//lib/rack/query_parser.rb#201
+  # source://rack//lib/rack/query_parser.rb#203
   def unescape(string); end
 
   class << self
@@ -2767,24 +2772,24 @@ Rack::QueryParser::PARAMS_LIMIT = T.let(T.unsafe(nil), Integer)
 # source://rack//lib/rack/query_parser.rb#12
 class Rack::QueryParser::ParameterTypeError < ::TypeError; end
 
-# source://rack//lib/rack/query_parser.rb#205
+# source://rack//lib/rack/query_parser.rb#207
 class Rack::QueryParser::Params
   # @return [Params] a new instance of Params
   #
-  # source://rack//lib/rack/query_parser.rb#206
+  # source://rack//lib/rack/query_parser.rb#208
   def initialize(limit); end
 
-  # source://rack//lib/rack/query_parser.rb#212
+  # source://rack//lib/rack/query_parser.rb#214
   def [](key); end
 
   # @raise [ParamsTooDeepError]
   #
-  # source://rack//lib/rack/query_parser.rb#216
+  # source://rack//lib/rack/query_parser.rb#218
   def []=(key, value); end
 
   # @return [Boolean]
   #
-  # source://rack//lib/rack/query_parser.rb#222
+  # source://rack//lib/rack/query_parser.rb#224
   def key?(key); end
 
   # Recursively unwraps nested `Params` objects and constructs an object
@@ -2805,7 +2810,7 @@ class Rack::QueryParser::Params
   #      getting the hash representation while another thread is adding a
   #      key to it is non-deterministic.
   #
-  # source://rack//lib/rack/query_parser.rb#244
+  # source://rack//lib/rack/query_parser.rb#246
   def to_h; end
 
   # Recursively unwraps nested `Params` objects and constructs an object
@@ -2826,7 +2831,7 @@ class Rack::QueryParser::Params
   #      getting the hash representation while another thread is adding a
   #      key to it is non-deterministic.
   #
-  # source://rack//lib/rack/query_parser.rb#244
+  # source://rack//lib/rack/query_parser.rb#246
   def to_params_hash; end
 end
 
@@ -3144,20 +3149,20 @@ module Rack::Request::Helpers
 
   # shortcut for <tt>request.params[key]</tt>
   #
-  # source://rack//lib/rack/request.rb#532
+  # source://rack//lib/rack/request.rb#535
   def [](key); end
 
   # shortcut for <tt>request.params[key] = value</tt>
   #
   # Note that modifications will not be persisted in the env. Use update_param or delete_param if you want to destructively modify params.
   #
-  # source://rack//lib/rack/request.rb#543
+  # source://rack//lib/rack/request.rb#546
   def []=(key, value); end
 
-  # source://rack//lib/rack/request.rb#519
+  # source://rack//lib/rack/request.rb#522
   def accept_encoding; end
 
-  # source://rack//lib/rack/request.rb#523
+  # source://rack//lib/rack/request.rb#526
   def accept_language; end
 
   # The authority of the incoming request as defined by RFC3976.
@@ -3169,7 +3174,7 @@ module Rack::Request::Helpers
   # source://rack//lib/rack/request.rb#227
   def authority; end
 
-  # source://rack//lib/rack/request.rb#502
+  # source://rack//lib/rack/request.rb#505
   def base_url; end
 
   # source://rack//lib/rack/request.rb#150
@@ -3205,7 +3210,7 @@ module Rack::Request::Helpers
   #
   # <tt>env['rack.input']</tt> is not touched.
   #
-  # source://rack//lib/rack/request.rb#497
+  # source://rack//lib/rack/request.rb#500
   def delete_param(k); end
 
   # Determine whether the request body contains form-data by checking
@@ -3231,7 +3236,7 @@ module Rack::Request::Helpers
   # source://rack//lib/rack/request.rb#338
   def forwarded_port; end
 
-  # source://rack//lib/rack/request.rb#515
+  # source://rack//lib/rack/request.rb#518
   def fullpath; end
 
   # Checks the HTTP request method (or verb) to see if it was of type GET
@@ -3317,7 +3322,7 @@ module Rack::Request::Helpers
   #
   # Note that modifications will not be persisted in the env. Use update_param or delete_param if you want to destructively modify params.
   #
-  # source://rack//lib/rack/request.rb#468
+  # source://rack//lib/rack/request.rb#471
   def params; end
 
   # Determine whether the request body contains data by checking
@@ -3335,7 +3340,7 @@ module Rack::Request::Helpers
   # source://rack//lib/rack/request.rb#196
   def patch?; end
 
-  # source://rack//lib/rack/request.rb#511
+  # source://rack//lib/rack/request.rb#514
   def path; end
 
   # source://rack//lib/rack/request.rb#154
@@ -3418,7 +3423,7 @@ module Rack::Request::Helpers
 
   # @return [Boolean]
   #
-  # source://rack//lib/rack/request.rb#527
+  # source://rack//lib/rack/request.rb#530
   def trusted_proxy?(ip); end
 
   # Checks the HTTP request method (or verb) to see if it was of type UNLINK
@@ -3434,12 +3439,12 @@ module Rack::Request::Helpers
   #
   # <tt>env['rack.input']</tt> is not touched.
   #
-  # source://rack//lib/rack/request.rb#477
+  # source://rack//lib/rack/request.rb#480
   def update_param(k, v); end
 
   # Tries to return a remake of the original request URL as a string.
   #
-  # source://rack//lib/rack/request.rb#507
+  # source://rack//lib/rack/request.rb#510
   def url; end
 
   # source://rack//lib/rack/request.rb#161
@@ -3447,7 +3452,7 @@ module Rack::Request::Helpers
 
   # like Hash#values_at
   #
-  # source://rack//lib/rack/request.rb#552
+  # source://rack//lib/rack/request.rb#555
   def values_at(*keys); end
 
   # @return [Boolean]
@@ -3457,46 +3462,46 @@ module Rack::Request::Helpers
 
   private
 
-  # source://rack//lib/rack/request.rb#641
+  # source://rack//lib/rack/request.rb#644
   def allowed_scheme(header); end
 
-  # source://rack//lib/rack/request.rb#558
+  # source://rack//lib/rack/request.rb#561
   def default_session; end
 
-  # source://rack//lib/rack/request.rb#645
+  # source://rack//lib/rack/request.rb#648
   def extract_proto_header(header); end
 
-  # source://rack//lib/rack/request.rb#636
+  # source://rack//lib/rack/request.rb#639
   def forwarded_scheme; end
 
-  # source://rack//lib/rack/request.rb#574
+  # source://rack//lib/rack/request.rb#577
   def parse_http_accept_header(header); end
 
-  # source://rack//lib/rack/request.rb#593
+  # source://rack//lib/rack/request.rb#596
   def parse_multipart; end
 
-  # source://rack//lib/rack/request.rb#589
+  # source://rack//lib/rack/request.rb#592
   def parse_query(qs, d = T.unsafe(nil)); end
 
-  # source://rack//lib/rack/request.rb#585
+  # source://rack//lib/rack/request.rb#588
   def query_parser; end
 
-  # source://rack//lib/rack/request.rb#632
+  # source://rack//lib/rack/request.rb#635
   def reject_trusted_ip_addresses(ip_addresses); end
 
-  # source://rack//lib/rack/request.rb#619
+  # source://rack//lib/rack/request.rb#622
   def split_authority(authority); end
 
-  # source://rack//lib/rack/request.rb#597
+  # source://rack//lib/rack/request.rb#600
   def split_header(value); end
 
   # Assist with compatibility when processing `X-Forwarded-For`.
   #
-  # source://rack//lib/rack/request.rb#561
+  # source://rack//lib/rack/request.rb#564
   def wrap_ipv6(host); end
 end
 
-# source://rack//lib/rack/request.rb#601
+# source://rack//lib/rack/request.rb#604
 Rack::Request::Helpers::AUTHORITY = T.let(T.unsafe(nil), Regexp)
 
 # Default ports depending on scheme. Used to decide whether or not
@@ -4064,17 +4069,22 @@ Rack::SET_COOKIE = T.let(T.unsafe(nil), String)
 #     proxy_set_header   X-Real-IP           $remote_addr;
 #     proxy_set_header   X-Forwarded-For     $proxy_add_x_forwarded_for;
 #
-#     proxy_set_header   X-Sendfile-Type     X-Accel-Redirect;
 #     proxy_set_header   X-Accel-Mapping     /var/www/=/files/;
 #
 #     proxy_pass         http://127.0.0.1:8080/;
 #   }
 #
-# Note that the X-Sendfile-Type header must be set exactly as shown above.
 # The X-Accel-Mapping header should specify the location on the file system,
 # followed by an equals sign (=), followed name of the private URL pattern
 # that it maps to. The middleware performs a simple substitution on the
 # resulting path.
+#
+# To enable X-Accel-Redirect, you must configure the middleware explicitly:
+#
+#   use Rack::Sendfile, "X-Accel-Redirect"
+#
+# For security reasons, the X-Sendfile-Type header from requests is ignored.
+# The sendfile variation must be set via the middleware constructor.
 #
 # See Also: https://www.nginx.com/resources/wiki/start/topics/examples/xsendfile
 #
@@ -4121,23 +4131,38 @@ Rack::SET_COOKIE = T.let(T.unsafe(nil), String)
 # external. The internal values may contain regular expression syntax, they
 # will be matched with case indifference.
 #
-# source://rack//lib/rack/sendfile.rb#100
+# When X-Accel-Redirect is explicitly enabled via the variation parameter,
+# and no application-level mappings are provided, the middleware will read
+# the X-Accel-Mapping header from the proxy. This allows nginx to control
+# the path mapping without requiring application-level configuration.
+#
+# === Security
+#
+# For security reasons, the X-Sendfile-Type header from HTTP requests is
+# ignored. The sendfile variation must be explicitly configured via the
+# middleware constructor to prevent information disclosure vulnerabilities
+# where attackers could bypass proxy restrictions.
+#
+# source://rack//lib/rack/sendfile.rb#117
 class Rack::Sendfile
   # @return [Sendfile] a new instance of Sendfile
   #
-  # source://rack//lib/rack/sendfile.rb#101
+  # source://rack//lib/rack/sendfile.rb#118
   def initialize(app, variation = T.unsafe(nil), mappings = T.unsafe(nil)); end
 
-  # source://rack//lib/rack/sendfile.rb#109
+  # source://rack//lib/rack/sendfile.rb#126
   def call(env); end
 
   private
 
-  # source://rack//lib/rack/sendfile.rb#149
+  # source://rack//lib/rack/sendfile.rb#177
   def map_accel_path(env, path); end
 
-  # source://rack//lib/rack/sendfile.rb#143
+  # source://rack//lib/rack/sendfile.rb#161
   def variation(env); end
+
+  # source://rack//lib/rack/sendfile.rb#167
+  def x_accel_mapping(env); end
 end
 
 # source://rack//lib/rack/server.rb#8

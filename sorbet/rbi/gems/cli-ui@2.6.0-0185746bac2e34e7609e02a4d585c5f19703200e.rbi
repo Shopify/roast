@@ -5,10 +5,10 @@
 # Please instead update this file by running `bin/tapioca gem cli-ui`.
 
 
-# source://cli-ui//lib/cli/ui.rb#8
+# source://cli-ui//lib/cli/ui.rb#4
 module CLI; end
 
-# source://cli-ui//lib/cli/ui.rb#9
+# source://cli-ui//lib/cli/ui.rb#5
 module CLI::UI
   class << self
     # Convenience Method for +CLI::UI::Prompt.any_key+
@@ -17,26 +17,15 @@ module CLI::UI
     #
     # * +prompt+ - prompt to present
     #
-    # source://cli-ui//lib/cli/ui.rb#101
-    sig { params(prompt: ::String).returns(T.nilable(::String)) }
+    # : (?String prompt) -> String?
+    #
+    # source://cli-ui//lib/cli/ui.rb#94
     def any_key(prompt = T.unsafe(nil)); end
 
     # Convenience Method for +CLI::UI::Prompt.ask+
+    # : (String question, ?options: Array[String]?, ?default: (String | Array[String])?, ?is_file: bool, ?allow_empty: bool, ?multiple: bool, ?filter_ui: bool, ?select_ui: bool) ?{ (Prompt::OptionsHandler handler) -> void } -> (String | Array[String])
     #
-    # source://cli-ui//lib/cli/ui.rb#119
-    sig do
-      params(
-        question: ::String,
-        options: T.nilable(T::Array[::String]),
-        default: T.nilable(T.any(::String, T::Array[::String])),
-        is_file: T::Boolean,
-        allow_empty: T::Boolean,
-        multiple: T::Boolean,
-        filter_ui: T::Boolean,
-        select_ui: T::Boolean,
-        options_proc: T.nilable(T.proc.params(handler: ::CLI::UI::Prompt::OptionsHandler).void)
-      ).returns(T.any(::String, T::Array[::String]))
-    end
+    # source://cli-ui//lib/cli/ui.rb#100
     def ask(question, options: T.unsafe(nil), default: T.unsafe(nil), is_file: T.unsafe(nil), allow_empty: T.unsafe(nil), multiple: T.unsafe(nil), filter_ui: T.unsafe(nil), select_ui: T.unsafe(nil), &options_proc); end
 
     # Convenience Method for +CLI::UI::Prompt.confirm+
@@ -45,8 +34,9 @@ module CLI::UI
     #
     # * +question+ - question to confirm
     #
-    # source://cli-ui//lib/cli/ui.rb#90
-    sig { params(question: ::String, default: T::Boolean).returns(T::Boolean) }
+    # : (String question, ?default: bool) -> bool
+    #
+    # source://cli-ui//lib/cli/ui.rb#83
     def confirm(question, default: T.unsafe(nil)); end
 
     # Turn colour in Formatter, Frame, and Spinner output on or off.
@@ -55,16 +45,20 @@ module CLI::UI
     #
     # * +bool+ - true or false; enable or disable colour.
     #
-    # source://cli-ui//lib/cli/ui.rb#358
-    sig { params(bool: T::Boolean).void }
+    # : (bool bool) -> void
+    #
+    # source://cli-ui//lib/cli/ui.rb#303
     def enable_color=(bool); end
 
     # Check whether colour is enabled in Formatter, Frame, and Spinner output.
     # By default, colour is enabled when STDOUT is a TTY; that is, when output
     # has not been directed to another program or to a file.
     #
-    # source://cli-ui//lib/cli/ui.rb#347
-    sig { returns(T::Boolean) }
+    # : -> bool
+    #
+    # @return [Boolean]
+    #
+    # source://cli-ui//lib/cli/ui.rb#292
     def enable_color?; end
 
     # Turn cursor control in Formatter, Frame, and Spinner output on or off.
@@ -73,16 +67,20 @@ module CLI::UI
     #
     # * +bool+ - true or false; enable or disable cursor control.
     #
-    # source://cli-ui//lib/cli/ui.rb#378
-    sig { params(bool: T::Boolean).void }
+    # : (bool bool) -> void
+    #
+    # source://cli-ui//lib/cli/ui.rb#323
     def enable_cursor=(bool); end
 
     # Check whether cursor control is enabled in Formatter, Frame, and Spinner output.
     # By default, cursor control is enabled when STDOUT is a TTY; that is, when output
     # has not been directed to another program or to a file.
     #
-    # source://cli-ui//lib/cli/ui.rb#367
-    sig { returns(T::Boolean) }
+    # : -> bool
+    #
+    # @return [Boolean]
+    #
+    # source://cli-ui//lib/cli/ui.rb#312
     def enable_cursor?; end
 
     # Convenience Method to format text using +CLI::UI::Formatter.format+
@@ -99,8 +97,9 @@ module CLI::UI
     #
     # * +enable_color+ - should color be used? default to true unless output is redirected.
     #
-    # source://cli-ui//lib/cli/ui.rb#175
-    sig { params(input: ::String, enable_color: T::Boolean).returns(::String) }
+    # : (String input, ?enable_color: bool) -> String
+    #
+    # source://cli-ui//lib/cli/ui.rb#156
     def fmt(input, enable_color: T.unsafe(nil)); end
 
     # Convenience Method for +CLI::UI::Frame.open+
@@ -110,20 +109,9 @@ module CLI::UI
     # * +args+ - arguments for +Frame.open+
     # * +block+ - block for +Frame.open+
     #
-    # source://cli-ui//lib/cli/ui.rb#241
-    sig do
-      type_parameters(:T)
-        .params(
-          text: ::String,
-          color: T.nilable(T.any(::CLI::UI::Color, ::String, ::Symbol)),
-          failure_text: T.nilable(::String),
-          success_text: T.nilable(::String),
-          timing: T.any(::Numeric, T::Boolean),
-          frame_style: T.any(::CLI::UI::Frame::FrameStyle, ::String, ::Symbol),
-          to: T.any(::IO, ::StringIO),
-          block: T.nilable(T.proc.returns(T.type_parameter(:T)))
-        ).returns(T.nilable(T.type_parameter(:T)))
-    end
+    # : [T] (String text, ?color: colorable?, ?failure_text: String?, ?success_text: String?, ?timing: (Numeric | bool), ?frame_style: frame_stylable, ?to: io_like) ?{ -> T } -> T?
+    #
+    # source://cli-ui//lib/cli/ui.rb#201
     def frame(text, color: T.unsafe(nil), failure_text: T.unsafe(nil), success_text: T.unsafe(nil), timing: T.unsafe(nil), frame_style: T.unsafe(nil), to: T.unsafe(nil), &block); end
 
     # Set the default frame style.
@@ -135,8 +123,9 @@ module CLI::UI
     #
     # * +symbol+ - the default frame style to use for frames
     #
-    # source://cli-ui//lib/cli/ui.rb#392
-    sig { params(frame_style: T.any(::CLI::UI::Frame::FrameStyle, ::String, ::Symbol)).void }
+    # : (frame_stylable frame_style) -> void
+    #
+    # source://cli-ui//lib/cli/ui.rb#337
     def frame_style=(frame_style); end
 
     # Glyph resolution using +CLI::UI::Glyph.lookup+
@@ -146,14 +135,15 @@ module CLI::UI
     #
     # * +handle+ - handle of the glyph to resolve
     #
-    # source://cli-ui//lib/cli/ui.rb#46
-    sig { params(handle: ::String).returns(::CLI::UI::Glyph) }
+    # : (String handle) -> Glyph
+    #
+    # source://cli-ui//lib/cli/ui.rb#39
     def glyph(handle); end
 
     # Create a terminal link
+    # : (String url, String text, ?format: bool, ?blue_underline: bool) -> String
     #
-    # source://cli-ui//lib/cli/ui.rb#398
-    sig { params(url: ::String, text: ::String, format: T::Boolean, blue_underline: T::Boolean).returns(::String) }
+    # source://cli-ui//lib/cli/ui.rb#343
     def link(url, text, format: T.unsafe(nil), blue_underline: T.unsafe(nil)); end
 
     # Duplicate output to a file path
@@ -162,14 +152,9 @@ module CLI::UI
     #
     # * +path+ - path to duplicate output to
     #
-    # source://cli-ui//lib/cli/ui.rb#309
-    sig do
-      type_parameters(:T)
-        .params(
-          path: ::String,
-          block: T.proc.returns(T.type_parameter(:T))
-        ).returns(T.type_parameter(:T))
-    end
+    # : [T] (String path) { -> T } -> T
+    #
+    # source://cli-ui//lib/cli/ui.rb#254
     def log_output_to(path, &block); end
 
     # Convenience Method for +CLI::UI::Printer.puts+
@@ -179,18 +164,8 @@ module CLI::UI
     # * +msg+ - Message to print
     # * +kwargs+ - keyword arguments for +Printer.puts+
     #
-    # source://cli-ui//lib/cli/ui.rb#202
-    sig do
-      params(
-        msg: ::String,
-        frame_color: T.nilable(T.any(::CLI::UI::Color, ::String, ::Symbol)),
-        to: T.any(::IO, ::StringIO),
-        encoding: ::Encoding,
-        format: T::Boolean,
-        graceful: T::Boolean,
-        wrap: T::Boolean
-      ).void
-    end
+    #
+    # source://cli-ui//lib/cli/ui.rb#173
     def puts(msg, frame_color: T.unsafe(nil), to: T.unsafe(nil), encoding: T.unsafe(nil), format: T.unsafe(nil), graceful: T.unsafe(nil), wrap: T.unsafe(nil)); end
 
     # Disable all framing within a block
@@ -199,8 +174,9 @@ module CLI::UI
     #
     # * +block+ - block in which to disable frames
     #
-    # source://cli-ui//lib/cli/ui.rb#334
-    sig { type_parameters(:T).params(block: T.proc.returns(T.type_parameter(:T))).returns(T.type_parameter(:T)) }
+    # : [T] { -> T } -> T
+    #
+    # source://cli-ui//lib/cli/ui.rb#279
     def raw(&block); end
 
     # Color resolution using +CLI::UI::Color.lookup+
@@ -210,8 +186,9 @@ module CLI::UI
     #
     # * +input+ - color to resolve
     #
-    # source://cli-ui//lib/cli/ui.rb#58
-    sig { params(input: T.any(::CLI::UI::Color, ::String, ::Symbol)).returns(::CLI::UI::Color) }
+    # : (colorable input) -> CLI::UI::Color
+    #
+    # source://cli-ui//lib/cli/ui.rb#51
     def resolve_color(input); end
 
     # Frame style resolution using +CLI::UI::Frame::FrameStyle.lookup+.
@@ -220,13 +197,9 @@ module CLI::UI
     # ==== Attributes
     #
     # * +input+ - frame style to resolve
+    # : (frame_stylable input) -> CLI::UI::Frame::FrameStyle
     #
-    # source://cli-ui//lib/cli/ui.rb#74
-    sig do
-      params(
-        input: T.any(::CLI::UI::Frame::FrameStyle, ::String, ::Symbol)
-      ).returns(::CLI::UI::Frame::FrameStyle)
-    end
+    # source://cli-ui//lib/cli/ui.rb#67
     def resolve_style(input); end
 
     # Convenience Method to resolve text using +CLI::UI::Formatter.format+
@@ -238,8 +211,9 @@ module CLI::UI
     # * +truncate_to+ - number of characters to truncate the string to (or nil)
     # * +enable_color+ - should color be used? default to true unless output is redirected.
     #
-    # source://cli-ui//lib/cli/ui.rb#153
-    sig { params(input: ::String, truncate_to: T.nilable(::Integer), enable_color: T::Boolean).returns(::String) }
+    # : (String input, ?truncate_to: Integer?, ?enable_color: bool) -> String
+    #
+    # source://cli-ui//lib/cli/ui.rb#134
     def resolve_text(input, truncate_to: T.unsafe(nil), enable_color: T.unsafe(nil)); end
 
     # Convenience Method for +CLI::UI::Spinner.spin+
@@ -249,15 +223,9 @@ module CLI::UI
     # * +args+ - arguments for +Spinner.open+
     # * +block+ - block for +Spinner.open+
     #
-    # source://cli-ui//lib/cli/ui.rb#278
-    sig do
-      params(
-        title: ::String,
-        auto_debrief: T::Boolean,
-        to: T.any(::IO, ::StringIO),
-        block: T.proc.params(task: ::CLI::UI::Spinner::SpinGroup::Task).void
-      ).returns(T::Boolean)
-    end
+    # : (String title, ?auto_debrief: bool, ?to: io_like) { (Spinner::SpinGroup::Task task) -> void } -> bool
+    #
+    # source://cli-ui//lib/cli/ui.rb#231
     def spinner(title, auto_debrief: T.unsafe(nil), to: T.unsafe(nil), &block); end
 
     # Convenience Method to override frame color using +CLI::UI::Frame.with_frame_color+
@@ -267,27 +235,24 @@ module CLI::UI
     # * +color+ - color to override to
     # * +block+ - block for +Frame.with_frame_color_override+
     #
-    # source://cli-ui//lib/cli/ui.rb#294
-    sig do
-      type_parameters(:T)
-        .params(
-          color: T.any(::CLI::UI::Color, ::String, ::Symbol),
-          block: T.proc.returns(T.type_parameter(:T))
-        ).returns(T.type_parameter(:T))
-    end
+    # : [T] (colorable color) { -> T } -> T
+    #
+    # source://cli-ui//lib/cli/ui.rb#243
     def with_frame_color(color, &block); end
 
-    # source://cli-ui//lib/cli/ui.rb#180
-    sig { params(input: ::String).returns(::String) }
+    # : (String input) -> String
+    #
+    # source://cli-ui//lib/cli/ui.rb#161
     def wrap(input); end
   end
 end
 
-# source://cli-ui//lib/cli/ui/ansi.rb#8
+# source://cli-ui//lib/cli/ui/ansi.rb#6
 module CLI::UI::ANSI
   class << self
-    # source://cli-ui//lib/cli/ui/ansi.rb#206
-    sig { returns(::String) }
+    # : -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#200
     def clear_to_end_of_line; end
 
     # Returns an ANSI control sequence
@@ -297,8 +262,9 @@ module CLI::UI::ANSI
     # - +args+ - Argument to pass to the ANSI control sequence
     # - +cmd+ - ANSI control sequence Command
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#60
-    sig { params(args: ::String, cmd: ::String).returns(::String) }
+    # : (String args, String cmd) -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#54
     def control(args, cmd); end
 
     # Move the cursor back n columns
@@ -307,8 +273,9 @@ module CLI::UI::ANSI
     #
     # * +n+ - number of columns by which to move the cursor back
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#118
-    sig { params(n: ::Integer).returns(::String) }
+    # : (?Integer n) -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#112
     def cursor_back(n = T.unsafe(nil)); end
 
     # Move the cursor down n lines
@@ -317,8 +284,9 @@ module CLI::UI::ANSI
     #
     # * +n+ - number of lines by which to move the cursor down
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#92
-    sig { params(n: ::Integer).returns(::String) }
+    # : (?Integer n) -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#86
     def cursor_down(n = T.unsafe(nil)); end
 
     # Move the cursor forward n columns
@@ -327,8 +295,9 @@ module CLI::UI::ANSI
     #
     # * +n+ - number of columns by which to move the cursor forward
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#105
-    sig { params(n: ::Integer).returns(::String) }
+    # : (?Integer n) -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#99
     def cursor_forward(n = T.unsafe(nil)); end
 
     # Move the cursor to a specific column
@@ -337,20 +306,23 @@ module CLI::UI::ANSI
     #
     # * +n+ - The column to move to
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#131
-    sig { params(n: ::Integer).returns(::String) }
+    # : (?Integer n) -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#125
     def cursor_horizontal_absolute(n = T.unsafe(nil)); end
 
     # Restore the saved cursor position
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#176
-    sig { returns(::String) }
+    # : -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#170
     def cursor_restore; end
 
     # Save the cursor position
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#169
-    sig { returns(::String) }
+    # : -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#163
     def cursor_save; end
 
     # Move the cursor up n lines
@@ -359,46 +331,55 @@ module CLI::UI::ANSI
     #
     # * +n+ - number of lines by which to move the cursor up
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#79
-    sig { params(n: ::Integer).returns(::String) }
+    # : (?Integer n) -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#73
     def cursor_up(n = T.unsafe(nil)); end
 
-    # source://cli-ui//lib/cli/ui/ansi.rb#138
-    sig { returns(::String) }
+    # : -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#132
     def enter_alternate_screen; end
 
-    # source://cli-ui//lib/cli/ui/ansi.rb#143
-    sig { returns(::String) }
+    # : -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#137
     def exit_alternate_screen; end
 
     # Hide the cursor
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#162
-    sig { returns(::String) }
+    # : -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#156
     def hide_cursor; end
 
-    # source://cli-ui//lib/cli/ui/ansi.rb#211
-    sig { returns(::String) }
+    # : -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#205
     def insert_line; end
 
-    # source://cli-ui//lib/cli/ui/ansi.rb#216
-    sig { params(n: ::Integer).returns(::String) }
+    # : (?Integer n) -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#210
     def insert_lines(n = T.unsafe(nil)); end
 
-    # source://cli-ui//lib/cli/ui/ansi.rb#148
-    sig { returns(::Regexp) }
+    # : -> Regexp
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#142
     def match_alternate_screen; end
 
     # Move to the next line
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#183
-    sig { returns(::String) }
+    # : -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#177
     def next_line; end
 
     # Move to the previous line
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#190
-    sig { returns(::String) }
+    # : -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#184
     def previous_line; end
 
     # Move to the previous n lines
@@ -407,8 +388,9 @@ module CLI::UI::ANSI
     #
     # * +n+ - number of lines by which to move the cursor up
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#201
-    sig { params(n: ::Integer).returns(::String) }
+    # : (?Integer n) -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#195
     def previous_lines(n = T.unsafe(nil)); end
 
     # ANSI escape sequences (like \x1b[31m) have zero width.
@@ -416,20 +398,22 @@ module CLI::UI::ANSI
     # This also implements a basic version of utf8 character width calculation like
     # we could get for real from something like utf8proc.
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#22
-    sig { params(str: ::String).returns(::Integer) }
+    # : (String str) -> Integer
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#16
     def printing_width(str); end
 
     # https://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+    # : (String params) -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#66
-    sig { params(params: ::String).returns(::String) }
+    # source://cli-ui//lib/cli/ui/ansi.rb#60
     def sgr(params); end
 
     # Show the cursor
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#155
-    sig { returns(::String) }
+    # : -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#149
     def show_cursor; end
 
     # Strips ANSI codes from a str
@@ -438,16 +422,17 @@ module CLI::UI::ANSI
     #
     # - +str+ - The string from which to strip codes
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#48
-    sig { params(str: ::String).returns(::String) }
+    # : (String str) -> String
+    #
+    # source://cli-ui//lib/cli/ui/ansi.rb#42
     def strip_codes(str); end
   end
 end
 
-# source://cli-ui//lib/cli/ui/ansi.rb#11
+# source://cli-ui//lib/cli/ui/ansi.rb#7
 CLI::UI::ANSI::ESC = T.let(T.unsafe(nil), String)
 
-# source://cli-ui//lib/cli/ui/color.rb#8
+# source://cli-ui//lib/cli/ui/color.rb#6
 class CLI::UI::Color
   # Creates a new color mapping
   # Signatures can be found here:
@@ -458,28 +443,34 @@ class CLI::UI::Color
   # * +sgr+ - The color signature
   # * +name+ - The name of the color
   #
-  # source://cli-ui//lib/cli/ui/color.rb#27
-  sig { params(sgr: ::String, name: ::Symbol).void }
+  # : (String sgr, Symbol name) -> void
+  #
+  # @return [Color] a new instance of Color
+  #
+  # source://cli-ui//lib/cli/ui/color.rb#23
   def initialize(sgr, name); end
 
-  # @return [String]
+  # : String
   #
-  # source://cli-ui//lib/cli/ui/color.rb#12
+  # source://cli-ui//lib/cli/ui/color.rb#8
   def code; end
 
-  # source://cli-ui//lib/cli/ui/color.rb#15
-  sig { returns(::Symbol) }
+  # : Symbol
+  #
+  # source://cli-ui//lib/cli/ui/color.rb#11
   def name; end
 
-  # source://cli-ui//lib/cli/ui/color.rb#12
-  sig { returns(::String) }
+  # : String
+  #
+  # source://cli-ui//lib/cli/ui/color.rb#8
   def sgr; end
 
   class << self
     # All available colors by name
     #
-    # source://cli-ui//lib/cli/ui/color.rb#100
-    sig { returns(T::Array[::Symbol]) }
+    # : -> Array[Symbol]
+    #
+    # source://cli-ui//lib/cli/ui/color.rb#93
     def available; end
 
     # Looks up a color code by name
@@ -491,67 +482,69 @@ class CLI::UI::Color
     # ==== Returns
     # Returns a color code
     #
-    # source://cli-ui//lib/cli/ui/color.rb#91
-    sig { params(name: T.any(::String, ::Symbol)).returns(::CLI::UI::Color) }
+    # : ((Symbol | String) name) -> Color
+    #
+    # source://cli-ui//lib/cli/ui/color.rb#84
     def lookup(name); end
   end
 end
 
 # default blue is low-contrast against black in some default terminal color scheme
 #
-# source://cli-ui//lib/cli/ui/color.rb#37
+# source://cli-ui//lib/cli/ui/color.rb#33
 CLI::UI::Color::BLUE = T.let(T.unsafe(nil), CLI::UI::Color)
 
-# source://cli-ui//lib/cli/ui/color.rb#41
+# source://cli-ui//lib/cli/ui/color.rb#37
 CLI::UI::Color::BOLD = T.let(T.unsafe(nil), CLI::UI::Color)
 
-# source://cli-ui//lib/cli/ui/color.rb#39
+# source://cli-ui//lib/cli/ui/color.rb#35
 CLI::UI::Color::CYAN = T.let(T.unsafe(nil), CLI::UI::Color)
 
 # 240 is very dark gray; 255 is very light gray. 244 is somewhat dark.
 #
-# source://cli-ui//lib/cli/ui/color.rb#45
+# source://cli-ui//lib/cli/ui/color.rb#41
 CLI::UI::Color::GRAY = T.let(T.unsafe(nil), CLI::UI::Color)
 
-# source://cli-ui//lib/cli/ui/color.rb#34
+# source://cli-ui//lib/cli/ui/color.rb#30
 CLI::UI::Color::GREEN = T.let(T.unsafe(nil), CLI::UI::Color)
 
-# source://cli-ui//lib/cli/ui/color.rb#61
+# source://cli-ui//lib/cli/ui/color.rb#58
 class CLI::UI::Color::InvalidColorName < ::ArgumentError
-  # source://cli-ui//lib/cli/ui/color.rb#65
-  sig { params(name: ::Symbol).void }
+  # : (Symbol name) -> void
+  #
+  # @return [InvalidColorName] a new instance of InvalidColorName
+  #
+  # source://cli-ui//lib/cli/ui/color.rb#60
   def initialize(name); end
 
-  # source://cli-ui//lib/cli/ui/color.rb#71
-  sig { returns(::String) }
+  # : -> String
+  #
+  # source://cli-ui//lib/cli/ui/color.rb#66
   def message; end
 end
 
-# source://cli-ui//lib/cli/ui/color.rb#38
+# source://cli-ui//lib/cli/ui/color.rb#34
 CLI::UI::Color::MAGENTA = T.let(T.unsafe(nil), CLI::UI::Color)
 
-# source://cli-ui//lib/cli/ui/color.rb#49
+# source://cli-ui//lib/cli/ui/color.rb#45
 CLI::UI::Color::MAP = T.let(T.unsafe(nil), Hash)
 
 # Using color 214 from the 256-color palette for a more distinct orange
 #
-# source://cli-ui//lib/cli/ui/color.rb#47
+# source://cli-ui//lib/cli/ui/color.rb#43
 CLI::UI::Color::ORANGE = T.let(T.unsafe(nil), CLI::UI::Color)
 
-# source://cli-ui//lib/cli/ui/color.rb#33
+# source://cli-ui//lib/cli/ui/color.rb#29
 CLI::UI::Color::RED = T.let(T.unsafe(nil), CLI::UI::Color)
 
-# source://cli-ui//lib/cli/ui/color.rb#40
+# source://cli-ui//lib/cli/ui/color.rb#36
 CLI::UI::Color::RESET = T.let(T.unsafe(nil), CLI::UI::Color)
 
-# source://cli-ui//lib/cli/ui/color.rb#42
+# source://cli-ui//lib/cli/ui/color.rb#38
 CLI::UI::Color::WHITE = T.let(T.unsafe(nil), CLI::UI::Color)
 
-# source://cli-ui//lib/cli/ui/color.rb#35
+# source://cli-ui//lib/cli/ui/color.rb#31
 CLI::UI::Color::YELLOW = T.let(T.unsafe(nil), CLI::UI::Color)
-
-# source://cli-ui//lib/cli/ui.rb#31
-CLI::UI::Colorable = T.type_alias { T.any(::CLI::UI::Color, ::String, ::Symbol) }
 
 # source://cli-ui//lib/cli/ui/formatter.rb#9
 class CLI::UI::Formatter
@@ -561,8 +554,11 @@ class CLI::UI::Formatter
   #
   # * +text+ - the text to format
   #
-  # source://cli-ui//lib/cli/ui/formatter.rb#87
-  sig { params(text: ::String).void }
+  # : (String text) -> void
+  #
+  # @return [Formatter] a new instance of Formatter
+  #
+  # source://cli-ui//lib/cli/ui/formatter.rb#84
   def initialize(text); end
 
   # Format the text using a map.
@@ -575,92 +571,88 @@ class CLI::UI::Formatter
   #
   # * +:enable_color+ - enable color output? Default is true unless output is redirected
   #
-  # source://cli-ui//lib/cli/ui/formatter.rb#103
-  sig { params(sgr_map: T::Hash[::String, ::String], enable_color: T::Boolean).returns(::String) }
+  # : (?Hash[String, String] sgr_map, ?enable_color: bool) -> String
+  #
+  # source://cli-ui//lib/cli/ui/formatter.rb#100
   def format(sgr_map = T.unsafe(nil), enable_color: T.unsafe(nil)); end
 
   private
 
-  # source://cli-ui//lib/cli/ui/formatter.rb#129
-  sig do
-    params(
-      text: ::String,
-      fmt: T::Array[T.any(::CLI::UI::Formatter::LITERAL_BRACES, ::String)],
-      sgr_map: T::Hash[::String, ::String]
-    ).returns(::String)
-  end
+  # : (String text, stack fmt, Hash[String, String] sgr_map) -> String
+  #
+  # source://cli-ui//lib/cli/ui/formatter.rb#127
   def apply_format(text, fmt, sgr_map); end
 
-  # source://cli-ui//lib/cli/ui/formatter.rb#211
-  sig { params(text: ::String, stack: T::Array[T.any(::CLI::UI::Formatter::LITERAL_BRACES, ::String)]).void }
+  # : (String text, stack stack) -> void
+  #
+  # source://cli-ui//lib/cli/ui/formatter.rb#212
   def emit(text, stack); end
 
-  # source://cli-ui//lib/cli/ui/formatter.rb#191
-  sig do
-    params(
-      sc: ::StringScanner,
-      stack: T::Array[T.any(::CLI::UI::Formatter::LITERAL_BRACES, ::String)]
-    ).returns(T::Array[T.any(::CLI::UI::Formatter::LITERAL_BRACES, ::String)])
-  end
+  # : (StringScanner sc, ?stack stack) -> stack
+  #
+  # source://cli-ui//lib/cli/ui/formatter.rb#190
   def parse_body(sc, stack = T.unsafe(nil)); end
 
-  # source://cli-ui//lib/cli/ui/formatter.rb#147
-  sig do
-    params(
-      sc: ::StringScanner,
-      stack: T::Array[T.any(::CLI::UI::Formatter::LITERAL_BRACES, ::String)]
-    ).returns(T::Array[T.any(::CLI::UI::Formatter::LITERAL_BRACES, ::String)])
-  end
+  # : (StringScanner sc, stack stack) -> stack
+  #
+  # source://cli-ui//lib/cli/ui/formatter.rb#145
   def parse_expr(sc, stack); end
 end
 
-# source://cli-ui//lib/cli/ui/formatter.rb#42
+# source://cli-ui//lib/cli/ui/formatter.rb#41
 CLI::UI::Formatter::BEGIN_EXPR = T.let(T.unsafe(nil), String)
 
-# source://cli-ui//lib/cli/ui/formatter.rb#57
+# source://cli-ui//lib/cli/ui/formatter.rb#56
 CLI::UI::Formatter::DISCARD_BRACES = T.let(T.unsafe(nil), Range)
 
-# source://cli-ui//lib/cli/ui/formatter.rb#43
+# source://cli-ui//lib/cli/ui/formatter.rb#42
 CLI::UI::Formatter::END_EXPR = T.let(T.unsafe(nil), String)
 
-# source://cli-ui//lib/cli/ui/formatter.rb#63
+# : type stack = Array[String | LITERAL_BRACES]
+#
+# source://cli-ui//lib/cli/ui/formatter.rb#62
 class CLI::UI::Formatter::FormatError < ::StandardError
-  # source://cli-ui//lib/cli/ui/formatter.rb#73
-  sig { params(message: ::String, input: ::String, index: ::Integer).void }
+  # : (String message, String input, Integer index) -> void
+  #
+  # @return [FormatError] a new instance of FormatError
+  #
+  # source://cli-ui//lib/cli/ui/formatter.rb#70
   def initialize(message, input, index); end
 
-  # source://cli-ui//lib/cli/ui/formatter.rb#70
-  sig { returns(::Integer) }
+  # : Integer
+  #
+  # source://cli-ui//lib/cli/ui/formatter.rb#67
   def index; end
 
-  # @return [Integer]
+  # : Integer
   #
-  # source://cli-ui//lib/cli/ui/formatter.rb#70
+  # source://cli-ui//lib/cli/ui/formatter.rb#67
   def index=(_arg0); end
 
-  # source://cli-ui//lib/cli/ui/formatter.rb#67
-  sig { returns(::String) }
+  # : String
+  #
+  # source://cli-ui//lib/cli/ui/formatter.rb#64
   def input; end
 
-  # @return [String]
+  # : String
   #
-  # source://cli-ui//lib/cli/ui/formatter.rb#67
+  # source://cli-ui//lib/cli/ui/formatter.rb#64
   def input=(_arg0); end
 end
 
-# source://cli-ui//lib/cli/ui/formatter.rb#59
+# source://cli-ui//lib/cli/ui/formatter.rb#58
 class CLI::UI::Formatter::LITERAL_BRACES; end
 
-# source://cli-ui//lib/cli/ui/formatter.rb#48
+# source://cli-ui//lib/cli/ui/formatter.rb#47
 CLI::UI::Formatter::SCAN_BODY = T.let(T.unsafe(nil), Regexp)
 
-# source://cli-ui//lib/cli/ui/formatter.rb#46
+# source://cli-ui//lib/cli/ui/formatter.rb#45
 CLI::UI::Formatter::SCAN_FUNCNAME = T.let(T.unsafe(nil), Regexp)
 
-# source://cli-ui//lib/cli/ui/formatter.rb#47
+# source://cli-ui//lib/cli/ui/formatter.rb#46
 CLI::UI::Formatter::SCAN_GLYPH = T.let(T.unsafe(nil), Regexp)
 
-# source://cli-ui//lib/cli/ui/formatter.rb#45
+# source://cli-ui//lib/cli/ui/formatter.rb#44
 CLI::UI::Formatter::SCAN_WIDGET = T.let(T.unsafe(nil), Regexp)
 
 # Available mappings of formattings
@@ -668,11 +660,8 @@ CLI::UI::Formatter::SCAN_WIDGET = T.let(T.unsafe(nil), Regexp)
 # There are presentational (colours and formatters)
 # and semantic (error, info, command) formatters available
 #
-# source://cli-ui//lib/cli/ui/formatter.rb#17
+# source://cli-ui//lib/cli/ui/formatter.rb#15
 CLI::UI::Formatter::SGR_MAP = T.let(T.unsafe(nil), Hash)
-
-# source://cli-ui//lib/cli/ui/formatter.rb#61
-CLI::UI::Formatter::Stack = T.type_alias { T::Array[T.any(::CLI::UI::Formatter::LITERAL_BRACES, ::String)] }
 
 # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#6
 module CLI::UI::Frame
@@ -703,18 +692,11 @@ module CLI::UI::Frame
     #
     # MUST be inside an open frame or it raises a +UnnestedFrameException+
     #
+    # : (String? text, ?color: colorable?, ?elapsed: Numeric?, ?frame_style: frame_stylable?, ?to: io_like) -> void
+    #
     # @raise [UnnestedFrameException]
     #
-    # source://cli-ui//lib/cli/ui/frame.rb#230
-    sig do
-      params(
-        text: T.nilable(::String),
-        color: T.nilable(T.any(::CLI::UI::Color, ::String, ::Symbol)),
-        elapsed: T.nilable(::Numeric),
-        frame_style: T.nilable(T.any(::CLI::UI::Frame::FrameStyle, ::String, ::Symbol)),
-        to: T.any(::IO, ::StringIO)
-      ).void
-    end
+    # source://cli-ui//lib/cli/ui/frame.rb#202
     def close(text, color: T.unsafe(nil), elapsed: T.unsafe(nil), frame_style: T.unsafe(nil), to: T.unsafe(nil)); end
 
     # Adds a divider in a frame
@@ -744,21 +726,16 @@ module CLI::UI::Frame
     #
     # MUST be inside an open frame or it raises a +UnnestedFrameException+
     #
+    # : (String? text, ?color: colorable?, ?frame_style: frame_stylable?, ?to: io_like) -> void
+    #
     # @raise [UnnestedFrameException]
     #
-    # source://cli-ui//lib/cli/ui/frame.rb#180
-    sig do
-      params(
-        text: T.nilable(::String),
-        color: T.nilable(T.any(::CLI::UI::Color, ::String, ::Symbol)),
-        frame_style: T.nilable(T.any(::CLI::UI::Frame::FrameStyle, ::String, ::Symbol)),
-        to: T.any(::IO, ::StringIO)
-      ).void
-    end
+    # source://cli-ui//lib/cli/ui/frame.rb#160
     def divider(text, color: T.unsafe(nil), frame_style: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    # source://cli-ui//lib/cli/ui/frame.rb#18
-    sig { returns(::CLI::UI::Frame::FrameStyle) }
+    # : -> FrameStyle
+    #
+    # source://cli-ui//lib/cli/ui/frame.rb#15
     def frame_style; end
 
     # Set the default frame style.
@@ -769,8 +746,9 @@ module CLI::UI::Frame
     #
     # * +symbol+ or +FrameStyle+ - the default frame style to use for frames
     #
-    # source://cli-ui//lib/cli/ui/frame.rb#31
-    sig { params(frame_style: T.any(::CLI::UI::Frame::FrameStyle, ::String, ::Symbol)).void }
+    # : (frame_stylable frame_style) -> void
+    #
+    # source://cli-ui//lib/cli/ui/frame.rb#28
     def frame_style=(frame_style); end
 
     # Opens a new frame. Can be nested
@@ -815,20 +793,10 @@ module CLI::UI::Frame
     # Default Output:
     #   ┏━━ Open ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     #
-    # source://cli-ui//lib/cli/ui/frame.rb#90
-    sig do
-      type_parameters(:T)
-        .params(
-          text: ::String,
-          color: T.any(::CLI::UI::Color, ::String, ::Symbol),
-          failure_text: T.nilable(::String),
-          success_text: T.nilable(::String),
-          timing: T.any(::Numeric, T::Boolean),
-          frame_style: T.any(::CLI::UI::Frame::FrameStyle, ::String, ::Symbol),
-          to: T.any(::IO, ::StringIO),
-          block: T.nilable(T.proc.returns(T.type_parameter(:T)))
-        ).returns(T.nilable(T.type_parameter(:T)))
-    end
+    #
+    # : [T] (String text, ?color: colorable, ?failure_text: String?, ?success_text: String?, ?timing: (Numeric | bool), ?frame_style: frame_stylable, ?to: io_like) ?{ -> T } -> T?
+    #
+    # source://cli-ui//lib/cli/ui/frame.rb#76
     def open(text, color: T.unsafe(nil), failure_text: T.unsafe(nil), success_text: T.unsafe(nil), timing: T.unsafe(nil), frame_style: T.unsafe(nil), to: T.unsafe(nil), &block); end
 
     # Determines the prefix of a frame entry taking multi-nested frames into account
@@ -837,14 +805,15 @@ module CLI::UI::Frame
     #
     # * +:color+ - The color of the prefix. Defaults to +Thread.current[:cliui_frame_color_override]+
     #
-    # source://cli-ui//lib/cli/ui/frame.rb#251
-    sig { params(color: T.nilable(T.any(::CLI::UI::Color, ::String, ::Symbol))).returns(::String) }
+    # : (?color: colorable?) -> String
+    #
+    # source://cli-ui//lib/cli/ui/frame.rb#223
     def prefix(color: T.unsafe(nil)); end
 
     # The width of a prefix given the number of Frames in the stack
+    # : -> Integer
     #
-    # source://cli-ui//lib/cli/ui/frame.rb#273
-    sig { returns(::Integer) }
+    # source://cli-ui//lib/cli/ui/frame.rb#245
     def prefix_width; end
 
     # Override a color for a given thread.
@@ -853,14 +822,9 @@ module CLI::UI::Frame
     #
     # * +color+ - The color to override to
     #
-    # source://cli-ui//lib/cli/ui/frame.rb#292
-    sig do
-      type_parameters(:T)
-        .params(
-          color: T.any(::CLI::UI::Color, ::String, ::Symbol),
-          block: T.proc.returns(T.type_parameter(:T))
-        ).returns(T.type_parameter(:T))
-    end
+    # : [T] (colorable color) { -> T } -> T
+    #
+    # source://cli-ui//lib/cli/ui/frame.rb#260
     def with_frame_color_override(color, &block); end
 
     private
@@ -869,29 +833,29 @@ module CLI::UI::Frame
     #   Numeric: return it
     #   false: return nil
     #   true: defaults to Time.new
+    # : (Time start, (Numeric | bool) timing) -> Numeric?
     #
-    # source://cli-ui//lib/cli/ui/frame.rb#307
-    sig { params(start: ::Time, timing: T.any(::Numeric, T::Boolean)).returns(T.nilable(::Numeric)) }
+    # source://cli-ui//lib/cli/ui/frame.rb#275
     def elapsed(start, timing); end
   end
 end
 
-# source://cli-ui//lib/cli/ui/frame.rb#12
+# source://cli-ui//lib/cli/ui/frame.rb#11
 CLI::UI::Frame::DEFAULT_FRAME_COLOR = T.let(T.unsafe(nil), CLI::UI::Color)
 
 # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#7
 module CLI::UI::Frame::FrameStack
   class << self
     # Fetch all items off the frame stack
+    # : -> Array[StackItem]
     #
-    # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#32
-    sig { returns(T::Array[::CLI::UI::Frame::FrameStack::StackItem]) }
+    # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#25
     def items; end
 
     # Removes and returns the last stack item off the stack
+    # : -> StackItem?
     #
-    # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#72
-    sig { returns(T.nilable(::CLI::UI::Frame::FrameStack::StackItem)) }
+    # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#60
     def pop; end
 
     # Push a new item onto the frame stack.
@@ -912,45 +876,38 @@ module CLI::UI::Frame::FrameStack
     # If both an item and a color/style pair are given, raises an +ArgumentError+
     # If the given item is not a +StackItem+, raises an +ArgumentError+
     #
-    # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#62
-    sig do
-      params(
-        item: T.nilable(::CLI::UI::Frame::FrameStack::StackItem),
-        color: T.nilable(::CLI::UI::Color),
-        style: T.nilable(::CLI::UI::Frame::FrameStyle)
-      ).void
-    end
+    # : (?StackItem? item, ?color: CLI::UI::Color?, ?style: CLI::UI::Frame::FrameStyle?) -> void
+    #
+    # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#48
     def push(item = T.unsafe(nil), color: T.unsafe(nil), style: T.unsafe(nil)); end
   end
 end
 
 # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#8
 class CLI::UI::Frame::FrameStack::StackItem
-  # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#21
-  sig do
-    params(
-      color_name: T.any(::CLI::UI::Color, ::String, ::Symbol),
-      style_name: T.any(::CLI::UI::Frame::FrameStyle, ::String, ::Symbol)
-    ).void
-  end
+  # : (CLI::UI::colorable color_name, frame_stylable style_name) -> void
+  #
+  # @return [StackItem] a new instance of StackItem
+  #
+  # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#16
   def initialize(color_name, style_name); end
 
-  # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#12
-  sig { returns(::CLI::UI::Color) }
+  # : CLI::UI::Color
+  #
+  # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#10
   def color; end
 
-  # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#15
-  sig { returns(::CLI::UI::Frame::FrameStyle) }
+  # : CLI::UI::Frame::FrameStyle
+  #
+  # source://cli-ui//lib/cli/ui/frame/frame_stack.rb#13
   def frame_style; end
 end
 
-# @abstract Subclasses must implement the `abstract` methods below.
+# @abstract
 #
-# source://cli-ui//lib/cli/ui/frame/frame_style.rb#9
+# source://cli-ui//lib/cli/ui/frame/frame_style.rb#10
 module CLI::UI::Frame::FrameStyle
   include ::Kernel
-
-  abstract!
 
   # Draws the "Close" line for this frame style
   #
@@ -963,10 +920,12 @@ module CLI::UI::Frame::FrameStyle
   # * +:color+ - (required) The color of the frame.
   # * +:right_text+ - Text to print at the right of the line. Defaults to nil
   #
-  # @abstract
+  # : (String, color: CLI::UI::Color, ?right_text: String?) -> String
   #
-  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#78
-  sig { abstract.params(text: ::String, color: ::CLI::UI::Color, right_text: T.nilable(::String)).returns(::String) }
+  # @abstract
+  # @raise [NotImplementedError]
+  #
+  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#84
   def close(text, color:, right_text: T.unsafe(nil)); end
 
   # Draws a "divider" line for the current frame style
@@ -979,29 +938,33 @@ module CLI::UI::Frame::FrameStyle
   #
   # * +:color+ - (required) The color of the frame.
   #
-  # @abstract
+  # : (String, color: CLI::UI::Color) -> String
   #
-  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#91
-  sig { abstract.params(text: ::String, color: ::CLI::UI::Color).returns(::String) }
+  # @abstract
+  # @raise [NotImplementedError]
+  #
+  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#100
   def divider(text, color:); end
 
   # Returns the character(s) that should be printed at the beginning
   # of lines inside this frame
+  # : -> String
   #
   # @abstract
+  # @raise [NotImplementedError]
   #
   # source://cli-ui//lib/cli/ui/frame/frame_style.rb#45
-  sig { abstract.returns(::String) }
   def prefix; end
 
   # Returns the printing width of the prefix
+  # : -> Integer
   #
-  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#49
-  sig { returns(::Integer) }
+  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#51
   def prefix_width; end
 
-  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#94
-  sig { params(x: ::Integer, str: ::String).returns(::String) }
+  # : (Integer x, String str) -> String
+  #
+  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#105
   def print_at_x(x, str); end
 
   # Draws the "Open" line for this frame style
@@ -1014,16 +977,20 @@ module CLI::UI::Frame::FrameStyle
   #
   # * +:color+ - (required) The color of the frame.
   #
-  # @abstract
+  # : (String, color: CLI::UI::Color) -> String
   #
-  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#64
-  sig { abstract.params(text: ::String, color: ::CLI::UI::Color).returns(::String) }
+  # @abstract
+  # @raise [NotImplementedError]
+  #
+  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#67
   def start(text, color:); end
 
-  # @abstract
+  # : -> Symbol
   #
-  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#40
-  sig { abstract.returns(::Symbol) }
+  # @abstract
+  # @raise [NotImplementedError]
+  #
+  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#37
   def style_name; end
 
   class << self
@@ -1032,9 +999,9 @@ module CLI::UI::Frame::FrameStyle
     # ==== Attributes
     #
     # * +symbol+ - frame style name to lookup
+    # : ((String | Symbol) name) -> FrameStyle
     #
-    # source://cli-ui//lib/cli/ui/frame/frame_style.rb#32
-    sig { params(name: T.any(::String, ::Symbol)).returns(::CLI::UI::Frame::FrameStyle) }
+    # source://cli-ui//lib/cli/ui/frame/frame_style.rb#28
     def lookup(name); end
   end
 end
@@ -1059,8 +1026,9 @@ module CLI::UI::Frame::FrameStyle::Box
     #
     #   ┗━━ Close ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     #
-    # source://cli-ui//lib/cli/ui/frame/frame_style/box.rb#84
-    sig { override.params(text: ::String, color: ::CLI::UI::Color, right_text: T.nilable(::String)).returns(::String) }
+    # : (String text, color: CLI::UI::Color, ?right_text: String?) -> String
+    #
+    # source://cli-ui//lib/cli/ui/frame/frame_style/box.rb#87
     def close(text, color:, right_text: T.unsafe(nil)); end
 
     # Draws a "divider" line for the current frame style
@@ -1077,12 +1045,14 @@ module CLI::UI::Frame::FrameStyle::Box
     #
     #   ┣━━ Divider ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     #
-    # source://cli-ui//lib/cli/ui/frame/frame_style/box.rb#64
-    sig { override.params(text: ::String, color: ::CLI::UI::Color).returns(::String) }
+    # : (String text, color: CLI::UI::Color) -> String
+    #
+    # source://cli-ui//lib/cli/ui/frame/frame_style/box.rb#66
     def divider(text, color:); end
 
+    # : -> String
+    #
     # source://cli-ui//lib/cli/ui/frame/frame_style/box.rb#26
-    sig { override.returns(::String) }
     def prefix; end
 
     # Draws the "Open" line for this frame style
@@ -1099,25 +1069,21 @@ module CLI::UI::Frame::FrameStyle::Box
     #
     #   ┏━━ Open ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     #
-    # source://cli-ui//lib/cli/ui/frame/frame_style/box.rb#45
-    sig { override.params(text: ::String, color: ::CLI::UI::Color).returns(::String) }
+    # : (String text, color: CLI::UI::Color) -> String
+    #
+    # source://cli-ui//lib/cli/ui/frame/frame_style/box.rb#46
     def start(text, color:); end
 
-    # source://cli-ui//lib/cli/ui/frame/frame_style/box.rb#21
-    sig { override.returns(::Symbol) }
+    # : -> Symbol
+    #
+    # source://cli-ui//lib/cli/ui/frame/frame_style/box.rb#20
     def style_name; end
 
     private
 
-    # source://cli-ui//lib/cli/ui/frame/frame_style/box.rb#93
-    sig do
-      params(
-        text: ::String,
-        color: ::CLI::UI::Color,
-        first: ::String,
-        right_text: T.nilable(::String)
-      ).returns(::String)
-    end
+    # : (String text, color: CLI::UI::Color, first: String, ?right_text: String?) -> String
+    #
+    # source://cli-ui//lib/cli/ui/frame/frame_style/box.rb#94
     def edge(text, color:, first:, right_text: T.unsafe(nil)); end
   end
 end
@@ -1157,8 +1123,9 @@ module CLI::UI::Frame::FrameStyle::Bracket
     #
     #   ┗━━ Close
     #
-    # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#84
-    sig { override.params(text: ::String, color: ::CLI::UI::Color, right_text: T.nilable(::String)).returns(::String) }
+    # : (String text, color: CLI::UI::Color, ?right_text: String?) -> String
+    #
+    # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#87
     def close(text, color:, right_text: T.unsafe(nil)); end
 
     # Draws a "divider" line for the current frame style
@@ -1175,12 +1142,14 @@ module CLI::UI::Frame::FrameStyle::Bracket
     #
     #   ┣━━ Divider
     #
-    # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#64
-    sig { override.params(text: ::String, color: ::CLI::UI::Color).returns(::String) }
+    # : (String text, color: CLI::UI::Color) -> String
+    #
+    # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#66
     def divider(text, color:); end
 
+    # : -> String
+    #
     # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#26
-    sig { override.returns(::String) }
     def prefix; end
 
     # Draws the "Open" line for this frame style
@@ -1197,25 +1166,21 @@ module CLI::UI::Frame::FrameStyle::Bracket
     #
     #   ┏━━ Open
     #
-    # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#45
-    sig { override.params(text: ::String, color: ::CLI::UI::Color).returns(::String) }
+    # : (String text, color: CLI::UI::Color) -> String
+    #
+    # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#46
     def start(text, color:); end
 
-    # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#21
-    sig { override.returns(::Symbol) }
+    # : -> Symbol
+    #
+    # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#20
     def style_name; end
 
     private
 
-    # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#93
-    sig do
-      params(
-        text: ::String,
-        color: ::CLI::UI::Color,
-        first: ::String,
-        right_text: T.nilable(::String)
-      ).returns(::String)
-    end
+    # : (String text, color: CLI::UI::Color, first: String, ?right_text: String?) -> String
+    #
+    # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#94
     def edge(text, color:, first:, right_text: T.unsafe(nil)); end
   end
 end
@@ -1235,27 +1200,28 @@ CLI::UI::Frame::FrameStyle::Bracket::TOP_LEFT = T.let(T.unsafe(nil), String)
 # source://cli-ui//lib/cli/ui/frame/frame_style/bracket.rb#11
 CLI::UI::Frame::FrameStyle::Bracket::VERTICAL = T.let(T.unsafe(nil), String)
 
-# source://cli-ui//lib/cli/ui/frame/frame_style.rb#98
+# source://cli-ui//lib/cli/ui/frame/frame_style.rb#109
 class CLI::UI::Frame::FrameStyle::InvalidFrameStyleName < ::ArgumentError
-  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#102
-  sig { params(name: T.any(::String, ::Symbol)).void }
+  # : ((String | Symbol) name) -> void
+  #
+  # @return [InvalidFrameStyleName] a new instance of InvalidFrameStyleName
+  #
+  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#111
   def initialize(name); end
 
-  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#108
-  sig { returns(::String) }
+  # : -> String
+  #
+  # source://cli-ui//lib/cli/ui/frame/frame_style.rb#117
   def message; end
 end
 
-# source://cli-ui//lib/cli/ui/frame/frame_style.rb#18
+# source://cli-ui//lib/cli/ui/frame/frame_style.rb#16
 CLI::UI::Frame::FrameStyle::MAP = T.let(T.unsafe(nil), Hash)
 
-# source://cli-ui//lib/cli/ui/frame.rb#11
+# source://cli-ui//lib/cli/ui/frame.rb#10
 class CLI::UI::Frame::UnnestedFrameException < ::StandardError; end
 
-# source://cli-ui//lib/cli/ui.rb#32
-CLI::UI::FrameStylable = T.type_alias { T.any(::CLI::UI::Frame::FrameStyle, ::String, ::Symbol) }
-
-# source://cli-ui//lib/cli/ui/glyph.rb#8
+# source://cli-ui//lib/cli/ui/glyph.rb#6
 class CLI::UI::Glyph
   # Creates a new glyph
   #
@@ -1266,49 +1232,49 @@ class CLI::UI::Glyph
   # * +plain+ - A fallback plain string to be used in case glyphs are disabled
   # * +color+ - What color to output the glyph. Check +CLI::UI::Color+ for options.
   #
-  # source://cli-ui//lib/cli/ui/glyph.rb#47
-  sig do
-    params(
-      handle: ::String,
-      codepoint: T.any(::Integer, T::Array[::Integer]),
-      plain: ::String,
-      color: ::CLI::UI::Color
-    ).void
-  end
+  # : (String handle, (Integer | Array[Integer]) codepoint, String plain, Color color) -> void
+  #
+  # @return [Glyph] a new instance of Glyph
+  #
+  # source://cli-ui//lib/cli/ui/glyph.rb#41
   def initialize(handle, codepoint, plain, color); end
 
-  # @return [String]
+  # : String
   #
-  # source://cli-ui//lib/cli/ui/glyph.rb#29
+  # source://cli-ui//lib/cli/ui/glyph.rb#23
   def char; end
 
-  # source://cli-ui//lib/cli/ui/glyph.rb#32
-  sig { returns(T.any(::Integer, T::Array[::Integer])) }
+  # : (Integer | Array[Integer])
+  #
+  # source://cli-ui//lib/cli/ui/glyph.rb#26
   def codepoint; end
 
-  # source://cli-ui//lib/cli/ui/glyph.rb#35
-  sig { returns(::CLI::UI::Color) }
+  # : Color
+  #
+  # source://cli-ui//lib/cli/ui/glyph.rb#29
   def color; end
 
-  # @return [String]
+  # : String
   #
-  # source://cli-ui//lib/cli/ui/glyph.rb#29
+  # source://cli-ui//lib/cli/ui/glyph.rb#23
   def fmt; end
 
-  # source://cli-ui//lib/cli/ui/glyph.rb#29
-  sig { returns(::String) }
+  # : String
+  #
+  # source://cli-ui//lib/cli/ui/glyph.rb#23
   def handle; end
 
-  # @return [String]
+  # : String
   #
-  # source://cli-ui//lib/cli/ui/glyph.rb#29
+  # source://cli-ui//lib/cli/ui/glyph.rb#23
   def to_s; end
 
   class << self
     # All available glyphs by name
     #
-    # source://cli-ui//lib/cli/ui/glyph.rb#92
-    sig { returns(T::Array[::String]) }
+    # : -> Array[String]
+    #
+    # source://cli-ui//lib/cli/ui/glyph.rb#84
     def available; end
 
     # Looks up a glyph by name
@@ -1320,115 +1286,136 @@ class CLI::UI::Glyph
     # ==== Returns
     # Returns a terminal output-capable string
     #
-    # source://cli-ui//lib/cli/ui/glyph.rb#83
-    sig { params(name: ::String).returns(::CLI::UI::Glyph) }
+    # : (String name) -> Glyph
+    #
+    # source://cli-ui//lib/cli/ui/glyph.rb#75
     def lookup(name); end
   end
 end
 
 # Bug emoji (🐛)
 #
-# source://cli-ui//lib/cli/ui/glyph.rb#65
+# source://cli-ui//lib/cli/ui/glyph.rb#59
 CLI::UI::Glyph::BUG = T.let(T.unsafe(nil), CLI::UI::Glyph)
 
 # GREEN CHECK MARK (✓)
 #
-# source://cli-ui//lib/cli/ui/glyph.rb#63
+# source://cli-ui//lib/cli/ui/glyph.rb#57
 CLI::UI::Glyph::CHECK = T.let(T.unsafe(nil), CLI::UI::Glyph)
 
 # RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK (»)
 #
-# source://cli-ui//lib/cli/ui/glyph.rb#66
+# source://cli-ui//lib/cli/ui/glyph.rb#60
 CLI::UI::Glyph::CHEVRON = T.let(T.unsafe(nil), CLI::UI::Glyph)
 
 # HOURGLASS (⧖)
 #
-# source://cli-ui//lib/cli/ui/glyph.rb#67
+# source://cli-ui//lib/cli/ui/glyph.rb#61
 CLI::UI::Glyph::HOURGLASS = T.let(T.unsafe(nil), CLI::UI::Glyph)
 
 # BLUE MATHEMATICAL SCRIPT SMALL i (𝒾)
 #
-# source://cli-ui//lib/cli/ui/glyph.rb#61
+# source://cli-ui//lib/cli/ui/glyph.rb#55
 CLI::UI::Glyph::INFO = T.let(T.unsafe(nil), CLI::UI::Glyph)
 
-# source://cli-ui//lib/cli/ui/glyph.rb#11
+# source://cli-ui//lib/cli/ui/glyph.rb#7
 class CLI::UI::Glyph::InvalidGlyphHandle < ::ArgumentError
-  # source://cli-ui//lib/cli/ui/glyph.rb#15
-  sig { params(handle: ::String).void }
+  # : (String handle) -> void
+  #
+  # @return [InvalidGlyphHandle] a new instance of InvalidGlyphHandle
+  #
+  # source://cli-ui//lib/cli/ui/glyph.rb#9
   def initialize(handle); end
 
-  # source://cli-ui//lib/cli/ui/glyph.rb#21
-  sig { returns(::String) }
+  # : -> String
+  #
+  # source://cli-ui//lib/cli/ui/glyph.rb#15
   def message; end
 end
 
 # Mapping of glyphs to terminal output
 #
-# source://cli-ui//lib/cli/ui/glyph.rb#59
+# source://cli-ui//lib/cli/ui/glyph.rb#53
 CLI::UI::Glyph::MAP = T.let(T.unsafe(nil), Hash)
 
 # BLUE QUESTION MARK (?)
 #
-# source://cli-ui//lib/cli/ui/glyph.rb#62
+# source://cli-ui//lib/cli/ui/glyph.rb#56
 CLI::UI::Glyph::QUESTION = T.let(T.unsafe(nil), CLI::UI::Glyph)
 
 # YELLOW SMALL STAR (⭑)
 #
-# source://cli-ui//lib/cli/ui/glyph.rb#60
+# source://cli-ui//lib/cli/ui/glyph.rb#54
 CLI::UI::Glyph::STAR = T.let(T.unsafe(nil), CLI::UI::Glyph)
 
 # WARNING SIGN + VARIATION SELECTOR 16 (⚠️ )
 #
-# source://cli-ui//lib/cli/ui/glyph.rb#68
+# source://cli-ui//lib/cli/ui/glyph.rb#62
 CLI::UI::Glyph::WARNING = T.let(T.unsafe(nil), CLI::UI::Glyph)
 
 # RED BALLOT X (✗)
 #
-# source://cli-ui//lib/cli/ui/glyph.rb#64
+# source://cli-ui//lib/cli/ui/glyph.rb#58
 CLI::UI::Glyph::X = T.let(T.unsafe(nil), CLI::UI::Glyph)
-
-# source://cli-ui//lib/cli/ui.rb#33
-CLI::UI::IOLike = T.type_alias { T.any(::IO, ::StringIO) }
 
 # source://cli-ui//lib/cli/ui/os.rb#8
 class CLI::UI::OS
-  # source://cli-ui//lib/cli/ui/os.rb#12
-  sig { params(emoji: T::Boolean, color_prompt: T::Boolean, arrow_keys: T::Boolean, shift_cursor: T::Boolean).void }
+  # : (?emoji: bool, ?color_prompt: bool, ?arrow_keys: bool, ?shift_cursor: bool) -> void
+  #
+  # @return [OS] a new instance of OS
+  #
+  # source://cli-ui//lib/cli/ui/os.rb#10
   def initialize(emoji: T.unsafe(nil), color_prompt: T.unsafe(nil), arrow_keys: T.unsafe(nil), shift_cursor: T.unsafe(nil)); end
 
-  # source://cli-ui//lib/cli/ui/os.rb#35
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/os.rb#33
   def shift_cursor_back_on_horizontal_absolute?; end
 
-  # source://cli-ui//lib/cli/ui/os.rb#30
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/os.rb#28
   def suggest_arrow_keys?; end
 
-  # source://cli-ui//lib/cli/ui/os.rb#25
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/os.rb#23
   def use_color_prompt?; end
 
-  # source://cli-ui//lib/cli/ui/os.rb#20
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/os.rb#18
   def use_emoji?; end
 
   class << self
-    # source://cli-ui//lib/cli/ui/os.rb#43
-    sig { returns(::CLI::UI::OS) }
+    # : -> OS
+    #
+    # source://cli-ui//lib/cli/ui/os.rb#39
     def current; end
   end
 end
 
-# source://cli-ui//lib/cli/ui/os.rb#60
+# source://cli-ui//lib/cli/ui/os.rb#59
+CLI::UI::OS::FREEBSD = T.let(T.unsafe(nil), CLI::UI::OS)
+
+# source://cli-ui//lib/cli/ui/os.rb#58
 CLI::UI::OS::LINUX = T.let(T.unsafe(nil), CLI::UI::OS)
 
-# source://cli-ui//lib/cli/ui/os.rb#59
+# source://cli-ui//lib/cli/ui/os.rb#57
 CLI::UI::OS::MAC = T.let(T.unsafe(nil), CLI::UI::OS)
 
-# source://cli-ui//lib/cli/ui/os.rb#61
+# source://cli-ui//lib/cli/ui/os.rb#60
 CLI::UI::OS::WINDOWS = T.let(T.unsafe(nil), CLI::UI::OS)
 
-# source://cli-ui//lib/cli/ui/printer.rb#8
+# source://cli-ui//lib/cli/ui/printer.rb#6
 class CLI::UI::Printer
   class << self
     # Print a message to a stream with common utilities.
@@ -1456,23 +1443,13 @@ class CLI::UI::Printer
     #
     #   CLI::UI::Printer.puts('{{x}} Ouch', to: $stderr)
     #
-    # source://cli-ui//lib/cli/ui/printer.rb#50
-    sig do
-      params(
-        msg: ::String,
-        frame_color: T.nilable(T.any(::CLI::UI::Color, ::String, ::Symbol)),
-        to: T.any(::IO, ::StringIO),
-        encoding: T.nilable(::Encoding),
-        format: T::Boolean,
-        graceful: T::Boolean,
-        wrap: T::Boolean
-      ).returns(T::Boolean)
-    end
+    #
+    # source://cli-ui//lib/cli/ui/printer.rb#34
     def puts(msg, frame_color: T.unsafe(nil), to: T.unsafe(nil), encoding: T.unsafe(nil), format: T.unsafe(nil), graceful: T.unsafe(nil), wrap: T.unsafe(nil)); end
   end
 end
 
-# source://cli-ui//lib/cli/ui/progress.rb#8
+# source://cli-ui//lib/cli/ui/progress.rb#6
 class CLI::UI::Progress
   # Initialize a progress bar. Typically used in a +Progress.progress+ block
   #
@@ -1480,10 +1457,14 @@ class CLI::UI::Progress
   #
   # * +:title+ - The title of the progress bar
   # * +:width+ - The width of the terminal
+  # * +:reporter+ - The progress reporter instance
   #
-  # source://cli-ui//lib/cli/ui/progress.rb#74
-  sig { params(title: T.nilable(::String), width: ::Integer).void }
-  def initialize(title = T.unsafe(nil), width: T.unsafe(nil)); end
+  # : (?String? title, ?width: Integer, ?reporter: ProgressReporter::Reporter?) -> void
+  #
+  # @return [Progress] a new instance of Progress
+  #
+  # source://cli-ui//lib/cli/ui/progress.rb#65
+  def initialize(title = T.unsafe(nil), width: T.unsafe(nil), reporter: T.unsafe(nil)); end
 
   # Set the progress of the bar. Typically used in a +Progress.progress+ block
   #
@@ -1495,16 +1476,18 @@ class CLI::UI::Progress
   #
   # *Note:* The +:percent+ and +:set_percent must be between 0.00 and 1.0
   #
+  # : (?percent: Numeric?, ?set_percent: Numeric?) -> void
+  #
   # @raise [ArgumentError]
   #
-  # source://cli-ui//lib/cli/ui/progress.rb#91
-  sig { params(percent: T.nilable(::Numeric), set_percent: T.nilable(::Numeric)).void }
+  # source://cli-ui//lib/cli/ui/progress.rb#83
   def tick(percent: T.unsafe(nil), set_percent: T.unsafe(nil)); end
 
   # Format the progress bar to be printed to terminal
   #
-  # source://cli-ui//lib/cli/ui/progress.rb#118
-  sig { returns(::String) }
+  # : -> String
+  #
+  # source://cli-ui//lib/cli/ui/progress.rb#113
   def to_s; end
 
   # Update the progress bar title
@@ -1513,8 +1496,9 @@ class CLI::UI::Progress
   #
   # * +new_title+ - title to change the progress bar to
   #
-  # source://cli-ui//lib/cli/ui/progress.rb#111
-  sig { params(new_title: ::String).void }
+  # : (String new_title) -> void
+  #
+  # source://cli-ui//lib/cli/ui/progress.rb#106
   def update_title(new_title); end
 
   class << self
@@ -1544,31 +1528,159 @@ class CLI::UI::Progress
     #     bar.tick(percent: 0.05)
     #     bar.update_title('New title')
     #   end
+    # : [T] (?String? title, ?width: Integer) { (Progress bar) -> T } -> T
     #
-    # source://cli-ui//lib/cli/ui/progress.rb#54
-    sig do
-      type_parameters(:T)
-        .params(
-          title: T.nilable(::String),
-          width: ::Integer,
-          block: T.proc.params(bar: ::CLI::UI::Progress).returns(T.type_parameter(:T))
-        ).returns(T.type_parameter(:T))
-    end
+    # source://cli-ui//lib/cli/ui/progress.rb#40
     def progress(title = T.unsafe(nil), width: T.unsafe(nil), &block); end
   end
 end
 
 # A Cyan filled block
 #
-# source://cli-ui//lib/cli/ui/progress.rb#12
+# source://cli-ui//lib/cli/ui/progress.rb#8
 CLI::UI::Progress::FILLED_BAR = T.let(T.unsafe(nil), String)
 
 # A bright white block
 #
-# source://cli-ui//lib/cli/ui/progress.rb#14
+# source://cli-ui//lib/cli/ui/progress.rb#10
 CLI::UI::Progress::UNFILLED_BAR = T.let(T.unsafe(nil), String)
 
-# source://cli-ui//lib/cli/ui/prompt.rb#15
+# Handles terminal progress bar reporting using ConEmu OSC 9;4 sequences
+# Supports:
+# - Numerical progress (0-100%)
+# - Indeterminate/pulsing progress
+# - Success/error states
+# - Paused state
+#
+# source://cli-ui//lib/cli/ui/progress_reporter.rb#12
+module CLI::UI::ProgressReporter
+  class << self
+    # : -> Reporter?
+    #
+    # source://cli-ui//lib/cli/ui/progress_reporter.rb#165
+    def current_reporter; end
+
+    # Thread-local storage for the current reporter stack
+    # : -> Array[Reporter]
+    #
+    # source://cli-ui//lib/cli/ui/progress_reporter.rb#160
+    def reporter_stack; end
+
+    # : -> bool
+    #
+    # @return [Boolean]
+    #
+    # source://cli-ui//lib/cli/ui/progress_reporter.rb#183
+    def supports_progress?; end
+
+    # Block-based API that ensures progress is cleared
+    # : [T] (?mode: Symbol, ?to: io_like, ?delay_start: bool) { (Reporter reporter) -> T } -> T
+    #
+    # source://cli-ui//lib/cli/ui/progress_reporter.rb#171
+    def with_progress(mode: T.unsafe(nil), to: T.unsafe(nil), delay_start: T.unsafe(nil), &block); end
+  end
+end
+
+# Progress reporter instance that manages the lifecycle of progress reporting
+#
+# source://cli-ui//lib/cli/ui/progress_reporter.rb#14
+class CLI::UI::ProgressReporter::Reporter
+  # : (Symbol mode, ?io_like to, ?parent: Reporter?, ?delay_start: bool) -> void
+  #
+  # @return [Reporter] a new instance of Reporter
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#27
+  def initialize(mode, to = T.unsafe(nil), parent: T.unsafe(nil), delay_start: T.unsafe(nil)); end
+
+  # : (Reporter child) -> void
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#51
+  def add_child(child); end
+
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#137
+  def cleanup; end
+
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#128
+  def clear; end
+
+  # Force indeterminate mode even if there are children
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#99
+  def force_set_indeterminate; end
+
+  # Force progress mode even if there are children - used by SpinGroup
+  # when a task needs to show deterministic progress
+  # : (Integer percentage) -> void
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#89
+  def force_set_progress(percentage); end
+
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#61
+  def has_active_children?; end
+
+  # : (Reporter child) -> void
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#56
+  def remove_child(child); end
+
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#107
+  def set_error; end
+
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#77
+  def set_indeterminate; end
+
+  # : (?Integer? percentage) -> void
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#115
+  def set_paused(percentage = T.unsafe(nil)); end
+
+  # : (Integer percentage) -> void
+  #
+  # source://cli-ui//lib/cli/ui/progress_reporter.rb#66
+  def set_progress(percentage); end
+end
+
+# source://cli-ui//lib/cli/ui/progress_reporter.rb#22
+CLI::UI::ProgressReporter::Reporter::ERROR = T.let(T.unsafe(nil), Integer)
+
+# source://cli-ui//lib/cli/ui/progress_reporter.rb#23
+CLI::UI::ProgressReporter::Reporter::INDETERMINATE = T.let(T.unsafe(nil), Integer)
+
+# OSC (Operating System Command) escape sequences
+#
+# source://cli-ui//lib/cli/ui/progress_reporter.rb#16
+CLI::UI::ProgressReporter::Reporter::OSC = T.let(T.unsafe(nil), String)
+
+# source://cli-ui//lib/cli/ui/progress_reporter.rb#24
+CLI::UI::ProgressReporter::Reporter::PAUSED = T.let(T.unsafe(nil), Integer)
+
+# Progress states
+#
+# source://cli-ui//lib/cli/ui/progress_reporter.rb#20
+CLI::UI::ProgressReporter::Reporter::REMOVE = T.let(T.unsafe(nil), Integer)
+
+# source://cli-ui//lib/cli/ui/progress_reporter.rb#21
+CLI::UI::ProgressReporter::Reporter::SET_PROGRESS = T.let(T.unsafe(nil), Integer)
+
+# String Terminator (BEL)
+#
+# source://cli-ui//lib/cli/ui/progress_reporter.rb#17
+CLI::UI::ProgressReporter::Reporter::ST = T.let(T.unsafe(nil), String)
+
+# source://cli-ui//lib/cli/ui/prompt.rb#14
 module CLI::UI::Prompt
   class << self
     # Present the user with a message and wait for any key to be pressed, returning the pressed key.
@@ -1578,9 +1690,9 @@ module CLI::UI::Prompt
     #   CLI::UI::Prompt.any_key # Press any key to continue...
     #
     #   CLI::UI::Prompt.any_key('Press RETURN to continue...') # Then check if that's what they pressed
+    # : (?String prompt) -> String?
     #
-    # source://cli-ui//lib/cli/ui/prompt.rb#212
-    sig { params(prompt: ::String).returns(T.nilable(::String)) }
+    # source://cli-ui//lib/cli/ui/prompt.rb#202
     def any_key(prompt = T.unsafe(nil)); end
 
     # Ask a user a question with either free form answer or a set of answers (multiple choice)
@@ -1650,20 +1762,9 @@ module CLI::UI::Prompt
     #     handler.option('python') { |selection| selection }
     #   end
     #
-    # source://cli-ui//lib/cli/ui/prompt.rb#118
-    sig do
-      params(
-        question: ::String,
-        options: T.nilable(T::Array[::String]),
-        default: T.nilable(T.any(::String, T::Array[::String])),
-        is_file: T::Boolean,
-        allow_empty: T::Boolean,
-        multiple: T::Boolean,
-        filter_ui: T::Boolean,
-        select_ui: T::Boolean,
-        options_proc: T.nilable(T.proc.params(handler: ::CLI::UI::Prompt::OptionsHandler).void)
-      ).returns(T.any(::String, T::Array[::String]))
-    end
+    # : (String question, ?options: Array[String]?, ?default: (String | Array[String])?, ?is_file: bool, ?allow_empty: bool, ?multiple: bool, ?filter_ui: bool, ?select_ui: bool) ?{ (OptionsHandler handler) -> void } -> (String | Array[String])
+    #
+    # source://cli-ui//lib/cli/ui/prompt.rb#103
     def ask(question, options: T.unsafe(nil), default: T.unsafe(nil), is_file: T.unsafe(nil), allow_empty: T.unsafe(nil), multiple: T.unsafe(nil), filter_ui: T.unsafe(nil), select_ui: T.unsafe(nil), &options_proc); end
 
     # Asks the user for a single-line answer, without displaying the characters while typing.
@@ -1673,9 +1774,9 @@ module CLI::UI::Prompt
     #
     # The password, without a trailing newline.
     # If the user simply presses "Enter" without typing any password, this will return an empty string.
+    # : (String question) -> String
     #
-    # source://cli-ui//lib/cli/ui/prompt.rb#169
-    sig { params(question: ::String).returns(::String) }
+    # source://cli-ui//lib/cli/ui/prompt.rb#159
     def ask_password(question); end
 
     # Asks the user a yes/no question.
@@ -1688,12 +1789,14 @@ module CLI::UI::Prompt
     #
     #   CLI::UI::Prompt.confirm('Do a dangerous thing?', default: false)
     #
-    # source://cli-ui//lib/cli/ui/prompt.rb#200
-    sig { params(question: ::String, default: T::Boolean).returns(T::Boolean) }
+    # : (String question, ?default: bool) -> bool
+    #
+    # source://cli-ui//lib/cli/ui/prompt.rb#190
     def confirm(question, default: T.unsafe(nil)); end
 
-    # source://cli-ui//lib/cli/ui/prompt.rb#23
-    sig { returns(::CLI::UI::Color) }
+    # : -> Color
+    #
+    # source://cli-ui//lib/cli/ui/prompt.rb#20
     def instructions_color; end
 
     # Set the instructions color.
@@ -1702,66 +1805,50 @@ module CLI::UI::Prompt
     #
     # * +color+ - the color to use for prompt instructions
     #
-    # source://cli-ui//lib/cli/ui/prompt.rb#34
-    sig { params(color: T.any(::CLI::UI::Color, ::String, ::Symbol)).void }
+    # : (colorable color) -> void
+    #
+    # source://cli-ui//lib/cli/ui/prompt.rb#31
     def instructions_color=(color); end
 
     # Wait for any key to be pressed, returning the pressed key.
+    # : -> String?
     #
-    # source://cli-ui//lib/cli/ui/prompt.rb#221
-    sig { returns(T.nilable(::String)) }
+    # source://cli-ui//lib/cli/ui/prompt.rb#211
     def read_char; end
 
     private
 
-    # source://cli-ui//lib/cli/ui/prompt.rb#240
-    sig do
-      params(
-        question: ::String,
-        default: T.nilable(::String),
-        is_file: T::Boolean,
-        allow_empty: T::Boolean
-      ).returns(::String)
-    end
+    # : (String question, String? default, bool is_file, bool allow_empty) -> String
+    #
+    # source://cli-ui//lib/cli/ui/prompt.rb#227
     def ask_free_form(question, default, is_file, allow_empty); end
 
+    # : (String question, ?Array[String]? options, ?multiple: bool, ?default: (String | Array[String])?, ?filter_ui: bool, ?select_ui: bool) -> (String | Array[String])
+    #
     # @raise [ArgumentError]
     #
-    # source://cli-ui//lib/cli/ui/prompt.rb#278
-    sig do
-      params(
-        question: ::String,
-        options: T.nilable(T::Array[::String]),
-        multiple: T::Boolean,
-        default: T.nilable(T.any(::String, T::Array[::String])),
-        filter_ui: T::Boolean,
-        select_ui: T::Boolean
-      ).returns(T.any(::String, T::Array[::String]))
-    end
+    # source://cli-ui//lib/cli/ui/prompt.rb#256
     def ask_interactive(question, options = T.unsafe(nil), multiple: T.unsafe(nil), default: T.unsafe(nil), filter_ui: T.unsafe(nil), select_ui: T.unsafe(nil)); end
 
     # Useful for stubbing in tests
+    # : (Array[String] options, ?multiple: bool, ?default: (Array[String] | String)?) -> (Array[String] | String)
     #
-    # source://cli-ui//lib/cli/ui/prompt.rb#339
-    sig do
-      params(
-        options: T::Array[::String],
-        multiple: T::Boolean,
-        default: T.nilable(T.any(::String, T::Array[::String]))
-      ).returns(T.any(::String, T::Array[::String]))
-    end
+    # source://cli-ui//lib/cli/ui/prompt.rb#315
     def interactive_prompt(options, multiple: T.unsafe(nil), default: T.unsafe(nil)); end
 
-    # source://cli-ui//lib/cli/ui/prompt.rb#359
-    sig { params(str: ::String).void }
+    # : (String str) -> void
+    #
+    # source://cli-ui//lib/cli/ui/prompt.rb#335
     def puts_question(str); end
 
-    # source://cli-ui//lib/cli/ui/prompt.rb#364
-    sig { params(is_file: T::Boolean).returns(::String) }
+    # : (?is_file: bool) -> String
+    #
+    # source://cli-ui//lib/cli/ui/prompt.rb#340
     def readline(is_file: T.unsafe(nil)); end
 
-    # source://cli-ui//lib/cli/ui/prompt.rb#346
-    sig { params(default: ::String).void }
+    # : (String default) -> void
+    #
+    # source://cli-ui//lib/cli/ui/prompt.rb#322
     def write_default_over_empty_input(default); end
   end
 end
@@ -1775,157 +1862,222 @@ class CLI::UI::Prompt::InteractiveOptions
   #
   #   CLI::UI::Prompt::InteractiveOptions.new(%w(rails go python))
   #
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#60
-  sig do
-    params(
-      options: T::Array[::String],
-      multiple: T::Boolean,
-      default: T.nilable(T.any(::String, T::Array[::String]))
-    ).void
-  end
+  # : (Array[String] options, ?multiple: bool, ?default: (String | Array[String])?) -> void
+  #
+  # @return [InteractiveOptions] a new instance of InteractiveOptions
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#52
   def initialize(options, multiple: T.unsafe(nil), default: T.unsafe(nil)); end
 
   # Calls the +InteractiveOptions+ and asks the question
   # Usually used from +self.call+
   #
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#92
-  sig { returns(T.any(::Integer, T::Array[::Integer])) }
+  # : -> (Integer | Array[Integer])
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#84
   def call; end
 
   private
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#251
-  sig { params(char: ::String).void }
+  # : (String char) -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#298
   def build_selection(char); end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#112
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#104
   def calculate_option_line_lengths; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#257
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#304
   def chop_selection; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#151
-  sig { params(number_of_lines: ::Integer).void }
+  # : (?Integer number_of_lines) -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#143
   def clear_output(number_of_lines = T.unsafe(nil)); end
 
   # Don't use this in place of +@displaying_metadata+, this updates too
   # quickly to be useful when drawing to the screen.
+  # : -> bool
   #
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#167
-  sig { returns(T::Boolean) }
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#159
   def display_metadata?; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#438
-  sig { returns(::Integer) }
+  # : -> Integer
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#490
   def distance_from_selection_to_end; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#443
-  sig { returns(::Integer) }
+  # : -> Integer
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#495
   def distance_from_start_to_selection; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#207
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#199
   def down; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#458
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#510
   def ensure_first_item_is_continuation_marker; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#453
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#505
   def ensure_last_item_is_continuation_marker; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#431
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#483
   def ensure_visible_is_active; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#358
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#410
   def filtering?; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#519
-  sig { params(format: ::String, choice: ::String).returns(::String) }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#210
+  def first_option; end
+
+  # : (String format, String choice) -> String
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#571
   def format_choice(format, choice); end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#363
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#415
   def has_filter?; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#448
-  sig { returns(::Integer) }
+  # : -> Integer
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#500
   def index_of_active_option; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#463
-  sig { returns(::Integer) }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#216
+  def last_option; end
+
+  # : -> Integer
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#515
   def max_lines; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#172
-  sig { returns(::Integer) }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#222
+  def next_page; end
+
+  # : -> Integer
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#164
   def num_lines; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#388
-  sig { params(recalculate: T::Boolean).returns(T::Array[[::String, T.nilable(::Integer)]]) }
+  # : (?recalculate: bool) -> Array[[String, Integer?]]
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#440
   def presented_options(recalculate: T.unsafe(nil)); end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#289
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#233
+  def previous_page; end
+
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#336
   def process_input_until_redraw_required; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#468
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#520
   def render_options; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#142
-  sig { params(number_of_lines: ::Integer).void }
+  # : (?Integer number_of_lines) -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#134
   def reset_position(number_of_lines = T.unsafe(nil)); end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#241
-  sig { params(char: ::String).void }
+  # : (String char) -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#288
   def select_bool(char); end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#281
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#328
   def select_current; end
 
   # n is 1-indexed selection
   # n == 0 if "Done" was selected in @multiple mode
+  # : (Integer n, ?final: bool) -> void
   #
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#220
-  sig { params(n: ::Integer).void }
-  def select_n(n); end
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#247
+  def select_n(n, final: T.unsafe(nil)); end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#353
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#405
   def selecting?; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#368
-  sig { void }
+  # : (Integer n) -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#274
+  def should_enter_select_mode?(n); end
+
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#420
   def start_filter; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#374
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#426
   def start_line_select; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#381
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#433
   def stop_line_select; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#186
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#178
   def terminal_width_changed?; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#196
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#188
   def up; end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#263
-  sig { params(char: ::String).void }
+  # : (String char) -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#310
   def update_search(char); end
 
-  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#296
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#343
   def wait_for_user_input; end
 
   class << self
@@ -1943,54 +2095,55 @@ class CLI::UI::Prompt::InteractiveOptions
     # Ask an interactive question
     #   CLI::UI::Prompt::InteractiveOptions.call(%w(rails go python))
     #
-    # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#37
-    sig do
-      params(
-        options: T::Array[::String],
-        multiple: T::Boolean,
-        default: T.nilable(T.any(::String, T::Array[::String]))
-      ).returns(T.any(::String, T::Array[::String]))
-    end
+    # : (Array[String] options, ?multiple: bool, ?default: (String | Array[String])?) -> (String | Array[String])
+    #
+    # source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#30
     def call(options, multiple: T.unsafe(nil), default: T.unsafe(nil)); end
   end
 end
 
-# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#191
+# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#183
 CLI::UI::Prompt::InteractiveOptions::BACKSPACE = T.let(T.unsafe(nil), String)
 
-# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#14
+# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#12
 CLI::UI::Prompt::InteractiveOptions::CHECKBOX_ICON = T.let(T.unsafe(nil), Hash)
 
-# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#192
+# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#184
 CLI::UI::Prompt::InteractiveOptions::CTRL_C = T.let(T.unsafe(nil), String)
 
-# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#193
+# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#185
 CLI::UI::Prompt::InteractiveOptions::CTRL_D = T.let(T.unsafe(nil), String)
 
-# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#13
+# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#11
 CLI::UI::Prompt::InteractiveOptions::DONE = T.let(T.unsafe(nil), String)
 
-# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#190
+# source://cli-ui//lib/cli/ui/prompt/interactive_options.rb#182
 CLI::UI::Prompt::InteractiveOptions::ESC = T.let(T.unsafe(nil), String)
 
 # A class that handles the various options of an InteractivePrompt and their callbacks
 #
 # source://cli-ui//lib/cli/ui/prompt/options_handler.rb#8
 class CLI::UI::Prompt::OptionsHandler
-  # source://cli-ui//lib/cli/ui/prompt/options_handler.rb#12
-  sig { void }
+  # : -> void
+  #
+  # @return [OptionsHandler] a new instance of OptionsHandler
+  #
+  # source://cli-ui//lib/cli/ui/prompt/options_handler.rb#10
   def initialize; end
 
-  # source://cli-ui//lib/cli/ui/prompt/options_handler.rb#27
-  sig { params(options: T.any(::String, T::Array[::String])).returns(::String) }
+  # : ((Array[String] | String) options) -> String
+  #
+  # source://cli-ui//lib/cli/ui/prompt/options_handler.rb#25
   def call(options); end
 
-  # source://cli-ui//lib/cli/ui/prompt/options_handler.rb#22
-  sig { params(option: ::String, handler: T.proc.params(option: ::String).returns(::String)).void }
+  # : (String option) { (String option) -> String } -> void
+  #
+  # source://cli-ui//lib/cli/ui/prompt/options_handler.rb#20
   def option(option, &handler); end
 
-  # source://cli-ui//lib/cli/ui/prompt/options_handler.rb#17
-  sig { returns(T::Array[::String]) }
+  # : -> Array[String]
+  #
+  # source://cli-ui//lib/cli/ui/prompt/options_handler.rb#15
   def options; end
 end
 
@@ -2011,10 +2164,10 @@ end
 
 # Convenience accessor to +CLI::UI::Spinner::SpinGroup+
 #
-# source://cli-ui//lib/cli/ui.rb#29
+# source://cli-ui//lib/cli/ui.rb#24
 CLI::UI::SpinGroup = CLI::UI::Spinner::SpinGroup
 
-# source://cli-ui//lib/cli/ui/spinner.rb#8
+# source://cli-ui//lib/cli/ui/spinner.rb#6
 module CLI::UI::Spinner
   class << self
     # We use this from CLI::UI::Widgets::Status to render an additional
@@ -2027,18 +2180,19 @@ module CLI::UI::Spinner
     # While it would be possible to stitch through some connection between
     # the SpinGroup and the Widgets included in its title, this is simpler
     # in practice and seems unlikely to cause issues in practice.
+    # : -> String
     #
-    # source://cli-ui//lib/cli/ui/spinner.rb#44
-    sig { returns(::String) }
+    # source://cli-ui//lib/cli/ui/spinner.rb#38
     def current_rune; end
 
-    # source://cli-ui//lib/cli/ui/spinner.rb#31
-    sig { returns(T.nilable(::Integer)) }
+    # : Integer?
+    #
+    # source://cli-ui//lib/cli/ui/spinner.rb#25
     def index; end
 
-    # @return [Integer, nil]
+    # : Integer?
     #
-    # source://cli-ui//lib/cli/ui/spinner.rb#31
+    # source://cli-ui//lib/cli/ui/spinner.rb#25
     def index=(_arg0); end
 
     # Adds a single spinner
@@ -2065,15 +2219,9 @@ module CLI::UI::Spinner
     #
     #   CLI::UI::Spinner.spin('Title') { sleep 1.0 }
     #
-    # source://cli-ui//lib/cli/ui/spinner.rb#84
-    sig do
-      params(
-        title: ::String,
-        auto_debrief: T::Boolean,
-        to: T.any(::IO, ::StringIO),
-        block: T.proc.params(task: ::CLI::UI::Spinner::SpinGroup::Task).void
-      ).returns(T::Boolean)
-    end
+    # : (String title, ?auto_debrief: bool, ?to: io_like) { (SpinGroup::Task task) -> void } -> bool
+    #
+    # source://cli-ui//lib/cli/ui/spinner.rb#69
     def spin(title, auto_debrief: T.unsafe(nil), to: T.unsafe(nil), &block); end
   end
 end
@@ -2091,34 +2239,39 @@ class CLI::UI::Spinner::Async
   #
   #   CLI::UI::Spinner::Async.new('Title')
   #
-  # source://cli-ui//lib/cli/ui/spinner/async.rb#33
-  sig { params(title: ::String).void }
+  # : (String title) -> void
+  #
+  # @return [Async] a new instance of Async
+  #
+  # source://cli-ui//lib/cli/ui/spinner/async.rb#29
   def initialize(title); end
 
   # Stops an asynchronous spinner
   #
-  # source://cli-ui//lib/cli/ui/spinner/async.rb#45
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # source://cli-ui//lib/cli/ui/spinner/async.rb#41
   def stop; end
 
   class << self
     # Convenience method for +initialize+
     #
-    # source://cli-ui//lib/cli/ui/spinner/async.rb#16
-    sig { params(title: ::String).returns(::CLI::UI::Spinner::Async) }
+    # : (String title) -> Async
+    #
+    # source://cli-ui//lib/cli/ui/spinner/async.rb#12
     def start(title); end
   end
 end
 
-# source://cli-ui//lib/cli/ui/spinner.rb#25
+# source://cli-ui//lib/cli/ui/spinner.rb#21
 CLI::UI::Spinner::GLYPHS = T.let(T.unsafe(nil), Array)
 
 # seconds
 #
-# source://cli-ui//lib/cli/ui/spinner.rb#14
+# source://cli-ui//lib/cli/ui/spinner.rb#10
 CLI::UI::Spinner::PERIOD = T.let(T.unsafe(nil), Float)
 
-# source://cli-ui//lib/cli/ui/spinner.rb#17
+# source://cli-ui//lib/cli/ui/spinner.rb#13
 CLI::UI::Spinner::RUNES = T.let(T.unsafe(nil), Array)
 
 # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#9
@@ -2146,16 +2299,11 @@ class CLI::UI::Spinner::SpinGroup
   #
   # https://user-images.githubusercontent.com/3074765/33798558-c452fa26-dce8-11e7-9e90-b4b34df21a46.gif
   #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#79
-  sig do
-    params(
-      auto_debrief: T::Boolean,
-      interrupt_debrief: T::Boolean,
-      max_concurrent: ::Integer,
-      work_queue: T.nilable(::CLI::UI::WorkQueue),
-      to: T.any(::IO, ::StringIO)
-    ).void
-  end
+  # : (?auto_debrief: bool, ?interrupt_debrief: bool, ?max_concurrent: Integer, ?work_queue: WorkQueue?, ?to: io_like) -> void
+  #
+  # @return [SpinGroup] a new instance of SpinGroup
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#63
   def initialize(auto_debrief: T.unsafe(nil), interrupt_debrief: T.unsafe(nil), max_concurrent: T.unsafe(nil), work_queue: T.unsafe(nil), to: T.unsafe(nil)); end
 
   # Add a new task
@@ -2170,59 +2318,45 @@ class CLI::UI::Spinner::SpinGroup
   #   spin_group.add('Title') { |spinner| sleep 1.0 }
   #   spin_group.wait
   #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#307
-  sig do
-    params(
-      title: ::String,
-      final_glyph: T.proc.params(success: T::Boolean).returns(T.any(::CLI::UI::Glyph, ::String)),
-      merged_output: T::Boolean,
-      duplicate_output_to: ::IO,
-      block: T.proc.params(task: ::CLI::UI::Spinner::SpinGroup::Task).void
-    ).void
-  end
+  # : (String title, ?final_glyph: ^(bool success) -> (Glyph | String), ?merged_output: bool, ?duplicate_output_to: IO) { (Task task) -> void } -> void
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#304
   def add(title, final_glyph: T.unsafe(nil), merged_output: T.unsafe(nil), duplicate_output_to: T.unsafe(nil), &block); end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#480
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#464
   def all_succeeded?; end
 
-  # Debriefs failed tasks is +auto_debrief+ is true
-  #
-  # ==== Options
-  #
-  # * +:to+ - Target stream, like $stdout or $stderr. Can be anything with print and puts methods,
-  #   or under Sorbet, IO or StringIO. Defaults to $stdout
-  #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#494
-  sig { params(to: T.any(::IO, ::StringIO)).returns(T::Boolean) }
-  def debrief(to: T.unsafe(nil)); end
-
   # Provide an alternative debriefing for failed tasks
+  # : { (String title, Exception? exception, String out, String err) -> void } -> void
   #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#465
-  sig do
-    params(
-      block: T.proc.params(title: ::String, exception: T.nilable(::Exception), out: ::String, err: ::String).void
-    ).void
-  end
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#453
   def failure_debrief(&block); end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#453
-  sig { params(message: ::String).void }
+  # : (String message) -> void
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#445
   def puts_above(message); end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#327
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#324
   def stop; end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#346
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#343
   def stopped?; end
 
   # Provide a debriefing for successful tasks
+  # : { (String title, String out, String err) -> void } -> void
   #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#475
-  sig { params(block: T.proc.params(title: ::String, out: ::String, err: ::String).void).void }
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#459
   def success_debrief(&block); end
 
   # Tells the group you're done adding tasks and to wait for all of them to finish
@@ -2237,21 +2371,59 @@ class CLI::UI::Spinner::SpinGroup
   #   spin_group.add('Title') { |spinner| sleep 1.0 }
   #   spin_group.wait
   #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#367
-  sig { params(to: T.any(::IO, ::StringIO)).returns(T::Boolean) }
+  # : (?to: io_like) -> bool
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#364
   def wait(to: T.unsafe(nil)); end
 
+  private
+
+  # Debriefs failed tasks is +auto_debrief+ is true
+  #
+  # ==== Options
+  #
+  # * +:to+ - Target stream, like $stdout or $stderr. Can be anything with print and puts methods,
+  #   or under Sorbet, IO or StringIO. Defaults to $stdout
+  #
+  # : (?to: io_like) -> bool
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#564
+  def debrief(to: T.unsafe(nil)); end
+
+  # Render messages that should appear above the spinner
+  # : (io_like to, Integer consumed_lines) -> bool
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#506
+  def render_puts_above(to, consumed_lines); end
+
+  # Render all tasks
+  # : (to: io_like, tasks_seen: Array[bool], tasks_seen_done: Array[bool], consumed_lines: Integer, idx: Integer, force_full_render: bool, width: Integer) -> [Integer, Integer]
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#526
+  def render_tasks(to:, tasks_seen:, tasks_seen_done:, consumed_lines:, idx:, force_full_render:, width:); end
+
+  # Update progress reporter mode based on task progress states
+  # : (CLI::UI::ProgressReporter::Reporter reporter, Symbol current_mode, bool first_render) -> Symbol
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#474
+  def update_progress_mode(reporter, current_mode, first_render); end
+
   class << self
-    # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#16
-    sig { returns(::Thread::Mutex) }
+    # : Mutex
+    #
+    # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#14
     def pause_mutex; end
 
-    # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#28
-    sig { type_parameters(:T).params(block: T.proc.returns(T.type_parameter(:T))).returns(T.type_parameter(:T)) }
+    # : [T] { -> T } -> T
+    #
+    # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#22
     def pause_spinners(&block); end
 
-    # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#19
-    sig { returns(T::Boolean) }
+    # : -> bool
+    #
+    # @return [Boolean]
+    #
+    # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#17
     def paused?; end
   end
 end
@@ -2259,7 +2431,7 @@ end
 # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#10
 CLI::UI::Spinner::SpinGroup::DEFAULT_FINAL_GLYPH = T.let(T.unsafe(nil), Proc)
 
-# source://cli-ui//lib/cli/ui/spinner/spin_group.rb#98
+# source://cli-ui//lib/cli/ui/spinner/spin_group.rb#79
 class CLI::UI::Spinner::SpinGroup::Task
   # Initializes a new Task
   # This is managed entirely internally by +SpinGroup+
@@ -2269,36 +2441,51 @@ class CLI::UI::Spinner::SpinGroup::Task
   # * +title+ - Title of the task
   # * +block+ - Block for the task, will be provided with an instance of the spinner
   #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#131
-  sig do
-    params(
-      title: ::String,
-      final_glyph: T.proc.params(success: T::Boolean).returns(T.any(::CLI::UI::Glyph, ::String)),
-      merged_output: T::Boolean,
-      duplicate_output_to: ::IO,
-      work_queue: ::CLI::UI::WorkQueue,
-      block: T.proc.params(task: ::CLI::UI::Spinner::SpinGroup::Task).returns(T.untyped)
-    ).void
-  end
+  # : (String title, final_glyph: ^(bool success) -> (Glyph | String), merged_output: bool, duplicate_output_to: IO, work_queue: WorkQueue) { (Task task) -> untyped } -> void
+  #
+  # @return [Task] a new instance of Task
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#104
   def initialize(title, final_glyph:, merged_output:, duplicate_output_to:, work_queue:, &block); end
 
   # Checks if a task is finished
   #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#162
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#137
   def check; end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#108
-  sig { returns(T::Boolean) }
+  # Switch back to indeterminate mode
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#213
+  def clear_progress; end
+
+  # Get current progress percentage
+  # : -> Integer?
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#228
+  def current_progress; end
+
+  # : bool
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#87
   def done; end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#111
-  sig { returns(T.nilable(::Exception)) }
+  # : Exception?
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#90
   def exception; end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#155
-  sig { params(block: T.proc.params(task: ::CLI::UI::Spinner::SpinGroup::Task).void).void }
+  # : { (Task task) -> void } -> void
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#130
   def on_done(&block); end
+
+  # : Integer?
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#93
+  def progress_percentage; end
 
   # Re-renders the task if required:
   #
@@ -2318,26 +2505,35 @@ class CLI::UI::Spinner::SpinGroup::Task
   # * +force+ - force rerender of the task
   # * +width+ - current terminal width to format for
   #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#200
-  sig { params(index: ::Integer, force: T::Boolean, width: ::Integer).returns(::String) }
+  # : (Integer index, ?bool force, ?width: Integer) -> String
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#175
   def render(index, force = T.unsafe(nil), width: T.unsafe(nil)); end
 
-  # @return [String]
+  # Set progress percentage (0-100) and switch to progress mode
+  # : (Integer percentage) -> void
   #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#102
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#204
+  def set_progress(percentage); end
+
+  # : String
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#81
   def stderr; end
 
-  # @return [String]
+  # : String
   #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#102
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#81
   def stdout; end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#105
-  sig { returns(T::Boolean) }
+  # : bool
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#84
   def success; end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#102
-  sig { returns(::String) }
+  # : String
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#81
   def title; end
 
   # Update the spinner title
@@ -2346,451 +2542,493 @@ class CLI::UI::Spinner::SpinGroup::Task
   #
   # * +title+ - title to change the spinner to
   #
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#219
-  sig { params(new_title: ::String).void }
+  # : (String new_title) -> void
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#194
   def update_title(new_title); end
+
+  # Check if this task wants progress mode
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#222
+  def wants_progress_mode?; end
 
   private
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#230
-  sig { params(index: ::Integer, terminal_width: ::Integer).returns(::String) }
+  # : (Integer index, Integer terminal_width) -> String
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#235
   def full_render(index, terminal_width); end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#256
-  sig { params(index: ::Integer).returns(::String) }
+  # : (Integer index) -> String
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#261
   def glyph(index); end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#276
-  sig { returns(::String) }
+  # : -> String
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#281
   def inset; end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#281
-  sig { returns(::Integer) }
+  # : -> Integer
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#286
   def inset_width; end
 
-  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#246
-  sig { params(index: ::Integer).returns(::String) }
+  # : (Integer index) -> String
+  #
+  # source://cli-ui//lib/cli/ui/spinner/spin_group.rb#251
   def partial_render(index); end
 end
 
-# source://cli-ui//lib/cli/ui/spinner.rb#15
+# source://cli-ui//lib/cli/ui/spinner.rb#11
 CLI::UI::Spinner::TASK_FAILED = T.let(T.unsafe(nil), Symbol)
 
-# source://cli-ui//lib/cli/ui/stdout_router.rb#10
+# source://cli-ui//lib/cli/ui/stdout_router.rb#9
 module CLI::UI::StdoutRouter
   class << self
+    # : -> void
+    #
     # @raise [NotEnabled]
     #
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#352
-    sig { void }
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#334
     def assert_enabled!; end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#347
-    sig { returns(T.nilable(T::Hash[::Symbol, T.any(::IO, ::String, ::StringIO)])) }
+    # : -> Hash[Symbol, (String | io_like)]?
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#329
     def current_id; end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#385
-    sig { returns(T::Boolean) }
+    # : -> bool
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#367
     def disable; end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#327
-    sig { returns(T.nilable(T.any(::IO, ::StringIO))) }
+    # : io_like?
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#311
     def duplicate_output_to; end
 
-    # @return [IOLike, nil]
+    # : io_like?
     #
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#327
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#311
     def duplicate_output_to=(_arg0); end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#371
-    sig { returns(T::Boolean) }
+    # : -> bool
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#353
     def enable; end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#380
-    sig { params(stream: T.any(::IO, ::StringIO)).returns(T::Boolean) }
+    # : (?io_like stream) -> bool
+    #
+    # @return [Boolean]
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#362
     def enabled?(stream = T.unsafe(nil)); end
 
     # TODO: remove this
+    # : -> void
     #
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#366
-    sig { void }
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#348
     def ensure_activated; end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#357
-    sig { type_parameters(:T).params(block: T.proc.returns(T.type_parameter(:T))).returns(T.type_parameter(:T)) }
+    # : [T] { -> T } -> T
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#339
     def with_enabled(&block); end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#334
-    sig do
-      type_parameters(:T)
-        .params(
-          on_streams: T::Array[T.any(::IO, ::StringIO)],
-          block: T.proc.params(id: ::String).returns(T.type_parameter(:T))
-        ).returns(T.type_parameter(:T))
-    end
+    # : [T] (on_streams: Array[io_like]) { (String id) -> T } -> T
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#314
     def with_id(on_streams:, &block); end
 
     private
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#403
-    sig { params(stream: T.any(::IO, ::StringIO), streamname: ::Symbol).void }
+    # : (io_like stream, Symbol streamname) -> void
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#385
     def activate(stream, streamname); end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#396
-    sig { params(stream: T.any(::IO, ::StringIO)).void }
+    # : (io_like stream) -> void
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#378
     def deactivate(stream); end
   end
 end
 
-# source://cli-ui//lib/cli/ui/stdout_router.rb#94
+# source://cli-ui//lib/cli/ui/stdout_router.rb#93
 class CLI::UI::StdoutRouter::Capture
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#196
-  sig do
-    params(
-      with_frame_inset: T::Boolean,
-      merged_output: T::Boolean,
-      duplicate_output_to: ::IO,
-      block: T.proc.void
-    ).void
-  end
+  # : (?with_frame_inset: bool, ?merged_output: bool, ?duplicate_output_to: IO) { -> void } -> void
+  #
+  # @return [Capture] a new instance of Capture
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#184
   def initialize(with_frame_inset: T.unsafe(nil), merged_output: T.unsafe(nil), duplicate_output_to: T.unsafe(nil), &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#212
-  sig { returns(T::Boolean) }
+  # : bool
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#200
   def print_captured_output; end
 
-  # @return [Boolean]
+  # : bool
   #
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#212
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#200
   def print_captured_output=(_arg0); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#215
-  sig { returns(T.untyped) }
+  # : -> untyped
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#203
   def run; end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#258
-  sig { returns(::String) }
+  # : -> String
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#246
   def stderr; end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#253
-  sig { returns(::String) }
+  # : -> String
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#241
   def stdout; end
 
   class << self
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#106
-    sig { returns(T.nilable(::CLI::UI::StdoutRouter::Capture)) }
+    # : -> Capture?
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#101
     def current_capture; end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#111
-    sig { returns(::CLI::UI::StdoutRouter::Capture) }
+    # : -> Capture
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#106
     def current_capture!; end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#116
-    sig { type_parameters(:T).params(block: T.proc.returns(T.type_parameter(:T))).returns(T.type_parameter(:T)) }
+    # : [T] { -> T } -> T
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#111
     def in_alternate_screen(&block); end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#143
-    sig { type_parameters(:T).params(block: T.proc.returns(T.type_parameter(:T))).returns(T.type_parameter(:T)) }
+    # : [T] { -> T } -> T
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#138
     def stdin_synchronize(&block); end
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#157
-    sig { type_parameters(:T).params(block: T.proc.returns(T.type_parameter(:T))).returns(T.type_parameter(:T)) }
+    # : [T] { -> T } -> T
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#152
     def with_stdin_masked(&block); end
 
     private
 
-    # source://cli-ui//lib/cli/ui/stdout_router.rb#183
-    sig { returns(T::Boolean) }
+    # : -> bool
+    #
+    # @return [Boolean]
+    #
+    # source://cli-ui//lib/cli/ui/stdout_router.rb#178
     def outermost_uncaptured?; end
   end
 end
 
-# source://cli-ui//lib/cli/ui/stdout_router.rb#262
+# source://cli-ui//lib/cli/ui/stdout_router.rb#250
 class CLI::UI::StdoutRouter::Capture::BlockingInput
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#266
-  sig { params(stream: ::IO).void }
+  # : (IO stream) -> void
+  #
+  # @return [BlockingInput] a new instance of BlockingInput
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#252
   def initialize(stream); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def <<(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def advise(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def autoclose=(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def autoclose?(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def binmode(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def binmode?(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def close(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def close_on_exec=(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def close_on_exec?(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def close_read(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def close_write(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def closed?(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def each(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def each_byte(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def each_char(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def each_codepoint(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def each_line(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def eof(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def eof?(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def external_encoding(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def fcntl(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def fdatasync(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def fileno(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def flush(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def fsync(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def getbyte(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def getc(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def getch(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def gets(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def inspect(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def internal_encoding(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def ioctl(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def isatty(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def lineno(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def lineno=(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def nread(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def path(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def pathconf(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def pid(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def pos(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def pos=(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def pread(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def print(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def printf(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def putc(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def puts(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def pwrite(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def read(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def read_nonblock(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def readbyte(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def readchar(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def readline(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def readlines(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#304
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def readpartial(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def ready?(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def reopen(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def rewind(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def seek(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def set_encoding(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def set_encoding_by_bom(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def stat(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def sync(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def sync=(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#272
-  sig { type_parameters(:T).params(block: T.proc.returns(T.type_parameter(:T))).returns(T.type_parameter(:T)) }
+  # : [T] { -> T } -> T
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#258
   def synchronize(&block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def sysread(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def sysseek(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def syswrite(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def tell(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def timeout(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def timeout=(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def to_i(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def to_io(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def to_path(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def tty?(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def ungetbyte(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def ungetc(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def wait(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def wait_priority(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def wait_readable(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def wait_writable(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def write(*args, **kwargs, &block); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#312
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def write_nonblock(*args, **kwargs, &block); end
 end
 
-# source://cli-ui//lib/cli/ui/stdout_router.rb#301
+# source://cli-ui//lib/cli/ui/stdout_router.rb#287
 CLI::UI::StdoutRouter::Capture::BlockingInput::NON_READING_METHODS = T.let(T.unsafe(nil), Array)
 
-# source://cli-ui//lib/cli/ui/stdout_router.rb#282
+# source://cli-ui//lib/cli/ui/stdout_router.rb#268
 CLI::UI::StdoutRouter::Capture::BlockingInput::READING_METHODS = T.let(T.unsafe(nil), Array)
 
-# source://cli-ui//lib/cli/ui/stdout_router.rb#11
+# source://cli-ui//lib/cli/ui/stdout_router.rb#10
 class CLI::UI::StdoutRouter::Writer
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#15
-  sig { params(stream: T.any(::IO, ::StringIO), name: ::Symbol).void }
+  # : (io_like stream, Symbol name) -> void
+  #
+  # @return [Writer] a new instance of Writer
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#12
   def initialize(stream, name); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#21
-  sig { params(args: ::Object).returns(::Integer) }
+  # : (*Object args) -> Integer
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#18
   def write(*args); end
 
   private
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#77
-  sig { params(str: ::String, prefix: ::String).returns(::String) }
+  # : (String str, String prefix) -> String
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#76
   def apply_line_prefix(str, prefix); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#72
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#71
   def auto_frame_inset?; end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#53
-  sig { params(stream: T.any(::IO, ::StringIO), args: T::Array[::String]).returns(T::Array[::String]) }
+  # : (io_like stream, Array[String] args) -> Array[String]
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#52
   def prepend_id(stream, args); end
 
-  # source://cli-ui//lib/cli/ui/stdout_router.rb#64
-  sig { params(stream: T.any(::IO, ::StringIO)).returns(T::Boolean) }
+  # : (io_like stream) -> bool
+  #
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#63
   def prepend_id_for_stream(stream); end
 end
 
@@ -2820,8 +3058,9 @@ module CLI::UI::Table
     #     ["row2",              "row2"]
     #   ])
     #
-    # source://cli-ui//lib/cli/ui/table.rb#79
-    sig { params(table: T::Array[T::Array[::String]], col_spacing: ::Integer).returns(T::Array[::String]) }
+    # : (Array[Array[String]] table, ?col_spacing: Integer) -> Array[String]
+    #
+    # source://cli-ui//lib/cli/ui/table.rb#75
     def capture_table(table, col_spacing: T.unsafe(nil)); end
 
     # Prints a formatted table to the specified output
@@ -2851,58 +3090,65 @@ module CLI::UI::Table
     #   really_long_cell short
     #   row2             row2
     #
-    # source://cli-ui//lib/cli/ui/table.rb#39
-    sig { params(table: T::Array[T::Array[::String]], col_spacing: ::Integer, to: T.any(::IO, ::StringIO)).void }
+    # : (Array[Array[String]] table, ?col_spacing: Integer, ?to: io_like) -> void
+    #
+    # source://cli-ui//lib/cli/ui/table.rb#35
     def puts_table(table, col_spacing: T.unsafe(nil), to: T.unsafe(nil)); end
   end
 end
 
-# source://cli-ui//lib/cli/ui/terminal.rb#9
+# source://cli-ui//lib/cli/ui/terminal.rb#8
 module CLI::UI::Terminal
   class << self
     # Returns the width of the terminal, if possible
     # Otherwise, will return DEFAULT_HEIGHT
     #
-    # source://cli-ui//lib/cli/ui/terminal.rb#30
-    sig { returns(::Integer) }
+    # : -> Integer
+    #
+    # source://cli-ui//lib/cli/ui/terminal.rb#25
     def height; end
 
-    # source://cli-ui//lib/cli/ui/terminal.rb#51
-    sig { void }
+    # : -> void
+    #
+    # source://cli-ui//lib/cli/ui/terminal.rb#46
     def setup_winsize_trap; end
 
     # Returns the width of the terminal, if possible
     # Otherwise will return DEFAULT_WIDTH
     #
-    # source://cli-ui//lib/cli/ui/terminal.rb#22
-    sig { returns(::Integer) }
+    # : -> Integer
+    #
+    # source://cli-ui//lib/cli/ui/terminal.rb#17
     def width; end
 
-    # source://cli-ui//lib/cli/ui/terminal.rb#35
-    sig { returns([::Integer, ::Integer]) }
+    # : -> [Integer, Integer]
+    #
+    # source://cli-ui//lib/cli/ui/terminal.rb#30
     def winsize; end
   end
 end
 
-# source://cli-ui//lib/cli/ui/terminal.rb#13
+# source://cli-ui//lib/cli/ui/terminal.rb#10
 CLI::UI::Terminal::DEFAULT_HEIGHT = T.let(T.unsafe(nil), Integer)
 
-# source://cli-ui//lib/cli/ui/terminal.rb#12
+# source://cli-ui//lib/cli/ui/terminal.rb#9
 CLI::UI::Terminal::DEFAULT_WIDTH = T.let(T.unsafe(nil), Integer)
 
 # Truncater truncates a string to a provided printable width.
 #
-# source://cli-ui//lib/cli/ui/truncater.rb#9
+# source://cli-ui//lib/cli/ui/truncater.rb#7
 module CLI::UI::Truncater
   class << self
-    # source://cli-ui//lib/cli/ui/truncater.rb#34
-    sig { params(text: ::String, printing_width: ::Integer).returns(::String) }
+    # : (String text, Integer printing_width) -> String
+    #
+    # source://cli-ui//lib/cli/ui/truncater.rb#30
     def call(text, printing_width); end
 
     private
 
-    # source://cli-ui//lib/cli/ui/truncater.rb#96
-    sig { params(printable_codepoint: ::Integer).returns(::Integer) }
+    # : (Integer printable_codepoint) -> Integer
+    #
+    # source://cli-ui//lib/cli/ui/truncater.rb#93
     def width(printable_codepoint); end
   end
 end
@@ -2911,45 +3157,45 @@ end
 # If you need this to be more accurate, we'll almost certainly accept a
 # PR improving it.
 #
-# source://cli-ui//lib/cli/ui/truncater.rb#23
+# source://cli-ui//lib/cli/ui/truncater.rb#21
 CLI::UI::Truncater::EMOJI_RANGE = T.let(T.unsafe(nil), Range)
 
-# source://cli-ui//lib/cli/ui/truncater.rb#15
+# source://cli-ui//lib/cli/ui/truncater.rb#13
 CLI::UI::Truncater::ESC = T.let(T.unsafe(nil), Integer)
 
-# source://cli-ui//lib/cli/ui/truncater.rb#25
+# source://cli-ui//lib/cli/ui/truncater.rb#23
 CLI::UI::Truncater::LC_ALPHA_RANGE = T.let(T.unsafe(nil), Range)
 
-# source://cli-ui//lib/cli/ui/truncater.rb#16
+# source://cli-ui//lib/cli/ui/truncater.rb#14
 CLI::UI::Truncater::LEFT_SQUARE_BRACKET = T.let(T.unsafe(nil), Integer)
 
-# source://cli-ui//lib/cli/ui/truncater.rb#24
+# source://cli-ui//lib/cli/ui/truncater.rb#22
 CLI::UI::Truncater::NUMERIC_RANGE = T.let(T.unsafe(nil), Range)
 
-# source://cli-ui//lib/cli/ui/truncater.rb#11
+# source://cli-ui//lib/cli/ui/truncater.rb#9
 CLI::UI::Truncater::PARSE_ANSI = T.let(T.unsafe(nil), Symbol)
 
-# source://cli-ui//lib/cli/ui/truncater.rb#12
+# source://cli-ui//lib/cli/ui/truncater.rb#10
 CLI::UI::Truncater::PARSE_ESC = T.let(T.unsafe(nil), Symbol)
 
-# source://cli-ui//lib/cli/ui/truncater.rb#10
+# source://cli-ui//lib/cli/ui/truncater.rb#8
 CLI::UI::Truncater::PARSE_ROOT = T.let(T.unsafe(nil), Symbol)
 
-# source://cli-ui//lib/cli/ui/truncater.rb#13
+# source://cli-ui//lib/cli/ui/truncater.rb#11
 CLI::UI::Truncater::PARSE_ZWJ = T.let(T.unsafe(nil), Symbol)
 
-# source://cli-ui//lib/cli/ui/truncater.rb#18
+# source://cli-ui//lib/cli/ui/truncater.rb#16
 CLI::UI::Truncater::SEMICOLON = T.let(T.unsafe(nil), Integer)
 
-# source://cli-ui//lib/cli/ui/truncater.rb#28
+# source://cli-ui//lib/cli/ui/truncater.rb#26
 CLI::UI::Truncater::TRUNCATED = T.let(T.unsafe(nil), String)
 
-# source://cli-ui//lib/cli/ui/truncater.rb#26
+# source://cli-ui//lib/cli/ui/truncater.rb#24
 CLI::UI::Truncater::UC_ALPHA_RANGE = T.let(T.unsafe(nil), Range)
 
 # emojipedia.org/emoji-zwj-sequences
 #
-# source://cli-ui//lib/cli/ui/truncater.rb#17
+# source://cli-ui//lib/cli/ui/truncater.rb#15
 CLI::UI::Truncater::ZWJ = T.let(T.unsafe(nil), Integer)
 
 # Widgets are formatter objects with more custom implementations than the
@@ -2971,8 +3217,9 @@ module CLI::UI::Widgets
   class << self
     # All available widgets by name
     #
-    # source://cli-ui//lib/cli/ui/widgets.rb#55
-    sig { returns(T::Array[::String]) }
+    # : -> Array[String]
+    #
+    # source://cli-ui//lib/cli/ui/widgets.rb#51
     def available; end
 
     # Looks up a widget by handle
@@ -2983,105 +3230,131 @@ module CLI::UI::Widgets
     # ==== Returns
     # A callable widget, to be invoked like `.call(argstring)`
     #
-    # source://cli-ui//lib/cli/ui/widgets.rb#46
-    sig { params(handle: ::String).returns(T.class_of(CLI::UI::Widgets::Base)) }
+    # : (String handle) -> singleton(Widgets::Base)
+    #
+    # source://cli-ui//lib/cli/ui/widgets.rb#42
     def lookup(handle); end
 
-    # source://cli-ui//lib/cli/ui/widgets.rb#33
-    sig { params(name: ::String, cb: T.proc.returns(T.class_of(CLI::UI::Widgets::Base))).void }
+    # : (String name) { -> singleton(Widgets::Base) } -> void
+    #
+    # source://cli-ui//lib/cli/ui/widgets.rb#29
     def register(name, &cb); end
   end
 end
 
-# @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
+# @abstract
 #
-# source://cli-ui//lib/cli/ui/widgets/base.rb#9
+# source://cli-ui//lib/cli/ui/widgets/base.rb#10
 class CLI::UI::Widgets::Base
-  abstract!
-
-  # source://cli-ui//lib/cli/ui/widgets/base.rb#24
-  sig { params(argstring: ::String).void }
+  # : (String argstring) -> void
+  #
+  # @return [Base] a new instance of Base
+  #
+  # source://cli-ui//lib/cli/ui/widgets/base.rb#19
   def initialize(argstring); end
 
-  # @abstract
+  # : -> String
   #
-  # source://cli-ui//lib/cli/ui/widgets/base.rb#43
-  sig { abstract.returns(::String) }
+  # @abstract
+  # @raise [NotImplementedError]
+  #
+  # source://cli-ui//lib/cli/ui/widgets/base.rb#40
   def render; end
 
   class << self
-    # @abstract
+    # : -> Regexp
     #
-    # source://cli-ui//lib/cli/ui/widgets/base.rb#39
-    sig { abstract.returns(::Regexp) }
+    # @abstract
+    # @raise [NotImplementedError]
+    #
+    # source://cli-ui//lib/cli/ui/widgets/base.rb#33
     def argparse_pattern; end
 
-    # source://cli-ui//lib/cli/ui/widgets/base.rb#18
-    sig { params(argstring: ::String).returns(::String) }
+    # : (String argstring) -> String
+    #
+    # source://cli-ui//lib/cli/ui/widgets/base.rb#13
     def call(argstring); end
   end
 end
 
-# source://cli-ui//lib/cli/ui/widgets.rb#79
+# source://cli-ui//lib/cli/ui/widgets.rb#73
 class CLI::UI::Widgets::InvalidWidgetArguments < ::ArgumentError
-  # source://cli-ui//lib/cli/ui/widgets.rb#83
-  sig { params(argstring: ::String, pattern: ::Regexp).void }
+  # : (String argstring, Regexp pattern) -> void
+  #
+  # @return [InvalidWidgetArguments] a new instance of InvalidWidgetArguments
+  #
+  # source://cli-ui//lib/cli/ui/widgets.rb#75
   def initialize(argstring, pattern); end
 
-  # source://cli-ui//lib/cli/ui/widgets.rb#90
-  sig { returns(::String) }
+  # : -> String
+  #
+  # source://cli-ui//lib/cli/ui/widgets.rb#82
   def message; end
 end
 
-# source://cli-ui//lib/cli/ui/widgets.rb#62
+# source://cli-ui//lib/cli/ui/widgets.rb#58
 class CLI::UI::Widgets::InvalidWidgetHandle < ::ArgumentError
-  # source://cli-ui//lib/cli/ui/widgets.rb#66
-  sig { params(handle: ::String).void }
+  # : (String handle) -> void
+  #
+  # @return [InvalidWidgetHandle] a new instance of InvalidWidgetHandle
+  #
+  # source://cli-ui//lib/cli/ui/widgets.rb#60
   def initialize(handle); end
 
-  # source://cli-ui//lib/cli/ui/widgets.rb#72
-  sig { returns(::String) }
+  # : -> String
+  #
+  # source://cli-ui//lib/cli/ui/widgets.rb#66
   def message; end
 end
 
-# source://cli-ui//lib/cli/ui/widgets.rb#24
+# source://cli-ui//lib/cli/ui/widgets.rb#22
 CLI::UI::Widgets::MAP = T.let(T.unsafe(nil), Hash)
 
 # source://cli-ui//lib/cli/ui/widgets/status.rb#9
 class CLI::UI::Widgets::Status < ::CLI::UI::Widgets::Base
+  # : -> String
+  #
   # source://cli-ui//lib/cli/ui/widgets/status.rb#34
-  sig { override.returns(::String) }
   def render; end
 
   private
 
+  # : (String num_str, String rune, Color color) -> String
+  #
   # source://cli-ui//lib/cli/ui/widgets/status.rb#51
-  sig { params(num_str: ::String, rune: ::String, color: ::CLI::UI::Color).returns(::String) }
   def colorize_if_nonzero(num_str, rune, color); end
 
+  # : -> String
+  #
   # source://cli-ui//lib/cli/ui/widgets/status.rb#62
-  sig { returns(::String) }
   def failed_part; end
 
+  # : -> String
+  #
   # source://cli-ui//lib/cli/ui/widgets/status.rb#73
-  sig { returns(::String) }
   def pending_part; end
 
+  # : -> String
+  #
   # source://cli-ui//lib/cli/ui/widgets/status.rb#57
-  sig { returns(::String) }
   def succeeded_part; end
 
+  # : -> String
+  #
   # source://cli-ui//lib/cli/ui/widgets/status.rb#67
-  sig { returns(::String) }
   def working_part; end
 
+  # : (String num_str) -> bool
+  #
+  # @return [Boolean]
+  #
   # source://cli-ui//lib/cli/ui/widgets/status.rb#46
-  sig { params(num_str: ::String).returns(T::Boolean) }
   def zero?(num_str); end
 
   class << self
-    # source://cli-ui//lib/cli/ui/widgets/status.rb#28
-    sig { override.returns(::Regexp) }
+    # : -> Regexp
+    #
+    # source://cli-ui//lib/cli/ui/widgets/status.rb#27
     def argparse_pattern; end
   end
 end
@@ -3111,71 +3384,96 @@ CLI::UI::Widgets::Status::SPINNER_STOPPED = T.let(T.unsafe(nil), String)
 
 # source://cli-ui//lib/cli/ui/work_queue.rb#6
 class CLI::UI::WorkQueue
-  # source://cli-ui//lib/cli/ui/work_queue.rb#72
-  sig { params(max_concurrent: ::Integer).void }
+  # : (Integer max_concurrent) -> void
+  #
+  # @return [WorkQueue] a new instance of WorkQueue
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#68
   def initialize(max_concurrent); end
 
-  # source://cli-ui//lib/cli/ui/work_queue.rb#91
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#87
   def close; end
 
-  # source://cli-ui//lib/cli/ui/work_queue.rb#81
-  sig { params(block: T.proc.returns(T.untyped)).returns(::CLI::UI::WorkQueue::Future) }
+  # : { -> untyped } -> Future
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#77
   def enqueue(&block); end
 
-  # source://cli-ui//lib/cli/ui/work_queue.rb#102
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#98
   def interrupt; end
 
-  # source://cli-ui//lib/cli/ui/work_queue.rb#96
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#92
   def wait; end
 
   private
 
-  # source://cli-ui//lib/cli/ui/work_queue.rb#120
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#116
   def start_worker; end
 end
 
-# source://cli-ui//lib/cli/ui/work_queue.rb#9
+# source://cli-ui//lib/cli/ui/work_queue.rb#7
 class CLI::UI::WorkQueue::Future
-  # source://cli-ui//lib/cli/ui/work_queue.rb#13
-  sig { void }
+  # : -> void
+  #
+  # @return [Future] a new instance of Future
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#9
   def initialize; end
 
-  # source://cli-ui//lib/cli/ui/work_queue.rb#23
-  sig { params(result: T.untyped).void }
+  # : (untyped result) -> void
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#19
   def complete(result); end
 
-  # source://cli-ui//lib/cli/ui/work_queue.rb#53
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#49
   def completed?; end
 
-  # source://cli-ui//lib/cli/ui/work_queue.rb#32
-  sig { params(error: ::Exception).void }
+  # : (Exception error) -> void
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#28
   def fail(error); end
 
-  # source://cli-ui//lib/cli/ui/work_queue.rb#63
-  sig { void }
+  # : -> void
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#59
   def start; end
 
-  # source://cli-ui//lib/cli/ui/work_queue.rb#58
-  sig { returns(T::Boolean) }
+  # : -> bool
+  #
+  # @return [Boolean]
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#54
   def started?; end
 
-  # source://cli-ui//lib/cli/ui/work_queue.rb#43
-  sig { returns(T.untyped) }
+  # : -> untyped
+  #
+  # source://cli-ui//lib/cli/ui/work_queue.rb#39
   def value; end
 end
 
-# source://cli-ui//lib/cli/ui/wrap.rb#11
+# source://cli-ui//lib/cli/ui/wrap.rb#10
 class CLI::UI::Wrap
-  # source://cli-ui//lib/cli/ui/wrap.rb#15
-  sig { params(input: ::String).void }
+  # : (String input) -> void
+  #
+  # @return [Wrap] a new instance of Wrap
+  #
+  # source://cli-ui//lib/cli/ui/wrap.rb#12
   def initialize(input); end
 
-  # source://cli-ui//lib/cli/ui/wrap.rb#20
-  sig { params(total_width: ::Integer).returns(::String) }
+  # : (?Integer total_width) -> String
+  #
+  # source://cli-ui//lib/cli/ui/wrap.rb#17
   def wrap(total_width = T.unsafe(nil)); end
 end
