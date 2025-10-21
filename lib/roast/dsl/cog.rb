@@ -50,7 +50,8 @@ module Roast
         @name = name
         @cog_input_proc = cog_input_proc #: ^(Cog::Input) -> untyped
         @output = nil #: Cog::Output?
-        @finished = false #: bool
+        @skipped = false #: bool
+        @failed = false #: bool
 
         # Make sure a config is always defined, so we don't have to worry about nils
         @config = self.class.config_class.new #: untyped
@@ -65,12 +66,28 @@ module Roast
         input_return = input_context.instance_exec(input_instance, executor_scope_value, &@cog_input_proc) if @cog_input_proc
         coerce_and_validate_input!(input_instance, input_return)
         @output = execute(input_instance)
-        @finished = true
+      rescue ControlFlow::SkipCog
+        @skipped = true
+      rescue ControlFlow::FailCog => e
+        @failed = true
+        # TODO: better / cleaner handling in the workflow execution manager for a workflow failure
+        #   just re-raising this exception for now
+        raise e if config.exit_on_error?
       end
 
       #: () -> bool
       def ran?
-        @finished
+        @output.present? || @skipped || @failed
+      end
+
+      #: () -> bool
+      def skipped?
+        @skipped
+      end
+
+      #: () -> bool
+      def failed?
+        @failed
       end
 
       # Inheriting cog must implement this

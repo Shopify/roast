@@ -46,6 +46,16 @@ module Roast
             end
           end
         end
+
+        #: () -> bool
+        def exit_on_error?
+          @values[:exit_on_error] ||= true
+        end
+
+        #: () -> void
+        def continue_on_error!
+          @values[:exit_on_error] = false
+        end
       end
     end
   end
