@@ -4,17 +4,41 @@
 module Roast
   module DSL
     class CogInputContext
-      #: (Symbol) -> Roast::DSL::Cog::Output
+      #: (Symbol) -> Roast::DSL::Cog::Output?
       def call(name); end
 
       #: (Symbol) -> Roast::DSL::Cog::Output
+      def call!(name); end
+
+      #: (Symbol) -> bool
+      def call?(name); end
+
+      #: (Symbol) -> Roast::DSL::Cog::Output?
       def map(name); end
 
-      #: (Symbol) -> Roast::DSL::Cogs::Cmd::Output
+      #: (Symbol) -> Roast::DSL::Cog::Output
+      def map!(name); end
+
+      #: (Symbol) -> bool
+      def map?(name); end
+
+      #: (Symbol) -> Roast::DSL::Cogs::Cmd::Output?
       def cmd(name); end
 
-      #: (Symbol) -> Roast::DSL::Cogs::Chat::Output
+      #: (Symbol) -> Roast::DSL::Cogs::Cmd::Output
+      def cmd!(name); end
+
+      #: (Symbol) -> bool
+      def cmd?(name); end
+
+      #: (Symbol) -> Roast::DSL::Cogs::Chat::Output?
       def chat(name); end
+
+      #: (Symbol) -> Roast::DSL::Cogs::Chat::Output
+      def chat!(name); end
+
+      #: (Symbol) -> bool
+      def chat?(name); end
     end
   end
 end

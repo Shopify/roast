@@ -7,7 +7,7 @@ module Roast
       class Store
         class CogAlreadyDefinedError < Roast::Error; end
 
-        delegate :[], to: :store
+        delegate :[], :key?, to: :store
 
         #: Hash[Symbol, Cog]
         attr_reader :store

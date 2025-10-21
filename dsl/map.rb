@@ -11,7 +11,11 @@ end
 
 execute(:capitalize_a_word) do
   cmd(:capitalize) do |my, word|
-    word ||= cmd(:word).out.strip
+    # Use the `fail!` method in a cog's input proc to terminate the cog with a failure state
+    # e.g., if a condition prevents its successful execution.
+    # If `fail!` is called, the input proc will immediately terminate.
+    # The entire workflow may or may not terminate as a result, based on its configuration and the cog's configuration.
+    fail! unless word.present?
     my.command = "sh"
     my.args << "-c"
     my.args << "echo \"#{word}\" | tr '[:lower:]' '[:upper:]'"

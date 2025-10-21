@@ -38,9 +38,9 @@ module DSL
         assert_empty stderr
       end
 
-      test "scoped_executors.rb workflow runs successfully" do
-        stdout, stderr = in_sandbox :scoped_executors do
-          Roast::DSL::Workflow.from_file("dsl/scoped_executors.rb")
+      test "call.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :call do
+          Roast::DSL::Workflow.from_file("dsl/call.rb")
         end
 
         lines = stdout.lines.map(&:strip)
