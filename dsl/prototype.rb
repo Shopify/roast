@@ -4,11 +4,8 @@
 #: self as Roast::DSL::Workflow
 
 config do
-  # TODO: make a way to do print_all on all and turn off printing on one
   cmd(:echo) { print_all! }
-  cmd(:date) { print_stdout! }
-  # TODO: add a way to apply config to a subset of named cog by pattern
-  # cmd(/^date.*/) { print_all! }
+  cmd(/date/) { print_all! }
 end
 
 execute do
@@ -20,5 +17,6 @@ execute do
   cmd(:echo) { |my| my.command = "echo 'Hello World!'" }
 
   # Cogs can implement input coercion for simple return values
-  cmd(:date) { "date" }
+  cmd(:date_today) { "date" }
+  cmd(:date_yesterday) { RUBY_PLATFORM.include?("darwin") ? "date -jv -1d" : "date -d '-1 day'" }
 end

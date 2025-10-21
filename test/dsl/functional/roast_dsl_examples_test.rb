@@ -10,6 +10,7 @@ module DSL
         stdout, stderr = in_sandbox :prototype do
           Roast::DSL::Workflow.from_file("dsl/map.rb")
         end
+        assert_empty stderr
         expected_stdout = <<~EOF
           HELLO
           WORLD
@@ -27,22 +28,27 @@ module DSL
           HELLO
         EOF
         assert_equal expected_stdout, stdout
-        assert_empty stderr
       end
 
       test "prototype.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
           Roast::DSL::Workflow.from_file("dsl/prototype.rb")
         end
-        assert_match "Hello World!", stdout
         assert_empty stderr
+        lines = stdout.lines.map(&:strip)
+        assert_equal "Hello World!", lines.shift
+        2.times do
+          # match default `date` format
+          assert_match(/^\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}$/, lines.shift, "missing date line")
+        end
+        assert_empty lines
       end
 
       test "call.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :call do
           Roast::DSL::Workflow.from_file("dsl/call.rb")
         end
-
+        assert_empty stderr
         lines = stdout.lines.map(&:strip)
         assert_equal "--> before", lines.shift
         3.times do
@@ -56,19 +62,18 @@ module DSL
         assert_equal "SCOPE VALUE: OTHER", lines.shift
         assert_equal "--> after", lines.shift
         assert_empty lines
-        assert_empty stderr
       end
 
       test "step_communication.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :step_communication do
           Roast::DSL::Workflow.from_file("dsl/step_communication.rb")
         end
+        assert_empty stderr
         lines = stdout.lines.map(&:strip)
         assert_match(/^d([r-][w-][x-]){3}\s+\d+.*\.$/, lines.shift)
         assert_equal "---", lines.shift
         assert_match(/^d([r-][w-][x-]){3}\s+\d+.*\w+$/, lines.shift)
         assert_empty lines
-        assert_empty stderr
       end
     end
   end
