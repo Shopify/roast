@@ -15,7 +15,7 @@ module Roast
           end
 
           #: (untyped) -> void
-          def coerce!(input_return_value)
+          def coerce(input_return_value)
             if input_return_value.is_a?(String)
               self.prompt = input_return_value
             end
@@ -34,26 +34,45 @@ module Roast
         end
 
         class Config < Cog::Config
-          #: () -> String?
-          def openai_api_key
-            @values[:openai_api_key] ||= ENV["OPENAI_API_KEY"]
+          #: (?String?) -> String?
+          def api_key(key = nil)
+            @values[:api_key] ||= key || ENV["OPENAI_API_KEY"]
           end
 
-          #: () -> String?
-          def openai_api_base_url
-            @values[:openai_api_base_url] ||= ENV["OPENAI_API_BASE_URL"]
+          #: (?String?) -> String?
+          def base_url(url = nil)
+            @values[:base_url] ||= url || ENV["OPENAI_API_BASE_URL"]
           end
+
+          #: (?String?) -> String?
+          def model(model_name = nil)
+            @values[:model] ||= model_name
+          end
+
+          #: (?Symbol?) -> Symbol?
+          def provider(provider_name = nil)
+            @values[:provider] ||= provider_name
+          end
+
+          #: (?bool?) -> bool?
+          def assume_model_exists(assume_model_exists = nil)
+            @values[:assume_model_exists] ||= assume_model_exists || false
+          end
+        end
+
+        #: () -> Roast::DSL::Cogs::Chat::Config
+        def config # rubocop:disable Style/TrivialAccessors
+          @config #: as Roast::DSL::Cogs::Chat::Config
         end
 
         #: (Input) -> Output
         def execute(input)
-          config = @config #: as Config
-          RubyLLM.configure do |ruby_llm_config|
-            ruby_llm_config.openai_api_key = config.openai_api_key
-            ruby_llm_config.openai_api_base = config.openai_api_base_url
-          end
+          chat = context.chat(
+            model: config.model,
+            provider: config.provider,
+            assume_model_exists: config.assume_model_exists,
+          )
 
-          chat = RubyLLM.chat
           resp = chat.ask(input.prompt)
           puts "Model: #{resp.model_id}"
           puts "Role: #{resp.role}"
@@ -65,6 +84,13 @@ module Roast
           end
 
           Output.new(resp.content)
+        end
+
+        def context
+          @context ||= RubyLLM.context do |context|
+            context.openai_api_key = config.api_key
+            context.openai_api_base = config.base_url
+          end
         end
       end
     end
