@@ -11,6 +11,7 @@ module Roast
         def initialize
           @cogs = {}
           use(SystemCogs::Call)
+          use(SystemCogs::Map)
           use(Cogs::Cmd)
           use(Cogs::Chat)
         end

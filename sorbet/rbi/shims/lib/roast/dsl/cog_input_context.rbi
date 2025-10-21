@@ -7,6 +7,9 @@ module Roast
       #: (Symbol) -> Roast::DSL::Cog::Output
       def call(name); end
 
+      #: (Symbol) -> Roast::DSL::Cog::Output
+      def map(name); end
+
       #: (Symbol) -> Roast::DSL::Cogs::Cmd::Output
       def cmd(name); end
 

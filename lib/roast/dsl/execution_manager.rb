@@ -6,6 +6,7 @@ module Roast
     # Context in which the `execute` block of a workflow is evaluated
     class ExecutionManager
       include SystemCogs::Call::Manager
+      include SystemCogs::Map::Manager
 
       class ExecutionManagerError < Roast::Error; end
 
@@ -130,6 +131,8 @@ module Roast
           cog_params = T.unsafe(cog_class).params_class.new(*cog_args, **cog_kwargs)
           cog_instance = if cog_class == SystemCogs::Call
             create_call_system_cog(cog_params, cog_input_proc)
+          elsif cog_class == SystemCogs::Map
+            create_map_system_cog(cog_params, cog_input_proc)
           else
             raise NotImplementedError, "No system cog manager defined for #{cog_class}"
           end
