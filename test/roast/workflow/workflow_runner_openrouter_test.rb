@@ -12,7 +12,7 @@ module Roast
 
       def test_configure_openrouter_client
         mock_openrouter_client = mock("OpenRouter::Client")
-        OpenRouter::Client.stubs(:new).with({ access_token: "test_openrouter_token" }).returns(mock_openrouter_client)
+        OpenRouter::Client.stubs(:new).with(access_token: "test_openrouter_token").returns(mock_openrouter_client)
 
         assert_nothing_raised { WorkflowRunner.new(@workflow_path) }
       end

@@ -22,7 +22,7 @@ module Roast
         def test_executes_simple_command_step
           @workflow_executor.expects(:interpolate).with("test_step").returns("test_step")
           @workflow_executor.expects(:interpolate).with("echo test").returns("echo test")
-          @coordinator.expects(:execute_step).with("echo test", { exit_on_error: true, step_key: "test_step" }).returns("test output")
+          @coordinator.expects(:execute_step).with("echo test", exit_on_error: true, step_key: "test_step").returns("test output")
 
           @executor.execute({ "test_step" => "echo test" })
 
@@ -41,7 +41,7 @@ module Roast
           @config_hash["test_step"] = { "exit_on_error" => false }
           @workflow_executor.expects(:interpolate).with("test_step").returns("test_step")
           @workflow_executor.expects(:interpolate).with("$(exit 1)").returns("$(exit 1)")
-          @coordinator.expects(:execute_step).with("$(exit 1)", { exit_on_error: false, step_key: "test_step" }).returns("error output")
+          @coordinator.expects(:execute_step).with("$(exit 1)", exit_on_error: false, step_key: "test_step").returns("error output")
 
           @executor.execute({ "test_step" => "$(exit 1)" })
         end

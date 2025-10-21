@@ -227,7 +227,7 @@ module Roast
         $stderr.puts "Configuring OpenRouter client with token from workflow"
         require "open_router"
 
-        client = OpenRouter::Client.new(client_options)
+        client = OpenRouter::Client.new(**client_options)
 
         Raix.configure do |config|
           config.openrouter_client = client
@@ -239,7 +239,7 @@ module Roast
         $stderr.puts "Configuring OpenAI client with token from workflow"
         require "openai"
 
-        client = OpenAI::Client.new(client_options)
+        client = OpenAI::Client.new(**client_options)
 
         Raix.configure do |config|
           config.openai_client = client

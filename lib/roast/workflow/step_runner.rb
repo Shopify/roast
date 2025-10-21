@@ -16,8 +16,8 @@ module Roast
       end
 
       # Execute a single step
-      def execute_step(step, options = {})
-        @coordinator.execute_step(step, options)
+      def execute_step(step, **options)
+        @coordinator.execute_step(step, **options)
       end
     end
   end

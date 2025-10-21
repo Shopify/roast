@@ -45,15 +45,15 @@ module Roast
       end
 
       # Execute a single step (alias for compatibility)
-      def execute_step(step, options = {})
-        execute(step, options)
+      def execute_step(step, **options)
+        execute(step, **options)
       end
 
       # Execute a step based on its type
       # @param step [String, Hash, Array] The step to execute
       # @param options [Hash] Execution options
       # @return [Object] The result of the step execution
-      def execute(step, options = {})
+      def execute(step, **options)
         step_type = StepTypeResolver.resolve(step, @context)
         step_name = StepTypeResolver.extract_name(step)
 
