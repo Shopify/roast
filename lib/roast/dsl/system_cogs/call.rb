@@ -7,12 +7,12 @@ module Roast
       class Call < SystemCog
         class Params < SystemCog::Params
           #: Symbol
-          attr_accessor :scope
+          attr_accessor :run
 
-          #: (Symbol, ?Symbol?) -> void
-          def initialize(scope, name = nil)
+          #: (?Symbol?, run: Symbol) -> void
+          def initialize(name = nil, run:)
             super(name)
-            @scope = scope
+            @run = run
           end
         end
 
@@ -48,9 +48,9 @@ module Roast
           def create_call_system_cog(params, input_proc)
             SystemCogs::Call.new(params.name, input_proc) do |input|
               input = input #: as Input
-              raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.scope.present?
+              raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 
-              em = ExecutionManager.new(@cog_registry, @config_manager, @all_execution_procs, params.scope, input.value)
+              em = ExecutionManager.new(@cog_registry, @config_manager, @all_execution_procs, params.run, input.value)
               em.prepare!
               em.run!
 
