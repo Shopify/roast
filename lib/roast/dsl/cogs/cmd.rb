@@ -62,14 +62,29 @@ module Roast
             @values[:print_stderr] = true
           end
 
+          def print_none!
+            @values[:print_stdout] = false
+            @values[:print_stderr] = false
+          end
+
           #: () -> void
           def print_stdout!
             @values[:print_stdout] = true
           end
 
           #: () -> void
+          def no_print_stdout!
+            @values[:print_stdout] = false
+          end
+
+          #: () -> void
           def print_stderr!
             @values[:print_stderr] = true
+          end
+
+          #: () -> void
+          def no_print_stderr!
+            @values[:print_stderr] = false
           end
 
           #: () -> bool
@@ -82,10 +97,8 @@ module Roast
             !!@values[:print_stderr]
           end
 
-          #: () -> void
-          def display!
-            print_all!
-          end
+          alias_method(:display!, :print_all!)
+          alias_method(:no_display!, :print_none!)
         end
 
         #: (Input) -> Output
