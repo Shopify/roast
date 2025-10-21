@@ -128,7 +128,8 @@ module Roast
         # Called when the cog method is invoked in the workflow's 'execute' block.
         # This creates the cog instance and prepares it for execution.
         if cog_class <= SystemCog
-          cog_params = T.unsafe(cog_class).params_class.new(*cog_args, **cog_kwargs)
+          untyped_cog_class = cog_class #: as untyped // to remove warning about splats of unknown length
+          cog_params = untyped_cog_class.params_class.new(*cog_args, **cog_kwargs)
           cog_instance = if cog_class == SystemCogs::Call
             create_call_system_cog(cog_params, cog_input_proc)
           elsif cog_class == SystemCogs::Map
@@ -138,7 +139,7 @@ module Roast
           end
         else
           cog_name = Array.wrap(cog_args).shift || Cog.generate_fallback_name
-          cog_instance = T.unsafe(cog_class).new(cog_name, cog_input_proc)
+          cog_instance = cog_class.new(cog_name, cog_input_proc)
         end
         add_cog_instance(cog_instance)
       end

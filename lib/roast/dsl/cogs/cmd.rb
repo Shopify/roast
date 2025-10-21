@@ -131,7 +131,8 @@ module Roast
         #: (Input) -> Output
         def execute(input)
           config = @config #: as Config
-          result = T.unsafe(Roast::Helpers::CmdRunner).popen3(input.command, *input.args) do |stdin, stdout, stderr, wait_thread|
+          result = Roast::Helpers::CmdRunner #: as untyped
+            .popen3(input.command, *input.args) do |stdin, stdout, stderr, wait_thread|
             stdin.close
             command_output = ""
             command_error = ""
