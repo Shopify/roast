@@ -30,6 +30,22 @@ module Roast
         def [](key)
           @values[key]
         end
+
+        class << self
+          def field(key, default = nil)
+            define_method(key) do |*args|
+              if args.empty?
+                if @values[key].nil?
+                  @values[key] = default
+                end
+
+                @values[key]
+              else
+                @values[key] = args.first
+              end
+            end
+          end
+        end
       end
     end
   end

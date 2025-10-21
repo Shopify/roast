@@ -34,40 +34,19 @@ module Roast
         end
 
         class Config < Cog::Config
-          #: (?String?) -> String?
-          def api_key(key = nil)
-            @values[:api_key] ||= key || ENV["OPENAI_API_KEY"]
-          end
-
-          #: (?String?) -> String?
-          def base_url(url = nil)
-            @values[:base_url] ||= url || ENV["OPENAI_API_BASE_URL"]
-          end
-
-          #: (?String?) -> String?
-          def model(model_name = nil)
-            @values[:model] ||= model_name
-          end
-
-          #: (?Symbol?) -> Symbol?
-          def provider(provider_name = nil)
-            @values[:provider] ||= provider_name
-          end
-
-          #: (?bool?) -> bool?
-          def assume_model_exists(assume_model_exists = nil)
-            @values[:assume_model_exists] ||= assume_model_exists || false
-          end
+          field :model
+          field :api_key, ENV["OPENAI_API_KEY"]
+          field :base_url, ENV["OPENAI_API_BASE_URL"]
+          field :provider, :openai
+          field :assume_model_exists, false
         end
 
-        #: () -> Roast::DSL::Cogs::Chat::Config
-        def config # rubocop:disable Style/TrivialAccessors
-          @config #: as Roast::DSL::Cogs::Chat::Config
-        end
+        #: Roast::DSL::Cogs::Chat::Config
+        attr_reader :config
 
         #: (Input) -> Output
         def execute(input)
-          chat = context.chat(
+          chat = ruby_llm_context.chat(
             model: config.model,
             provider: config.provider,
             assume_model_exists: config.assume_model_exists,
@@ -86,10 +65,11 @@ module Roast
           Output.new(resp.content)
         end
 
-        def context
-          @context ||= RubyLLM.context do |context|
-            context.openai_api_key = config.api_key
-            context.openai_api_base = config.base_url
+        #: () -> RubyLLM::Context
+        def ruby_llm_context
+          @ruby_llm_context ||= RubyLLM.context do |context|
+            context.openai_api_key = config.api_key unless config.api_key.nil?
+            context.openai_api_base = config.base_url unless config.base_url.nil?
           end
         end
       end
