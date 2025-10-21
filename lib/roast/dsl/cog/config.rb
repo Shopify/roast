@@ -32,7 +32,7 @@ module Roast
         end
 
         class << self
-          def field(key, default = nil)
+          def field(key, default)
             define_method(key) do |*args|
               if args.empty?
                 if @values[key].nil?

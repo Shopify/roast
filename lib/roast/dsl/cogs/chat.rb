@@ -34,9 +34,9 @@ module Roast
         end
 
         class Config < Cog::Config
-          field :model
+          field :model, "gpt-4o-mini"
           field :api_key, ENV["OPENAI_API_KEY"]
-          field :base_url, ENV["OPENAI_API_BASE_URL"]
+          field :base_url, ENV.fetch("OPENAI_API_BASE_URL", "https://api.openai.com/v1")
           field :provider, :openai
           field :assume_model_exists, false
         end

@@ -4,12 +4,11 @@
 #: self as Roast::DSL::Workflow
 
 config do
-  chat(:lake) do
-    model("gpt-4o")
-    assume_model_exists(true)
+  agent(:foo) do
+    provider(:claude)
   end
 end
 
 execute do
-  chat(:lake) { "What is the deepest lake?" }
+  agent(:foo) { "Say hi" }
 end

@@ -14,6 +14,7 @@ module Roast
           use(SystemCogs::Map)
           use(Cogs::Cmd)
           use(Cogs::Chat)
+          use(Cogs::Agent)
         end
 
         #: Hash[Symbol, singleton(Cog)]
