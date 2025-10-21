@@ -7,12 +7,12 @@ module Roast
       class Map < SystemCog
         class Params < SystemCog::Params
           #: Symbol
-          attr_accessor :scope
+          attr_accessor :run
 
-          #: (Symbol, ?Symbol?) -> void
-          def initialize(scope, name = nil)
+          #: (?Symbol?, run: Symbol) -> void
+          def initialize(name = nil, run:)
             super(name)
-            @scope = scope
+            @run = run
           end
         end
 
@@ -53,7 +53,7 @@ module Roast
           def create_map_system_cog(params, input_proc)
             SystemCogs::Map.new(params.name, input_proc) do |input|
               input = input #: as Input
-              raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.scope.present?
+              raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 
               # For now, just process each item sequentially in a single thread
               input.items.each do |item|
@@ -61,7 +61,7 @@ module Roast
                   @cog_registry,
                   @config_manager,
                   @all_execution_procs,
-                  params.scope,
+                  params.run,
                   item,
                 )
                 em.prepare!
