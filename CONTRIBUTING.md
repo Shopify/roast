@@ -1,5 +1,7 @@
 # How to contribute
 
+> **📢 Code Freeze Notice**: This project is currently under a limited code freeze while we work on an alternative frontend (a DSL). We are still accepting **bug fixes**, but **new features** will not be merged until the DSL is released. Thank you for your understanding!
+
 ## Things we will merge
 
 * Bugfixes

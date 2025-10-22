@@ -2,6 +2,8 @@
 
 # Roast
 
+> **📢 Code Freeze Notice**: This project is currently under a limited code freeze while we work on an alternative frontend (a DSL). We are still accepting **bug fixes**, but **new features** will not be merged until the DSL is released. Thank you for your understanding!
+
 A convention-oriented framework for creating structured AI workflows, maintained by the Augmented Engineering team at Shopify.
 
 ## Installation
