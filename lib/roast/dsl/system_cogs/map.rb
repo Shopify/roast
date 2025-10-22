@@ -45,6 +45,14 @@ module Roast
           end
         end
 
+        class Output < Cog::Output
+          #: (Array[ExecutionManager]) -> void
+          def initialize(execution_managers)
+            super()
+            @execution_managers = execution_managers
+          end
+        end
+
         # @requires_ancestor: ExecutionManager
         module Manager
           private
@@ -56,7 +64,7 @@ module Roast
               raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 
               # For now, just process each item sequentially in a single thread
-              input.items.each do |item|
+              ems = input.items.map do |item|
                 em = ExecutionManager.new(
                   @cog_registry,
                   @config_manager,
@@ -66,10 +74,22 @@ module Roast
                 )
                 em.prepare!
                 em.run!
+                em
               end
 
-              Cog::Output.new
+              Output.new(ems)
             end
+          end
+        end
+
+        # @requires_ancestor: CogInputContext
+        module InputContext
+          #: [T] (Roast::DSL::SystemCogs::Map::Output) {() -> T} -> Array[T]
+          def collect(map_cog_output, &block)
+            ems = map_cog_output.instance_variable_get(:@execution_managers)
+            raise CogInputContext::ContextNotFoundError if ems.nil?
+
+            ems.map { |em| em.cog_input_context.instance_exec(&block) unless em.nil? }
           end
         end
       end
