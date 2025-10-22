@@ -6,6 +6,39 @@ require "test_helper"
 module DSL
   module Functional
     class RoastDSLExamplesTest < FunctionalTest
+      test "call.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :call do
+          Roast::DSL::Workflow.from_file("dsl/call.rb")
+        end
+        assert_empty stderr
+        lines = stdout.lines.map(&:strip)
+        assert_equal "--> before", lines.shift
+        3.times do
+          word = lines.shift
+          assert_equal word.upcase, lines.shift
+        end
+        assert_equal "---", lines.shift
+        assert_match(/^[\w']+$/, lines.shift)
+        assert_equal "SCOPE VALUE: ROAST", lines.shift
+        assert_match(/^[\w']+$/, lines.shift)
+        assert_equal "SCOPE VALUE: OTHER", lines.shift
+        assert_equal "--> after", lines.shift
+        assert_empty lines
+      end
+
+      test "from.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :from do
+          Roast::DSL::Workflow.from_file("dsl/from.rb")
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          Could not access :to_upper directly
+          Hello --> HELLO --> hello
+          World --> WORLD --> world
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
       test "map.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
           Roast::DSL::Workflow.from_file("dsl/map.rb")
@@ -41,26 +74,6 @@ module DSL
           # match default `date` format
           assert_match(/^\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}$/, lines.shift, "missing date line")
         end
-        assert_empty lines
-      end
-
-      test "call.rb workflow runs successfully" do
-        stdout, stderr = in_sandbox :call do
-          Roast::DSL::Workflow.from_file("dsl/call.rb")
-        end
-        assert_empty stderr
-        lines = stdout.lines.map(&:strip)
-        assert_equal "--> before", lines.shift
-        3.times do
-          word = lines.shift
-          assert_equal word.upcase, lines.shift
-        end
-        assert_equal "---", lines.shift
-        assert_match(/^[\w']+$/, lines.shift)
-        assert_equal "SCOPE VALUE: ROAST", lines.shift
-        assert_match(/^[\w']+$/, lines.shift)
-        assert_equal "SCOPE VALUE: OTHER", lines.shift
-        assert_equal "--> after", lines.shift
         assert_empty lines
       end
 

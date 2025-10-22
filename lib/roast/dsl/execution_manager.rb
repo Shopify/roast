@@ -57,7 +57,7 @@ module Roast
         @cog_stack.map do |cog|
           cog.run!(
             @config_manager.config_for(cog.class, cog.name),
-            cog_input_manager,
+            cog_input_context,
             @scope_value.deep_dup, # Pass a copy to each cog to guard against mutated values being passed between cogs
           )
         end
@@ -80,7 +80,7 @@ module Roast
       end
 
       #: () -> CogInputContext
-      def cog_input_manager
+      def cog_input_context
         raise ExecutionManagerNotPreparedError unless prepared?
 
         @cog_input_manager.context

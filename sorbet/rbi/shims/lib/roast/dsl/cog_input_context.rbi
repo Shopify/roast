@@ -4,10 +4,10 @@
 module Roast
   module DSL
     class CogInputContext
-      #: (Symbol) -> Roast::DSL::Cog::Output?
+      #: (Symbol) -> Roast::DSL::SystemCogs::Call::Output?
       def call(name); end
 
-      #: (Symbol) -> Roast::DSL::Cog::Output
+      #: (Symbol) -> Roast::DSL::SystemCogs::Call::Output
       def call!(name); end
 
       #: (Symbol) -> bool

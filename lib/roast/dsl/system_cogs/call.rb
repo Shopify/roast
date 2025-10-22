@@ -40,6 +40,14 @@ module Roast
           end
         end
 
+        class Output < Cog::Output
+          #: (ExecutionManager) -> void
+          def initialize(execution_manager)
+            super()
+            @execution_manager = execution_manager
+          end
+        end
+
         # @requires_ancestor: ExecutionManager
         module Manager
           private
@@ -54,8 +62,19 @@ module Roast
               em.prepare!
               em.run!
 
-              Cog::Output.new
+              Output.new(em)
             end
+          end
+        end
+
+        # @requires_ancestor: CogInputContext
+        module InputContext
+          #: [T] (Roast::DSL::SystemCogs::Call::Output) {() -> T} -> T
+          def from(call_cog_output, &block)
+            em = call_cog_output.instance_variable_get(:@execution_manager)
+            raise CogInputContext::ContextNotFoundError if em.nil?
+
+            em.cog_input_context.instance_exec(&block) unless em.nil?
           end
         end
       end
