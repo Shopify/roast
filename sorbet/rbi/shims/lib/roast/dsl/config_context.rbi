@@ -32,6 +32,8 @@ module Roast
       # - `no_print_stdout!` - Configure the cog __not__ to write STDOUT to the console
       # - `print_stderr!` - Configure the cog to write STDERR to the console
       # - `no_print_stderr!` - Configure the cog __not__ to write STDERR to the console
+      # - `clean_output!` - Configure the cog to strip surrounding whitespace from the values in its output object
+      # - `raw_output!` - Configure the cog __not__ to strip surrounding whitespace from the values in its output object
       #
       # ---
       #

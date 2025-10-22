@@ -84,6 +84,8 @@ module Roast
 
           # Configure the cog to write STDOUT to the console
           #
+          # Disabled by default
+          #
           #: () -> void
           def print_stdout!
             @values[:print_stdout] = true
@@ -98,6 +100,8 @@ module Roast
 
           # Configure the cog to write STDERR to the console
           #
+          # Disabled by default
+          #
           #: () -> void
           def print_stderr!
             @values[:print_stderr] = true
@@ -108,6 +112,24 @@ module Roast
           #: () -> void
           def no_print_stderr!
             @values[:print_stderr] = false
+          end
+
+          # Configure the cog to strip surrounding whitespace from the values in its output object
+          #
+          # Default: `true`
+          #
+          #: () -> void
+          def clean_output!
+            @values[:raw_output] = false
+          end
+
+          # Configure the cog __not__ to strip surrounding whitespace from the values in its output object
+          #
+          # Default: `false`
+          #
+          #: () -> void
+          def raw_output!
+            @values[:raw_output] = true
           end
 
           # Check if the cog is configured to write STDOUT to the console
@@ -122,6 +144,10 @@ module Roast
           #: () -> bool
           def print_stderr?
             !!@values[:print_stderr]
+          end
+
+          def raw_output?
+            !!@values[:raw_output]
           end
 
           alias_method(:display!, :print_all!)
@@ -160,6 +186,9 @@ module Roast
             # Wait for threads to finish
             stdout_thread.join
             stderr_thread.join
+
+            command_output = command_output.strip unless config.raw_output?
+            command_error = command_error.strip unless config.raw_output?
 
             [command_output, command_error, wait_thread.value]
           end #: as [String, String, Process::Status]

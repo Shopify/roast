@@ -39,18 +39,18 @@ execute do
 
     # Using `from`, you can access cogs from the executor scope that was run by a specific named `call`.
     # The block you pass to `from` runs in the input context of the specified scope, rather than the current scope.
-    original = from(call!(:hello)) { cmd!(:to_original).out.strip }
-    upper = from(call!(:hello)) { cmd!(:to_upper).out.strip }
-    lower = from(call!(:hello)) { cmd!(:to_lower).out.strip }
+    original = from(call!(:hello)) { cmd!(:to_original).out }
+    upper = from(call!(:hello)) { cmd!(:to_upper).out }
+    lower = from(call!(:hello)) { cmd!(:to_lower).out }
     "echo \"#{original} --> #{upper} --> #{lower}\""
   end
 
   cmd do
     # You can also grab the `call`'s output once and pass it to multiple `from` invocations.
     my_scope = call!(:world)
-    original = from(my_scope) { cmd!(:to_original).out.strip }
-    upper = from(my_scope) { cmd!(:to_upper).out.strip }
-    lower = from(my_scope) { cmd!(:to_lower).out.strip }
+    original = from(my_scope) { cmd!(:to_original).out }
+    upper = from(my_scope) { cmd!(:to_upper).out }
+    lower = from(my_scope) { cmd!(:to_lower).out }
     "echo \"#{original} --> #{upper} --> #{lower}\""
   end
 
@@ -58,9 +58,9 @@ execute do
     # Using `collect`, you can access cogs from the executor scopes that were run by a specific named `map`.
     # The block you pass to `collect` runs in the input context of each specified scope.
     # `collect` returns an array containing the output of each invocation of that block.
-    originals = collect(map!(:other_words)) { cmd!(:to_original).out.strip }
-    uppers = collect(map!(:other_words)) { cmd!(:to_upper).out.strip }
-    lowers = collect(map!(:other_words)) { cmd!(:to_lower).out.strip }
+    originals = collect(map!(:other_words)) { cmd!(:to_original).out }
+    uppers = collect(map!(:other_words)) { cmd!(:to_upper).out }
+    lowers = collect(map!(:other_words)) { cmd!(:to_lower).out }
     "echo \"#{originals.join(",")} --> #{uppers.join(",")} --> #{lowers.join(",")}\""
   end
 end
