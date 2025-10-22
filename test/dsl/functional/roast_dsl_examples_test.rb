@@ -64,6 +64,14 @@ module DSL
         assert_equal expected_stdout, stdout
       end
 
+      test "map_reduce.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :map_reduce do
+          Roast::DSL::Workflow.from_file("dsl/map_reduce.rb")
+        end
+        assert_empty stderr
+        assert_equal "lower case words: hello world", stdout.strip
+      end
+
       test "prototype.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
           Roast::DSL::Workflow.from_file("dsl/prototype.rb")
