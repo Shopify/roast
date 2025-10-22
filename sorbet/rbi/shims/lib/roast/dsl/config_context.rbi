@@ -42,6 +42,9 @@ module Roast
 
       #: (?Symbol?) {() [self: Roast::DSL::Cogs::Chat::Config] -> void} -> void
       def chat(name = nil, &block); end
+
+      #: (?Symbol?) {() [self: Roast::DSL::Cogs::Agent::Config] -> void} -> void
+      def agent(name = nil, &block); end
     end
   end
 end
