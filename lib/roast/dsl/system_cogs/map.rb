@@ -91,6 +91,26 @@ module Roast
 
             ems.map { |em| em.cog_input_context.instance_exec(&block) unless em.nil? }
           end
+
+          #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A?) {(A?) -> A} -> A?
+          def reduce(map_cog_output, initial_value = nil, &block)
+            ems = map_cog_output.instance_variable_get(:@execution_managers)
+            raise CogInputContext::ContextNotFoundError if ems.nil?
+
+            accumulator = initial_value
+            ems.each do |em|
+              new_accumulator = em.cog_input_context.instance_exec(accumulator, &block) unless em.nil?
+              case new_accumulator
+              when nil
+                # do not overwrite a non-nil value in the accumulator with a nil value,
+                # even if one is returned from the block
+              else
+                accumulator = new_accumulator #: as A
+              end
+            end
+
+            accumulator
+          end
         end
       end
     end

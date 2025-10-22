@@ -4,6 +4,11 @@
 module Roast
   module DSL
     class CogInputContext
+
+      #: [A] (Roast::DSL::SystemCogs::Map::Output, ?NilClass) {(A?) -> A} -> A?
+      #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A) {(A) -> A} -> A
+      def reduce(map_cog_output, initial_value = nil, &block); end
+
       #: (Symbol) -> Roast::DSL::SystemCogs::Call::Output?
       def call(name); end
 
