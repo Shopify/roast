@@ -175,9 +175,9 @@ module DSL
         end
         assert_empty stderr
         lines = stdout.lines.map(&:strip)
-        assert_match(/^d([r-][w-][x-]){3}\s+\d+.*\.$/, lines.shift)
+        assert_match(/^d([r-][w-][x-]){3}[@+]?\s+\d+.*\.$/, lines.shift)
         assert_equal "---", lines.shift
-        assert_match(/^d([r-][w-][x-]){3}\s+\d+.*\w+$/, lines.shift)
+        assert_match(/^d([r-][w-][x-]){3}[@+]?\s+\d+.*\w+$/, lines.shift)
         assert_empty lines
       end
 

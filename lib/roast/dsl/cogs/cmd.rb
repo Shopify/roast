@@ -160,43 +160,23 @@ module Roast
         #: (Input) -> Output
         def execute(input)
           config = @config #: as Config
-          result = Roast::Helpers::CmdRunner #: as untyped
-            .popen3(input.command, *input.args) do |stdin, stdout, stderr, wait_thread|
-            stdin.close
-            command_output = ""
-            command_error = ""
 
-            # Thread to read and accumulate stdout
-            stdout_thread = Thread.new do
-              stdout.each_line do |line|
-                command_output += line
-                $stdout.puts(line) if config.print_stdout?
-              end
-            rescue IOError => e
-              Roast::Helpers::Logger.debug("IOError while reading stdout: #{e.message}")
-            end
+          stdout_handler = config.print_stdout? ? ->(line) { $stdout.print(line) } : nil
+          stderr_handler = config.print_stderr? ? ->(line) { $stderr.print(line) } : nil
 
-            # Thread to read and accumulate stderr
-            stderr_thread = Thread.new do
-              stderr.each_line do |line|
-                command_error += line
-                $stderr.puts(line) if config.print_stderr?
-              end
-            rescue IOError => e
-              Roast::Helpers::Logger.debug("IOError while reading stderr: #{e.message}")
-            end
+          stdout, stderr, status = CommandRunner #: as untyped
+            .execute(
+              [input.command] + input.args,
+              stdout_handler: stdout_handler,
+              stderr_handler: stderr_handler,
+            )
 
-            # Wait for threads to finish
-            stdout_thread.join
-            stderr_thread.join
+          unless config.raw_output?
+            stdout = stdout.strip
+            stderr = stderr.strip
+          end
 
-            command_output = command_output.strip unless config.raw_output?
-            command_error = command_error.strip unless config.raw_output?
-
-            [command_output, command_error, wait_thread.value]
-          end #: as [String, String, Process::Status]
-
-          Output.new(*result)
+          Output.new(stdout, stderr, status)
         end
       end
     end

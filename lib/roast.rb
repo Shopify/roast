@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 # Standard library requires
+require "benchmark"
 require "digest"
 require "English"
 require "erb"
