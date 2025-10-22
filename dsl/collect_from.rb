@@ -23,9 +23,10 @@ execute(:capitalize_a_word) do
 end
 
 execute do
-  # Call a subroutine with `call`
+  # Call a subroutine with `call` or `map`
   call(:hello, run: :capitalize_a_word) { "Hello" }
   call(:world, run: :capitalize_a_word) { "World" }
+  map(:other_words, run: :capitalize_a_word) { ["Goodnight", "Moon"] }
 
   cmd do
     # Normally, you can only reference the output of cogs that run in the same executor scope.
@@ -51,5 +52,15 @@ execute do
     upper = from(my_scope) { cmd!(:to_upper).out.strip }
     lower = from(my_scope) { cmd!(:to_lower).out.strip }
     "echo \"#{original} --> #{upper} --> #{lower}\""
+  end
+
+  cmd do
+    # Using `collect`, you can access cogs from the executor scopes that were run by a specific named `map`.
+    # The block you pass to `collect` runs in the input context of each specified scope.
+    # `collect` returns an array containing the output of each invocation of that block.
+    originals = collect(map!(:other_words)) { cmd!(:to_original).out.strip }
+    uppers = collect(map!(:other_words)) { cmd!(:to_upper).out.strip }
+    lowers = collect(map!(:other_words)) { cmd!(:to_lower).out.strip }
+    "echo \"#{originals.join(",")} --> #{uppers.join(",")} --> #{lowers.join(",")}\""
   end
 end

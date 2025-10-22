@@ -26,15 +26,16 @@ module DSL
         assert_empty lines
       end
 
-      test "from.rb workflow runs successfully" do
-        stdout, stderr = in_sandbox :from do
-          Roast::DSL::Workflow.from_file("dsl/from.rb")
+      test "collect_from.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :collect_from do
+          Roast::DSL::Workflow.from_file("dsl/collect_from.rb")
         end
         assert_empty stderr
         expected_stdout = <<~EOF
           Could not access :to_upper directly
           Hello --> HELLO --> hello
           World --> WORLD --> world
+          Goodnight,Moon --> GOODNIGHT,MOON --> goodnight,moon
         EOF
         assert_equal expected_stdout, stdout
       end

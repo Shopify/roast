@@ -6,6 +6,7 @@ module Roast
     # Context in which the individual cog input blocks within the `execute` block of a workflow definition are evaluated
     class CogInputContext
       include SystemCogs::Call::InputContext
+      include SystemCogs::Map::InputContext
 
       class CogInputContextError < Roast::Error; end
       class ContextNotFoundError < CogInputContextError; end
