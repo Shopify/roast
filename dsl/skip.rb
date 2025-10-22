@@ -12,7 +12,7 @@ execute do
 
   cmd(:even) do
     # `cmd!` output accessor bang method will raise an exception if the named cog did not complete successfully
-    seconds = cmd!(:seconds).out.strip.to_i
+    seconds = cmd!(:seconds).out.to_i
     # Use the `skip!` method in a cog's input proc to conditionally skip this cog
     # If `skip!` is called, the input proc will immediately terminate
     skip! if seconds.odd?
@@ -20,7 +20,7 @@ execute do
   end
 
   cmd(:odd) do
-    seconds = cmd!(:seconds).out.strip.to_i
+    seconds = cmd!(:seconds).out.to_i
     skip! if seconds.even?
     "echo '#{seconds} is odd'"
   end
