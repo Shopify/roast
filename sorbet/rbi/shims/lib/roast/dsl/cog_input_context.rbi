@@ -13,10 +13,10 @@ module Roast
       #: (Symbol) -> bool
       def call?(name); end
 
-      #: (Symbol) -> Roast::DSL::Cog::Output?
+      #: (Symbol) -> Roast::DSL::SystemCogs::Map::Output?
       def map(name); end
 
-      #: (Symbol) -> Roast::DSL::Cog::Output
+      #: (Symbol) -> Roast::DSL::SystemCogs::Map::Output
       def map!(name); end
 
       #: (Symbol) -> bool
