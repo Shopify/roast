@@ -20,6 +20,10 @@ module Roast
 
       class ExecutionScopeNotSpecifiedError < ExecutionManagerError; end
 
+      class IllegalCogNameError < ExecutionManagerError; end
+
+      class OutputsAlreadyDefinedError < ExecutionManagerError; end
+
       #: (Cog::Registry, ConfigManager, Hash[Symbol?, Array[^() -> void]], ?Symbol?, ?untyped?) -> void
       def initialize(
         cog_registry,
@@ -44,6 +48,7 @@ module Roast
         raise ExecutionManagerAlreadyPreparedError if preparing? || prepared?
 
         @preparing = true
+        bind_outputs
         bind_registered_cogs
         my_execution_procs.each { |ep| @execution_context.instance_eval(&ep) }
         @prepared = true
@@ -119,6 +124,8 @@ module Roast
           on_execute_method.call(cog_class, args, kwargs, cog_input_proc)
         end
         @execution_context.instance_eval do
+          raise IllegalCogNameError, cog_method_name if respond_to?(cog_method_name, true)
+
           define_singleton_method(cog_method_name, cog_method)
         end
       end
@@ -142,6 +149,33 @@ module Roast
           cog_instance = cog_class.new(cog_name, cog_input_proc)
         end
         add_cog_instance(cog_instance)
+      end
+
+      def bind_outputs
+        on_outputs_method = method(:on_outputs)
+        method_to_bind = proc do |&outputs_proc|
+          on_outputs_method.call(outputs_proc)
+        end
+        @execution_context.instance_eval do
+          define_singleton_method(:outputs, method_to_bind)
+        end
+      end
+
+      #: (^() -> untyped) -> void
+      def on_outputs(outputs)
+        raise OutputsAlreadyDefinedError if @outputs
+
+        @outputs = outputs
+      end
+
+      #: () -> untyped
+      def final_output
+        return @cog_input_manager.context.instance_exec(&@outputs) if @outputs
+
+        last_cog = @cog_stack.last
+        raise CogInputManager::CogDoesNotExistError, "no cogs defined in scope" unless last_cog
+
+        last_cog.output
       end
     end
   end

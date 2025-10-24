@@ -77,10 +77,7 @@ module Roast
 
             return em.cog_input_context.instance_exec(&block) if block_given?
 
-            last_cog = em.instance_variable_get(:@cog_stack).last
-            raise CogInputManager::CogDoesNotExistError, "no cogs defined in scope" unless last_cog
-
-            last_cog.output
+            em.send(:final_output)
           end
         end
       end
