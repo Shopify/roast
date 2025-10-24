@@ -40,6 +40,14 @@ module DSL
         assert_equal expected_stdout, stdout
       end
 
+      test "outputs.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :outputs do
+          Roast::DSL::Workflow.from_file("dsl/outputs.rb")
+        end
+        assert_empty stderr
+        assert_equal "Upper: HELLO", stdout.strip
+      end
+
       test "map.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
           Roast::DSL::Workflow.from_file("dsl/map.rb")

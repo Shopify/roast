@@ -4,6 +4,10 @@
 module Roast
   module DSL
     class ExecutionContext
+
+      #: () {() [self: Roast::DSL::CogInputContext] -> untyped} -> void
+      def outputs(&block); end
+
       #: (?Symbol?, run: Symbol) ?{(Roast::DSL::SystemCogs::Call::Input, untyped) [self: Roast::DSL::CogInputContext] -> untyped} -> void
       def call(name = nil, run:,  &block); end
 
