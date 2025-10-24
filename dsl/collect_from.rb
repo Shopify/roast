@@ -40,8 +40,11 @@ execute do
     # Using `from`, you can access cogs from the executor scope that was run by a specific named `call`.
     # The block you pass to `from` runs in the input context of the specified scope, rather than the current scope.
     original = from(call!(:hello)) { cmd!(:to_original).out }
-    upper = from(call!(:hello)) { cmd!(:to_upper).out }
-    lower = from(call!(:hello)) { cmd!(:to_lower).out }
+    # The type of the return value of `from` is the same type as the return value of the block.
+    upper = from(call!(:hello)) { cmd!(:to_upper) }.out
+    # You can also use this shorthand `from` syntax to get the output of the last cog in its executor scope.
+    # In this syntax, the return value of `from` is untyped
+    lower = from(call!(:hello)).out
     "echo \"#{original} --> #{upper} --> #{lower}\""
   end
 
