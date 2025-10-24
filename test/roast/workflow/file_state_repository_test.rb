@@ -184,6 +184,72 @@ module Roast
         assert_match(/Failed to save final output/, output[1]) # stderr is at index 1
       end
 
+      test "#save_state handles very long step names without exceeding filesystem limits" do
+        # This is to make sure that issue #267 won't recur
+        long_step_name = "Use the coding agent and its coverage mcp tool to run test coverage on each changed files individually that is not a test file. Make sure to find and use the correct test file path. If anything fails, report the entire MCP server error do not retry" * 5
+
+        state_data = { step_name: long_step_name, order: 2, transcript: [], output: {}, final_output: [], execution_order: [long_step_name] }
+
+        assert_nothing_raised do
+          @repository.save_state(@workflow, long_step_name, state_data)
+        end
+
+        workflow_dir = expected_workflow_dir
+        session_dirs = Dir.children(workflow_dir).reject { |f| f == ".gitignore" }
+        assert_equal 1, session_dirs.size
+
+        session_dir = File.join(workflow_dir, session_dirs.first)
+        state_files = Dir.glob(File.join(session_dir, "step_*_*.json"))
+        assert_equal 1, state_files.size
+
+        filename = File.basename(state_files.first)
+        assert filename.bytesize <= 255, "Filename '#{filename}' is #{filename.bytesize} bytes (should be <= 255)"
+
+        state = JSON.parse(File.read(state_files.first))
+        assert_equal long_step_name, state["step_name"]
+      end
+
+      test "short step names remain unchanged" do
+        short_name = "simple_step"
+        result = @repository.send(:sanitize_step_name, short_name)
+        assert_equal short_name, result
+      end
+
+      test "step names at the limit remain unchanged" do
+        # MAX_FILENAME_LENGTH is 255, reserved_length for ".json" is 14 (9 + 5)
+        # So max_step_name_length is 241 (255 - 14)
+        max_step_name_length = FileStateRepository::MAX_FILENAME_LENGTH - 14
+        name_at_limit = "a" * max_step_name_length
+        result = @repository.send(:sanitize_step_name, name_at_limit)
+        assert_equal name_at_limit, result
+      end
+
+      test "step names over limit are truncated with hash" do
+        long_name = "a" * 300
+        result = @repository.send(:sanitize_step_name, long_name)
+
+        max_step_name_length = FileStateRepository::MAX_FILENAME_LENGTH - 14
+        assert result.bytesize <= max_step_name_length
+        assert result.end_with?("_#{Digest::MD5.hexdigest(long_name)[0..7]}")
+      end
+
+      test "truncation doesn't split multi-byte UTF-8 characters" do
+        # Create a string that would be truncated in the middle of a multi-byte character
+        # if we're not careful - need to make it long enough to actually trigger truncation
+        max_step_name_length = FileStateRepository::MAX_FILENAME_LENGTH - 14
+        base = "a" * (max_step_name_length + 10) # Exceed limit
+        utf8_suffix = "🔥💯" # 2 emoji (8 bytes total - each is 4 bytes)
+        long_name = base + utf8_suffix
+
+        result = @repository.send(:sanitize_step_name, long_name)
+
+        assert result.valid_encoding?
+        assert result.bytesize <= max_step_name_length
+
+        # Should contain a hash since it was truncated
+        assert_match(/_[a-f0-9]{8}$/, result)
+      end
+
       private
 
       def expected_workflow_dir
