@@ -84,12 +84,20 @@ module Roast
 
         # @requires_ancestor: CogInputContext
         module InputContext
-          #: [T] (Roast::DSL::SystemCogs::Map::Output) {() -> T} -> Array[T]
+          # @rbs [T] (Roast::DSL::SystemCogs::Map::Output) {() -> T} -> Array[T]
+          #    | (Roast::DSL::SystemCogs::Map::Output) -> Array[untyped]
           def collect(map_cog_output, &block)
             ems = map_cog_output.instance_variable_get(:@execution_managers)
             raise CogInputContext::ContextNotFoundError if ems.nil?
 
-            ems.map { |em| em.cog_input_context.instance_exec(&block) unless em.nil? }
+            return ems.map { |em| em.cog_input_context.instance_exec(&block) } if block_given?
+
+            ems.map do |em|
+              last_cog = em.instance_variable_get(:@cog_stack).last
+              raise CogInputManager::CogDoesNotExistError, "no cogs defined in scope" unless last_cog
+
+              last_cog.output
+            end
           end
 
           #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A?) {(A?) -> A} -> A?
