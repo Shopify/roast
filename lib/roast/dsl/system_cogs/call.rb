@@ -69,12 +69,18 @@ module Roast
 
         # @requires_ancestor: CogInputContext
         module InputContext
-          #: [T] (Roast::DSL::SystemCogs::Call::Output) {() -> T} -> T
+          # @rbs [T] (Roast::DSL::SystemCogs::Call::Output) {() -> T} -> T
+          #    | (Roast::DSL::SystemCogs::Call::Output) -> untyped
           def from(call_cog_output, &block)
             em = call_cog_output.instance_variable_get(:@execution_manager)
             raise CogInputContext::ContextNotFoundError if em.nil?
 
-            em.cog_input_context.instance_exec(&block) unless em.nil?
+            return em.cog_input_context.instance_exec(&block) if block_given?
+
+            last_cog = em.instance_variable_get(:@cog_stack).last
+            raise CogInputManager::CogDoesNotExistError, "no cogs defined in scope" unless last_cog
+
+            last_cog.output
           end
         end
       end
