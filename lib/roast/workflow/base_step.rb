@@ -89,7 +89,7 @@ module Roast
       def normalize_name(name)
         return name if name.is_a?(Roast::ValueObjects::StepName)
 
-        name_value = name || self.class.name.underscore.split("/").last
+        name_value = name || self.class.name&.underscore&.split("/")&.last || "unnamed_step"
         Roast::ValueObjects::StepName.new(name_value)
       end
 
