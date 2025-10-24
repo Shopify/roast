@@ -9,6 +9,10 @@ module Roast
       #: (Roast::DSL::SystemCogs::Call::Output) -> untyped
       def from(call_cog_output, &block); end
 
+      #: [T] (Roast::DSL::SystemCogs::Map::Output) {() -> T} -> Array[T]
+      #: (Roast::DSL::SystemCogs::Map::Output) -> Array[untyped]
+      def collect(map_cog_output, &block); end
+
       #: [A] (Roast::DSL::SystemCogs::Map::Output, ?NilClass) {(A?) -> A} -> A?
       #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A) {(A) -> A} -> A
       def reduce(map_cog_output, initial_value = nil, &block); end

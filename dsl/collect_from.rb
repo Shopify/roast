@@ -42,7 +42,7 @@ execute do
     original = from(call!(:hello)) { cmd!(:to_original).out }
     # The type of the return value of `from` is the same type as the return value of the block.
     upper = from(call!(:hello)) { cmd!(:to_upper) }.out
-    # You can also use this shorthand `from` syntax to get the output of the last cog in its executor scope.
+    # You can also use this shorthand `from` syntax to get the output of the last cog in the call's executor scope.
     # In this syntax, the return value of `from` is untyped
     lower = from(call!(:hello)).out
     "echo \"#{original} --> #{upper} --> #{lower}\""
@@ -62,8 +62,11 @@ execute do
     # The block you pass to `collect` runs in the input context of each specified scope.
     # `collect` returns an array containing the output of each invocation of that block.
     originals = collect(map!(:other_words)) { cmd!(:to_original).out }
-    uppers = collect(map!(:other_words)) { cmd!(:to_upper).out }
-    lowers = collect(map!(:other_words)) { cmd!(:to_lower).out }
+    # The type of the return value of `call` is an Array of the same type as the return value of the block.
+    uppers = collect(map!(:other_words)) { cmd!(:to_upper) }.map(&:out)
+    # You can also use this shorthand `collect` syntax to get the output of the last cog in each of the map's executor scopes.
+    # In this syntax, the return value of `collect` is Array[untyped]
+    lowers = collect(map!(:other_words)).map(&:out)
     "echo \"#{originals.join(",")} --> #{uppers.join(",")} --> #{lowers.join(",")}\""
   end
 end
