@@ -295,6 +295,47 @@ module Roast
           assert_equal({ "CUSTOM_VAR" => "custom_value" }, step.env)
         end
       end
+
+      def test_loads_ruby_step_with_plural_name
+        # issue 335: plural step names should be resolved to their plural class names
+        Dir.mktmpdir do |dir|
+          step_file = File.join(dir, "generate_tests.rb")
+          File.write(step_file, <<~RUBY)
+            class GenerateTests < Roast::Workflow::BaseStep
+              def call
+                "Tests generated"
+              end
+            end
+          RUBY
+
+          loader = StepLoader.new(@workflow, @config_hash, dir)
+          step = loader.load("generate_tests")
+
+          assert_instance_of(GenerateTests, step)
+          assert_equal("generate_tests", step.name)
+          assert_equal(dir, step.context_path)
+        end
+      end
+
+      def test_loads_ruby_step_using_classify_fallback
+        Dir.mktmpdir do |dir|
+          step_file = File.join(dir, "analyze_coverage.rb")
+          File.write(step_file, <<~RUBY)
+            class AnalyzeCoverage < Roast::Workflow::BaseStep
+              def call
+                "Coverage analyzed"
+              end
+            end
+          RUBY
+
+          loader = StepLoader.new(@workflow, @config_hash, dir)
+          step = loader.load("analyze_coverage")
+
+          assert_instance_of(AnalyzeCoverage, step)
+          assert_equal("analyze_coverage", step.name)
+          assert_equal(dir, step.context_path)
+        end
+      end
     end
   end
 end
