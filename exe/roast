@@ -13,5 +13,8 @@ unshift_path.call("lib")
 require "bundler/setup"
 require "roast"
 
-puts "🔥🔥🔥 Everyone loves a good roast 🔥🔥🔥\n\n"
+# Don't print banner for mcp-server command as it interferes with the protocol
+unless ARGV.include?("mcp-server")
+  puts "🔥🔥🔥 Everyone loves a good roast 🔥🔥🔥\n\n"
+end
 Roast::CLI.start(ARGV)
