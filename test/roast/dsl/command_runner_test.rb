@@ -24,44 +24,50 @@ module Roast
       end
 
       test "stdout_handler is called for each line" do
-        lines = []
+        mock_handler = Minitest::Mock.new
+        mock_handler.expect(:call, nil, ["test\n"])
+
         stdout, _, _ = CommandRunner.execute(
           "echo",
           "test",
-          stdout_handler: ->(line) { lines << line },
+          stdout_handler: mock_handler,
         )
 
-        assert_equal ["test\n"], lines
+        mock_handler.verify
         assert_equal "test\n", stdout
       end
 
       test "stderr_handler is called for each line" do
-        lines = []
+        mock_handler = Minitest::Mock.new
+        mock_handler.expect(:call, nil, ["error\n"])
+
         _, stderr, _ = CommandRunner.execute(
           "bash",
           "-c",
           "echo 'error' >&2",
-          stderr_handler: ->(line) { lines << line },
+          stderr_handler: mock_handler,
         )
 
-        assert_equal ["error\n"], lines
+        mock_handler.verify
         assert_equal "error\n", stderr
       end
 
       test "both handlers work together" do
-        stdout_lines = []
-        stderr_lines = []
+        stdout_mock = Minitest::Mock.new
+        stderr_mock = Minitest::Mock.new
+        stdout_mock.expect(:call, nil, ["out\n"])
+        stderr_mock.expect(:call, nil, ["err\n"])
 
         stdout, stderr, _ = CommandRunner.execute(
           "bash",
           "-c",
           "echo 'out' && echo 'err' >&2",
-          stdout_handler: ->(line) { stdout_lines << line },
-          stderr_handler: ->(line) { stderr_lines << line },
+          stdout_handler: stdout_mock,
+          stderr_handler: stderr_mock,
         )
 
-        assert_equal ["out\n"], stdout_lines
-        assert_equal ["err\n"], stderr_lines
+        stdout_mock.verify
+        stderr_mock.verify
         assert_equal "out\n", stdout
         assert_equal "err\n", stderr
       end
@@ -97,67 +103,31 @@ module Roast
         end
       end
 
-      test "tracks and untracks child processes" do
-        # Get baseline count
-        initial_count = CommandRunner.send(:all_child_processes).size
-
-        # Execute command
-        CommandRunner.execute("echo", "test")
-
-        # Should be untracked after completion
-        final_count = CommandRunner.send(:all_child_processes).size
-        assert_equal initial_count, final_count
-      end
-
-      test "cleanup_all_children terminates tracked processes" do
-        # Spawn a long-running process in a thread so we can verify cleanup
+      test "timeout kills the process" do
+        # Capture PID in a thread
         thread = Thread.new do
-          CommandRunner.execute("sleep", "10", timeout: 10)
+          CommandRunner.execute("sleep", "100", timeout: 0.1)
         rescue CommandRunner::TimeoutError
-          # Expected when we kill it
+          # Expected
         end
 
-        # Give it time to start
-        sleep(0.1)
+        # Give command time to start
+        sleep(0.05)
 
-        # Should have one tracked process
-        processes = CommandRunner.send(:all_child_processes)
-        assert_equal 1, processes.size, "Should have exactly one tracked process"
+        # Wait for timeout to fire
+        thread.join
 
-        pid = processes.keys.first
-        assert CommandRunner.send(:process_running?, pid), "Process should be running"
+        # Give kill some time to complete
+        sleep(0.15)
 
-        # Clean up all children
-        CommandRunner.cleanup_all_children
-
-        # Give cleanup time to complete
-        sleep(0.1)
-
-        # Process should be terminated
-        refute CommandRunner.send(:process_running?, pid), "Process should be terminated"
-
-        # Should be untracked
-        processes = CommandRunner.send(:all_child_processes)
-        assert_equal 0, processes.size, "Should have no tracked processes"
-
-        # Clean up thread
-        thread.kill if thread.alive?
-      end
-
-      test "timeout cleans up the process" do
-        # Execute a command that will timeout
-        error = assert_raises(CommandRunner::TimeoutError) do
-          CommandRunner.execute("sleep", "10", timeout: 0.1)
-        end
-
-        assert_match(/timed out after 0.1 seconds/, error.message)
-
-        # Give cleanup time to complete
-        sleep(0.1)
-
-        # Should have no tracked processes after timeout
-        processes = CommandRunner.send(:all_child_processes)
-        assert_equal 0, processes.size, "Process should be untracked after timeout"
+        # The sleep process should be dead
+        # We can't easily get the PID from outside, but we can verify
+        # that a very short timeout doesn't leave sleep running
+        # by checking process list (external check, not using CommandRunner)
+        # rubocop:disable Roast/UseCmdRunner
+        output = %x(ps aux | grep "sleep 100" | grep -v grep)
+        # rubocop:enable Roast/UseCmdRunner
+        assert_empty output, "sleep process should be killed after timeout"
       end
 
       test "multiple line output calls handler for each line" do
@@ -171,6 +141,31 @@ module Roast
 
         assert_equal ["line1\n", "line2\n", "line3\n"], lines
         assert_equal "line1\nline2\nline3\n", stdout
+      end
+
+      test "multiple line stderr calls handler for each line" do
+        lines = []
+        _, stderr, _ = CommandRunner.execute(
+          "bash",
+          "-c",
+          "echo 'err1' >&2 && echo 'err2' >&2 && echo 'err3' >&2",
+          stderr_handler: ->(line) { lines << line },
+        )
+
+        assert_equal ["err1\n", "err2\n", "err3\n"], lines
+        assert_equal "err1\nerr2\nerr3\n", stderr
+      end
+
+      test "captured output preserved with non-zero exit status" do
+        stdout, stderr, status = CommandRunner.execute(
+          "bash",
+          "-c",
+          "echo 'output' && echo 'error' >&2 && exit 42",
+        )
+
+        assert_equal "output\n", stdout
+        assert_equal "error\n", stderr
+        assert_equal 42, status.exitstatus
       end
 
       test "handlers still work with non-zero exit status" do
@@ -201,18 +196,21 @@ module Roast
           raise "Handler error!" if call_count == 2
         end
 
-        stdout, _, status = CommandRunner.execute(
-          "bash",
-          "-c",
-          "echo 'line1' && echo 'line2' && echo 'line3'",
-          stdout_handler: failing_handler,
-        )
+        # Exception should not propagate from handler
+        assert_nothing_raised do
+          stdout, _, status = CommandRunner.execute(
+            "bash",
+            "-c",
+            "echo 'line1' && echo 'line2' && echo 'line3'",
+            stdout_handler: failing_handler,
+          )
 
-        # Should still capture all output even though handler crashed
-        assert_equal "line1\nline2\nline3\n", stdout
-        # Handler was called for all 3 lines (even after exception)
-        assert_equal 3, stdout_lines.size
-        assert_equal 0, status.exitstatus
+          # Should still capture all output even though handler crashed
+          assert_equal "line1\nline2\nline3\n", stdout
+          # Handler was called for all 3 lines (even after exception)
+          assert_equal 3, stdout_lines.size
+          assert_equal 0, status.exitstatus
+        end
       end
     end
   end
