@@ -25,31 +25,36 @@ module Roast
 
       test "stdout_handler is called for each line" do
         mock_handler = Minitest::Mock.new
-        mock_handler.expect(:call, nil, ["test\n"])
+        mock_handler.expect(:call, nil, ["line1\n"])
+        mock_handler.expect(:call, nil, ["line2\n"])
+        mock_handler.expect(:call, nil, ["line3\n"])
 
         stdout, _, _ = CommandRunner.execute(
-          "echo",
-          "test",
+          "bash",
+          "-c",
+          "echo 'line1' && echo 'line2' && echo 'line3'",
           stdout_handler: mock_handler,
         )
 
         mock_handler.verify
-        assert_equal "test\n", stdout
+        assert_equal "line1\nline2\nline3\n", stdout
       end
 
       test "stderr_handler is called for each line" do
         mock_handler = Minitest::Mock.new
-        mock_handler.expect(:call, nil, ["error\n"])
+        mock_handler.expect(:call, nil, ["err1\n"])
+        mock_handler.expect(:call, nil, ["err2\n"])
+        mock_handler.expect(:call, nil, ["err3\n"])
 
         _, stderr, _ = CommandRunner.execute(
           "bash",
           "-c",
-          "echo 'error' >&2",
+          "echo 'err1' >&2 && echo 'err2' >&2 && echo 'err3' >&2",
           stderr_handler: mock_handler,
         )
 
         mock_handler.verify
-        assert_equal "error\n", stderr
+        assert_equal "err1\nerr2\nerr3\n", stderr
       end
 
       test "both handlers work together" do
@@ -128,32 +133,6 @@ module Roast
         output = %x(ps aux | grep "sleep 100" | grep -v grep)
         # rubocop:enable Roast/UseCmdRunner
         assert_empty output, "sleep process should be killed after timeout"
-      end
-
-      test "multiple line output calls handler for each line" do
-        lines = []
-        stdout, _, _ = CommandRunner.execute(
-          "bash",
-          "-c",
-          "echo 'line1' && echo 'line2' && echo 'line3'",
-          stdout_handler: ->(line) { lines << line },
-        )
-
-        assert_equal ["line1\n", "line2\n", "line3\n"], lines
-        assert_equal "line1\nline2\nline3\n", stdout
-      end
-
-      test "multiple line stderr calls handler for each line" do
-        lines = []
-        _, stderr, _ = CommandRunner.execute(
-          "bash",
-          "-c",
-          "echo 'err1' >&2 && echo 'err2' >&2 && echo 'err3' >&2",
-          stderr_handler: ->(line) { lines << line },
-        )
-
-        assert_equal ["err1\n", "err2\n", "err3\n"], lines
-        assert_equal "err1\nerr2\nerr3\n", stderr
       end
 
       test "captured output preserved with non-zero exit status" do
