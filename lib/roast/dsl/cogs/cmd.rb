@@ -158,7 +158,6 @@ module Roast
         def execute(input)
           config = @config #: as Config
 
-          # Convert config booleans to handlers for CommandRunner
           stdout_handler = config.print_stdout? ? ->(line) { $stdout.print(line) } : nil
           stderr_handler = config.print_stderr? ? ->(line) { $stderr.print(line) } : nil
 
@@ -170,7 +169,6 @@ module Roast
               stderr_handler: stderr_handler,
             )
 
-          # Apply output stripping if configured
           unless config.raw_output?
             stdout = stdout.strip
             stderr = stderr.strip
