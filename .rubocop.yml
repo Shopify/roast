@@ -33,6 +33,7 @@ Roast/UseCmdRunner:
   Enabled: true
   Exclude:
     - 'lib/roast/helpers/cmd_runner.rb'
+    - 'lib/roast/dsl/command_runner.rb'
     - 'roast.gemspec'
 
 Style/MethodCallWithArgsParentheses:
