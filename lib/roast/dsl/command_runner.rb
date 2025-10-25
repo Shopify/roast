@@ -3,12 +3,19 @@
 
 module Roast
   module DSL
-    # Simple command runner for DSL cogs
+    # The canonical way to execute shell commands in Roast.
     #
-    # Provides command execution with:
+    # CommandRunner is the standard command execution interface for DSL cogs
+    # and should be used for all command invocations in this project.
+    #
+    # Features:
     # - Separate stdout/stderr capture (using Async fibers for concurrency)
-    # - Line-by-line callbacks for custom handling
-    # - Optional timeout support
+    # - Line-by-line streaming callbacks for custom handling
+    # - Optional timeout support with automatic process cleanup
+    # - Direct command execution (no shell by default for safety)
+    #
+    # Note: Currently executes commands directly without shell features.
+    # Shell support (pipes, redirects, etc.) will be added in a future version.
     class CommandRunner
       class CommandRunnerError < StandardError; end
       class TimeoutError < CommandRunnerError; end
