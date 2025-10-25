@@ -42,9 +42,7 @@ module Roast
           pid = nil #: Integer?
 
           execute_block = lambda do |_sec = nil|
-            # rubocop:disable Roast/UseCmdRunner
             Open3.popen3(*args) do |stdin, stdout, stderr, wait_thread|
-              # rubocop:enable Roast/UseCmdRunner
               stdin.close
               pid = wait_thread.pid
 
