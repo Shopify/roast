@@ -60,21 +60,23 @@ module Roast
       test "both handlers work together" do
         stdout_mock = Minitest::Mock.new
         stderr_mock = Minitest::Mock.new
-        stdout_mock.expect(:call, nil, ["out\n"])
-        stderr_mock.expect(:call, nil, ["err\n"])
+        stdout_mock.expect(:call, nil, ["out1\n"])
+        stdout_mock.expect(:call, nil, ["out2\n"])
+        stderr_mock.expect(:call, nil, ["err1\n"])
+        stderr_mock.expect(:call, nil, ["err2\n"])
 
         stdout, stderr, _ = CommandRunner.execute(
           "bash",
           "-c",
-          "echo 'out' && echo 'err' >&2",
+          "echo 'out1' && echo 'err1' >&2 && echo 'out2' && echo 'err2' >&2",
           stdout_handler: stdout_mock,
           stderr_handler: stderr_mock,
         )
 
         stdout_mock.verify
         stderr_mock.verify
-        assert_equal "out\n", stdout
-        assert_equal "err\n", stderr
+        assert_equal "out1\nout2\n", stdout
+        assert_equal "err1\nerr2\n", stderr
       end
 
       test "nil handlers work without errors" do
@@ -190,6 +192,23 @@ module Roast
           assert_equal 3, stdout_lines.size
           assert_equal 0, status.exitstatus
         end
+      end
+
+      test "handler exceptions are logged to debug" do
+        failing_handler = ->(_line) { raise StandardError, "Test error" }
+
+        # Capture debug calls
+        debug_calls = []
+        Roast::Helpers::Logger.stub(:debug, ->(msg) { debug_calls << msg }) do
+          CommandRunner.execute(
+            "echo",
+            "test",
+            stdout_handler: failing_handler,
+          )
+        end
+
+        assert_equal 1, debug_calls.size
+        assert_match(/stdout_handler raised: StandardError - Test error/, debug_calls.first)
       end
     end
   end
