@@ -37,4 +37,13 @@ execute do
     # It is possible to specify a custom index value when invoking `call`
     my.index = 23
   end
+
+  cmd { "echo" }
+
+  # `map` will also take a custom 'initial_index' value, at which to start the value of 'index' passed
+  # to the executors it invokes. This parallels the syntax of Ruby's `items.map.with_index(initial_value) { ... }`
+  map(run: :capitalize_a_word) do |my|
+    my.items = words[1, 2]
+    my.initial_index = 8
+  end
 end

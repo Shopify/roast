@@ -20,9 +20,13 @@ module Roast
           #: Array[untyped]
           attr_accessor :items
 
+          #: Integer
+          attr_accessor :initial_index
+
           def initialize
             super
             @items = []
+            @initial_index = 0
           end
 
           #: () -> void
@@ -71,7 +75,7 @@ module Roast
                   @all_execution_procs,
                   params.run,
                   item,
-                  index,
+                  index + input.initial_index,
                 )
                 em.prepare!
                 em.run!
