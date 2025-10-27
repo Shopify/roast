@@ -32,20 +32,13 @@ module Roast
           #: () -> void
           def validate!
             raise Cog::Input::InvalidInputError, "'items' is required" if items.nil?
-            # raise a validation error items is empty and coercion has not been run, to allow coercion to proceed
-            raise Cog::Input::InvalidInputError if items.blank? && !permit_empty_items?
+            raise Cog::Input::InvalidInputError if items.empty? && !coerce_ran?
           end
 
           #: (Array[untyped]) -> void
           def coerce(input_return_value)
+            super
             @items = Array.wrap(input_return_value) unless @items.present?
-          end
-
-          private
-
-          #: () -> bool
-          def permit_empty_items?
-            @permit_empty_items ||= false
           end
         end
 

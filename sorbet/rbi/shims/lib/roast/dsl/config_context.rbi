@@ -45,6 +45,9 @@ module Roast
 
       #: (?Symbol?) {() [self: Roast::DSL::Cogs::Agent::Config] -> void} -> void
       def agent(name = nil, &block); end
+
+      #: (?Symbol?) {() [self: Roast::DSL::Cogs::Ruby::Config] -> void} -> void
+      def ruby(name_or_pattern = nil, &block); end
     end
   end
 end

@@ -197,6 +197,20 @@ module DSL
         assert_includes stdout, "Hi! How can I help you today?"
         assert_empty stderr
       end
+
+      test "ruby_cog.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :ruby_cog do
+          Roast::DSL::Workflow.from_file("dsl/ruby_cog.rb")
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          Roast
+          Hello, ROAST
+          Calling a method: 7
+          1 22 333 4444 55555
+        EOF
+        assert_equal expected_stdout, stdout
+      end
     end
   end
 end
