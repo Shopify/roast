@@ -90,6 +90,9 @@ module DSL
           [1] WORLD
           [2] GOODNIGHT
           [3] MOON
+
+          [0] DEFAULT
+          [23] SPECIFIC
         EOF
         assert_equal expected_stdout, stdout
       end

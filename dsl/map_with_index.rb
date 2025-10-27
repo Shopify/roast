@@ -22,5 +22,19 @@ end
 
 execute do
   words = ["hello", "world", "goodnight", "moon"]
+
+  # When calling an execute scope with `map`, the index of the item in the enumerable
+  # will be provided to the cogs in that scope
   map(:some_name, run: :capitalize_a_word) { words }
+
+  cmd { "echo" }
+
+  # When calling an execute scope with `call`, the cogs in that scope will receive 0 as the index value by default
+  call(run: :capitalize_a_word) { "default" }
+
+  call(run: :capitalize_a_word) do |my|
+    my.value = "specific"
+    # It is possible to specify a custom index value when invoking `call`
+    my.index = 23
+  end
 end
