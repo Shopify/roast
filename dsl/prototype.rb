@@ -17,6 +17,7 @@ execute do
   cmd(:echo) { |my| my.command = "echo 'Hello World!'" }
 
   # Cogs can implement input coercion for simple return values
-  cmd(:date_today) { "date" }
-  cmd(:date_yesterday) { RUBY_PLATFORM.include?("darwin") ? "date -jv -1d" : "date -d '-1 day'" }
+  fmt = "\"+%a %b %d %T %Z %Y\""
+  cmd(:date_today) { "/bin/date #{fmt}" }
+  cmd(:date_yesterday) { RUBY_PLATFORM.include?("darwin") ? "/bin/date -jv -1d #{fmt}" : "/bin/date -d '-1 day' #{fmt}" }
 end
