@@ -146,6 +146,9 @@ module Roast
             !!@values[:print_stderr]
           end
 
+          # Check if the cog is configured to write its output to the console in raw form
+          #
+          #: () -> bool
           def raw_output?
             !!@values[:raw_output]
           end
