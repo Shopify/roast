@@ -110,17 +110,15 @@ module Roast
                 em
               end
 
-              ems = Async do
-                max_parallel_semaphore = Async::Semaphore.new(config.max_parallel_tasks) if config.max_parallel_tasks.present?
-                tasks = input.items.map.with_index do |item, index|
-                  if max_parallel_semaphore
-                    max_parallel_semaphore.async { create_and_run_execution_manager.call(item, index) }
-                  else
-                    Async { create_and_run_execution_manager.call(item, index) }
-                  end
+              max_parallel_semaphore = Async::Semaphore.new(config.max_parallel_tasks) if config.max_parallel_tasks.present?
+              tasks = input.items.map.with_index do |item, index|
+                if max_parallel_semaphore
+                  max_parallel_semaphore.async { create_and_run_execution_manager.call(item, index) }
+                else
+                  Async { create_and_run_execution_manager.call(item, index) }
                 end
-                tasks.map(&:wait)
-              end.wait
+              end
+              ems = tasks.map(&:wait)
 
               Output.new(ems)
             end

@@ -8,6 +8,8 @@ module Roast
 
       class CogAlreadyRanError < CogError; end
 
+      class CogAlreadyStartedError < CogError; end
+
       class << self
         #: () -> singleton(Cog::Config)
         def config_class
@@ -49,6 +51,8 @@ module Roast
       def initialize(name, cog_input_proc)
         @name = name
         @cog_input_proc = cog_input_proc #: ^(Cog::Input) -> untyped
+        @run_semaphore = Async::Semaphore.new(1) #: Async::Semaphore
+        @started = false #: bool
         @output = nil #: Cog::Output?
         @skipped = false #: bool
         @failed = false #: bool
@@ -57,39 +61,82 @@ module Roast
         @config = self.class.config_class.new #: untyped
       end
 
-      #: (Cog::Config, CogInputContext, untyped, Integer) -> void
+      #: (Cog::Config, CogInputContext, untyped, Integer) -> Async::Task
       def run!(config, input_context, executor_scope_value, executor_scope_index)
-        raise CogAlreadyRanError if ran?
+        @run_semaphore.async do # prevents multiple invocations of run! from occurring in parallel
+          raise CogAlreadyRanError if @output.present? || @skipped || @failed
+          raise CogAlreadyStartedError if @started
 
-        @config = config
-        input_instance = self.class.input_class.new
-        input_return = input_context.instance_exec(
-          input_instance, executor_scope_value, executor_scope_index, &@cog_input_proc
-        ) if @cog_input_proc
-        coerce_and_validate_input!(input_instance, input_return)
-        @output = execute(input_instance)
-      rescue ControlFlow::SkipCog
-        @skipped = true
-      rescue ControlFlow::FailCog => e
-        @failed = true
-        # TODO: better / cleaner handling in the workflow execution manager for a workflow failure
-        #   just re-raising this exception for now
-        raise e if config.exit_on_error?
+          @started = true
+          @config = config
+          input_instance = self.class.input_class.new
+          input_return = input_context.instance_exec(
+            input_instance, executor_scope_value, executor_scope_index, &@cog_input_proc
+          ) if @cog_input_proc
+          coerce_and_validate_input!(input_instance, input_return)
+          @output = execute(input_instance)
+        rescue ControlFlow::SkipCog
+          @skipped = true
+        rescue ControlFlow::FailCog => e
+          @failed = true
+          # TODO: better / cleaner handling in the workflow execution manager for a workflow failure
+          #   just re-raising this exception for now
+          raise e if config.exit_on_error?
+        end
+      end
+
+      #: () -> bool
+      def started?
+        # NOTE: explicitly not waiting for the cog's task to complete before answering, as in the other methods below,
+        # because this method is intended to be potentially called while the cog is running.
+        @started
       end
 
       #: () -> bool
       def ran?
-        @output.present? || @skipped || @failed
+        # NOTE: this will block until the cog finished running IF it is currently running
+        # It will answer immediately if the cog has not started to run
+        answer = @run_semaphore.async do
+          @output.present? || @skipped || @failed
+        end.wait
+        # NOTE: this answer will be `nil` if this block that is simply checking for the output/result is stopped,
+        # not if the cog's task itself was stopped. This should really never happen.
+        raise CogError, "task stopped while fetching value" if answer.nil?
+
+        answer
       end
 
       #: () -> bool
       def skipped?
-        @skipped
+        # see NOTEs on `ran?`
+        answer = @run_semaphore.async do
+          @skipped
+        end.wait
+        raise CogError, "task stopped while fetching value" if answer.nil?
+
+        answer
       end
 
       #: () -> bool
       def failed?
-        @failed
+        # see NOTEs on `ran?`
+        answer = @run_semaphore.async do
+          @failed
+        end.wait
+        raise CogError, "task stopped while fetching value" if answer.nil?
+
+        answer
+      end
+
+      #: () -> bool
+      def stopped?
+        # see NOTEs on `ran?`
+        answer = @run_semaphore.async do
+          @started && !@output.present? && !@skipped && !@failed
+        end.wait
+        raise CogError, "task stopped while fetching value" if answer.nil?
+
+        answer
       end
 
       # Inheriting cog must implement this
