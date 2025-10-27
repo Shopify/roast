@@ -47,15 +47,22 @@ module Roast
           end
         end
 
+        #: () -> void
+        def exit_on_error!
+          @values[:exit_on_error] = true
+        end
+
+        #: () -> void
+        def no_exit_on_error!
+          @values[:exit_on_error] = false
+        end
+
         #: () -> bool
         def exit_on_error?
           @values[:exit_on_error] ||= true
         end
 
-        #: () -> void
-        def continue_on_error!
-          @values[:exit_on_error] = false
-        end
+        alias_method(:continue_on_error!, :no_exit_on_error!)
       end
     end
   end
