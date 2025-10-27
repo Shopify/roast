@@ -80,6 +80,20 @@ module DSL
         assert_equal "lower case words: hello world", stdout.strip
       end
 
+      test "map_with_index.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :map_with_index do
+          Roast::DSL::Workflow.from_file("dsl/map_with_index.rb")
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          [0] HELLO
+          [1] WORLD
+          [2] GOODNIGHT
+          [3] MOON
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
       test "prototype.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
           Roast::DSL::Workflow.from_file("dsl/prototype.rb")
