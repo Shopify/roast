@@ -93,6 +93,9 @@ module DSL
 
           [0] DEFAULT
           [23] SPECIFIC
+
+          [8] WORLD
+          [9] GOODNIGHT
         EOF
         assert_equal expected_stdout, stdout
       end
