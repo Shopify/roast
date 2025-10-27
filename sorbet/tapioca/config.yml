@@ -5,6 +5,12 @@ gem:
   # - gem_name
   # doc: true
   # workers: 5
+  exclude:
+    # yard, via yard-sorbet, is required by tapioca itself, but unused in this project
+    # yard depends on rake, which seems not to be declared properly as a dependency of that gem
+    # since we don't use yard or rake ourselves, the easiest option is not to generate RBI files for these gems
+    - yard
+    - yard-sorbet
 dsl:
   # Add your `dsl` command parameters here:
   #
