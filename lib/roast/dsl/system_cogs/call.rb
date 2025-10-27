@@ -20,6 +20,15 @@ module Roast
           #: untyped
           attr_accessor :value
 
+          # Integer
+          attr_accessor :index
+
+          #: () -> void
+          def initialize
+            super
+            @index = 0
+          end
+
           #: () -> void
           def validate!
             # raise a validation error if value is nil and coercion has not been run, to allow coercion to proceed
@@ -58,7 +67,7 @@ module Roast
               input = input #: as Input
               raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 
-              em = ExecutionManager.new(@cog_registry, @config_manager, @all_execution_procs, params.run, input.value)
+              em = ExecutionManager.new(@cog_registry, @config_manager, @all_execution_procs, params.run, input.value, input.index)
               em.prepare!
               em.run!
 
