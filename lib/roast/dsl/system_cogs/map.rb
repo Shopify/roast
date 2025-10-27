@@ -64,13 +64,14 @@ module Roast
               raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 
               # For now, just process each item sequentially in a single thread
-              ems = input.items.map do |item|
+              ems = input.items.map.with_index do |item, index|
                 em = ExecutionManager.new(
                   @cog_registry,
                   @config_manager,
                   @all_execution_procs,
                   params.run,
                   item,
+                  index,
                 )
                 em.prepare!
                 em.run!
