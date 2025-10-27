@@ -295,6 +295,66 @@ module Roast
           assert_equal({ "CUSTOM_VAR" => "custom_value" }, step.env)
         end
       end
+
+      def test_loads_ruby_step_with_plural_name
+        Dir.mktmpdir do |dir|
+          step_file = File.join(dir, "generate_tests.rb")
+          File.write(step_file, <<~RUBY)
+            class GenerateTests < Roast::Workflow::BaseStep
+              def call
+                "Tests generated"
+              end
+            end
+          RUBY
+
+          loader = StepLoader.new(@workflow, @config_hash, dir)
+          step = loader.load("generate_tests")
+
+          assert_instance_of(GenerateTests, step)
+          assert_equal("generate_tests", step.name)
+          assert_equal(dir, step.context_path)
+        end
+      end
+
+      def test_loads_ruby_step_with_singular_class_from_plural_step_name
+        Dir.mktmpdir do |dir|
+          step_file = File.join(dir, "analyze_tests.rb")
+          File.write(step_file, <<~RUBY)
+            class AnalyzeTest < Roast::Workflow::BaseStep
+              def call
+                "Tests analyzed"
+              end
+            end
+          RUBY
+
+          loader = StepLoader.new(@workflow, @config_hash, dir)
+          step = loader.load("analyze_tests")
+
+          assert_instance_of(AnalyzeTest, step)
+          assert_equal("analyze_tests", step.name)
+          assert_equal(dir, step.context_path)
+        end
+      end
+
+      def test_loads_ruby_step_with_singular_class_from_irregular_plural_step_name
+        Dir.mktmpdir do |dir|
+          step_file = File.join(dir, "do_things.rb")
+          File.write(step_file, <<~RUBY)
+            class DoThing < Roast::Workflow::BaseStep
+              def call
+                "Thing done"
+              end
+            end
+          RUBY
+
+          loader = StepLoader.new(@workflow, @config_hash, dir)
+          step = loader.load("do_things")
+
+          assert_instance_of(DoThing, step)
+          assert_equal("do_things", step.name)
+          assert_equal(dir, step.context_path)
+        end
+      end
     end
   end
 end
