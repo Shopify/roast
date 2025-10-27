@@ -57,18 +57,46 @@ module Roast
           end
         end
 
+        class Config < Cog::Config
+          #: (Integer) -> void
+          def parallel(value)
+            raise ArgumentError, "value must be >= 0" if value < 0
+
+            # treat 0 as unlimited parallelism
+            @values[:parallel] = value > 0 ? value : nil
+          end
+
+          #: () -> void
+          def parallel!
+            @values[:parallel] = nil
+          end
+
+          #: () -> void
+          def no_parallel!
+            @values[:parallel] = 1
+          end
+
+          #: () -> Integer?
+          def max_parallel_tasks
+            @values.fetch(:parallel, 1)
+          end
+        end
+
+        #: Config
+        attr_accessor :config
+
         # @requires_ancestor: ExecutionManager
         module Manager
           private
 
           #: (Params, ^(Cog::Input) -> untyped) -> SystemCogs::Map
           def create_map_system_cog(params, input_proc)
-            SystemCogs::Map.new(params.name, input_proc) do |input|
+            SystemCogs::Map.new(params.name, input_proc) do |input, config|
               input = input #: as Input
+              config = config #: as Config
               raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 
-              # For now, just process each item sequentially in a single thread
-              ems = input.items.map.with_index do |item, index|
+              create_and_run_execution_manager = proc do |item, index|
                 em = ExecutionManager.new(
                   @cog_registry,
                   @config_manager,
@@ -81,6 +109,18 @@ module Roast
                 em.run!
                 em
               end
+
+              ems = Async do
+                max_parallel_semaphore = Async::Semaphore.new(config.max_parallel_tasks) if config.max_parallel_tasks.present?
+                tasks = input.items.map.with_index do |item, index|
+                  if max_parallel_semaphore
+                    max_parallel_semaphore.async { create_and_run_execution_manager.call(item, index) }
+                  else
+                    Async { create_and_run_execution_manager.call(item, index) }
+                  end
+                end
+                tasks.map(&:wait)
+              end.wait
 
               Output.new(ems)
             end

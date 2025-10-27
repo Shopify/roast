@@ -19,7 +19,7 @@ module Roast
         end
       end
 
-      #: (Symbol, ^(Cog::Input) -> untyped) { (Cog::Input) -> Cog::Output } -> void
+      #: (Symbol, ^(Cog::Input) -> untyped) { (Cog::Input, Cog::Config) -> Cog::Output } -> void
       def initialize(name, cog_input_proc, &on_execute)
         super(name, cog_input_proc)
         @on_execute = on_execute
@@ -29,7 +29,7 @@ module Roast
       def execute(input)
         # The `on_execute` callback allows a system cog to pass its execution back to the ExecutionManager
         # for special handling.
-        @on_execute.call(input)
+        @on_execute.call(input, @config)
       end
     end
   end

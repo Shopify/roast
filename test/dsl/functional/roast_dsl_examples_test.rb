@@ -100,6 +100,28 @@ module DSL
         assert_equal expected_stdout, stdout
       end
 
+      test "parallel_map.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :parallel_map do
+          Roast::DSL::Workflow.from_file("dsl/parallel_map.rb")
+        end
+        assert_empty stderr
+        # first four lines may appear in a non-deterministic order
+        expected_stdout_first_four_lines = [
+          "TWO",
+          "FOUR",
+          "FIVE",
+          "SIX",
+        ].to_set
+        assert_equal expected_stdout_first_four_lines, stdout.lines[...4].map(&:strip).to_set
+        # last three lines will always appear in the same order
+        expected_stdout_last_three_lines = <<~EOF
+          THREE
+          ONE
+          ONE, TWO, THREE, FOUR, FIVE, SIX
+        EOF
+        assert_equal expected_stdout_last_three_lines, stdout.lines[4..].join("")
+      end
+
       test "prototype.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
           Roast::DSL::Workflow.from_file("dsl/prototype.rb")
