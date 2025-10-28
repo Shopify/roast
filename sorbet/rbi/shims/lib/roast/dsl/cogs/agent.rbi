@@ -6,8 +6,12 @@ module Roast
     module Cogs
       class Agent
         class Config
-          #: (?Symbol?) -> Symbol
-          def provider(value = nil); end
+          #: (Symbol) -> Symbol
+          #: () -> Symbol
+          def provider(value); end
+
+          #: () -> Symbol
+          def use_default_provider!; end
         end
       end
     end
