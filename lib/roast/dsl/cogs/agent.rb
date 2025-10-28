@@ -33,7 +33,7 @@ module Roast
 
           #: () -> void
           def validate!
-            raise Cog::Input::InvalidInputError, "'prompt' is required" unless prompt.present?
+            valid_prompt!
           end
 
           #: (untyped) -> void
@@ -41,6 +41,13 @@ module Roast
             if input_return_value.is_a?(String)
               self.prompt ||= input_return_value
             end
+          end
+
+          #: () -> String
+          def valid_prompt!
+            raise Cog::Input::InvalidInputError, "'prompt' is required" unless @prompt.present?
+
+            @prompt
           end
         end
 
@@ -60,27 +67,20 @@ module Roast
 
         #: (Input) -> Output
         def execute(input)
-          prompt = input.prompt
-          raise MissingPromptError, "Prompt is required for agent cog" unless prompt.present?
-
-          provider_name = config.provider
-          raise MissingProviderError, "Provider config is required for agent cog" unless provider_name.present?
-
-          provider_instance = create_provider(provider_name)
-          response = provider_instance.invoke(prompt)
+          response = provider.invoke(input.valid_prompt!)
           puts "[AGENT RESPONSE] #{response}"
           Output.new(response)
         end
 
         private
 
-        #: (Symbol) -> Roast::DSL::Cogs::Agent::Providers::Base
-        def create_provider(provider_name)
-          case provider_name
+        #: () -> Providers::Base
+        def provider
+          @provider ||= case config.provider
           when :claude
             Providers::Claude.new
           else
-            raise UnknownProviderError, "Unknown provider: #{provider_name}"
+            raise UnknownProviderError, "Unknown provider: #{config.provider}"
           end
         end
       end
