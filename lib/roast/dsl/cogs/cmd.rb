@@ -5,56 +5,6 @@ module Roast
   module DSL
     module Cogs
       class Cmd < Cog
-        class Input < Cog::Input
-          #: String?
-          attr_accessor :command
-
-          #: Array[String]
-          attr_accessor :args
-
-          #: () -> void
-          def initialize
-            super
-            @args = []
-          end
-
-          #: () -> void
-          def validate!
-            raise Cog::Input::InvalidInputError, "'command' is required" unless command.present?
-          end
-
-          #: (String | Array[untyped]) -> void
-          def coerce(input_return_value)
-            case input_return_value
-            when String
-              self.command = input_return_value
-            when Array
-              input_return_value.map!(&:to_s)
-              self.command = input_return_value.shift
-              self.args = input_return_value
-            end
-          end
-        end
-
-        class Output < Cog::Output
-          #: String
-          attr_reader :out
-
-          #: String
-          attr_reader :err
-
-          #: Process::Status
-          attr_reader :status
-
-          #: ( String, String, Process::Status) -> void
-          def initialize(out, err, status)
-            super()
-            @out = out #: String
-            @err = err #: String
-            @status = status #: Process::Status
-          end
-        end
-
         # TODO: User-facing doc comment about the cog's configuration options would ideally go here,
         #   and then get copied to config_context.rbi by the tapioca compiler.
         #   For now, just writing the doc comments there to avoid duplication
@@ -155,6 +105,56 @@ module Roast
 
           alias_method(:display!, :print_all!)
           alias_method(:no_display!, :print_none!)
+        end
+
+        class Input < Cog::Input
+          #: String?
+          attr_accessor :command
+
+          #: Array[String]
+          attr_accessor :args
+
+          #: () -> void
+          def initialize
+            super
+            @args = []
+          end
+
+          #: () -> void
+          def validate!
+            raise Cog::Input::InvalidInputError, "'command' is required" unless command.present?
+          end
+
+          #: (String | Array[untyped]) -> void
+          def coerce(input_return_value)
+            case input_return_value
+            when String
+              self.command = input_return_value
+            when Array
+              input_return_value.map!(&:to_s)
+              self.command = input_return_value.shift
+              self.args = input_return_value
+            end
+          end
+        end
+
+        class Output < Cog::Output
+          #: String
+          attr_reader :out
+
+          #: String
+          attr_reader :err
+
+          #: Process::Status
+          attr_reader :status
+
+          #: ( String, String, Process::Status) -> void
+          def initialize(out, err, status)
+            super()
+            @out = out #: String
+            @err = err #: String
+            @status = status #: Process::Status
+          end
         end
 
         #: (Input) -> Output
