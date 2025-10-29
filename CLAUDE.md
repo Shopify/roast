@@ -4,7 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## About the codebase
 - This is a Ruby gem called Roast. Its purpose is to run AI workflows defined in a YAML file.
-- Note that this project now uses Zeitwerk, which means you don't have to manually require project files anymore
+- This project uses Zeitwerk for autoloading - DO NOT manually require project files
+  - Zeitwerk automatically loads classes based on file structure
+  - Only require external gems, not internal project files
+  - The only exception is when a file needs to be loaded in a specific order
 
 ## Commands
 - Default THE SUITE RUNS FAST SO USE THIS  IN MOST CASES (tests + lint w/autocorrect): `bundle exec rake`
@@ -18,6 +21,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `thor` and `cli-ui` for the CLI tool
 - Testing: Use Minitest, VCR for HTTP mocking, test files named with `_test.rb` suffix
 - Prefer using the more literate `test "this is a test description" do` type of testing that we get from extending ActiveSupport::TestCase over the primitive XUnit-style def test_description headings for tests
+- **ActiveSupport is available**: Leverage ActiveSupport features when appropriate
+  - Use ActiveSupport::Notifications for instrumentation instead of custom solutions
+  - Example: `ActiveSupport::Notifications.instrument("roast.tool.execute", payload) { ... }`
+  - The framework already instruments with `roast.tool.execute` and `roast.tool.complete`
+  - Memory tracking: Use the `allocations` feature that comes with the instrumentation framework
 
 ## Code Style Guidelines
 - Naming: snake_case for variables/methods, CamelCase for classes/modules, ALL_CAPS for constants
@@ -35,6 +43,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Do not use require_relative**
 - Require statements should always be in alphabetical order
 - Always leave a blank line after module includes and before the rest of the class
+- **Constants over magic numbers**: Always extract magic numbers into named constants
+  - Example: `DEFAULT_TIMEOUT = 30` instead of hardcoding `30` throughout the code
+  - Place constants at the top of the module/class definition
+- **Prefer data structures over hashes for static data**: Use Struct or Data classes instead of hashes when the structure is known and static
+  - Example: `Metric = Struct.new(:name, :value, :timestamp)` instead of `{name: ..., value: ..., timestamp: ...}`
 
 ## Architecture Guidelines
 - **SOLID principles are important** - don't violate them
