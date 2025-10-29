@@ -5,6 +5,31 @@ module Roast
   module DSL
     module SystemCogs
       class Map < SystemCog
+        class Config < Cog::Config
+          #: (Integer) -> void
+          def parallel(value)
+            raise ArgumentError, "value must be >= 0" if value < 0
+
+            # treat 0 as unlimited parallelism
+            @values[:parallel] = value > 0 ? value : nil
+          end
+
+          #: () -> void
+          def parallel!
+            @values[:parallel] = nil
+          end
+
+          #: () -> void
+          def no_parallel!
+            @values[:parallel] = 1
+          end
+
+          #: () -> Integer?
+          def max_parallel_tasks
+            @values.fetch(:parallel, 1)
+          end
+        end
+
         class Params < SystemCog::Params
           #: Symbol
           attr_accessor :run
@@ -47,31 +72,6 @@ module Roast
           def initialize(execution_managers)
             super()
             @execution_managers = execution_managers
-          end
-        end
-
-        class Config < Cog::Config
-          #: (Integer) -> void
-          def parallel(value)
-            raise ArgumentError, "value must be >= 0" if value < 0
-
-            # treat 0 as unlimited parallelism
-            @values[:parallel] = value > 0 ? value : nil
-          end
-
-          #: () -> void
-          def parallel!
-            @values[:parallel] = nil
-          end
-
-          #: () -> void
-          def no_parallel!
-            @values[:parallel] = 1
-          end
-
-          #: () -> Integer?
-          def max_parallel_tasks
-            @values.fetch(:parallel, 1)
           end
         end
 

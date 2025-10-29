@@ -5,6 +5,8 @@ module Roast
   module DSL
     module SystemCogs
       class Call < SystemCog
+        class Config < Cog::Config; end
+
         class Params < SystemCog::Params
           #: Symbol
           attr_accessor :run
