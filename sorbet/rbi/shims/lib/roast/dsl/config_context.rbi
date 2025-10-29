@@ -4,11 +4,26 @@
 module Roast
   module DSL
     class ConfigContext
+
+      ########################################
+      #             System Cogs
+      ########################################
+
       #: (?Symbol?) {() [self: Roast::DSL::Cog::Config] -> void} -> void
       def call(name = nil, &block); end
 
       #: (?Symbol?) {() [self: Roast::DSL::SystemCogs::Map::Config] -> void} -> void
       def map(name = nil, &block); end
+
+      ########################################
+      #            Standard Cogs
+      ########################################
+
+      #: (?Symbol?) {() [self: Roast::DSL::Cogs::Agent::Config] -> void} -> void
+      def agent(name = nil, &block); end
+
+      #: (?Symbol?) {() [self: Roast::DSL::Cogs::Chat::Config] -> void} -> void
+      def chat(name = nil, &block); end
 
       # Configure the `cmd` cog
       #
@@ -39,12 +54,6 @@ module Roast
       #
       #: (?(Symbol | Regexp)?) {() [self: Roast::DSL::Cogs::Cmd::Config] -> void} -> void
       def cmd(name_or_pattern = nil, &block); end
-
-      #: (?Symbol?) {() [self: Roast::DSL::Cogs::Chat::Config] -> void} -> void
-      def chat(name = nil, &block); end
-
-      #: (?Symbol?) {() [self: Roast::DSL::Cogs::Agent::Config] -> void} -> void
-      def agent(name = nil, &block); end
 
       #: (?Symbol?) {() [self: Roast::DSL::Cogs::Ruby::Config] -> void} -> void
       def ruby(name_or_pattern = nil, &block); end

@@ -5,6 +5,10 @@ module Roast
   module DSL
     class CogInputContext
 
+      ########################################
+      #             System Cogs
+      ########################################
+
       #: [T] (Roast::DSL::SystemCogs::Call::Output) {() -> T} -> T
       #: (Roast::DSL::SystemCogs::Call::Output) -> untyped
       def from(call_cog_output, &block); end
@@ -35,14 +39,18 @@ module Roast
       #: (Symbol) -> bool
       def map?(name); end
 
-      #: (Symbol) -> Roast::DSL::Cogs::Cmd::Output?
-      def cmd(name); end
+      ########################################
+      #            Standard Cogs
+      ########################################
 
-      #: (Symbol) -> Roast::DSL::Cogs::Cmd::Output
-      def cmd!(name); end
+      #: (Symbol) -> Roast::DSL::Cogs::Agent::Output?
+      def agent(name); end
+
+      #: (Symbol) -> Roast::DSL::Cogs::Agent::Output
+      def agent!(name); end
 
       #: (Symbol) -> bool
-      def cmd?(name); end
+      def agent?(name); end
 
       #: (Symbol) -> Roast::DSL::Cogs::Chat::Output?
       def chat(name); end
@@ -52,6 +60,15 @@ module Roast
 
       #: (Symbol) -> bool
       def chat?(name); end
+
+      #: (Symbol) -> Roast::DSL::Cogs::Cmd::Output?
+      def cmd(name); end
+
+      #: (Symbol) -> Roast::DSL::Cogs::Cmd::Output
+      def cmd!(name); end
+
+      #: (Symbol) -> bool
+      def cmd?(name); end
 
       #: (Symbol) -> Roast::DSL::Cogs::Ruby::Output?
       def ruby(name); end
