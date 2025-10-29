@@ -7,7 +7,7 @@ module Roast
       #: (?Symbol?) {() [self: Roast::DSL::Cog::Config] -> void} -> void
       def call(name = nil, &block); end
 
-      #: (?Symbol?) {() [self: Roast::DSL::Cog::Config] -> void} -> void
+      #: (?Symbol?) {() [self: Roast::DSL::SystemCogs::Map::Config] -> void} -> void
       def map(name = nil, &block); end
 
       # Configure the `cmd` cog
