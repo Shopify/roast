@@ -32,17 +32,22 @@ module Roast
         end
 
         class << self
-          def field(key, default)
+          #: [T] (Symbol, T) ?{(T) -> T} -> void
+          def field(key, default, &validator)
             define_method(key) do |*args|
               if args.empty?
-                if @values[key].nil?
-                  @values[key] = default
-                end
-
-                @values[key]
+                # with no args, return the configured value, or the default
+                @values[key] || default
               else
-                @values[key] = args.first
+                # with an argument, set the configured value
+                new_value = args.first
+                @values[key] = validator ? validator.call(new_value) : new_value
               end
+            end
+
+            define_method("use_default_#{key}!".to_sym) do
+              # explicitly set the configured value to the default
+              @values[key] = default
             end
           end
         end

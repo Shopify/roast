@@ -45,7 +45,14 @@ module Roast
         end
 
         class Config < Cog::Config
-          field :provider, :claude
+          VALID_PROVIDERS = [:claude].freeze #: Array[Symbol]
+          field :provider, :claude do |provider|
+            unless VALID_PROVIDERS.include?(provider)
+              raise ArgumentError, "'#{provider}' is not a valid provider. Available providers include: #{VALID_PROVIDERS.join(", ")}"
+            end
+
+            provider
+          end
         end
 
         #: Roast::DSL::Cogs::Agent::Config

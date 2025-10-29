@@ -4,8 +4,8 @@
 #: self as Roast::DSL::Workflow
 
 config do
-  agent(:foo) do
-    provider(:claude)
+  agent do
+    provider :claude
   end
 end
 
