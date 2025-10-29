@@ -15,6 +15,7 @@ module Roast
           use(Cogs::Cmd)
           use(Cogs::Chat)
           use(Cogs::Agent)
+          use(Cogs::Ruby)
         end
 
         #: Hash[Symbol, singleton(Cog)]

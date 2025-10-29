@@ -52,6 +52,15 @@ module Roast
 
       #: (Symbol) -> bool
       def chat?(name); end
+
+      #: (Symbol) -> Roast::DSL::Cogs::Ruby::Output?
+      def ruby(name); end
+
+      #: (Symbol) -> Roast::DSL::Cogs::Ruby::Output
+      def ruby!(name); end
+
+      #: (Symbol) -> bool
+      def ruby?(name); end
     end
   end
 end

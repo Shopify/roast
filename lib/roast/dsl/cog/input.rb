@@ -23,7 +23,16 @@ module Roast
         # to coerce the input to a valid state.
         # Inheriting cog may implement this for its input class; it is optional
         #: (untyped) -> void
-        def coerce(input_return_value); end
+        def coerce(input_return_value)
+          @coerce_ran = true
+        end
+
+        private
+
+        #: () -> bool
+        def coerce_ran?
+          @coerce_ran ||= false
+        end
       end
     end
   end

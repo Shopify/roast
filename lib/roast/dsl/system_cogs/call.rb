@@ -31,21 +31,12 @@ module Roast
 
           #: () -> void
           def validate!
-            # raise a validation error if value is nil and coercion has not been run, to allow coercion to proceed
-            raise Cog::Input::InvalidInputError, "'value' is required" if value.nil? && !permit_nil_value?
+            raise Cog::Input::InvalidInputError, "'value' is required" if value.nil? && !coerce_ran?
           end
 
           def coerce(input_return_value)
-            # Do not raise a validation error if value is nil when validation is called *after* coercion.
-            @permit_nil_value = true
+            super
             @value = input_return_value unless @value.present?
-          end
-
-          private
-
-          #: () -> bool
-          def permit_nil_value?
-            @permit_nil_value ||= false
           end
         end
 

@@ -22,6 +22,9 @@ module Roast
 
       #: (?Symbol?) {(Roast::DSL::Cogs::Agent::Input, untyped, Integer) [self: Roast::DSL::CogInputContext] -> (String | void)} -> void
       def agent(name = nil, &block); end
+
+      #: (?Symbol?) {(Roast::DSL::Cogs::Ruby::Input, untyped, Integer) [self: Roast::DSL::CogInputContext] -> untyped} -> void
+      def ruby(name = nil, &block); end
     end
   end
 end
