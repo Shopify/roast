@@ -62,7 +62,23 @@ module Roast
           @values[:exit_on_error] ||= true
         end
 
+        #: () -> void
+        def async!
+          @values[:async] = true
+        end
+
+        #: () -> void
+        def no_async!
+          @values[:async] = false
+        end
+
+        #: () -> bool
+        def async?
+          !!@values[:async]
+        end
+
         alias_method(:continue_on_error!, :no_exit_on_error!)
+        alias_method(:sync!, :no_async!)
       end
     end
   end

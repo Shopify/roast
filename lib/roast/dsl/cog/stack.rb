@@ -5,7 +5,7 @@ module Roast
   module DSL
     class Cog
       class Stack
-        delegate :empty?, :last, :map, :push, :size, to: :@queue
+        delegate :each, :empty?, :last, :map, :push, :size, to: :@queue
 
         #: () -> void
         def initialize

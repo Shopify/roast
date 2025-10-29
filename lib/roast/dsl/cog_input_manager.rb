@@ -15,6 +15,8 @@ module Roast
 
       class CogFailedError < CogOutputAccessError; end
 
+      class CogStoppedError < CogOutputAccessError; end
+
       #: (Cog::Registry, Cog::Store) -> void
       def initialize(cog_registry, cogs)
         @cog_registry = cog_registry
@@ -70,6 +72,7 @@ module Roast
           raise CogNotYetRunError, cog_name unless cog.ran?
           raise CogSkippedError, cog_name if cog.skipped?
           raise CogFailedError, cog_name if cog.failed?
+          raise CogStoppedError, cog_name if cog.stopped?
         end.output
       end
     end

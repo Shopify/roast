@@ -6,6 +6,39 @@ require "test_helper"
 module DSL
   module Functional
     class RoastDSLExamplesTest < FunctionalTest
+      test "async_cogs.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :async_cogs do
+          Roast::DSL::Workflow.from_file("dsl/async_cogs.rb")
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          first
+          second
+          third
+          slow background task 1
+          fourth <-- 'slow background task 1'
+          fifth
+          slow background task 2
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
+      test "async_cogs_complex.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :async_cogs_complex do
+          Roast::DSL::Workflow.from_file("dsl/async_cogs_complex.rb")
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          first
+          third
+          fourth
+          sixth
+          second
+          fifth (second said: 'second')
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
       test "call.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :call do
           Roast::DSL::Workflow.from_file("dsl/call.rb")
