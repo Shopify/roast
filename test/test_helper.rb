@@ -30,6 +30,10 @@ if ENV["CI"]
   Minitest::RG.rg!(color: true)
 end
 
+def slow_test!
+  skip "slow test" unless ["1", "true"].include?(ENV["ROAST_RUN_SLOW_TESTS"])
+end
+
 VCR.configure do |config|
   config.cassette_library_dir = "test/fixtures/vcr_cassettes"
   config.hook_into :webmock
