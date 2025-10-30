@@ -5,6 +5,17 @@ require "test_helper"
 module Roast
   module DSL
     class CommandRunnerTest < ActiveSupport::TestCase
+      test "provides stdin_content to running command" do
+        stdout, stderr, status = CommandRunner.execute(
+          ["tr", "[:lower:]", "[:upper:]"],
+          stdin_content: "Hello, world!",
+        )
+
+        assert_equal "HELLO, WORLD!\n", stdout
+        assert_equal "", stderr
+        assert_equal 0, status.exitstatus
+      end
+
       test "basic execution captures stdout" do
         stdout, stderr, status = CommandRunner.execute(["echo", "hello"])
 
