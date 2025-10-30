@@ -208,6 +208,36 @@ module Roast
         assert_equal 1, debug_calls.size
         assert_match(/stdout_handler raised: StandardError - Test error/, debug_calls.first)
       end
+
+      test "runs command in current working directory if no working directory specified" do
+        stdout, stderr, status = CommandRunner.execute(["pwd"])
+
+        assert_equal "#{Dir.pwd}\n", stdout
+        assert_equal "", stderr
+        assert_equal 0, status.exitstatus
+      end
+
+      test "runs command in specified working directory if working directory specified" do
+        uuid = Random.uuid
+        Dir.mktmpdir(["Roast", uuid]) do |dir|
+          stdout, stderr, status = CommandRunner.execute(["pwd"], working_directory: dir)
+
+          assert_match(/Roast.*#{uuid}/, stdout.strip)
+          assert_equal "", stderr
+          assert_equal 0, status.exitstatus
+        end
+      end
+
+      test "runs command with PWD environment variable set to specified working directory" do
+        uuid = Random.uuid
+        Dir.mktmpdir(["Roast", uuid]) do |dir|
+          stdout, stderr, status = CommandRunner.execute(["echo $PWD"], working_directory: dir)
+
+          assert_match(/Roast.*#{uuid}/, stdout.strip)
+          assert_equal "", stderr
+          assert_equal 0, status.exitstatus
+        end
+      end
     end
   end
 end
