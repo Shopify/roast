@@ -19,6 +19,9 @@ execute do
     # Simple word tokens are collected as `args`. Tokens in the form `key=value` are parsed into the `kwargs` hash.
     # e.g., `roast execute --executor=dsl dsl/targets_and_params.rb Gemfile* -- foo=bar abc=pqr hello world`
     puts "workflow args: #{params.args}" # [:hello, :world] (args are parsed as symbols)
-    puts "workflow kwargs: #{params.kwargs}" # {abc: "pqr", foo: "bar"} (keys are parsed as symbols, values as strings)
+
+    # {abc: "pqr", foo: "bar"} (keys are parsed as symbols, values as strings)
+    # (Note: using explicit formatting for compatibility with Ruby versions < 3.4)
+    puts "workflow kwargs: {#{params.kwargs.map { |k, v| "#{k}: #{v.inspect}" }.join(", ")}}"
   end
 end
