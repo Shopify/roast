@@ -40,18 +40,21 @@ module Roast
         #
         # @example With explicit timeout
         #   CommandRunner.execute(["sleep", "5"], timeout: 2)  # Will timeout after 2 seconds
-        #: (Array[String], ?timeout: (Integer | Float)?, ?stdout_handler: untyped, ?stderr_handler: untyped) -> [String, String, Process::Status]
-        def execute(args, timeout: nil, stdout_handler: nil, stderr_handler: nil)
-          # rubocop:disable Lint/UselessAssignment
-          stdout_content = "" #: String
-          stderr_content = "" #: String
-          # rubocop:enable Lint/UselessAssignment
+        #: (
+        #|  Array[String],
+        #|  ?timeout: (Integer | Float)?,
+        #|  ?stdin_content: String?,
+        #|  ?stdout_handler: untyped,
+        #|  ?stderr_handler: untyped
+        #| ) -> [String, String, Process::Status]
+        def execute(args, timeout: nil, stdin_content: nil, stdout_handler: nil, stderr_handler: nil)
           pid = nil #: Integer?
           wait_thread = nil #: Thread?
 
           begin
             stdin, stdout, stderr, wait_thread = Open3 #: as untyped
               .popen3(*args)
+            stdin.puts stdin_content if stdin_content.present?
             stdin.close
             pid = wait_thread.pid
 
