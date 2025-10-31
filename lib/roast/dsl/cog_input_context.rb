@@ -11,14 +11,14 @@ module Roast
       class CogInputContextError < Roast::Error; end
       class ContextNotFoundError < CogInputContextError; end
 
-      #: () -> void
-      def skip!
-        raise ControlFlow::SkipCog
+      #: (?String?) -> void
+      def skip!(message = nil)
+        raise ControlFlow::SkipCog, message
       end
 
-      #: () -> void
-      def fail!
-        raise ControlFlow::FailCog
+      #: (?String?) -> void
+      def fail!(message = nil)
+        raise ControlFlow::FailCog, message
       end
     end
   end
