@@ -18,6 +18,9 @@ module Roast
     # Shell support (pipes, redirects, etc.) will be added in a future version.
     class CommandRunner
       class CommandRunnerError < StandardError; end
+
+      class NoCommandProvidedError < CommandRunnerError; end
+
       class TimeoutError < CommandRunnerError; end
 
       class << self
@@ -42,18 +45,30 @@ module Roast
         #   CommandRunner.execute(["sleep", "5"], timeout: 2)  # Will timeout after 2 seconds
         #: (
         #|  Array[String],
+        #|  ?working_directory: (Pathname | String)?,
         #|  ?timeout: (Integer | Float)?,
         #|  ?stdin_content: String?,
         #|  ?stdout_handler: untyped,
         #|  ?stderr_handler: untyped
         #| ) -> [String, String, Process::Status]
-        def execute(args, timeout: nil, stdin_content: nil, stdout_handler: nil, stderr_handler: nil)
+        def execute(
+          args,
+          working_directory: nil,
+          timeout: nil,
+          stdin_content: nil,
+          stdout_handler: nil,
+          stderr_handler: nil
+        )
           pid = nil #: Integer?
           wait_thread = nil #: Thread?
 
           begin
             stdin, stdout, stderr, wait_thread = Open3 #: as untyped
-              .popen3(*args)
+              .popen3(
+                { "PWD" => working_directory&.to_s }.compact,
+                *args,
+                { chdir: working_directory }.compact,
+              )
             stdin.puts stdin_content if stdin_content.present?
             stdin.close
             pid = wait_thread.pid
