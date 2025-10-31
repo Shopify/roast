@@ -79,7 +79,10 @@ module Roast
 
       if options[:executor] == "dsl"
         puts "⚠️ WARNING: This is an experimental syntax and may break at any time. Don't depend on it."
-        Roast::DSL::Workflow.from_file(workflow_path)
+        targets, workflow_args, workflow_kwargs = parse_custom_workflow_args(files, ARGV)
+        targets.unshift(options[:target]) if options[:target]
+        workflow_params = Roast::DSL::WorkflowParams.new(targets, workflow_args, workflow_kwargs)
+        Roast::DSL::Workflow.from_file(workflow_path, workflow_params)
       else
         expanded_workflow_path = if workflow_path.include?("workflow.yml")
           File.expand_path(workflow_path)
@@ -296,6 +299,24 @@ module Roast
     end
 
     private
+
+    #: (Array[String], Array[String]) -> [Array[String], Array[Symbol], Hash[Symbol, String]]
+    def parse_custom_workflow_args(parsed_args, raw_args)
+      separator_index = raw_args.index("--")
+      extra_args = (separator_index ? raw_args[(separator_index + 1)..] : []) || []
+      targets = parsed_args.shift(parsed_args.length - extra_args.length)
+      args = []
+      kwargs = {}
+      parsed_args.each do |arg|
+        if arg.include?("=")
+          key, value = arg.split("=", 2)
+          kwargs[key.to_sym] = value if key
+        else
+          args << arg.to_sym
+        end
+      end
+      [targets, args, kwargs]
+    end
 
     def show_example_picker
       examples = available_examples

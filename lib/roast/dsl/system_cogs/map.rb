@@ -94,9 +94,9 @@ module Roast
                   @cog_registry,
                   @config_manager,
                   @all_execution_procs,
-                  params.run,
-                  item,
-                  index + input.initial_index,
+                  scope: params.run,
+                  scope_value: item,
+                  scope_index: index + input.initial_index,
                 )
                 em.prepare!
                 em.run!

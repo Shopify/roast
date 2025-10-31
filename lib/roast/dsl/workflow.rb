@@ -11,18 +11,19 @@ module Roast
       class InvalidCogReference < WorkflowError; end
 
       class << self
-        #: (String) -> void
-        def from_file(workflow_path)
-          workflow = new(workflow_path)
+        #: (String, WorkflowParams) -> void
+        def from_file(workflow_path, params)
+          workflow = new(workflow_path, params)
           workflow.prepare!
           workflow.start!
         end
       end
 
-      #: (String) -> void
-      def initialize(workflow_path)
-        @workflow_path = Pathname.new(workflow_path)
-        @workflow_definition = File.read(workflow_path)
+      #: (String, WorkflowParams) -> void
+      def initialize(workflow_path, workflow_params)
+        @workflow_path = Pathname.new(workflow_path) #: Pathname
+        @workflow_params = workflow_params
+        @workflow_definition = File.read(workflow_path) #: String
         @cog_registry = Cog::Registry.new #: Cog::Registry
         @config_procs = [] #: Array[^() -> void]
         @execution_procs = { nil: [] } #: Hash[Symbol?, Array[^() -> void]]
@@ -38,7 +39,7 @@ module Roast
         extract_dsl_procs!
         @config_manager = ConfigManager.new(@cog_registry, @config_procs)
         @config_manager.prepare!
-        @execution_manager = ExecutionManager.new(@cog_registry, @config_manager, @execution_procs)
+        @execution_manager = ExecutionManager.new(@cog_registry, @config_manager, @execution_procs, scope_value: @workflow_params)
         @execution_manager.prepare!
 
         @prepared = true

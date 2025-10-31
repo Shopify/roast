@@ -60,7 +60,14 @@ module Roast
               input = input #: as Input
               raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 
-              em = ExecutionManager.new(@cog_registry, @config_manager, @all_execution_procs, params.run, input.value, input.index)
+              em = ExecutionManager.new(
+                @cog_registry,
+                @config_manager,
+                @all_execution_procs,
+                scope: params.run,
+                scope_value: input.value,
+                scope_index: input.index,
+              )
               em.prepare!
               em.run!
 
