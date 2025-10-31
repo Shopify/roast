@@ -5,10 +5,12 @@ require "test_helper"
 # This test suite validates the incubating example workflows in `dsl/`.
 module DSL
   module Functional
+    EMPTY_PARAMS = Roast::DSL::WorkflowParams.new([], [], {})
+
     class RoastDSLExamplesTest < FunctionalTest
       test "async_cogs.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :async_cogs do
-          Roast::DSL::Workflow.from_file("dsl/async_cogs.rb")
+          Roast::DSL::Workflow.from_file("dsl/async_cogs.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         expected_stdout = <<~EOF
@@ -25,7 +27,7 @@ module DSL
 
       test "async_cogs_complex.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :async_cogs_complex do
-          Roast::DSL::Workflow.from_file("dsl/async_cogs_complex.rb")
+          Roast::DSL::Workflow.from_file("dsl/async_cogs_complex.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         expected_stdout = <<~EOF
@@ -41,7 +43,7 @@ module DSL
 
       test "call.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :call do
-          Roast::DSL::Workflow.from_file("dsl/call.rb")
+          Roast::DSL::Workflow.from_file("dsl/call.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         lines = stdout.lines.map(&:strip)
@@ -61,7 +63,7 @@ module DSL
 
       test "collect_from.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :collect_from do
-          Roast::DSL::Workflow.from_file("dsl/collect_from.rb")
+          Roast::DSL::Workflow.from_file("dsl/collect_from.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         expected_stdout = <<~EOF
@@ -75,7 +77,7 @@ module DSL
 
       test "outputs.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :outputs do
-          Roast::DSL::Workflow.from_file("dsl/outputs.rb")
+          Roast::DSL::Workflow.from_file("dsl/outputs.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         assert_equal "Upper: HELLO", stdout.strip
@@ -83,7 +85,7 @@ module DSL
 
       test "map.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
-          Roast::DSL::Workflow.from_file("dsl/map.rb")
+          Roast::DSL::Workflow.from_file("dsl/map.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         expected_stdout = <<~EOF
@@ -107,7 +109,7 @@ module DSL
 
       test "map_reduce.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :map_reduce do
-          Roast::DSL::Workflow.from_file("dsl/map_reduce.rb")
+          Roast::DSL::Workflow.from_file("dsl/map_reduce.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         assert_equal "lower case words: hello world", stdout.strip
@@ -115,7 +117,7 @@ module DSL
 
       test "map_with_index.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :map_with_index do
-          Roast::DSL::Workflow.from_file("dsl/map_with_index.rb")
+          Roast::DSL::Workflow.from_file("dsl/map_with_index.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         expected_stdout = <<~EOF
@@ -135,7 +137,7 @@ module DSL
 
       test "parallel_map.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :parallel_map do
-          Roast::DSL::Workflow.from_file("dsl/parallel_map.rb")
+          Roast::DSL::Workflow.from_file("dsl/parallel_map.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         # first four lines may appear in a non-deterministic order
@@ -157,7 +159,7 @@ module DSL
 
       test "prototype.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
-          Roast::DSL::Workflow.from_file("dsl/prototype.rb")
+          Roast::DSL::Workflow.from_file("dsl/prototype.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         lines = stdout.lines.map(&:strip)
@@ -171,7 +173,7 @@ module DSL
 
       test "step_communication.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :step_communication do
-          Roast::DSL::Workflow.from_file("dsl/step_communication.rb")
+          Roast::DSL::Workflow.from_file("dsl/step_communication.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         lines = stdout.lines.map(&:strip)
@@ -191,16 +193,34 @@ module DSL
           .returns(["Hi! How can I help you today?", "", mock_status])
 
         stdout, stderr = in_sandbox :simple_agent do
-          Roast::DSL::Workflow.from_file("dsl/simple_agent.rb")
+          Roast::DSL::Workflow.from_file("dsl/simple_agent.rb", EMPTY_PARAMS)
         end
 
         assert_includes stdout, "Hi! How can I help you today?"
         assert_empty stderr
       end
 
+      test "targets_and_params.rb workflow runs successfully" do
+        params = Roast::DSL::WorkflowParams.new(
+          ["one", "two", "three"],
+          [:a, :b, :c],
+          { hello: "world", goodnight: "moon" },
+        )
+        stdout, stderr = in_sandbox :targets_and_params do
+          Roast::DSL::Workflow.from_file("dsl/targets_and_params.rb", params)
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          workflow targets: ["one", "two", "three"]
+          workflow args: [:a, :b, :c]
+          workflow kwargs: {hello: "world", goodnight: "moon"}
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
       test "ruby_cog.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :ruby_cog do
-          Roast::DSL::Workflow.from_file("dsl/ruby_cog.rb")
+          Roast::DSL::Workflow.from_file("dsl/ruby_cog.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
         expected_stdout = <<~EOF

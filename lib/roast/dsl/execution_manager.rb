@@ -24,16 +24,21 @@ module Roast
 
       class OutputsAlreadyDefinedError < ExecutionManagerError; end
 
-      #: (Cog::Registry, ConfigManager, Hash[Symbol?, Array[^() -> void]], ?Symbol?, ?untyped?, ?Integer) -> void
-      # TODO: we should refactor this class to reduce its number of instance variables and number of arguments here
-      # rubocop:disable Metrics/ParameterLists
+      #: (
+      #|  Cog::Registry,
+      #|  ConfigManager,
+      #|  Hash[Symbol?, Array[^() -> void]],
+      #|  ?scope: Symbol?,
+      #|  ?scope_value: untyped?,
+      #|  ?scope_index: Integer
+      #| ) -> void
       def initialize(
         cog_registry,
         config_manager,
         all_execution_procs,
-        scope = nil,
-        scope_value = nil,
-        scope_index = 0
+        scope: nil,
+        scope_value: nil,
+        scope_index: 0
       )
         @cog_registry = cog_registry
         @config_manager = config_manager
@@ -46,8 +51,6 @@ module Roast
         @execution_context = ExecutionContext.new #: ExecutionContext
         @cog_input_manager = CogInputManager.new(@cog_registry, @cogs) #: CogInputManager
       end
-
-      # rubocop:enable Metrics/ParameterLists
 
       #: () -> void
       def prepare!
