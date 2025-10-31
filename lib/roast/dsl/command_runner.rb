@@ -59,88 +59,86 @@ module Roast
           stdout_handler: nil,
           stderr_handler: nil
         )
-          pid = nil #: Integer?
-          wait_thread = nil #: Thread?
+          args.compact!
+          raise NoCommandProvidedError if args.blank?
 
+          stdin, stdout, stderr, wait_thread = Open3 #: as untyped
+            .popen3(
+              { "PWD" => working_directory&.to_s }.compact,
+              *args,
+              { chdir: working_directory }.compact,
+            )
+          stdin.puts stdin_content if stdin_content.present?
+          stdin.close
+          pid = wait_thread.pid
+
+          # If timeout is specified, start a timer in a separate thread
+          timeout_thread = if timeout
+            Thread.new do
+              sleep(timeout)
+              kill_process(pid) if pid
+            end
+          end
+
+          # Read stdout and stderr concurrently
+          stdout_content, stderr_content = Async do
+            stdout_task = Async do
+              buffer = "" #: String
+              stdout.each_line do |line|
+                buffer += line
+                begin
+                  stdout_handler&.call(line)
+                rescue => e
+                  Roast::Helpers::Logger.debug("stdout_handler raised: #{e.class} - #{e.message}")
+                end
+              end
+              buffer
+            rescue IOError
+              buffer
+            end
+
+            stderr_task = Async do
+              buffer = "" #: String
+              stderr.each_line do |line|
+                buffer += line
+                begin
+                  stderr_handler&.call(line)
+                rescue => e
+                  Roast::Helpers::Logger.debug("stderr_handler raised: #{e.class} - #{e.message}")
+                end
+              end
+              buffer
+            rescue IOError
+              buffer
+            end
+
+            [stdout_task.wait, stderr_task.wait]
+          end.wait
+
+          # Wait for the process to complete
+          status = wait_thread.value
+
+          # Cancel the timeout thread if it's still running
+          timeout_thread&.kill
+
+          # Check if the process was killed due to timeout
+          if timeout && status.signaled? && (status.termsig == 15 || status.termsig == 9)
+            raise TimeoutError, "Command timed out after #{timeout} seconds"
+          end
+
+          [stdout_content, stderr_content, status]
+        ensure
+          # Clean up resources
           begin
-            stdin, stdout, stderr, wait_thread = Open3 #: as untyped
-              .popen3(
-                { "PWD" => working_directory&.to_s }.compact,
-                *args,
-                { chdir: working_directory }.compact,
-              )
-            stdin.puts stdin_content if stdin_content.present?
-            stdin.close
-            pid = wait_thread.pid
-
-            # If timeout is specified, start a timer in a separate thread
-            timeout_thread = if timeout
-              Thread.new do
-                sleep(timeout)
-                kill_process(pid) if pid
-              end
-            end
-
-            # Read stdout and stderr concurrently
-            stdout_content, stderr_content = Async do
-              stdout_task = Async do
-                buffer = "" #: String
-                stdout.each_line do |line|
-                  buffer += line
-                  begin
-                    stdout_handler&.call(line)
-                  rescue => e
-                    Roast::Helpers::Logger.debug("stdout_handler raised: #{e.class} - #{e.message}")
-                  end
-                end
-                buffer
-              rescue IOError
-                buffer
-              end
-
-              stderr_task = Async do
-                buffer = "" #: String
-                stderr.each_line do |line|
-                  buffer += line
-                  begin
-                    stderr_handler&.call(line)
-                  rescue => e
-                    Roast::Helpers::Logger.debug("stderr_handler raised: #{e.class} - #{e.message}")
-                  end
-                end
-                buffer
-              rescue IOError
-                buffer
-              end
-
-              [stdout_task.wait, stderr_task.wait]
-            end.wait
-
-            # Wait for the process to complete
-            status = wait_thread.value
-
-            # Cancel the timeout thread if it's still running
-            timeout_thread&.kill
-
-            # Check if the process was killed due to timeout
-            if timeout && status.signaled? && (status.termsig == 15 || status.termsig == 9)
-              raise TimeoutError, "Command timed out after #{timeout} seconds"
-            end
-
-            [stdout_content, stderr_content, status]
-          ensure
-            # Clean up resources
-            begin
-              [stdout, stderr].compact.each(&:close)
-            rescue
-              nil
-            end
-            # If we haven't waited for the process yet, kill it
-            if pid && wait_thread&.alive?
-              kill_process(pid)
-              wait_thread.join(1) # Give it a second to finish
-            end
-          end #: as [String, String, Process::Status]
+            [stdout, stderr].compact.each(&:close)
+          rescue
+            nil
+          end
+          # If we haven't waited for the process yet, kill it
+          if pid && wait_thread&.alive?
+            kill_process(pid)
+            wait_thread.join(1) # Give it a second to finish
+          end
         end
 
         private

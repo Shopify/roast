@@ -238,6 +238,47 @@ module Roast
           assert_equal 0, status.exitstatus
         end
       end
+
+      test "removes nils from command args" do
+        mock_stdin = mock.tap { |it| it.expects(:close).returns(nil) }
+        mock_status = mock.tap { |it| it.expects(:exitstatus).returns(0) }
+        mock_wait_thread = mock.tap do |it|
+          it.expects(:pid).returns(12345).at_least_once
+          it.expects(:value).returns(mock_status).at_least_once
+          it.expects(:alive?).returns(false)
+        end
+        Open3.stubs(:popen3).with({}, "echo", "hello", "world", {}).returns([mock_stdin, "hello world\n", "", mock_wait_thread])
+
+        stdout, stderr, status = CommandRunner.execute(["echo", nil, "hello", "world", nil])
+
+        assert_equal "hello world\n", stdout
+        assert_equal "", stderr
+        assert_equal 0, status.exitstatus
+      end
+
+      test "raises NoCommandProvidedError when args is empty" do
+        assert_raises(CommandRunner::NoCommandProvidedError) do
+          CommandRunner.execute([])
+        end
+      end
+
+      test "raises NoCommandProvidedError when args contains only nil" do
+        assert_raises(CommandRunner::NoCommandProvidedError) do
+          CommandRunner.execute([nil, nil])
+        end
+      end
+
+      test "does not raise NoCommandProvidedError when args contains only empty string" do
+        assert_raises(Errno::ENOENT) do
+          CommandRunner.execute([""])
+        end
+      end
+
+      test "does not raise NoCommandProvidedError when first value of args is empty string" do
+        assert_raises(Errno::ENOENT) do
+          CommandRunner.execute(["", "echo", "hello"])
+        end
+      end
     end
   end
 end
