@@ -21,16 +21,30 @@ end
 Rake::TestTask.new(:minitest_old) do |t|
   t.libs << "test"
   t.libs << "lib"
-  t.test_files = FileList["test/**/*_test.rb"].exclude("test/functional/**/*_test.rb", "test/dsl/**/*_test.rb")
+  t.test_files = FileList["test/**/*_test.rb"].exclude(
+    "test/functional/**/*_test.rb",
+    "test/dsl/**/*_test.rb",
+    "test/roast/dsl/**/*_test.rb",
+  )
 end
 
-Rake::TestTask.new(:minitest_dsl) do |t|
+Rake::TestTask.new(:minitest_dsl_fast) do |t|
   t.libs << "test"
   t.libs << "lib"
-  t.test_files = FileList["test/dsl/**/*_test.rb"]
+  t.test_files = FileList["test/dsl/**/*_test.rb", "test/roast/dsl/**/*_test.rb"]
 end
 
-task test: [:minitest_dsl, :minitest_functional, :minitest_old]
+Rake::TestTask.new(:minitest_dsl_slow) do |t|
+  t.libs << "test"
+  t.libs << "lib"
+  t.test_files = FileList["test/dsl/**/*_test.rb", "test/roast/dsl/**/*_test.rb"]
+end
+task :set_slow_env do
+  ENV["ROAST_RUN_SLOW_TESTS"] = "true"
+end
+task minitest_dsl_slow: :set_slow_env
+
+task test: [:minitest_dsl_fast, :minitest_dsl_slow, :minitest_functional, :minitest_old]
 
 ### Rubocop Tasks
 
@@ -51,6 +65,6 @@ end
 
 ### Task Groups
 
-task default: [:sorbet, :rubocop, :minitest_dsl]
+task default: [:sorbet, :rubocop, :minitest_dsl_fast]
 
 task check: [:sorbet, :rubocop]
