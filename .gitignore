@@ -22,5 +22,4 @@ bin/claude-swarm
 coverage
 
 .dev
-dev.yml
 .shadowenv
