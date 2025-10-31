@@ -1,0 +1,9 @@
+name: roast
+
+nix: true
+
+type: ruby
+
+up:
+  - ruby
+  - bundler
