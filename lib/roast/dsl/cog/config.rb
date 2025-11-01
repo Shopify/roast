@@ -5,6 +5,17 @@ module Roast
   module DSL
     class Cog
       class Config
+        class ConfigError < Roast::Error; end
+
+        class InvalidConfigError < ConfigError; end
+
+        # Validate that the config instance has all required parameters set in an acceptable manner
+        #
+        # Inheriting cog should implement this for its config class if validation is desired.
+        #
+        #: () -> void
+        def validate!; end
+
         #: Hash[Symbol, untyped]
         attr_reader :values
 
