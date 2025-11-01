@@ -8,8 +8,6 @@ module Roast
         class Config < Cog::Config
           #: (Integer) -> void
           def parallel(value)
-            raise ArgumentError, "value must be >= 0" if value < 0
-
             # treat 0 as unlimited parallelism
             @values[:parallel] = value > 0 ? value : nil
           end
@@ -24,9 +22,17 @@ module Roast
             @values[:parallel] = 1
           end
 
+          def validate!
+            valid_parallel!
+          end
+
           #: () -> Integer?
-          def max_parallel_tasks
-            @values.fetch(:parallel, 1)
+          def valid_parallel!
+            parallel = @values.fetch(:parallel, 1)
+            return if parallel.nil?
+            raise InvalidConfigError, "'parallel' must be >= 0 if specified" if parallel < 0
+
+            parallel
           end
         end
 
@@ -103,7 +109,8 @@ module Roast
                 em
               end
 
-              max_parallel_semaphore = Async::Semaphore.new(config.max_parallel_tasks) if config.max_parallel_tasks.present?
+              max_parallel_tasks = config.valid_parallel!
+              max_parallel_semaphore = Async::Semaphore.new(max_parallel_tasks) if max_parallel_tasks.present?
               tasks = input.items.map.with_index do |item, index|
                 if max_parallel_semaphore
                   max_parallel_semaphore.async { create_and_run_execution_manager.call(item, index) }

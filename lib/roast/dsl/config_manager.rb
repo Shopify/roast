@@ -53,6 +53,7 @@ module Roast
         end.values.each { |cfg| config = config.merge(cfg) }
         name_scoped_config = fetch_name_scoped_config(cog_class, name) unless name.nil?
         config = config.merge(name_scoped_config) if name_scoped_config
+        config.validate!
         config
       end
 
