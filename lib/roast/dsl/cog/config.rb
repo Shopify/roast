@@ -225,6 +225,71 @@ module Roast
           @values[:exit_on_error] ||= true
         end
 
+        # Configure the cog to run external commands in the specified working directory
+        #
+        # The directory given can be relative or absolute.
+        # If relative, it will be understood in relation to the directory from which Roast is invoked.
+        #
+        # ---
+        #
+        # __Important Note__: this configuration option only applies to external commands invoked by a cog
+        # It does not affect the working directory in which Roast is running.
+        #
+        # ---
+        #
+        # #### See Also
+        # - `use_current_working_directory!`
+        # - `valid_working_directory`
+        #
+        #: (String) -> void
+        def working_directory(directory)
+          @values[:working_directory] = directory
+        end
+
+        # Configure the cog to run in the directory from which Roast is invoked
+        #
+        # ---
+        #
+        # __Important Note__: this configuration option only applies to external commands invoked by a cog
+        # It does not affect the working directory in which Roast is running.
+        #
+        # ---
+        #
+        # #### See Also
+        # - `working_directory`
+        # - `valid_working_directory`
+        #
+        #: () -> void
+        def use_current_working_directory!
+          @values[:working_directory] = nil
+        end
+
+        # Get the validated, configured value for the working directory path in which the cog should run
+        #
+        # A value of `nil` means to use the current working directory.
+        # This method will raise an `InvalidConfigError` if the path does not exist or is not a directory.
+        #
+        # ---
+        #
+        # __Important Note__: this configuration option only applies to external commands invoked by a cog
+        # It does not affect the working directory in which Roast is running.
+        #
+        # ---
+        #
+        # #### See Also
+        # - `working_directory`
+        # - `use_current_working_directory!`
+        #
+        #: () -> Pathname?
+        def valid_working_directory
+          path = Pathname.new(@values[:working_directory]).expand_path if @values[:working_directory]
+          return unless path
+          raise InvalidConfigError, "working directory '#{path}' does not exist'" unless path.exist?
+          raise InvalidConfigError, "working directory '#{path}' is not a directory'" unless path.directory?
+
+          path
+        end
+
         alias_method(:exit_on_error!, :abort_on_error!)
         alias_method(:no_exit_on_error!, :no_abort_on_error!)
         alias_method(:continue_on_error!, :no_abort_on_error!)
