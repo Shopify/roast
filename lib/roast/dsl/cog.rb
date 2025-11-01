@@ -81,7 +81,7 @@ module Roast
           @failed = true
           # TODO: better / cleaner handling in the workflow execution manager for a workflow failure
           #   just re-raising this exception for now
-          raise e if config.exit_on_error?
+          raise e if config.abort_on_error?
         end
       end
 
