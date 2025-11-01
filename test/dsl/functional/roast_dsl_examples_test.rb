@@ -50,7 +50,7 @@ module DSL
         assert_equal "--> before", lines.shift
         3.times do
           word = lines.shift
-          assert_equal word.upcase, lines.shift
+          assert_equal word.tr("a-z", "A-Z"), lines.shift
         end
         assert_equal "---", lines.shift
         assert_match(/^[\w']+$/, lines.shift)
