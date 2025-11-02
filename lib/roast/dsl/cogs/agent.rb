@@ -398,6 +398,7 @@ module Roast
         def execute(input)
           puts "[USER PROMPT] #{input.valid_prompt!}" if config.show_prompt?
           output = provider.invoke(input)
+          puts
           puts "[AGENT RESPONSE] #{output.response}" if config.show_response?
           output
         end
