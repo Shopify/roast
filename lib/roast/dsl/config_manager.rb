@@ -7,12 +7,14 @@ module Roast
       class ConfigManagerError < Roast::Error; end
       class ConfigManagerNotPreparedError < ConfigManagerError; end
       class ConfigManagerAlreadyPreparedError < ConfigManagerError; end
+      class IllegalCogNameError < ConfigManagerError; end
 
       #: (Cog::Registry, Array[^() -> void]) -> void
       def initialize(cog_registry, config_procs)
         @cog_registry = cog_registry
         @config_procs = config_procs
         @config_context = ConfigContext.new #: ConfigContext
+        @global_config = Cog::Config.new #: Cog::Config
         @general_configs = {} #: Hash[singleton(Cog), Cog::Config]
         @regexp_scoped_configs = {} #: Hash[singleton(Cog), Hash[Regexp, Cog::Config]]
         @name_scoped_configs = {} #: Hash[singleton(Cog), Hash[Symbol, Cog::Config]]
@@ -23,6 +25,7 @@ module Roast
         raise ConfigManagerAlreadyPreparedError if preparing? || prepared?
 
         @preparing = true
+        bind_global
         bind_registered_cogs
         @config_procs.each { |cp| @config_context.instance_eval(&cp) }
         @prepared = true
@@ -43,7 +46,8 @@ module Roast
         raise ConfigManagerNotPreparedError unless prepared?
 
         # All cogs will always have a config; empty by default if the cog was never explicitly configured
-        config = fetch_general_config(cog_class)
+        config = cog_class.config_class.new(@global_config.instance_variable_get(:@values).deep_dup)
+        config = config.merge(fetch_general_config(cog_class))
         @regexp_scoped_configs.fetch(cog_class, {}).select do |pattern, _|
           pattern.match?(name.to_s) unless name.nil?
         end.values.each { |cfg| config = config.merge(cfg) }
@@ -83,6 +87,8 @@ module Roast
           on_config_method.call(cog_class, cog_name_or_pattern, cog_config_proc)
         end
         @config_context.instance_eval do
+          raise IllegalCogNameError, cog_method_name if respond_to?(cog_method_name, true)
+
           define_singleton_method(cog_method_name, cog_method)
         end
       end
@@ -110,6 +116,23 @@ module Roast
         # but our cog_config_proc does not get an argument
         cog_config_proc = cog_config_proc #: as ^(untyped) -> void
         config_object.instance_exec(&cog_config_proc) if cog_config_proc
+        nil
+      end
+
+      def bind_global
+        on_global_method = method(:on_global)
+        method_to_bind = proc do |&global_proc|
+          on_global_method.call(global_proc)
+        end
+        @config_context.instance_eval do
+          define_singleton_method(:global, method_to_bind)
+        end
+      end
+
+      #: (^() -> void ) -> void
+      def on_global(global_config_proc)
+        global_config_proc = global_config_proc #: as ^(untyped) -> void
+        @global_config.instance_exec(&global_config_proc) if global_config_proc
         nil
       end
     end
