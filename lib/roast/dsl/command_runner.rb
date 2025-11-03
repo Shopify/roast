@@ -48,8 +48,8 @@ module Roast
         #|  ?working_directory: (Pathname | String)?,
         #|  ?timeout: (Integer | Float)?,
         #|  ?stdin_content: String?,
-        #|  ?stdout_handler: untyped,
-        #|  ?stderr_handler: untyped
+        #|  ?stdout_handler: (^(String) -> void)?,
+        #|  ?stderr_handler: (^(String) -> void)?,
         #| ) -> [String, String, Process::Status]
         def execute(
           args,
