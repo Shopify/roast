@@ -82,10 +82,26 @@ module Roast
       puts "Roast version #{Roast::VERSION}"
     end
 
-    desc "init", "Initialize a new Roast workflow from an example"
-    option :example, type: :string, aliases: "-e", desc: "Name of the example to use directly (skips picker)"
-    def init
-      raise NotImplementedError, "Example workflows for the new DSL are coming soon. For now, see the examples in the dsl/ directory of the roast repository."
+    desc "init [EXAMPLE_NAME] [WORKFLOW_NAME]", "Initialize a new Roast workflow from an example"
+    def init(example_name, workflow_name = nil)
+      dsl_dir = File.join(Roast::ROOT, "dsl")
+      example_path = File.join(dsl_dir, "#{example_name}.rb")
+
+      unless File.exist?(example_path)
+        available = Dir.glob(File.join(dsl_dir, "*.rb")).map { |f| File.basename(f, ".rb") }.join(", ")
+        raise Thor::Error, "Example '#{example_name}' not found. Available: #{available}"
+      end
+
+      filename = workflow_name || example_name
+      filename += ".roast" unless filename.end_with?(".roast")
+      dest_file = File.join(Dir.pwd, filename)
+
+      if File.exist?(dest_file)
+        raise Thor::Error, "File #{dest_file} already exists. Remove it first or choose a different name."
+      end
+
+      FileUtils.cp(example_path, dest_file)
+      puts "✓ Created #{filename} from '#{example_name}' example!"
     end
 
     desc "list", "List workflows visible to Roast and their source"
