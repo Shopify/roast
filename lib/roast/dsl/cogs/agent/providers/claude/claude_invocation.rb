@@ -39,6 +39,7 @@ module Roast
                 @working_directory = config.valid_working_directory #: Pathname?
                 @prompt = input.valid_prompt! #: String
                 @result = Result.new #: Result
+                @raw_dump_file = config.valid_dump_raw_agent_messages_to_path #: Pathname?
               end
 
               #: () -> void
@@ -97,7 +98,7 @@ module Roast
               #: (String) -> void
               def handle_stdout(line)
                 line = line.strip
-                message = Message.from_json(line) unless line.empty?
+                message = Message.from_json(line, raw_dump_file: @raw_dump_file) unless line.empty?
                 return unless message
 
                 handle_message(message)

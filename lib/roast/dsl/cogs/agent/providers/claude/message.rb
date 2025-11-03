@@ -13,8 +13,10 @@ module Roast
               ].freeze
 
               class << self
-                #: (String) -> Message
-                def from_json(json)
+                #: (String, ?raw_dump_file: Pathname?) -> Message
+                def from_json(json, raw_dump_file: nil)
+                  raw_dump_file&.dirname&.mkpath
+                  File.write("./tmp/claude-messages.log", "#{json}\n", mode: "a") if raw_dump_file
                   from_hash(JSON.parse(json, symbolize_names: true))
                 end
 
