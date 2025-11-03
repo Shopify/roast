@@ -45,10 +45,12 @@ module Roast
         class << self
           #: [T] (Symbol, T) ?{(T) -> T} -> void
           def field(key, default, &validator)
+            default = default #: as untyped
+
             define_method(key) do |*args|
               if args.empty?
                 # with no args, return the configured value, or the default
-                @values[key] || default
+                @values[key] || default.deep_dup
               else
                 # with an argument, set the configured value
                 new_value = args.first
@@ -58,7 +60,7 @@ module Roast
 
             define_method("use_default_#{key}!".to_sym) do
               # explicitly set the configured value to the default
-              @values[key] = default
+              @values[key] = default.deep_dup
             end
           end
         end
