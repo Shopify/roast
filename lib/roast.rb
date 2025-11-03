@@ -130,12 +130,6 @@ module Roast
       puts "Run a workflow with: roast execute <workflow_file>"
     end
 
-    desc "validate [WORKFLOW_CONFIGURATION_FILE]", "Validate a workflow configuration"
-    option :strict, type: :boolean, aliases: "-s", desc: "Treat warnings as errors"
-    def validate(workflow_path = nil)
-      raise NotImplementedError, "Validation for DSL workflows is not yet implemented"
-    end
-
     private
 
     #: (Array[String], Array[String]) -> [Array[String], Array[Symbol], Hash[Symbol, String]]
