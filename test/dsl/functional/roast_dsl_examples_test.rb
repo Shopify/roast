@@ -231,6 +231,19 @@ module DSL
         EOF
         assert_equal expected_stdout, stdout
       end
+
+      test "working_directory.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :working_directory do
+          Roast::DSL::Workflow.from_file("dsl/working_directory.rb", EMPTY_PARAMS)
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          Current working directory: #{Dir.pwd}
+          Alternate working directory: /tmp
+          Back to originl working directory: #{Dir.pwd}
+        EOF
+        assert_equal expected_stdout, stdout
+      end
     end
   end
 end

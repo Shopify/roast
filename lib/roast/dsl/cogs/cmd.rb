@@ -167,6 +167,7 @@ module Roast
           stdout, stderr, status = CommandRunner #: as untyped
             .execute(
               [input.command] + input.args,
+              working_directory: config.valid_working_directory,
               stdout_handler: stdout_handler,
               stderr_handler: stderr_handler,
             )
