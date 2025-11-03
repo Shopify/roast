@@ -18,16 +18,6 @@ Rake::TestTask.new(:minitest_functional) do |t|
   t.test_files = FileList["test/functional/**/*_test.rb"]
 end
 
-Rake::TestTask.new(:minitest_old) do |t|
-  t.libs << "test"
-  t.libs << "lib"
-  t.test_files = FileList["test/**/*_test.rb"].exclude(
-    "test/functional/**/*_test.rb",
-    "test/dsl/**/*_test.rb",
-    "test/roast/dsl/**/*_test.rb",
-  )
-end
-
 Rake::TestTask.new(:minitest_dsl_fast) do |t|
   t.libs << "test"
   t.libs << "lib"
