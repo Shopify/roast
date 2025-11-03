@@ -6,9 +6,12 @@
 config do
   agent do
     provider :claude
+    model "haiku"
+    initial_prompt "Always respond in haiku form"
+    show_prompt!
   end
 end
 
 execute do
-  agent(:foo) { "Say hi" }
+  agent { "What is the world's largest lake?" }
 end

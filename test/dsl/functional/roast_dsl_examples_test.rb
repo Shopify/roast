@@ -202,15 +202,31 @@ module DSL
         mock_status = mock
         mock_status.expects(:success?).returns(true).at_least_once
 
-        Roast::Helpers::CmdRunner.stubs(:capture3)
-          .with("claude", "-p", "Say hi")
-          .returns(["Hi! How can I help you today?", "", mock_status])
+        Roast::DSL::CommandRunner.expects(:execute)
+          .with(
+            [
+              "claude",
+              "-p",
+              "--model",
+              "haiku",
+              "--append-system-prompt",
+              "Always respond in haiku form",
+              "--dangerously-skip-permissions",
+            ],
+            working_directory: nil,
+            stdin_content: "What is the world's largest lake?",
+          )
+          .returns([
+            "Caspian Sea sits,\nThough called sea, it's landlocked, vast -\nWorld's largest true lake.",
+            "",
+            mock_status,
+          ])
 
         stdout, stderr = in_sandbox :simple_agent do
           Roast::DSL::Workflow.from_file("dsl/simple_agent.rb", EMPTY_PARAMS)
         end
 
-        assert_includes stdout, "Hi! How can I help you today?"
+        assert_includes stdout, "Caspian Sea sits,\nThough called sea, it's landlocked, vast -\nWorld's largest true lake."
         assert_empty stderr
       end
 
