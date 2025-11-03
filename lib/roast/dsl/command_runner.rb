@@ -3,19 +3,10 @@
 
 module Roast
   module DSL
-    # The canonical way to execute shell commands in Roast.
+    # Execute shell commands in Roast.
     #
-    # CommandRunner is the standard command execution interface for DSL cogs
-    # and should be used for all command invocations in this project.
-    #
-    # Features:
-    # - Separate stdout/stderr capture (using Async fibers for concurrency)
-    # - Line-by-line streaming callbacks for custom handling
-    # - Optional timeout support with automatic process cleanup
-    # - Direct command execution (no shell by default for safety)
-    #
-    # Note: Currently executes commands directly without shell features.
-    # Shell support (pipes, redirects, etc.) will be added in a future version.
+    # - execute(String) - Shell commands with pipes, redirects, variables
+    # - simple_execute(*args) - Direct execution without shell (safer)
     class CommandRunner
       class CommandRunnerError < StandardError; end
 
@@ -23,36 +14,27 @@ module Roast
 
       class TimeoutError < CommandRunnerError; end
 
+      @child_processes = {} #: Hash[Integer, { command: String, pgid: Integer? }]
+      @child_processes_mutex = Mutex.new
+
       class << self
-        # Execute a command with optional stream handlers
-        #
-        # @param args [Array<String>] Command and arguments as an array
-        # @param timeout [Integer, nil] Timeout in seconds (default: nil, no timeout)
-        # @param stdout_handler [Proc, nil] Called for each stdout line
-        # @param stderr_handler [Proc, nil] Called for each stderr line
-        # @return [Array<String, String, Process::Status>] stdout, stderr, status
-        #
-        # @example Basic usage
-        #   stdout, stderr, status = CommandRunner.execute(["echo", "hello"])
-        #
-        # @example With handlers for streaming output
-        #   CommandRunner.execute(
-        #     ["ls", "-la"],
-        #     stdout_handler: ->(line) { puts "[OUT] #{line}" }
-        #   )
-        #
-        # @example With explicit timeout
-        #   CommandRunner.execute(["sleep", "5"], timeout: 2)  # Will timeout after 2 seconds
+        # Execute a shell command (wraps with sh -c)
+        #: (String, ?working_directory: (Pathname | String)?, ?timeout: (Integer | Float)?, ?stdout_handler: untyped, ?stderr_handler: untyped) -> [String, String, Process::Status]
+        def execute(command, working_directory: nil, timeout: nil, stdout_handler: nil, stderr_handler: nil)
+          simple_execute("sh", "-c", command, working_directory: working_directory, timeout: timeout, stdout_handler: stdout_handler, stderr_handler: stderr_handler)
+        end
+
+        # Execute a command directly (no shell, safer for untrusted input)
         #: (
-        #|  Array[String],
+        #|  *String,
         #|  ?working_directory: (Pathname | String)?,
         #|  ?timeout: (Integer | Float)?,
         #|  ?stdin_content: String?,
         #|  ?stdout_handler: (^(String) -> void)?,
         #|  ?stderr_handler: (^(String) -> void)?,
         #| ) -> [String, String, Process::Status]
-        def execute(
-          args,
+        def simple_execute(
+          *args,
           working_directory: nil,
           timeout: nil,
           stdin_content: nil,
@@ -72,7 +54,6 @@ module Roast
           stdin.close
           pid = wait_thread.pid
 
-          # If timeout is specified, start a timer in a separate thread
           timeout_thread = if timeout
             Thread.new do
               sleep(timeout)
@@ -80,7 +61,6 @@ module Roast
             end
           end
 
-          # Read stdout and stderr concurrently
           stdout_content, stderr_content = Async do
             stdout_task = Async do
               buffer = "" #: String
@@ -115,58 +95,102 @@ module Roast
             [stdout_task.wait, stderr_task.wait]
           end.wait
 
-          # Wait for the process to complete
           status = wait_thread.value
-
-          # Cancel the timeout thread if it's still running
           timeout_thread&.kill
 
-          # Check if the process was killed due to timeout
           if timeout && status.signaled? && (status.termsig == 15 || status.termsig == 9)
             raise TimeoutError, "Command timed out after #{timeout} seconds"
           end
 
           [stdout_content, stderr_content, status]
         ensure
-          # Clean up resources
           begin
             [stdout, stderr].compact.each(&:close)
           rescue
             nil
           end
-          # If we haven't waited for the process yet, kill it
           if pid && wait_thread&.alive?
             kill_process(pid)
-            wait_thread.join(1) # Give it a second to finish
+            wait_thread.join(1)
           end
         end
 
         private
 
+        #: (Integer, String, ?Integer?) -> void
+        def track_child_process(pid, command, pgid = nil)
+          @child_processes_mutex.synchronize do
+            @child_processes[pid] = { command: command, pgid: pgid }
+          end
+        end
+
+        #: (Integer) -> void
+        def untrack_child_process(pid)
+          @child_processes_mutex.synchronize do
+            @child_processes.delete(pid)
+          end
+        end
+
+        #: -> Hash[Integer, { command: String, pgid: Integer? }]
+        def all_child_processes
+          @child_processes_mutex.synchronize { @child_processes.dup }
+        end
+
+        #: -> void
+        def cleanup_all_children
+          Thread.new do
+            child_processes = all_child_processes
+            Thread.current.exit if child_processes.empty?
+
+            child_processes.each do |pid, info|
+              Roast::Helpers::Logger.debug("Cleaning up PID #{pid}: #{info[:command]}")
+              kill_process_group(pid, info[:pgid])
+            end
+          end.join
+        end
+
+        #: (Integer, ?Integer?) -> void
+        def kill_process_group(pid, pgid = nil)
+          untrack_child_process(pid)
+
+          if pgid
+            kill_pgid(pgid)
+          else
+            kill_pid(pid)
+          end
+        end
+
         #: (Integer) -> void
         def kill_process(pid)
+          kill_pid(pid)
+        end
+
+        #: (Integer) -> void
+        def kill_pgid(pgid)
+          return unless pgid_running?(pgid)
+
+          Process.kill("-TERM", pgid)
+          sleep(0.1)
+          Process.kill("-KILL", pgid) if pgid_running?(pgid)
+        rescue Errno::ESRCH
+        rescue Errno::EPERM
+          Roast::Helpers::Logger.debug("Could not kill process group #{pgid}: Permission denied")
+        end
+
+        #: (Integer) -> void
+        def kill_pid(pid)
           return unless process_running?(pid)
 
-          # First try TERM signal
           Process.kill("TERM", pid)
-
-          # Give process a short time to terminate gracefully
-          5.times do
-            sleep(0.02)
-            return unless process_running?(pid)
-          end
-
-          # If still running, use KILL signal
+          sleep(0.1)
           Process.kill("KILL", pid) if process_running?(pid)
 
-          # Also try to kill the process group to ensure child processes are killed
           begin
             Process.kill("-KILL", pid)
           rescue
             nil
           end
         rescue Errno::ESRCH
-          # Process already terminated
         rescue Errno::EPERM
           Roast::Helpers::Logger.debug("Could not kill process #{pid}: Permission denied")
         end
@@ -177,6 +201,19 @@ module Roast
           true
         rescue Errno::ESRCH
           false
+        end
+
+        #: (Integer) -> bool
+        def pgid_running?(pgid)
+          Process.getpgid(pgid)
+          true
+        rescue Errno::ESRCH
+          false
+        end
+
+        #: (T::Array[untyped]) -> String
+        def presentable_command(args)
+          args.join(" ")
         end
       end
     end

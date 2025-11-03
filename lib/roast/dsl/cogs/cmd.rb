@@ -164,13 +164,25 @@ module Roast
           stdout_handler = config.print_stdout? ? ->(line) { $stdout.print(line) } : nil
           stderr_handler = config.print_stderr? ? ->(line) { $stderr.print(line) } : nil
 
-          stdout, stderr, status = CommandRunner #: as untyped
-            .execute(
-              [input.command] + input.args,
-              working_directory: config.valid_working_directory,
-              stdout_handler: stdout_handler,
-              stderr_handler: stderr_handler,
-            )
+          # String → shell, Array → direct execution
+          stdout, stderr, status = if input.args.empty?
+            CommandRunner #: as untyped
+              .execute(
+                input.command,
+                working_directory: config.valid_working_directory,
+                stdout_handler: stdout_handler,
+                stderr_handler: stderr_handler,
+              )
+          else
+            CommandRunner #: as untyped
+              .simple_execute(
+                input.command,
+                *input.args,
+                working_directory: config.valid_working_directory,
+                stdout_handler: stdout_handler,
+                stderr_handler: stderr_handler,
+              )
+          end
 
           unless config.raw_output?
             stdout = stdout.strip

@@ -6,8 +6,10 @@ module Roast
   module DSL
     class CommandRunnerTest < ActiveSupport::TestCase
       test "provides stdin_content to running command" do
-        stdout, stderr, status = CommandRunner.execute(
-          ["tr", "[:lower:]", "[:upper:]"],
+        stdout, stderr, status = CommandRunner.simple_execute(
+          "tr",
+          "[:lower:]",
+          "[:upper:]",
           stdin_content: "Hello, world!",
         )
 
@@ -17,7 +19,7 @@ module Roast
       end
 
       test "basic execution captures stdout" do
-        stdout, stderr, status = CommandRunner.execute(["echo", "hello"])
+        stdout, stderr, status = CommandRunner.simple_execute("echo", "hello")
 
         assert_equal "hello\n", stdout
         assert_equal "", stderr
@@ -25,8 +27,8 @@ module Roast
       end
 
       test "captures both stdout and stderr separately" do
-        stdout, stderr, status = CommandRunner.execute(
-          ["bash", "-c", "echo 'to stdout' && echo 'to stderr' >&2"],
+        stdout, stderr, status = CommandRunner.simple_execute(
+          "bash", "-c", "echo 'to stdout' && echo 'to stderr' >&2"
         )
 
         assert_equal "to stdout\n", stdout
@@ -40,8 +42,10 @@ module Roast
         mock_handler.expect(:call, nil, ["line2\n"])
         mock_handler.expect(:call, nil, ["line3\n"])
 
-        stdout, _, _ = CommandRunner.execute(
-          ["bash", "-c", "echo 'line1' && echo 'line2' && echo 'line3'"],
+        stdout, _, _ = CommandRunner.simple_execute(
+          "bash",
+          "-c",
+          "echo 'line1' && echo 'line2' && echo 'line3'",
           stdout_handler: mock_handler,
         )
 
@@ -55,8 +59,10 @@ module Roast
         mock_handler.expect(:call, nil, ["err2\n"])
         mock_handler.expect(:call, nil, ["err3\n"])
 
-        _, stderr, _ = CommandRunner.execute(
-          ["bash", "-c", "echo 'err1' >&2 && echo 'err2' >&2 && echo 'err3' >&2"],
+        _, stderr, _ = CommandRunner.simple_execute(
+          "bash",
+          "-c",
+          "echo 'err1' >&2 && echo 'err2' >&2 && echo 'err3' >&2",
           stderr_handler: mock_handler,
         )
 
@@ -72,8 +78,10 @@ module Roast
         stderr_mock.expect(:call, nil, ["err1\n"])
         stderr_mock.expect(:call, nil, ["err2\n"])
 
-        stdout, stderr, _ = CommandRunner.execute(
-          ["bash", "-c", "echo 'out1' && echo 'err1' >&2 && echo 'out2' && echo 'err2' >&2"],
+        stdout, stderr, _ = CommandRunner.simple_execute(
+          "bash",
+          "-c",
+          "echo 'out1' && echo 'err1' >&2 && echo 'out2' && echo 'err2' >&2",
           stdout_handler: stdout_mock,
           stderr_handler: stderr_mock,
         )
@@ -85,8 +93,9 @@ module Roast
       end
 
       test "nil handlers work without errors" do
-        stdout, _, _ = CommandRunner.execute(
-          ["echo", "test"],
+        stdout, _, _ = CommandRunner.simple_execute(
+          "echo",
+          "test",
           stdout_handler: nil,
           stderr_handler: nil,
         )
@@ -96,55 +105,41 @@ module Roast
 
       test "timeout raises TimeoutError" do
         error = assert_raises(CommandRunner::TimeoutError) do
-          CommandRunner.execute(["sleep", "5"], timeout: 0.1)
+          CommandRunner.simple_execute("sleep", "5", timeout: 0.1)
         end
 
         assert_match(/timed out after 0.1 seconds/, error.message)
       end
 
       test "captures non-zero exit status" do
-        _, _, status = CommandRunner.execute(["bash", "-c", "exit 42"])
+        _, _, status = CommandRunner.simple_execute("bash", "-c", "exit 42")
 
         assert_equal 42, status.exitstatus
       end
 
       test "raises Errno::ENOENT for non-existent command" do
         assert_raises(Errno::ENOENT) do
-          CommandRunner.execute(["nonexistent_command_xyz_12345"])
+          CommandRunner.simple_execute("nonexistent_command_xyz_12345")
         end
       end
 
       test "timeout kills the process" do
-        time = Benchmark.realtime do
-          # Capture PID in a thread
-          thread = Thread.new do
-            CommandRunner.execute(["sleep", "5"], timeout: 0.1)
-          rescue CommandRunner::TimeoutError
-            # Expected
-          end
-
-          # Give command time to start
-          sleep(0.05)
-
-          # Wait for timeout to fire
-          thread.join
-
-          # Give kill some time to complete
-          sleep(0.15)
-
-          # The sleep process should be dead
-          # We can't easily get the PID from outside, but we can verify
-          # that a very short timeout doesn't leave sleep running
-          # by checking process list (external check, not using CommandRunner)
-          output = %x(ps aux | grep "sleep 2" | grep -v grep) # rubocop:disable Roast/UseCmdRunner
-          assert_empty output, "sleep process should be killed after timeout"
+        start_time = Time.now
+        thread = Thread.new do
+          CommandRunner.simple_execute("sleep", "100", timeout: 0.1)
+        rescue CommandRunner::TimeoutError
+          # Expected
         end
-        assert_operator time, :<, 1, "command ran for much longer than configured timeout"
+        thread.join
+        elapsed_time = Time.now - start_time
+        assert_operator elapsed_time, :<, 1, "command ran for much longer than configured timeout"
       end
 
       test "captured output preserved with non-zero exit status" do
-        stdout, stderr, status = CommandRunner.execute(
-          ["bash", "-c", "echo 'output' && echo 'error' >&2 && exit 42"],
+        stdout, stderr, status = CommandRunner.simple_execute(
+          "bash",
+          "-c",
+          "echo 'output' && echo 'error' >&2 && exit 42",
         )
 
         assert_equal "output\n", stdout
@@ -156,8 +151,10 @@ module Roast
         stdout_lines = []
         stderr_lines = []
 
-        _, _, status = CommandRunner.execute(
-          ["bash", "-c", "echo 'output' && echo 'error' >&2 && exit 1"],
+        _, _, status = CommandRunner.simple_execute(
+          "bash",
+          "-c",
+          "echo 'output' && echo 'error' >&2 && exit 1",
           stdout_handler: ->(line) { stdout_lines << line },
           stderr_handler: ->(line) { stderr_lines << line },
         )
@@ -180,8 +177,10 @@ module Roast
 
         # Exception should not propagate from handler
         assert_nothing_raised do
-          stdout, _, status = CommandRunner.execute(
-            ["bash", "-c", "echo 'line1' && echo 'line2' && echo 'line3'"],
+          stdout, _, status = CommandRunner.simple_execute(
+            "bash",
+            "-c",
+            "echo 'line1' && echo 'line2' && echo 'line3'",
             stdout_handler: failing_handler,
           )
 
@@ -199,8 +198,9 @@ module Roast
         # Capture debug calls
         debug_calls = []
         Roast::Helpers::Logger.stub(:debug, ->(msg) { debug_calls << msg }) do
-          CommandRunner.execute(
-            ["echo", "test"],
+          CommandRunner.simple_execute(
+            "echo",
+            "test",
             stdout_handler: failing_handler,
           )
         end
@@ -210,7 +210,7 @@ module Roast
       end
 
       test "runs command in current working directory if no working directory specified" do
-        stdout, stderr, status = CommandRunner.execute(["pwd"])
+        stdout, stderr, status = CommandRunner.simple_execute("pwd")
 
         assert_equal "#{Dir.pwd}\n", stdout
         assert_equal "", stderr
@@ -220,7 +220,7 @@ module Roast
       test "runs command in specified working directory if working directory specified" do
         uuid = Random.uuid
         Dir.mktmpdir(["Roast", uuid]) do |dir|
-          stdout, stderr, status = CommandRunner.execute(["pwd"], working_directory: dir)
+          stdout, stderr, status = CommandRunner.simple_execute("pwd", working_directory: dir)
 
           assert_match(/Roast.*#{uuid}/, stdout.strip)
           assert_equal "", stderr
@@ -231,7 +231,7 @@ module Roast
       test "runs command with PWD environment variable set to specified working directory" do
         uuid = Random.uuid
         Dir.mktmpdir(["Roast", uuid]) do |dir|
-          stdout, stderr, status = CommandRunner.execute(["echo $PWD"], working_directory: dir)
+          stdout, stderr, status = CommandRunner.execute("echo $PWD", working_directory: dir)
 
           assert_match(/Roast.*#{uuid}/, stdout.strip)
           assert_equal "", stderr
@@ -249,7 +249,7 @@ module Roast
         end
         Open3.stubs(:popen3).with({}, "echo", "hello", "world", {}).returns([mock_stdin, "hello world\n", "", mock_wait_thread])
 
-        stdout, stderr, status = CommandRunner.execute(["echo", nil, "hello", "world", nil])
+        stdout, stderr, status = CommandRunner.simple_execute("echo", nil, "hello", "world", nil)
 
         assert_equal "hello world\n", stdout
         assert_equal "", stderr
@@ -258,26 +258,133 @@ module Roast
 
       test "raises NoCommandProvidedError when args is empty" do
         assert_raises(CommandRunner::NoCommandProvidedError) do
-          CommandRunner.execute([])
+          CommandRunner.simple_execute
         end
       end
 
       test "raises NoCommandProvidedError when args contains only nil" do
         assert_raises(CommandRunner::NoCommandProvidedError) do
-          CommandRunner.execute([nil, nil])
+          CommandRunner.simple_execute(nil, nil)
         end
       end
 
       test "does not raise NoCommandProvidedError when args contains only empty string" do
         assert_raises(Errno::ENOENT) do
-          CommandRunner.execute([""])
+          CommandRunner.simple_execute("")
         end
       end
 
       test "does not raise NoCommandProvidedError when first value of args is empty string" do
         assert_raises(Errno::ENOENT) do
-          CommandRunner.execute(["", "echo", "hello"])
+          CommandRunner.simple_execute("", "echo", "hello")
         end
+      end
+
+      # Shell execution tests (execute method)
+      test "execute supports shell pipelines" do
+        stdout, _, status = CommandRunner.execute("echo 'foo\nbar\nbaz' | grep 'bar'")
+
+        assert_equal "bar\n", stdout
+        assert_equal 0, status.exitstatus
+      end
+
+      test "execute supports multiple pipes" do
+        stdout, _, status = CommandRunner.execute("echo 'line1\nline2\nline3' | grep 'line' | wc -l")
+
+        assert_equal "3", stdout.strip
+        assert_equal 0, status.exitstatus
+      end
+
+      test "execute supports output redirection" do
+        temp_file = "/tmp/roast_test_#{Process.pid}_#{rand(10000)}.txt"
+
+        begin
+          stdout, _, status = CommandRunner.execute("echo 'test content' > #{temp_file} && cat #{temp_file}")
+
+          assert_equal "test content\n", stdout
+          assert_equal 0, status.exitstatus
+          assert File.exist?(temp_file)
+          assert_equal "test content\n", File.read(temp_file)
+        ensure
+          File.delete(temp_file) if File.exist?(temp_file)
+        end
+      end
+
+      test "execute supports variable expansion" do
+        stdout, _, status = CommandRunner.execute("TEST_VAR='hello world' && echo $TEST_VAR")
+
+        assert_equal "hello world\n", stdout
+        assert_equal 0, status.exitstatus
+      end
+
+      test "execute supports command substitution" do
+        stdout, _, status = CommandRunner.execute("echo \"Current directory: $(basename $(pwd))\"")
+
+        assert_match(/Current directory: \w+/, stdout)
+        assert_equal 0, status.exitstatus
+      end
+
+      test "execute with timeout kills entire process group" do
+        # Create a pipeline that spawns multiple processes
+        # If process group cleanup works, all processes should be killed
+        thread = Thread.new do
+          CommandRunner.execute("sleep 100 | grep foo", timeout: 0.1)
+        rescue CommandRunner::TimeoutError
+          # Expected
+        end
+
+        # Give command time to start
+        sleep(0.05)
+
+        # Wait for timeout to fire
+        thread.join
+
+        # Give kill some time to complete
+        sleep(0.15)
+
+        # Verify no sleep or grep processes are still running
+        # rubocop:disable Roast/UseCmdRunner
+        output = %x(ps aux | grep "sleep 100" | grep -v grep)
+        # rubocop:enable Roast/UseCmdRunner
+        assert_empty output, "sleep process should be killed after timeout"
+
+        # rubocop:disable Roast/UseCmdRunner
+        output2 = %x(ps aux | grep "grep foo" | grep -v grep | grep -v "ps aux")
+        # rubocop:enable Roast/UseCmdRunner
+        assert_empty output2, "grep process should be killed after timeout"
+      end
+
+      test "execute handles complex shell commands" do
+        stdout, _, status = CommandRunner.execute(
+          "for i in 1 2 3; do echo \"number: $i\"; done | grep '2'",
+        )
+
+        assert_equal "number: 2\n", stdout
+        assert_equal 0, status.exitstatus
+      end
+
+      test "execute preserves exit status from pipeline" do
+        _, _, status = CommandRunner.execute("echo 'test' | grep 'nonexistent'")
+
+        assert_equal 1, status.exitstatus
+      end
+
+      test "execute works with stderr redirect" do
+        _, stderr, status = CommandRunner.execute("echo 'error message' >&2")
+
+        assert_equal "error message\n", stderr
+        assert_equal 0, status.exitstatus
+      end
+
+      test "execute with handlers works on shell pipelines" do
+        lines = []
+        stdout, _, _ = CommandRunner.execute(
+          "echo 'line1\nline2\nline3' | grep 'line'",
+          stdout_handler: ->(line) { lines << line },
+        )
+
+        assert_equal ["line1\n", "line2\n", "line3\n"], lines
+        assert_equal "line1\nline2\nline3\n", stdout
       end
     end
   end

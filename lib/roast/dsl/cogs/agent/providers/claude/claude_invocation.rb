@@ -46,8 +46,8 @@ module Roast
                 raise ClaudeAlreadyStartedError if started?
 
                 @started = true
-                _stdout, stderr, status = CommandRunner.execute(
-                  command_line,
+                _stdout, stderr, status = CommandRunner.simple_execute(
+                  *T.unsafe(command_line),
                   working_directory: @working_directory,
                   stdin_content: @prompt,
                   stdout_handler: lambda { |line| handle_stdout(line) },
