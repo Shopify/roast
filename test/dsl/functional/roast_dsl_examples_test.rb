@@ -171,6 +171,20 @@ module DSL
         assert_empty lines
       end
 
+      test "ruby_cog.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :ruby_cog do
+          Roast::DSL::Workflow.from_file("dsl/ruby_cog.rb", EMPTY_PARAMS)
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          Roast
+          Hello, ROAST
+          Calling a method: 7
+          1 22 333 4444 55555
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
       test "step_communication.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :step_communication do
           Roast::DSL::Workflow.from_file("dsl/step_communication.rb", EMPTY_PARAMS)
@@ -214,20 +228,6 @@ module DSL
           workflow targets: ["one", "two", "three"]
           workflow args: [:a, :b, :c]
           workflow kwargs: {hello: "world", goodnight: "moon"}
-        EOF
-        assert_equal expected_stdout, stdout
-      end
-
-      test "ruby_cog.rb workflow runs successfully" do
-        stdout, stderr = in_sandbox :ruby_cog do
-          Roast::DSL::Workflow.from_file("dsl/ruby_cog.rb", EMPTY_PARAMS)
-        end
-        assert_empty stderr
-        expected_stdout = <<~EOF
-          Roast
-          Hello, ROAST
-          Calling a method: 7
-          1 22 333 4444 55555
         EOF
         assert_equal expected_stdout, stdout
       end
