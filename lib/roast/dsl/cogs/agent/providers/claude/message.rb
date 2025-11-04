@@ -22,10 +22,14 @@ module Roast
                 def from_hash(hash)
                   type = hash.delete(:type)&.to_sym
                   case type
+                  when :assistant
+                    Messages::AssistantMessage.new(type:, hash:)
                   when :result
                     Messages::ResultMessage.new(type:, hash:)
                   when :system
                     Messages::SystemMessage.new(type:, hash:)
+                  when :text
+                    Messages::TextMessage.new(type:, hash:)
                   else
                     Messages::UnknownMessage.new(type:, hash:)
                   end
@@ -47,6 +51,10 @@ module Roast
                 @type = type
                 hash.except!(*IGNORED_FIELDS)
                 @unparsed = hash
+              end
+
+              #: () -> String?
+              def format
               end
             end
           end

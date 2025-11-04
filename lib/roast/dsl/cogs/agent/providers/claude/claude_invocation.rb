@@ -100,7 +100,14 @@ module Roast
                 message = Message.from_json(line) unless line.empty?
                 return unless message
 
+                handle_message(message)
+              end
+
+              #: (Message) -> void
+              def handle_message(message)
                 case message
+                when Messages::AssistantMessage
+                  message.messages.each { |msg| handle_message(msg) }
                 when Messages::ResultMessage
                   @result.response = message.content
                   @result.success = message.success
