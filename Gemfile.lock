@@ -10,9 +10,9 @@ PATH
   specs:
     roast-ai (0.4.10)
       activesupport (>= 7.0)
-      async (~> 2.34)
-      cli-kit (~> 5.2)
-      cli-ui (~> 2.6)
+      async (>= 2.18)
+      cli-kit (>= 5.0)
+      cli-ui (>= 2.3)
       diff-lcs (~> 1.5)
       json-schema
       open_router (~> 0.3)

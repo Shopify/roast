@@ -78,7 +78,7 @@ module Roast
       workflow_path, *files = paths
 
       if options[:executor] == "dsl"
-        puts "⚠️ WARNING: This is an experimental syntax and may break at any time. Don't depend on it."
+        puts "⚠️⚠️⚠️ WARNING: This is an experimental syntax and may break at any time. Don't depend on it."
         targets, workflow_args, workflow_kwargs = parse_custom_workflow_args(files, ARGV)
         targets.unshift(options[:target]) if options[:target]
         workflow_params = Roast::DSL::WorkflowParams.new(targets, workflow_args, workflow_kwargs)
