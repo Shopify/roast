@@ -1,6 +1,0 @@
-name: OpenRouter Workflow Test
-api_provider: openrouter
-api_token: test_openrouter_token
-model: anthropic/claude-3-opus-20240229
-steps:
-  - test_step

@@ -1,5 +1,0 @@
-description: Test workflow for agent steps
-
-steps:
-  - regular_prompt    # Normal prompt through LLM
-  - ^agent_prompt     # Direct to CodingAgent

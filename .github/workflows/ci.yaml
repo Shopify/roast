@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y ripgrep graphviz wamerican
+        run: sudo apt-get update && sudo apt-get install -y ripgrep wamerican
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
@@ -37,4 +37,3 @@ jobs:
       - run: bundle exec rake minitest_dsl_fast
       - run: bundle exec rake minitest_dsl_slow
       - run: bundle exec rake minitest_functional
-      - run: bundle exec rake minitest_old

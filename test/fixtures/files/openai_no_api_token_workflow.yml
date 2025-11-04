@@ -1,5 +1,0 @@
-name: Openai Workflow Test
-api_provider: openai
-model: gpt-4o-mini
-steps:
-  - test_step

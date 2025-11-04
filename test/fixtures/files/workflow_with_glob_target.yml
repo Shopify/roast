@@ -1,4 +1,0 @@
-name: Workflow with Glob Target
-steps:
-  - step1
-target: "*_spec.rb"
