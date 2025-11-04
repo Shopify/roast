@@ -68,21 +68,28 @@ module Roast
         raise ExecutionManagerCurrentlyRunningError if running?
 
         @running = true
-        Async do
-          cog_tasks = @cog_stack.map do |cog|
-            cog_config = @config_manager.config_for(cog.class, cog.name)
-            cog_task = cog.run!(
-              cog_config,
-              cog_input_context,
-              @scope_value.deep_dup, # Pass a copy to each cog to guard against mutated values being passed between cogs
-              @scope_index,
-            )
-            cog_task.wait unless cog_config.async?
-            cog_task
-          end
-          cog_tasks.map(&:wait)
-        end.wait
-        @running = false
+        begin
+          Async do
+            cog_tasks = @cog_stack.map do |cog|
+              cog_config = @config_manager.config_for(cog.class, cog.name)
+              cog_task = cog.run!(
+                cog_config,
+                cog_input_context,
+                @scope_value.deep_dup, # Pass a copy to each cog to guard against mutated values being passed between cogs
+                @scope_index,
+              )
+              cog_task.wait unless cog_config.async?
+              cog_task
+            end
+            cog_tasks.map(&:wait)
+          end.wait
+        rescue => e
+          error_formatter = ErrorFormatter.new
+          error_formatter.print_error(e, step_name: "cog execution")
+          raise e
+        ensure
+          @running = false
+        end
       end
 
       #: () -> bool

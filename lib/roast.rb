@@ -82,8 +82,22 @@ module Roast
         targets, workflow_args, workflow_kwargs = parse_custom_workflow_args(files, ARGV)
         targets.unshift(options[:target]) if options[:target]
         workflow_params = Roast::DSL::WorkflowParams.new(targets, workflow_args, workflow_kwargs)
-        Dir.chdir(ENV["ROAST_WORKING_DIRECTORY"] || Dir.pwd) do
-          Roast::DSL::Workflow.from_file(workflow_path, workflow_params)
+
+        original_stderr = $stderr
+        stderr_captured = StringIO.new
+        $stderr = stderr_captured
+
+        begin
+          Dir.chdir(ENV["ROAST_WORKING_DIRECTORY"] || Dir.pwd) do
+            Roast::DSL::Workflow.from_file(workflow_path, workflow_params)
+          end
+        ensure
+          $stderr = original_stderr
+          # Only show stderr if there were no user-friendly error messages shown
+          stderr_content = stderr_captured.string
+          unless stderr_content.empty? || stderr_content.include?("❌")
+            $stderr.print(stderr_content)
+          end
         end
       else
         expanded_workflow_path = if workflow_path.include?("workflow.yml")
@@ -99,6 +113,9 @@ module Roast
     rescue => e
       if options[:verbose]
         raise e
+      elsif options[:executor] == "dsl"
+        error_formatter = Roast::DSL::ErrorFormatter.new
+        error_formatter.print_error(e)
       else
         $stderr.puts e.message
       end
