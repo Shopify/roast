@@ -9,6 +9,7 @@ config do
     model "haiku"
     initial_prompt "Always respond in haiku form"
     show_prompt!
+    dump_raw_agent_messages_to "tmp/claude-messages.log"
   end
 end
 

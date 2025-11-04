@@ -351,6 +351,22 @@ module Roast
             show_prompt? || show_progress? || show_response?
           end
 
+          # Dump raw messages received from the agent process to a file
+          # (for development and debugging purposes)
+          #
+          #: (String) -> void
+          def dump_raw_agent_messages_to(filename)
+            @values[:dump_raw_agent_messages_to] = filename
+          end
+
+          # Get the validated, configured path to which raw agent messages should be dumped
+          # (for development and debugging purposes)
+          #
+          #: () -> Pathname?
+          def valid_dump_raw_agent_messages_to_path
+            Pathname.new(@values[:dump_raw_agent_messages_to]) if @values[:dump_raw_agent_messages_to]
+          end
+
           alias_method(:skip_permissions!, :no_apply_permissions!)
           alias_method(:no_skip_permissions!, :apply_permissions!)
           alias_method(:quiet!, :no_display!)
