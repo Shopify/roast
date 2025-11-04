@@ -139,6 +139,8 @@ module Roast
         end
 
         class Output < Cog::Output
+          include Cog::Output::WithJson
+
           #: String
           attr_reader :out
 
@@ -154,6 +156,12 @@ module Roast
             @out = out #: String
             @err = err #: String
             @status = status #: Process::Status
+          end
+
+          private
+
+          def json_text
+            out
           end
         end
 

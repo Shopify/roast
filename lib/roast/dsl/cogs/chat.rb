@@ -31,6 +31,8 @@ module Roast
         end
 
         class Output < Cog::Output
+          include Cog::Output::WithJson
+
           #: String
           attr_reader :response
 
@@ -38,6 +40,12 @@ module Roast
           def initialize(response)
             super()
             @response = response
+          end
+
+          private
+
+          def json_text
+            response
           end
         end
 
