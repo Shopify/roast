@@ -82,7 +82,9 @@ module Roast
         targets, workflow_args, workflow_kwargs = parse_custom_workflow_args(files, ARGV)
         targets.unshift(options[:target]) if options[:target]
         workflow_params = Roast::DSL::WorkflowParams.new(targets, workflow_args, workflow_kwargs)
-        Roast::DSL::Workflow.from_file(workflow_path, workflow_params)
+        Dir.chdir(ENV["ROAST_WORKING_DIRECTORY"] || Dir.pwd) do
+          Roast::DSL::Workflow.from_file(workflow_path, workflow_params)
+        end
       else
         expanded_workflow_path = if workflow_path.include?("workflow.yml")
           File.expand_path(workflow_path)
