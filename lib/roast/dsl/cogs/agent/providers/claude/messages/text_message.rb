@@ -22,8 +22,8 @@ module Roast
                   super(type:, hash:)
                 end
 
-                #: () -> String
-                def format
+                #: (ClaudeInvocation::Context) -> String?
+                def format(context)
                   @text
                 end
               end

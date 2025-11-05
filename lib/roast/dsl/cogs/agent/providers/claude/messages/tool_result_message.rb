@@ -8,33 +8,34 @@ module Roast
         module Providers
           class Claude < Provider
             module Messages
-              class ToolUseMessage < Message
+              class ToolResultMessage < Message
                 IGNORED_FIELDS = [
                   :role,
                 ].freeze
 
                 #: String?
-                attr_reader :id
+                attr_reader :tool_use_id
 
-                #: Symbol
-                attr_reader :name
+                #: String?
+                attr_reader :content
 
-                #: Hash[Symbol, untyped]
-                attr_reader :input
+                #: bool
+                attr_reader :is_error
 
                 #: (type: Symbol, hash: Hash[Symbol, untyped]) -> void
                 def initialize(type:, hash:)
-                  @name = hash.delete(:name)&.downcase&.to_sym || :unknown
-                  @id = hash.delete(:id)
-                  @input = hash.delete(:input) || {}
+                  @tool_use_id = hash.delete(:tool_use_id)
+                  @content = hash.delete(:content)
+                  @is_error = hash.delete(:is_error) || false
                   hash.except!(*IGNORED_FIELDS)
                   super(type:, hash:)
                 end
 
                 #: (ClaudeInvocation::Context) -> String?
                 def format(context)
-                  tool_use = ToolUse.new(name:, input:)
-                  tool_use.format
+                  tool_use = context.tool_use(tool_use_id)
+                  tool_result = ToolResult.new(tool_use:, content:, is_error:)
+                  tool_result.format
                 end
               end
             end

@@ -32,8 +32,12 @@ module Roast
                     Messages::SystemMessage.new(type:, hash:)
                   when :text
                     Messages::TextMessage.new(type:, hash:)
+                  when :tool_result
+                    Messages::ToolResultMessage.new(type:, hash:)
                   when :tool_use
                     Messages::ToolUseMessage.new(type:, hash:)
+                  when :user
+                    Messages::UserMessage.new(type:, hash:)
                   else
                     Messages::UnknownMessage.new(type:, hash:)
                   end
@@ -57,8 +61,8 @@ module Roast
                 @unparsed = hash
               end
 
-              #: () -> String?
-              def format
+              #: (ClaudeInvocation::Context) -> String?
+              def format(context)
               end
             end
           end
