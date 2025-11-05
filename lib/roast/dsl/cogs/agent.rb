@@ -379,6 +379,9 @@ module Roast
           #: String?
           attr_accessor :prompt
 
+          #: String?
+          attr_accessor :session
+
           #: () -> void
           def initialize
             super
@@ -410,6 +413,9 @@ module Roast
 
           #: String
           attr_reader :response
+
+          #: String
+          attr_reader :session
 
           private
 
