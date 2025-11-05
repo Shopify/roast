@@ -32,6 +32,8 @@ module Roast
                     Messages::SystemMessage.new(type:, hash:)
                   when :text
                     Messages::TextMessage.new(type:, hash:)
+                  when :tool_use
+                    Messages::ToolUseMessage.new(type:, hash:)
                   else
                     Messages::UnknownMessage.new(type:, hash:)
                   end

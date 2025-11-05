@@ -120,8 +120,10 @@ module Roast
 
                 @result.session = message.session_id if message.session_id.present?
 
-                puts
-                puts "[AGENT MESSAGE] #{message.inspect}"
+                formatted_message = message.format
+                puts formatted_message unless formatted_message.blank?
+
+                puts "[AGENT MESSAGE] #{message.inspect}" unless message.unparsed.blank?
                 # TODO: do something better with unhandled data so we can improve the parser
                 puts "[WARNING] Unhandled data in Claude #{message.type} message: #{message.unparsed}\n" unless message.unparsed.blank?
               end
