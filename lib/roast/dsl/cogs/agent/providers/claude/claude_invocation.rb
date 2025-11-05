@@ -25,6 +25,9 @@ module Roast
                 #: bool
                 attr_accessor :success
 
+                #: String?
+                attr_accessor :session
+
                 def initialize
                   @response = ""
                   @success = false
@@ -38,6 +41,7 @@ module Roast
                 @apply_permissions = config.apply_permissions? #: bool
                 @working_directory = config.valid_working_directory #: Pathname?
                 @prompt = input.valid_prompt! #: String
+                @session = input.session #: String?
                 @result = Result.new #: Result
                 @raw_dump_file = config.valid_dump_raw_agent_messages_to_path #: Pathname?
               end
@@ -114,6 +118,8 @@ module Roast
                   @result.success = message.success
                 end
 
+                @result.session = message.session_id if message.session_id.present?
+
                 puts
                 puts "[AGENT MESSAGE] #{message.inspect}"
                 # TODO: do something better with unhandled data so we can improve the parser
@@ -125,6 +131,7 @@ module Roast
                 command = ["claude", "-p", "--verbose", "--output-format", "stream-json"]
                 command.push("--model", @model) if @model
                 command.push("--append-system-prompt", @append_system_prompt) if @append_system_prompt
+                command.push("--fork-session", "--resume", @session) if @session.present?
                 command << "--dangerously-skip-permissions" unless @apply_permissions
                 command
               end
