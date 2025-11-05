@@ -75,6 +75,32 @@ module DSL
         assert_equal expected_stdout, stdout
       end
 
+      test "json_output.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :json_output do
+          Roast::DSL::Workflow.from_file("dsl/json_output.rb", EMPTY_PARAMS)
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          {
+            "hello": "world",
+            "letters": [
+              "aaa",
+              "bbb"
+            ]
+          }
+
+          RAW OUTPUT: {
+            "hello": "world",
+            "letters": [
+              "aaa",
+              "bbb"
+            ]
+          }
+          SOME VALUE FROM PARSED OUTPUT: aaa
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
       test "outputs.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :outputs do
           Roast::DSL::Workflow.from_file("dsl/outputs.rb", EMPTY_PARAMS)

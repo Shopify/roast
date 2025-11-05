@@ -6,8 +6,11 @@ module Roast
     module Cogs
       class Agent < Cog
         class AgentCogError < Roast::Error; end
+
         class UnknownProviderError < AgentCogError; end
+
         class MissingProviderError < AgentCogError; end
+
         class MissingPromptError < AgentCogError; end
 
         class Config < Cog::Config
@@ -403,8 +406,16 @@ module Roast
         end
 
         class Output < Cog::Output
+          include Cog::Output::WithJson
+
           #: String
           attr_reader :response
+
+          private
+
+          def json_text
+            response
+          end
         end
 
         #: Agent::Config
