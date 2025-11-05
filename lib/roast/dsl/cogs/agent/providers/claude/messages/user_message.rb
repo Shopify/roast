@@ -8,7 +8,7 @@ module Roast
         module Providers
           class Claude < Provider
             module Messages
-              class AssistantMessage < Message
+              class UserMessage < Message
                 IGNORED_FIELDS = [
                   :parent_tool_use_id,
                 ].freeze
@@ -19,7 +19,7 @@ module Roast
                 #: (type: Symbol, hash: Hash[Symbol, untyped]) -> void
                 def initialize(type:, hash:)
                   @messages = hash.dig(:message, :content)&.map do |content|
-                    content[:role] = :assistant
+                    content[:role] = :user
                     Message.from_hash(content)
                   end&.compact || []
                   hash.delete(:message)

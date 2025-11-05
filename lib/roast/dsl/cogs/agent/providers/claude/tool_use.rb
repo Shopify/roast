@@ -22,7 +22,7 @@ module Roast
 
               #: () -> String
               def format
-                format_method_name = "format_#{@name.downcase}".to_sym
+                format_method_name = "format_#{name}".to_sym
                 return send(format_method_name) if respond_to?(format_method_name, true)
 
                 format_unknown
@@ -32,12 +32,12 @@ module Roast
 
               #: () -> String
               def format_bash
-                "BASH #{@input.inspect}"
+                "BASH #{input.inspect}"
               end
 
               #: () -> String
               def format_unknown
-                "UNKNOWN #{@input.inspect}"
+                "UNKNOWN [#{name}] #{input.inspect}"
               end
             end
           end

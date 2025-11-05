@@ -18,6 +18,23 @@ module Roast
 
               class ClaudeFailedError < ClaudeInvocationError; end
 
+              class Context
+                def initialize
+                  @tool_uses = {} #: Hash[String, Messages::ToolUseMessage]
+                end
+
+                #: (String?) -> Messages::ToolUseMessage?
+                def tool_use(tool_use_id)
+                  @tool_uses[tool_use_id] if tool_use_id
+                end
+
+                #: (Messages::ToolUseMessage) -> void
+                def add_tool_use(tool_use_message)
+                  id = tool_use_message.id
+                  @tool_uses[id] = tool_use_message if id
+                end
+              end
+
               class Result
                 #: String
                 attr_accessor :response
@@ -42,6 +59,7 @@ module Roast
                 @working_directory = config.valid_working_directory #: Pathname?
                 @prompt = input.valid_prompt! #: String
                 @session = input.session #: String?
+                @context = Context.new #: Context
                 @result = Result.new #: Result
                 @raw_dump_file = config.valid_dump_raw_agent_messages_to_path #: Pathname?
               end
@@ -116,14 +134,18 @@ module Roast
                 when Messages::ResultMessage
                   @result.response = message.content
                   @result.success = message.success
+                when Messages::ToolUseMessage
+                  @context.add_tool_use(message)
+                when Messages::UserMessage
+                  message.messages.each { |msg| handle_message(msg) }
                 end
 
                 @result.session = message.session_id if message.session_id.present?
 
-                formatted_message = message.format
+                formatted_message = message.format(@context)
                 puts formatted_message unless formatted_message.blank?
 
-                puts "[AGENT MESSAGE] #{message.inspect}" unless message.unparsed.blank?
+                puts "[AGENT MESSAGE: #{message.type}] #{message.inspect}" unless message.unparsed.blank?
                 # TODO: do something better with unhandled data so we can improve the parser
                 puts "[WARNING] Unhandled data in Claude #{message.type} message: #{message.unparsed}\n" unless message.unparsed.blank?
               end
