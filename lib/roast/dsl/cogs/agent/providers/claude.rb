@@ -8,7 +8,7 @@ module Roast
         module Providers
           class Claude < Provider
             class Output < Agent::Output
-              delegate :response, :session, to: :@invocation_result
+              delegate :response, :session, :stats, to: :@invocation_result
 
               #: (ClaudeInvocation::Result) -> void
               def initialize(invocation_result)

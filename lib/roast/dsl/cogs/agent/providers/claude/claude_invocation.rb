@@ -45,6 +45,9 @@ module Roast
                 #: String?
                 attr_accessor :session
 
+                #: Stats?
+                attr_accessor :stats
+
                 def initialize
                   @response = ""
                   @success = false
@@ -134,6 +137,7 @@ module Roast
                 when Messages::ResultMessage
                   @result.response = message.content
                   @result.success = message.success
+                  @result.stats = message.stats
                 when Messages::ToolUseMessage
                   @context.add_tool_use(message)
                 when Messages::UserMessage

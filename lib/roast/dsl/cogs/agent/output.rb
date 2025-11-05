@@ -14,6 +14,9 @@ module Roast
           #: String
           attr_reader :session
 
+          #: Stats
+          attr_reader :stats
+
           private
 
           def json_text
