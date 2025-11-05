@@ -87,8 +87,8 @@ module Roast
               #: () -> Result
               def result
                 raise ClaudeNotStartedError unless started?
-                raise ClaudeFailedError if failed?
-                raise ClaudeNotCompletedError unless completed?
+                raise ClaudeFailedError, @result.response if failed?
+                raise ClaudeNotCompletedError, @result.response unless completed?
 
                 @result
               end
@@ -123,8 +123,8 @@ module Roast
               #: () -> Array[String]
               def command_line
                 command = ["claude", "-p", "--verbose", "--output-format", "stream-json"]
-                command << "--model" << @model if @model.present?
-                command << "--append-system-prompt" << @append_system_prompt if @append_system_prompt
+                command.push("--model", @model) if @model
+                command.push("--append-system-prompt", @append_system_prompt) if @append_system_prompt
                 command << "--dangerously-skip-permissions" unless @apply_permissions
                 command
               end
