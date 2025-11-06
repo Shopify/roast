@@ -7,12 +7,12 @@ config do
   agent do
     provider :claude
     model "haiku"
-    initial_prompt "Always respond in haiku form"
+    # initial_prompt "Always respond in haiku form"
     show_prompt!
     dump_raw_agent_messages_to "tmp/claude-messages.log"
   end
 end
 
 execute do
-  agent { "What is the world's largest lake?" }
+  agent { "Tell me about the git history of this project" }
 end

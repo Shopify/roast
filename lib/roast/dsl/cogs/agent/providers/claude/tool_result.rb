@@ -40,7 +40,7 @@ module Roast
 
               #: () -> String
               def format_unknown
-                "UNKNOWN [#{tool_name}] #{is_error ? " ERROR" : "OK"} #{tool_use_description || ""}\n#{content}"
+                ::CLI::UI.fmt(" {{red:⏺}} TOOL RESULT [#{tool_name}] #{is_error ? " ERROR" : "OK"} #{tool_use_description || ""}\n#{content}")
               end
             end
           end

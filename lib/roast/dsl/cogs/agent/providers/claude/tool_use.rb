@@ -30,14 +30,14 @@ module Roast
 
               private
 
-              #: () -> String
-              def format_bash
-                "BASH #{input.inspect}"
-              end
+              # #: () -> String
+              # def format_bash
+              #   "BASH #{input.inspect}"
+              # end
 
               #: () -> String
               def format_unknown
-                "UNKNOWN [#{name}] #{input.inspect}"
+                ::CLI::UI.fmt(" {{green:⏺}} TOOL [#{name}] #{input.inspect}")
               end
             end
           end

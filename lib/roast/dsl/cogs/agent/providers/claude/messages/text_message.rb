@@ -24,7 +24,7 @@ module Roast
 
                 #: (ClaudeInvocation::Context) -> String
                 def format(context)
-                  @text
+                  "⏺ #{@text}"
                 end
               end
             end
