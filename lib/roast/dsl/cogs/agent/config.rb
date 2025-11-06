@@ -202,6 +202,7 @@ module Roast
           # - `show_prompt!`
           # - `show_prompt?`
           # - `no_display!`
+          # - `quiet!`
           #
           #: () -> void
           def no_show_prompt!
@@ -242,6 +243,7 @@ module Roast
           # - `show_progress!`
           # - `show_progress?`
           # - `no_display!`
+          # - `quiet!`
           #
           #: () -> void
           def no_show_progress!
@@ -279,6 +281,7 @@ module Roast
           # - `show_response!`
           # - `show_response?`
           # - `no_display!`
+          # - `quiet!`
           #
           #: () -> void
           def no_show_response!
@@ -296,21 +299,62 @@ module Roast
             @values.fetch(:show_response, true)
           end
 
+          # Configure the cog to display statistics about the agent's operation
+          #
+          # Enabled by default.
+          #
+          # #### See Also
+          # - `no_show_stats!`
+          # - `show_stats?`
+          # - `display!`
+          #
+          #: () -> void
+          def show_stats!
+            @values[:show_stats] = true
+          end
+
+          # Configure the cog __not__ to display statistics about the agent's operation
+          #
+          # #### See Also
+          # - `show_stats!`
+          # - `show_stats?`
+          # - `no_display!`
+          # - `quiet!`
+          #
+          #: () -> void
+          def no_show_stats!
+            @values[:show_stats] = false
+          end
+
+          # Check if the cog is configured to display statistics about the agent's operation
+          #
+          # #### See Also
+          # - `show_stats!`
+          # - `no_show_stats!`
+          #
+          #: () -> bool
+          def show_stats?
+            @values.fetch(:show_stats, true)
+          end
+
           # Configure the cog to display all agent output
           #
           # This enables `show_prompt!`, `show_progress!`, and `show_response!`.
           #
           # #### See Also
           # - `no_display!`
+          # - `quiet!`
           # - `show_prompt!`
           # - `show_progress!`
           # - `show_response!`
+          # - `show_stats!`
           #
           #: () -> void
           def display!
             show_prompt!
             show_progress!
             show_response!
+            show_stats!
           end
 
           # Configure the cog to __hide__ all agent output
@@ -323,15 +367,18 @@ module Roast
           #
           # #### See Also
           # - `display!`
+          # - `quiet!`
           # - `no_show_prompt!`
           # - `no_show_progress!`
           # - `no_show_response!`
+          # - `no_show_stats!`
           #
           #: () -> void
           def no_display!
             no_show_prompt!
             no_show_progress!
             no_show_response!
+            no_show_stats!
           end
 
           # Check if the cog is configured to display any output while running
@@ -340,10 +387,11 @@ module Roast
           # - `show_prompt?`
           # - `show_progress?`
           # - `show_response?`
+          # - `show_stats?`
           #
           #: () -> bool
           def display?
-            show_prompt? || show_progress? || show_response?
+            show_prompt? || show_progress? || show_response? || show_stats?
           end
 
           # Dump raw messages received from the agent process to a file

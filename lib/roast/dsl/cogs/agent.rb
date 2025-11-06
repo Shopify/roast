@@ -21,7 +21,10 @@ module Roast
           puts "[USER PROMPT] #{input.valid_prompt!}" if config.show_prompt?
           output = provider.invoke(input)
           puts
-          puts "[AGENT RESPONSE] #{output.response}" if config.show_response?
+          # NOTE: If progress is displayed, the agent's response will always be the last progress message,
+          # so showing it again is duplicative.
+          puts "[AGENT RESPONSE] #{output.response}" if config.show_response? && !config.show_progress?
+          puts "[AGENT STATS] #{output.stats}" if config.show_stats?
           output
         end
 
