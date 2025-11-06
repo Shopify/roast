@@ -28,7 +28,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Documentation: Include method/class documentation with examples when appropriate
 - Dependencies: Prefer existing gems in the Gemfile before adding new ones
 - Define class methods inside `class << self; end` declarations.
-- Add runtime dependencies to `roast.gemspec`.
+- Add runtime dependencies to `roast-ai.gemspec`.
 - Add development dependencies to `Gemfile`.
 - Don't ever test private methods directly. Specs should test behavior, not implementation.
 - I do not like test-specific code embedded in production code, don't ever do that

@@ -8,7 +8,7 @@ GIT
 PATH
   remote: .
   specs:
-    roast-ai (0.4.10)
+    roast-ai (0.4.11)
       activesupport (>= 7.0)
       async (~> 2.34)
       cli-kit (~> 5.2)
@@ -258,6 +258,7 @@ PLATFORMS
   arm64-darwin
 
 DEPENDENCIES
+  benchmark
   cli-ui!
   guard
   guard-minitest

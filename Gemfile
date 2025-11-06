@@ -4,11 +4,12 @@ source "https://rubygems.org"
 
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
-# Specify your gem's dependencies in roast.gemspec
+# Specify your gem's dependencies in roast-ai.gemspec
 gemspec
 
 # TODO: remove this version pin when the next cli-ui version is released with this circular dependency fix
 #   https://github.com/Shopify/cli-ui/pull/606
+gem "benchmark"
 gem "cli-ui", github: "Shopify/cli-ui", ref: "0185746bac2e34e7609e02a4d585c5f19703200e"
 gem "guard-minitest"
 gem "guard"
