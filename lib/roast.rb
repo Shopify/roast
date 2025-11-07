@@ -56,6 +56,7 @@ require "zeitwerk"
 # Set up Zeitwerk autoloader
 loader = Zeitwerk::Loader.for_gem
 loader.inflector.inflect("dsl" => "DSL")
+loader.ignore("#{__dir__}/roast-ai.rb")
 loader.setup
 
 module Roast
