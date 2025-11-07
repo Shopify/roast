@@ -347,8 +347,10 @@ module Roast
       examples_dir = File.join(Roast::ROOT, "examples")
       return [] unless File.directory?(examples_dir)
 
+      # Only look for DSL (.rb) files now
       Dir.entries(examples_dir)
-        .select { |entry| File.directory?(File.join(examples_dir, entry)) && entry != "." && entry != ".." }
+        .select { |entry| entry.end_with?(".rb") && File.file?(File.join(examples_dir, entry)) }
+        .map { |entry| entry.chomp(".rb") }
         .sort
     end
 
@@ -362,25 +364,27 @@ module Roast
 
     def copy_example(example_name)
       examples_dir = File.join(Roast::ROOT, "examples")
-      source_path = File.join(examples_dir, example_name)
+      source_path = File.join(examples_dir, "#{example_name}.rb")
+
+      unless File.file?(source_path)
+        puts "DSL example '#{example_name}' not found!"
+        return
+      end
 
       # Always place new workflows in roast/ so `roast list` can find them
       roast_dir = File.join(Dir.pwd, "roast")
       FileUtils.mkdir_p(roast_dir)
-      target_path = File.join(roast_dir, example_name)
-
-      unless File.directory?(source_path)
-        puts "Example '#{example_name}' not found!"
-        return
-      end
+      target_path = File.join(roast_dir, "#{example_name}.rb")
 
       if File.exist?(target_path)
-        puts "Directory '#{example_name}' already exists in current directory!"
+        puts "File '#{example_name}.rb' already exists in roast/ directory!"
         return
       end
 
-      FileUtils.cp_r(source_path, target_path)
-      puts "Successfully copied example '#{example_name}' to current directory."
+      FileUtils.cp(source_path, target_path)
+      puts "Successfully copied DSL example '#{example_name}.rb' to roast/ directory."
+      puts
+      puts "Run with: bundle exec bin/roast execute roast/#{example_name}.rb --executor dsl"
     end
 
     def show_coming_soon_message

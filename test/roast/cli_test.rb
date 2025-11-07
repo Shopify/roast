@@ -213,10 +213,10 @@ class RoastCLITest < ActiveSupport::TestCase
   test "init with example option copies example directly" do
     Dir.mktmpdir do |tmpdir|
       Dir.chdir(tmpdir) do
-        # Create a real example directory in the temp location
+        # Create a real DSL example file in the temp location
         example_name = "test_example"
-        FileUtils.mkdir_p(File.join(Roast::ROOT, "examples", example_name))
-        File.write(File.join(Roast::ROOT, "examples", example_name, "workflow.yml"), "name: test")
+        example_file_path = File.join(Roast::ROOT, "examples", "#{example_name}.rb")
+        File.write(example_file_path, "# Test DSL example\nconfig { }\nexecute { }")
 
         cli = Roast::CLI.new([], { "example" => example_name })
 
@@ -224,11 +224,11 @@ class RoastCLITest < ActiveSupport::TestCase
           cli.init
         end
 
-        assert_match(/Successfully copied example/, output)
-        assert File.exist?(File.join(tmpdir, "roast", example_name, "workflow.yml"))
+        assert_match(/Successfully copied DSL example/, output)
+        assert File.exist?(File.join(tmpdir, "roast", "#{example_name}.rb"))
       ensure
         # Cleanup
-        FileUtils.rm_rf(File.join(Roast::ROOT, "examples", example_name))
+        FileUtils.rm_rf(example_file_path)
       end
     end
   end
