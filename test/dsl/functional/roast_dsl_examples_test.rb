@@ -53,9 +53,9 @@ module DSL
           assert_equal word.tr("a-z", "A-Z"), lines.shift
         end
         assert_equal "---", lines.shift
-        assert_match(/^[\w']+$/, lines.shift)
+        assert_match(/^[\p{L}']+$/, lines.shift)
         assert_equal "SCOPE VALUE: ROAST", lines.shift
-        assert_match(/^[\w']+$/, lines.shift)
+        assert_match(/^[\p{L}']+$/, lines.shift)
         assert_equal "SCOPE VALUE: OTHER", lines.shift
         assert_equal "--> after", lines.shift
         assert_empty lines
