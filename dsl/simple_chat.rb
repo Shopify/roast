@@ -15,8 +15,8 @@ execute do
   chat(:lake) { "What is the deepest lake?" }
 
   # Ask a question with a template prompt. You can pass variables to it as you would an ERB template
-  # chat { template("dsl/prompts/simple_prompt.md.erb", { lake_answer: chat!(:lake).response }) }
+  chat { template("dsl/prompts/simple_prompt.md.erb", { lake_answer: chat!(:lake).response }) }
 
   # Shorthand to look up a template prompt
-  chat { template("simple_prompt", { lake_answer: chat!(:lake).response }) }
+  # chat { template("simple_prompt", { lake_answer: chat!(:lake).response }) }
 end

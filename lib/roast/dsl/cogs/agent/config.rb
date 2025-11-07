@@ -339,7 +339,7 @@ module Roast
 
           # Configure the cog to display all agent output
           #
-          # This enables `show_prompt!`, `show_progress!`, and `show_response!`.
+          # This enables `show_prompt!`, `show_progress!`, `show_response!`, and `show_stats!`.
           #
           # #### See Also
           # - `no_display!`
@@ -359,7 +359,7 @@ module Roast
 
           # Configure the cog to __hide__ all agent output
           #
-          # This enables `no_show_prompt!`, `no_show_progress!`, and `no_show_response!`.
+          # This enables `no_show_prompt!`, `no_show_progress!`, `no_show_response!`, `no_show_stats!`.
           #
           # #### Alias Methods
           # - `no_display!`
