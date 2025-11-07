@@ -17,13 +17,24 @@ module Roast
           )
 
           resp = chat.ask(input.prompt)
-          puts "Model: #{resp.model_id}"
-          puts "Role: #{resp.role}"
-          puts "Input Tokens: #{resp.input_tokens}"
-          puts "Output Tokens: #{resp.output_tokens}"
-
           chat.messages.each do |message|
-            puts "[#{message.role.to_s.upcase}] #{message.content}"
+            case message.role
+            when :user
+              puts "[USER PROMPT] #{message.content}" if config.show_prompt?
+            when :assistant
+              puts "[LLM RESPONSE] #{message.content}" if config.show_response?
+            else
+              # No other message types are expected, but let's show them if they do appear
+              # but only the user has requested some form of output
+              puts "[UNKNOWN] #{message.content}" if config.show_prompt? || config.show_response?
+            end
+          end
+          if config.show_stats?
+            puts "[LLM STATS]"
+            puts "\tModel: #{resp.model_id}"
+            puts "\tRole: #{resp.role}"
+            puts "\tInput Tokens: #{resp.input_tokens}"
+            puts "\tOutput Tokens: #{resp.output_tokens}"
           end
 
           Output.new(resp.content)
