@@ -84,7 +84,7 @@ module Roast
         #: Config
         attr_accessor :config
 
-        # @requires_ancestor: ExecutionManager
+        # @requires_ancestor: Roast::DSL::ExecutionManager
         module Manager
           private
 
@@ -125,7 +125,7 @@ module Roast
           end
         end
 
-        # @requires_ancestor: CogInputContext
+        # @requires_ancestor: Roast::DSL::CogInputContext
         module InputContext
           # @rbs [T] (Roast::DSL::SystemCogs::Map::Output) {() -> T} -> Array[T]
           #    | (Roast::DSL::SystemCogs::Map::Output) -> Array[untyped]

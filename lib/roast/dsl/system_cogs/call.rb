@@ -50,7 +50,7 @@ module Roast
           end
         end
 
-        # @requires_ancestor: ExecutionManager
+        # @requires_ancestor: Roast::DSL::ExecutionManager
         module Manager
           private
 
@@ -76,7 +76,7 @@ module Roast
           end
         end
 
-        # @requires_ancestor: CogInputContext
+        # @requires_ancestor: Roast::DSL::CogInputContext
         module InputContext
           # @rbs [T] (Roast::DSL::SystemCogs::Call::Output) {() -> T} -> T
           #    | (Roast::DSL::SystemCogs::Call::Output) -> untyped
