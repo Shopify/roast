@@ -11,6 +11,7 @@ PATH
     roast-ai (0.4.11)
       activesupport (>= 7.0)
       async (~> 2.34)
+      benchmark (~> 0.4.1)
       cli-kit (~> 5.2)
       cli-ui (~> 2.6)
       diff-lcs (~> 1.5)
@@ -258,7 +259,6 @@ PLATFORMS
   arm64-darwin
 
 DEPENDENCIES
-  benchmark
   cli-ui!
   guard
   guard-minitest
