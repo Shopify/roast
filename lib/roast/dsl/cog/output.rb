@@ -7,7 +7,7 @@ module Roast
       # Generic output from running a cog.
       # Cogs should extend this class with their own output types.
       class Output
-        # @requires_ancestor: Output
+        # @requires_ancestor: Roast::DSL::Cog::Output
         module WithJson
           #: () -> Hash[Symbol, untyped]
           def json!
