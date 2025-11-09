@@ -44,7 +44,7 @@ module Roast
         def ruby_llm_context
           @ruby_llm_context ||= RubyLLM.context do |context|
             context.openai_api_key = config.valid_api_key!
-            context.openai_api_base = config.base_url unless config.base_url.nil?
+            context.openai_api_base = config.valid_base_url
           end
         end
       end
