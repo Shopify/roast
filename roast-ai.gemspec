@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency("async", "~> 2.34")
   spec.add_dependency("benchmark", "~> 0.4.1")
   spec.add_dependency("cli-kit", "~> 5.2")
-  spec.add_dependency("cli-ui", "~> 2.6")
+  spec.add_dependency("cli-ui", "~> 2.7")
   spec.add_dependency("diff-lcs", "~> 1.5")
   spec.add_dependency("json-schema")
   spec.add_dependency("open_router", "~> 0.3")

@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/Shopify/cli-ui
-  revision: 0185746bac2e34e7609e02a4d585c5f19703200e
-  ref: 0185746bac2e34e7609e02a4d585c5f19703200e
+  revision: 6bdefd1d06305e5d6ae312ac76f9c88f88658dda
+  branch: main
   specs:
-    cli-ui (2.6.0)
+    cli-ui (2.7.0)
 
 PATH
   remote: .
@@ -13,7 +13,7 @@ PATH
       async (~> 2.34)
       benchmark (~> 0.4.1)
       cli-kit (~> 5.2)
-      cli-ui (~> 2.6)
+      cli-ui (~> 2.7)
       diff-lcs (~> 1.5)
       json-schema
       open_router (~> 0.3)
