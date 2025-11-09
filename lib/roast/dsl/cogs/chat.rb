@@ -12,7 +12,7 @@ module Roast
         def execute(input)
           chat = ruby_llm_context.chat(
             model: config.model,
-            provider: config.provider,
+            provider: config.valid_provider!,
             assume_model_exists: config.assume_model_exists,
           )
 

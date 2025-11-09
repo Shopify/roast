@@ -6,11 +6,67 @@ module Roast
     module Cogs
       class Chat < Cog
         class Config < Cog::Config
-          field :model, "gpt-4o-mini"
-          field :api_key, ENV["OPENAI_API_KEY"]
-          field :base_url, ENV.fetch("OPENAI_API_BASE_URL", "https://api.openai.com/v1")
-          field :provider, :openai
+          PROVIDERS = {
+            openai: {
+              api_key_env_var: "OPENAI_API_KEY",
+              base_url_env_var: "OPENAI_API_BASE_URL",
+              default_base_url: "https://api.openai.com/v1",
+              default_model: "gpt-4o-mini",
+            },
+          }.freeze #: Hash[Symbol, Hash[Symbol, String]]
+
+          field :model, PROVIDERS.dig(:openai, :default_model)
+          field :api_key, ENV[PROVIDERS.dig(:openai, :api_key_env_var).not_nil!]
+          field :base_url, ENV.fetch(
+            PROVIDERS.dig(:openai, :base_url_env_var).not_nil!,
+            PROVIDERS.dig(:openai, :default_base_url),
+          )
           field :assume_model_exists, false
+
+          # Configure the cog to use a specified API provider when invoking the llm
+          #
+          # #### See Also
+          # - `use_default_provider!`
+          # - `valid_provider!`
+          #
+          #: (Symbol) -> void
+          def provider(provider)
+            @values[:provider] = provider
+          end
+
+          # Configure the cog to use the default provider when invoking the llm
+          #
+          # The default LLM provider used by Roast is OpenAI (`:openai`).
+          #
+          # #### See Also
+          # - `provider`
+          # - `valid_provider!`
+          #
+          #: () -> void
+          def use_default_provider!
+            @values[:provider] = nil
+          end
+
+          # Get the validated provider name that the cog is configured to use when invoking the llm
+          #
+          # Note: this method will return the name of a valid provider or raise an `InvalidConfigError`.
+          # It will __not__, however, validate that the you have access to the provider's API.
+          # If you have not correctly configured API access, you will likely experience a failure when Roast attempts to
+          # run your workflow.
+          #
+          # #### See Also
+          # - `provider`
+          # - `use_default_provider!`
+          #
+          #: () -> Symbol
+          def valid_provider!
+            provider = @values[:provider] || PROVIDERS.keys.first
+            unless PROVIDERS.include?(provider)
+              raise ArgumentError, "'#{provider}' is not a valid provider. Available providers include: #{PROVIDERS.keys.join(", ")}"
+            end
+
+            provider
+          end
 
           # Configure the cog to display the prompt when invoking the llm
           #
