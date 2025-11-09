@@ -12,7 +12,7 @@ module Roast
           field :provider, :openai
           field :assume_model_exists, false
 
-          # Configure the cog to display the prompt when running the agent
+          # Configure the cog to display the prompt when invoking the llm
           #
           # Disabled by default.
           #
@@ -26,7 +26,7 @@ module Roast
             @values[:show_prompt] = true
           end
 
-          # Configure the cog __not__ to display the prompt when running the agent
+          # Configure the cog __not__ to display the prompt when invoking the llm
           #
           # This is the default behaviour.
           #
@@ -41,7 +41,7 @@ module Roast
             @values[:show_prompt] = false
           end
 
-          # Check if the cog is configured to display the prompt when running the agent
+          # Check if the cog is configured to display the prompt when invoking the llm
           #
           # #### See Also
           # - `show_prompt!`
@@ -52,7 +52,7 @@ module Roast
             @values.fetch(:show_prompt, false)
           end
 
-          # Configure the cog to display the agent's final response
+          # Configure the cog to display the llm's final response
           #
           # Enabled by default.
           #
@@ -66,7 +66,7 @@ module Roast
             @values[:show_response] = true
           end
 
-          # Configure the cog __not__ to display the agent's final response
+          # Configure the cog __not__ to display the llm's final response
           #
           # #### See Also
           # - `show_response!`
@@ -79,7 +79,7 @@ module Roast
             @values[:show_response] = false
           end
 
-          # Check if the cog is configured to display the agent's final response
+          # Check if the cog is configured to display the llm's final response
           #
           # #### See Also
           # - `show_response!`
@@ -90,7 +90,7 @@ module Roast
             @values.fetch(:show_response, true)
           end
 
-          # Configure the cog to display statistics about the agent's operation
+          # Configure the cog to display statistics about the llm's operation
           #
           # Enabled by default.
           #
@@ -104,7 +104,7 @@ module Roast
             @values[:show_stats] = true
           end
 
-          # Configure the cog __not__ to display statistics about the agent's operation
+          # Configure the cog __not__ to display statistics about the llm's operation
           #
           # #### See Also
           # - `show_stats!`
@@ -117,7 +117,7 @@ module Roast
             @values[:show_stats] = false
           end
 
-          # Check if the cog is configured to display statistics about the agent's operation
+          # Check if the cog is configured to display statistics about the llm's operation
           #
           # #### See Also
           # - `show_stats!`
@@ -128,7 +128,7 @@ module Roast
             @values.fetch(:show_stats, true)
           end
 
-          # Configure the cog to display all agent output
+          # Configure the cog to display all llm output
           #
           # This enables `show_prompt!`, `show_response!`, and `show_stats!`.
           #
@@ -146,7 +146,7 @@ module Roast
             show_stats!
           end
 
-          # Configure the cog to __hide__ all agent output
+          # Configure the cog to __hide__ all llm output
           #
           # This enables `no_show_prompt!`, `no_show_response!`, and `no_show_stats!`.
           #
