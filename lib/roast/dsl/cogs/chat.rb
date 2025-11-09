@@ -13,7 +13,7 @@ module Roast
           chat = ruby_llm_context.chat(
             model: config.valid_model,
             provider: config.valid_provider!,
-            assume_model_exists: config.assume_model_exists,
+            assume_model_exists: !config.verify_model_exists?,
           )
 
           resp = chat.ask(input.prompt)

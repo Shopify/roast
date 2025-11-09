@@ -15,8 +15,6 @@ module Roast
             },
           }.freeze #: Hash[Symbol, Hash[Symbol, String]]
 
-          field :assume_model_exists, false
-
           # Configure the cog to use a specified API provider when invoking the llm
           #
           # #### See Also
@@ -193,6 +191,47 @@ module Roast
             @values.fetch(:model, PROVIDERS.dig(valid_provider!, :default_model))
           end
 
+          # Configure the cog to verify that the model exists on the provider before attempting to invoke it
+          #
+          # Enabled by default.
+          #
+          # #### See Also
+          # - `no_verify_model_exists!`
+          # - `assume_model_exists!`
+          # - `verify_model_exists?`
+          #
+          #: () -> void
+          def verify_model_exists!
+            @values[:verify_model_exists] = true
+          end
+
+          # Configure the cog __not__ to verify that the model exists on the provider before attempting to invoke it
+          #
+          # Disabled by default.
+          #
+          # #### See Also
+          # - `verify_model_exists!`
+          # - `assume_model_exists!`
+          # - `verify_model_exists?`
+          #
+          #: () -> void
+          def no_verify_model_exists!
+            @values[:verify_model_exists] = false
+          end
+
+          # Check if the cog is configured to verify that the model exists on the provider
+          #
+          # #### See Also
+          # - `verify_model_exists!`
+          # - `no_verify_model_exists!`
+          # - `assume_model_exists!`
+          # - `verify_model_exists?`
+          #
+          #: () -> bool
+          def verify_model_exists?
+            @values.fetch(:verify_model_exists, true)
+          end
+
           # Configure the cog to display the prompt when invoking the llm
           #
           # Disabled by default.
@@ -362,6 +401,7 @@ module Roast
           end
 
           alias_method(:quiet!, :no_display!)
+          alias_method(:assume_model_exists!, :no_verify_model_exists!)
         end
       end
     end
