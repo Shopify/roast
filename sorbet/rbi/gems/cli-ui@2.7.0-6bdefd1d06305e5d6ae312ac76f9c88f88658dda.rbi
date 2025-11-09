@@ -252,7 +252,7 @@ module CLI::UI::ANSI
   class << self
     # : -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#200
+    # source://cli-ui//lib/cli/ui/ansi.rb#205
     def clear_to_end_of_line; end
 
     # Returns an ANSI control sequence
@@ -264,7 +264,7 @@ module CLI::UI::ANSI
     #
     # : (String args, String cmd) -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#54
+    # source://cli-ui//lib/cli/ui/ansi.rb#59
     def control(args, cmd); end
 
     # Move the cursor back n columns
@@ -275,7 +275,7 @@ module CLI::UI::ANSI
     #
     # : (?Integer n) -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#112
+    # source://cli-ui//lib/cli/ui/ansi.rb#117
     def cursor_back(n = T.unsafe(nil)); end
 
     # Move the cursor down n lines
@@ -286,7 +286,7 @@ module CLI::UI::ANSI
     #
     # : (?Integer n) -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#86
+    # source://cli-ui//lib/cli/ui/ansi.rb#91
     def cursor_down(n = T.unsafe(nil)); end
 
     # Move the cursor forward n columns
@@ -297,7 +297,7 @@ module CLI::UI::ANSI
     #
     # : (?Integer n) -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#99
+    # source://cli-ui//lib/cli/ui/ansi.rb#104
     def cursor_forward(n = T.unsafe(nil)); end
 
     # Move the cursor to a specific column
@@ -308,21 +308,21 @@ module CLI::UI::ANSI
     #
     # : (?Integer n) -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#125
+    # source://cli-ui//lib/cli/ui/ansi.rb#130
     def cursor_horizontal_absolute(n = T.unsafe(nil)); end
 
     # Restore the saved cursor position
     #
     # : -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#170
+    # source://cli-ui//lib/cli/ui/ansi.rb#175
     def cursor_restore; end
 
     # Save the cursor position
     #
     # : -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#163
+    # source://cli-ui//lib/cli/ui/ansi.rb#168
     def cursor_save; end
 
     # Move the cursor up n lines
@@ -333,53 +333,53 @@ module CLI::UI::ANSI
     #
     # : (?Integer n) -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#73
+    # source://cli-ui//lib/cli/ui/ansi.rb#78
     def cursor_up(n = T.unsafe(nil)); end
 
     # : -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#132
+    # source://cli-ui//lib/cli/ui/ansi.rb#137
     def enter_alternate_screen; end
 
     # : -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#137
+    # source://cli-ui//lib/cli/ui/ansi.rb#142
     def exit_alternate_screen; end
 
     # Hide the cursor
     #
     # : -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#156
+    # source://cli-ui//lib/cli/ui/ansi.rb#161
     def hide_cursor; end
 
     # : -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#205
+    # source://cli-ui//lib/cli/ui/ansi.rb#210
     def insert_line; end
 
     # : (?Integer n) -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#210
+    # source://cli-ui//lib/cli/ui/ansi.rb#215
     def insert_lines(n = T.unsafe(nil)); end
 
     # : -> Regexp
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#142
+    # source://cli-ui//lib/cli/ui/ansi.rb#147
     def match_alternate_screen; end
 
     # Move to the next line
     #
     # : -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#177
+    # source://cli-ui//lib/cli/ui/ansi.rb#182
     def next_line; end
 
     # Move to the previous line
     #
     # : -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#184
+    # source://cli-ui//lib/cli/ui/ansi.rb#189
     def previous_line; end
 
     # Move to the previous n lines
@@ -390,7 +390,7 @@ module CLI::UI::ANSI
     #
     # : (?Integer n) -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#195
+    # source://cli-ui//lib/cli/ui/ansi.rb#200
     def previous_lines(n = T.unsafe(nil)); end
 
     # ANSI escape sequences (like \x1b[31m) have zero width.
@@ -400,20 +400,20 @@ module CLI::UI::ANSI
     #
     # : (String str) -> Integer
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#16
+    # source://cli-ui//lib/cli/ui/ansi.rb#21
     def printing_width(str); end
 
     # https://en.wikipedia.org/wiki/ANSI_escape_code#graphics
     # : (String params) -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#60
+    # source://cli-ui//lib/cli/ui/ansi.rb#65
     def sgr(params); end
 
     # Show the cursor
     #
     # : -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#149
+    # source://cli-ui//lib/cli/ui/ansi.rb#154
     def show_cursor; end
 
     # Strips ANSI codes from a str
@@ -424,13 +424,24 @@ module CLI::UI::ANSI
     #
     # : (String str) -> String
     #
-    # source://cli-ui//lib/cli/ui/ansi.rb#42
+    # source://cli-ui//lib/cli/ui/ansi.rb#47
     def strip_codes(str); end
   end
 end
 
+# https://ghostty.org/docs/vt/concepts/sequences#csi-sequences
+#
+# source://cli-ui//lib/cli/ui/ansi.rb#9
+CLI::UI::ANSI::CSI_SEQUENCE = T.let(T.unsafe(nil), Regexp)
+
 # source://cli-ui//lib/cli/ui/ansi.rb#7
 CLI::UI::ANSI::ESC = T.let(T.unsafe(nil), String)
+
+# https://ghostty.org/docs/vt/concepts/sequences#osc-sequences
+# OSC sequences can be terminated with either ST (\x1b\x5c) or BEL (\x07)
+#
+# source://cli-ui//lib/cli/ui/ansi.rb#12
+CLI::UI::ANSI::OSC_SEQUENCE = T.let(T.unsafe(nil), Regexp)
 
 # source://cli-ui//lib/cli/ui/color.rb#6
 class CLI::UI::Color
@@ -2751,10 +2762,19 @@ class CLI::UI::StdoutRouter::Capture::BlockingInput
   def autoclose?(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def beep(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def binmode(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def binmode?(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def check_winsize_changed(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def clear_screen(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def close(*args, **kwargs, &block); end
@@ -2774,6 +2794,36 @@ class CLI::UI::StdoutRouter::Capture::BlockingInput
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def closed?(*args, **kwargs, &block); end
 
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def console_mode(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def console_mode=(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def cooked(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def cooked!(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def cursor(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def cursor=(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def cursor_down(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def cursor_left(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def cursor_right(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def cursor_up(*args, **kwargs, &block); end
+
   # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def each(*args, **kwargs, &block); end
 
@@ -2790,10 +2840,22 @@ class CLI::UI::StdoutRouter::Capture::BlockingInput
   def each_line(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def echo=(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def echo?(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def eof(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def eof?(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def erase_line(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def erase_screen(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def external_encoding(*args, **kwargs, &block); end
@@ -2822,8 +2884,20 @@ class CLI::UI::StdoutRouter::Capture::BlockingInput
   # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def getch(*args, **kwargs, &block); end
 
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def getpass(*args, **kwargs, &block); end
+
   # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def gets(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def goto(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def goto_column(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def iflush(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def inspect(*args, **kwargs, &block); end
@@ -2835,6 +2909,9 @@ class CLI::UI::StdoutRouter::Capture::BlockingInput
   def ioctl(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def ioflush(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def isatty(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
@@ -2844,7 +2921,13 @@ class CLI::UI::StdoutRouter::Capture::BlockingInput
   def lineno=(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def noecho(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def nread(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def oflush(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def path(*args, **kwargs, &block); end
@@ -2865,6 +2948,9 @@ class CLI::UI::StdoutRouter::Capture::BlockingInput
   def pread(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def pressed?(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def print(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
@@ -2878,6 +2964,12 @@ class CLI::UI::StdoutRouter::Capture::BlockingInput
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def pwrite(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def raw(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def raw!(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#290
   def read(*args, **kwargs, &block); end
@@ -2908,6 +3000,12 @@ class CLI::UI::StdoutRouter::Capture::BlockingInput
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def rewind(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def scroll_backward(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def scroll_forward(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def seek(*args, **kwargs, &block); end
@@ -2963,6 +3061,9 @@ class CLI::UI::StdoutRouter::Capture::BlockingInput
   def tty?(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def ttyname(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def ungetbyte(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
@@ -2979,6 +3080,12 @@ class CLI::UI::StdoutRouter::Capture::BlockingInput
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def wait_writable(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def winsize(*args, **kwargs, &block); end
+
+  # source://cli-ui//lib/cli/ui/stdout_router.rb#298
+  def winsize=(*args, **kwargs, &block); end
 
   # source://cli-ui//lib/cli/ui/stdout_router.rb#298
   def write(*args, **kwargs, &block); end
