@@ -18,6 +18,7 @@ PATH
       json-schema
       open_router (~> 0.3)
       raix (~> 1.0.2)
+      rake (~> 13.3.0)
       ruby-graphviz (~> 1.2)
       ruby_llm
       sqlite3 (~> 2.6)
