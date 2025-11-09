@@ -11,7 +11,7 @@ module Roast
         #: (Input) -> Output
         def execute(input)
           chat = ruby_llm_context.chat(
-            model: config.model,
+            model: config.valid_model,
             provider: config.valid_provider!,
             assume_model_exists: config.assume_model_exists,
           )
