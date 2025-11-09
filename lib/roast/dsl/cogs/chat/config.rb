@@ -15,7 +15,6 @@ module Roast
             },
           }.freeze #: Hash[Symbol, Hash[Symbol, String]]
 
-          field :model, PROVIDERS.dig(:openai, :default_model)
           field :assume_model_exists, false
 
           # Configure the cog to use a specified API provider when invoking the llm
@@ -158,6 +157,40 @@ module Roast
           def valid_base_url
             @values.fetch(:api_key, ENV[PROVIDERS.dig(valid_provider!, :base_url_env_var).not_nil!]) ||
               PROVIDERS.dig(valid_provider!, :default_base_url)
+          end
+
+          # Configure the cog to use a specific model when invoking the agent
+          #
+          # The model name format is provider-specific.
+          #
+          # #### See Also
+          # - `use_default_model!`
+          # - `valid_model`
+          #
+          #: (String) -> void
+          def model(model)
+            @values[:model] = model
+          end
+
+          # Configure the cog to use the provider's default model when invoking the agent
+          #
+          # Note: the default model will be different for different providers.
+          #
+          # #### See Also
+          # - `model`
+          #
+          #: () -> void
+          def use_default_model!
+            @values[:model] = nil
+          end
+
+          # Get the validated, configured value of the model the cog is configured to use when running the agent
+          #
+          # `nil` means that the provider should use its own default model, however that is configured.
+          #
+          #: () -> String?
+          def valid_model
+            @values.fetch(:model, PROVIDERS.dig(valid_provider!, :default_model))
           end
 
           # Configure the cog to display the prompt when invoking the llm

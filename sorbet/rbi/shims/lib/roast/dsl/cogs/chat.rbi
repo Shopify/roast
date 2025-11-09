@@ -6,8 +6,6 @@ module Roast
     module Cogs
       class Chat
         class Config
-          #: (?String?) -> String?
-          def model(value = nil); end
           #: (?bool?) -> bool?
           def assume_model_exists(value = nil); end
         end
