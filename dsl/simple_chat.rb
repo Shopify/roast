@@ -6,7 +6,7 @@
 config do
   chat(:lake) do
     model("gpt-4o")
-    assume_model_exists(true)
+    assume_model_exists!
   end
 end
 
