@@ -16,7 +16,6 @@ module Roast
           }.freeze #: Hash[Symbol, Hash[Symbol, String]]
 
           field :model, PROVIDERS.dig(:openai, :default_model)
-          field :api_key, ENV[PROVIDERS.dig(:openai, :api_key_env_var).not_nil!]
           field :base_url, ENV.fetch(
             PROVIDERS.dig(:openai, :base_url_env_var).not_nil!,
             PROVIDERS.dig(:openai, :default_base_url),
@@ -66,6 +65,55 @@ module Roast
             end
 
             provider
+          end
+
+          # Configure the cog to use a specific API key when invoking the llm
+          #
+          # By default, the cog will use the value specified in a provider-specific environment variable, if present.
+          #
+          # #### See Also
+          # - `use_api_key_from_environment!`
+          # - `valid_api_key!`
+          #
+          #: (String) -> void
+          def api_key(key)
+            @values[:api_key] = key
+          end
+
+          # Remove any explicit api key that the cog was configured to use when invoking the llm
+          #
+          # The cog will fall back to the value specified in a provider-specific environment variable, if present.
+          #
+          # #### Environment Variables
+          # - OpenAI Provider: OPENAI_API_KEY
+          #
+          # #### See Also
+          # - `api_key`
+          # - `valid_api_key!`
+          #
+          #: () -> void
+          def use_api_key_from_environment!
+            @values.delete(:api_key)
+          end
+
+          # Get the validated, configured value of the API key the cog is configured to use when invoking the llm
+          #
+          # This method will raise InvalidConfigError if no api key was provided, neither explicitly nor
+          # via a provider-specific environment variable.
+          #
+          # #### Environment Variables
+          # - OpenAI Provider: OPENAI_API_KEY
+          #
+          # #### See Also
+          # - `api_key`
+          # - `use_api_key_from_environment!`
+          #
+          #: () -> String
+          def valid_api_key!
+            value = @values.fetch(:api_key, ENV[PROVIDERS.dig(valid_provider!, :api_key_env_var).not_nil!])
+            raise InvalidConfigError, "no api key provided" unless value
+
+            value
           end
 
           # Configure the cog to display the prompt when invoking the llm
