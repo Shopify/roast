@@ -9,17 +9,19 @@ gemspec
 
 # TODO: remove this version pin when the next cli-ui version is released with this circular dependency fix
 #   https://github.com/Shopify/cli-ui/pull/606
-gem "benchmark"
 gem "cli-ui", github: "Shopify/cli-ui", ref: "0185746bac2e34e7609e02a4d585c5f19703200e"
-gem "guard-minitest"
-gem "guard"
-gem "minitest-rg"
-gem "mocha"
-gem "rake", require: false
-gem "rubocop-shopify", require: false
-gem "rubocop-sorbet", require: false
-gem "simplecov", require: false
-gem "sorbet", require: false
-gem "tapioca", require: false
-gem "vcr", require: false
-gem "webmock", require: false
+
+group :development, :test do
+  gem "guard-minitest"
+  gem "guard"
+  gem "minitest-rg"
+  gem "mocha"
+  gem "rake", require: false
+  gem "rubocop-shopify", require: false
+  gem "rubocop-sorbet", require: false
+  gem "simplecov", require: false
+  gem "sorbet", require: false
+  gem "tapioca", require: false
+  gem "vcr", require: false
+  gem "webmock", require: false
+end
