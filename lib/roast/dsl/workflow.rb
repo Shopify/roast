@@ -75,12 +75,12 @@ module Roast
         @completed ||= false
       end
 
-      #: { () [self: ConfigContext] -> void } -> void
+      #: { () [self: Roast::DSL::ConfigContext] -> void } -> void
       def config(&block)
         @config_procs << block
       end
 
-      #: (?Symbol?) { () [self: ExecutionContext] -> void } -> void
+      #: (?Symbol?) { () [self: Roast::DSL::ExecutionContext] -> void } -> void
       def execute(scope = nil, &block)
         (@execution_procs[scope] ||= []) << block
       end
