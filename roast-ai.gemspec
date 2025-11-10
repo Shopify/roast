@@ -38,6 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency("json-schema")
   spec.add_dependency("open_router", "~> 0.3")
   spec.add_dependency("raix", "~> 1.0.2")
+  spec.add_dependency("rake", "~> 13.3.0") # NOTE: required by Thor
   spec.add_dependency("ruby-graphviz", "~> 1.2")
   spec.add_dependency("ruby_llm")
   spec.add_dependency("sqlite3", "~> 2.6")
