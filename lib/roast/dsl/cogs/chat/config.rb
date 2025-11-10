@@ -16,10 +16,6 @@ module Roast
           }.freeze #: Hash[Symbol, Hash[Symbol, String]]
 
           field :model, PROVIDERS.dig(:openai, :default_model)
-          field :base_url, ENV.fetch(
-            PROVIDERS.dig(:openai, :base_url_env_var).not_nil!,
-            PROVIDERS.dig(:openai, :default_base_url),
-          )
           field :assume_model_exists, false
 
           # Configure the cog to use a specified API provider when invoking the llm
@@ -114,6 +110,54 @@ module Roast
             raise InvalidConfigError, "no api key provided" unless value
 
             value
+          end
+
+          # Configure the cog to use a specific API base URL when invoking the llm
+          #
+          # Default value:
+          # - The value specified in provider-specific environment variable, if present;
+          # - A provider-specific default, otherwise.
+          #
+          # #### See Also
+          # - `use_default_base_url!`
+          # - `valid_base_url`
+          #
+          #: (String) -> void
+          def base_url(key)
+            @values[:api_key] = key
+          end
+
+          # Remove any explicit API base URL that the cog was configured to use when invoking the llm
+          #
+          # The cog will fall back to a default value determined as follows:
+          # - The value specified in provider-specific environment variable, if present;
+          # - A provider-specific default, otherwise.
+          #
+          # #### Environment Variables
+          # - OpenAI Provider: OPENAI_API_BASE_URL
+          #
+          # #### See Also
+          # - `base_url`
+          # - `valid_base_url`
+          #
+          #: () -> void
+          def use_default_base_url!
+            @values[:model] = nil
+          end
+
+          # Get the validated, configured value of the API base URL the cog is configured to use when invoking the llm
+          #
+          # #### Environment Variables
+          # - OpenAI Provider: OPENAI_API_BASE_URL
+          #
+          # #### See Also
+          # - `base_url`
+          # - `use_default_base_url!`
+          #
+          #: () -> String
+          def valid_base_url
+            @values.fetch(:api_key, ENV[PROVIDERS.dig(valid_provider!, :base_url_env_var).not_nil!]) ||
+              PROVIDERS.dig(valid_provider!, :default_base_url)
           end
 
           # Configure the cog to display the prompt when invoking the llm
