@@ -1,0 +1,392 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "fileutils"
+require "pathname"
+require "prism"
+require "set"
+require "optparse"
+
+class RBIGenerator
+  def initialize(source_file, output_file)
+    @source_file = Pathname.new(source_file)
+    @output_file = Pathname.new(output_file)
+    @source_code = File.read(source_file)
+    @result = Prism.parse(@source_code)
+    @comments = build_comment_map
+  end
+
+  def generate
+    # Get any leading file-level comments (before the first node)
+    file_comments = get_file_level_comments
+    file_comments_str = file_comments.empty? ? "" : file_comments.join("\n") + "\n"
+
+    rbi_content = file_comments_str + process_node(@result.value)
+
+    FileUtils.mkdir_p(@output_file.dirname)
+    File.write(@output_file, rbi_content)
+
+    puts "Generated: #{@output_file}"
+  end
+
+  private
+
+  def build_comment_map
+    # Build a map that tracks which comments have been used and maps line numbers to comments
+    @comments_used = Set.new
+    comment_map = {}
+    @result.comments.each do |comment|
+      line = comment.location.start_line
+      text = comment_text(comment)
+      comment_map[line] ||= []
+      comment_map[line] << { text: text, line: line }
+    end
+    comment_map
+  end
+
+  def comment_text(comment)
+    @source_code[comment.location.start_offset...comment.location.end_offset]
+  end
+
+  def get_file_level_comments
+    # Get comments at the beginning of the file before any code
+    return [] if @result.value.nil? || !@result.value.respond_to?(:location)
+
+    first_node_line = if @result.value.is_a?(Prism::ProgramNode) && @result.value.statements&.body&.first
+      @result.value.statements.body.first.location.start_line
+    else
+      @result.value.location.start_line
+    end
+
+    file_comments = []
+    (1...first_node_line).each do |line|
+      if @comments[line]
+        @comments[line].each do |comment|
+          unless @comments_used.include?(comment[:line])
+            file_comments << comment[:text]
+            @comments_used.add(comment[:line])
+          end
+        end
+      end
+    end
+
+    file_comments
+  end
+
+  def get_leading_comments(node)
+    return [] unless node.location
+
+    # Get comments that appear before this node (up to 5 lines before)
+    node_line = node.location.start_line
+    comments = []
+
+    # Look backwards from the node's line to find associated comments
+    # Start from the line immediately before the node
+    current_line = node_line - 1
+
+    while current_line >= [node_line - 10, 1].max
+      if @comments[current_line]
+        # Get comments that haven't been used yet
+        unused_comments = @comments[current_line].reject { |c| @comments_used.include?(c[:line]) }
+        if unused_comments.any?
+          comments = unused_comments.map { |c| c[:text] } + comments
+          unused_comments.each { |c| @comments_used.add(c[:line]) }
+        end
+        current_line -= 1
+      elsif !comments.empty?
+        # Stop if we hit a non-comment line after finding comments
+        break
+      else
+        current_line -= 1
+      end
+    end
+
+    comments
+  end
+
+  def get_inline_comment(node)
+    return nil unless node.location
+
+    # Get comment on the same line as the node
+    node_line = node.location.start_line
+    if @comments[node_line]
+      # Return the first unused comment on this line
+      unused = @comments[node_line].find { |c| !@comments_used.include?(c[:line]) }
+      if unused
+        @comments_used.add(unused[:line])
+        unused[:text]
+      end
+    end
+  end
+
+  def format_comments(comments, indent)
+    return "" if comments.empty?
+    comments.map { |c| "#{' ' * indent}#{c}" }.join("\n") + "\n"
+  end
+
+  def process_node(node, indent = 0)
+    leading_comments = get_leading_comments(node)
+    inline_comment = get_inline_comment(node)
+
+    result = case node
+    when Prism::ProgramNode
+      # For the program node, process statements directly without leading comments
+      node.statements.body.map { |stmt| process_node(stmt, indent) }.join("\n")
+
+    when Prism::ModuleNode
+      module_name = constant_path_to_s(node.constant_path)
+      body = process_body(node.body, indent + 2)
+      comments = format_comments(leading_comments, indent)
+      "#{comments}#{' ' * indent}module #{module_name}\n#{body}\n#{' ' * indent}end"
+
+    when Prism::ClassNode
+      class_name = constant_path_to_s(node.constant_path)
+      superclass = node.superclass ? " < #{constant_path_to_s(node.superclass)}" : ""
+      body = process_body(node.body, indent + 2)
+      comments = format_comments(leading_comments, indent)
+      "#{comments}#{' ' * indent}class #{class_name}#{superclass}\n#{body}\n#{' ' * indent}end"
+
+    when Prism::DefNode
+      method_signature = build_method_signature(node)
+      comments = format_comments(leading_comments, indent)
+      inline = inline_comment ? " #{inline_comment}" : ""
+      "#{comments}#{' ' * indent}#{method_signature}; end#{inline}"
+
+    when Prism::SingletonClassNode
+      body = process_body(node.body, indent + 2)
+      comments = format_comments(leading_comments, indent)
+      "#{comments}#{' ' * indent}class << self\n#{body}\n#{' ' * indent}end"
+
+    when Prism::ConstantWriteNode, Prism::ConstantPathWriteNode
+      # Keep constant definitions
+      source_slice = @source_code[node.location.start_offset...node.location.end_offset]
+      comments = format_comments(leading_comments, indent)
+      inline = inline_comment ? " #{inline_comment}" : ""
+      "#{comments}#{' ' * indent}#{source_slice}#{inline}"
+
+    when Prism::StatementsNode
+      node.body.map { |stmt| process_node(stmt, indent) }.compact.join("\n")
+
+    when Prism::CallNode
+      # Handle visibility modifiers (private, protected, public) and other significant calls
+      if %w[private protected public].include?(node.name.to_s) && node.receiver.nil?
+        comments = format_comments(leading_comments, indent)
+        inline = inline_comment ? " #{inline_comment}" : ""
+
+        if node.arguments&.arguments&.any?
+          # private :method_name
+          args = node.arguments.arguments.map do |arg|
+            if arg.is_a?(Prism::SymbolNode)
+              ":#{arg.unescaped}"
+            else
+              @source_code[arg.location.start_offset...arg.location.end_offset]
+            end
+          end.join(", ")
+          "#{comments}#{' ' * indent}#{node.name} #{args}#{inline}"
+        else
+          # private (without arguments, affects following methods)
+          "#{comments}#{' ' * indent}#{node.name}#{inline}"
+        end
+      elsif [:attr_reader, :attr_writer, :attr_accessor, :delegate].include?(node.name)
+        # Keep attr_* declarations and delegate calls
+        source_slice = @source_code[node.location.start_offset...node.location.end_offset]
+        comments = format_comments(leading_comments, indent)
+        inline = inline_comment ? " #{inline_comment}" : ""
+        "#{comments}#{' ' * indent}#{source_slice}#{inline}"
+      else
+        nil
+      end
+
+    else
+      nil
+    end
+
+    result
+  end
+
+  def process_body(body, indent)
+    return "" unless body
+
+    case body
+    when Prism::StatementsNode
+      body.body.map { |stmt| process_node(stmt, indent) }.compact.join("\n")
+    else
+      process_node(body, indent)
+    end
+  end
+
+  def build_method_signature(node)
+    name = node.name
+    params = build_parameters(node.parameters)
+    "def #{name}#{params}"
+  end
+
+  def build_parameters(params_node)
+    return "()" unless params_node
+
+    parts = []
+
+    # Required parameters
+    if params_node.requireds.any?
+      parts += params_node.requireds.map do |param|
+        case param
+        when Prism::RequiredParameterNode
+          param.name
+        when Prism::MultiTargetNode
+          # Destructuring parameter like (a, b)
+          @source_code[param.location.start_offset...param.location.end_offset]
+        else
+          @source_code[param.location.start_offset...param.location.end_offset]
+        end
+      end
+    end
+
+    # Optional parameters
+    if params_node.optionals.any?
+      parts += params_node.optionals.map do |param|
+        "#{param.name} = #{@source_code[param.value.location.start_offset...param.value.location.end_offset]}"
+      end
+    end
+
+    # Rest parameter
+    if params_node.rest
+      if params_node.rest.respond_to?(:name)
+        rest_name = params_node.rest.name
+      elsif params_node.rest.respond_to?(:expression) && params_node.rest.expression
+        rest_name = params_node.rest.expression.name
+      else
+        rest_name = nil
+      end
+      parts << (rest_name ? "*#{rest_name}" : "*")
+    end
+
+    # Post parameters (after rest)
+    if params_node.posts.any?
+      parts += params_node.posts.map { |param| param.name }
+    end
+
+    # Keyword parameters
+    if params_node.keywords.any?
+      parts += params_node.keywords.map do |param|
+        case param
+        when Prism::RequiredKeywordParameterNode
+          "#{param.name}:"
+        when Prism::OptionalKeywordParameterNode
+          "#{param.name}: #{@source_code[param.value.location.start_offset...param.value.location.end_offset]}"
+        end
+      end
+    end
+
+    # Keyword rest parameter
+    if params_node.keyword_rest
+      if params_node.keyword_rest.respond_to?(:name)
+        kwrest_name = params_node.keyword_rest.name
+      elsif params_node.keyword_rest.respond_to?(:expression) && params_node.keyword_rest.expression
+        kwrest_name = params_node.keyword_rest.expression.name
+      else
+        kwrest_name = nil
+      end
+      parts << (kwrest_name ? "**#{kwrest_name}" : "**")
+    end
+
+    # Block parameter
+    if params_node.block
+      parts << "&#{params_node.block.name}"
+    end
+
+    return "()" if parts.empty?
+    "(#{parts.join(', ')})"
+  end
+
+  def constant_path_to_s(node)
+    case node
+    when Prism::ConstantReadNode
+      node.name.to_s
+    when Prism::ConstantPathNode
+      parent = node.parent ? constant_path_to_s(node.parent) + "::" : ""
+      "#{parent}#{node.name}"
+    else
+      @source_code[node.location.start_offset...node.location.end_offset]
+    end
+  end
+end
+
+class RBIBatchGenerator
+  def initialize(input_dir, output_dir)
+    @input_dir = Pathname.new(input_dir)
+    @output_dir = Pathname.new(output_dir)
+  end
+
+  def generate_all
+    unless @input_dir.directory?
+      puts "Error: Input directory '#{@input_dir}' does not exist or is not a directory"
+      exit 1
+    end
+
+    ruby_files = find_ruby_files
+
+    if ruby_files.empty?
+      puts "No .rb files found in #{@input_dir}"
+      return
+    end
+
+    puts "Found #{ruby_files.size} Ruby file(s) to process..."
+    puts
+
+    ruby_files.each do |source_file|
+      relative_path = source_file.relative_path_from(@input_dir)
+      output_file = @output_dir.join(relative_path).sub_ext(".rbi")
+
+      begin
+        generator = RBIGenerator.new(source_file, output_file)
+        generator.generate
+      rescue => e
+        puts "Error processing #{source_file}: #{e.message}"
+        puts e.backtrace.first(5).join("\n")
+      end
+    end
+
+    puts
+    puts "Done! Generated #{ruby_files.size} .rbi file(s) in #{@output_dir}"
+  end
+
+  private
+
+  def find_ruby_files
+    @input_dir.glob("**/*.rb").sort
+  end
+end
+
+# Main execution
+options = {
+  input_dir: "lib",
+  output_dir: "rbi"
+}
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{$PROGRAM_NAME} [options]"
+  opts.separator ""
+  opts.separator "Options:"
+
+  opts.on("-i", "--input DIR", "Input directory (default: lib)") do |dir|
+    options[:input_dir] = dir
+  end
+
+  opts.on("-o", "--output DIR", "Output directory (default: rbi)") do |dir|
+    options[:output_dir] = dir
+  end
+
+  opts.on("-h", "--help", "Show this help message") do
+    puts opts
+    exit
+  end
+
+  opts.separator ""
+  opts.separator "Examples:"
+  opts.separator "  #{$PROGRAM_NAME}                          # Process lib/ and output to rbi/"
+  opts.separator "  #{$PROGRAM_NAME} -i app -o sig           # Process app/ and output to sig/"
+  opts.separator "  #{$PROGRAM_NAME} --input lib --output rbi # Explicit form"
+end.parse!
+
+generator = RBIBatchGenerator.new(options[:input_dir], options[:output_dir])
+generator.generate_all
