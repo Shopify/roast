@@ -1,0 +1,7 @@
+name: MCP Demo Workflow
+description: A simple workflow to demonstrate MCP server functionality
+steps:
+  - greet_user
+
+greet_user:
+  print_response: true
