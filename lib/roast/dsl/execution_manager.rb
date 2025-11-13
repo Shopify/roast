@@ -28,6 +28,7 @@ module Roast
       #|  Cog::Registry,
       #|  ConfigManager,
       #|  Hash[Symbol?, Array[^() -> void]],
+      #|  WorkflowParams,
       #|  ?scope: Symbol?,
       #|  ?scope_value: untyped?,
       #|  ?scope_index: Integer
@@ -36,6 +37,7 @@ module Roast
         cog_registry,
         config_manager,
         all_execution_procs,
+        workflow_params,
         scope: nil,
         scope_value: nil,
         scope_index: 0
@@ -43,13 +45,14 @@ module Roast
         @cog_registry = cog_registry
         @config_manager = config_manager
         @all_execution_procs = all_execution_procs
+        @workflow_params = workflow_params
         @scope = scope
         @scope_value = scope_value
         @scope_index = scope_index
         @cogs = Cog::Store.new #: Cog::Store
         @cog_stack = Cog::Stack.new #: Cog::Stack
         @execution_context = ExecutionContext.new #: ExecutionContext
-        @cog_input_manager = CogInputManager.new(@cog_registry, @cogs) #: CogInputManager
+        @cog_input_manager = CogInputManager.new(@cog_registry, @cogs, @workflow_params) #: CogInputManager
       end
 
       #: () -> void

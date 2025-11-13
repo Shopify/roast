@@ -64,6 +64,7 @@ module Roast
                 @cog_registry,
                 @config_manager,
                 @all_execution_procs,
+                @workflow_params,
                 scope: params.run,
                 scope_value: input.value,
                 scope_index: input.index,

@@ -100,6 +100,7 @@ module Roast
                   @cog_registry,
                   @config_manager,
                   @all_execution_procs,
+                  @workflow_params,
                   scope: params.run,
                   scope_value: item,
                   scope_index: index + input.initial_index,
