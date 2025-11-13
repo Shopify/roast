@@ -17,14 +17,14 @@ module Roast
 
       class CogStoppedError < CogOutputAccessError; end
 
-      #: (Cog::Registry, Cog::Store, WorkflowParams) -> void
-      def initialize(cog_registry, cogs, workflow_params)
+      #: (Cog::Registry, Cog::Store, WorkflowContext) -> void
+      def initialize(cog_registry, cogs, workflow_context)
         @cog_registry = cog_registry
         @cogs = cogs
-        @workflow_params = workflow_params
+        @workflow_context = workflow_context
         @context = CogInputContext.new
         bind_registered_cogs
-        bind_workflow_params
+        bind_workflow_context
       end
 
       #: CogInputContext
@@ -79,7 +79,7 @@ module Roast
       end
 
       #: () -> void
-      def bind_workflow_params
+      def bind_workflow_context
         target_bang_method = method(:target!)
         targets_method = method(:targets)
         arg_question_method = method(:arg?)
@@ -88,6 +88,7 @@ module Roast
         kwarg_bang_method = method(:kwarg!)
         kwarg_question_method = method(:kwarg?)
         kwargs_method = method(:kwargs)
+        tmpdir_method = method(:tmpdir)
         @context.instance_eval do
           define_singleton_method(:target!, proc { target_bang_method.call })
           define_singleton_method(:targets, proc { targets_method.call })
@@ -97,51 +98,57 @@ module Roast
           define_singleton_method(:kwarg!, proc { |key| kwarg_bang_method.call(key) })
           define_singleton_method(:kwarg?, proc { |key| kwarg_question_method.call(key) })
           define_singleton_method(:kwargs, proc { kwargs_method.call })
+          define_singleton_method(:tmpdir, proc { tmpdir_method.call })
         end
       end
 
       #: () -> String
       def target!
-        raise ArgumentError, "expected exactly one target" unless @workflow_params.targets.length == 1
+        raise ArgumentError, "expected exactly one target" unless @workflow_context.params.targets.length == 1
 
-        @workflow_params.targets.first #: as String
+        @workflow_context.params.targets.first #: as String
       end
 
       #: () -> Array[String]
       def targets
-        @workflow_params.targets.dup
+        @workflow_context.params.targets.dup
       end
 
       #: (Symbol) -> bool
       def arg?(value)
-        @workflow_params.args.include?(value)
+        @workflow_context.params.args.include?(value)
       end
 
       #: () -> Array[Symbol]
       def args
-        @workflow_params.args.dup
+        @workflow_context.params.args.dup
       end
 
       #: (Symbol) -> String?
       def kwarg(key)
-        @workflow_params.kwargs[key]
+        @workflow_context.params.kwargs[key]
       end
 
       #: (Symbol) -> String
       def kwarg!(key)
-        raise ArgumentError, "expected keyword argument '#{key}' to be present" unless @workflow_params.kwargs.include?(key)
+        raise ArgumentError, "expected keyword argument '#{key}' to be present" unless @workflow_context.params.kwargs.include?(key)
 
-        @workflow_params.kwargs[key] #: as String
+        @workflow_context.params.kwargs[key] #: as String
       end
 
       #: (Symbol) -> bool
       def kwarg?(key)
-        @workflow_params.kwargs.include?(key)
+        @workflow_context.params.kwargs.include?(key)
       end
 
       #: () -> Hash[Symbol, String]
       def kwargs
-        @workflow_params.kwargs.dup
+        @workflow_context.params.kwargs.dup
+      end
+
+      #: () -> Pathname
+      def tmpdir
+        Pathname.new(@workflow_context.tmpdir).realpath
       end
     end
   end

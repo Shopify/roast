@@ -13,16 +13,19 @@ module Roast
       class << self
         #: (String, WorkflowParams) -> void
         def from_file(workflow_path, params)
-          workflow = new(workflow_path, params)
-          workflow.prepare!
-          workflow.start!
+          Dir.mktmpdir("roast-") do |tmpdir|
+            workflow_context = WorkflowContext.new(params:, tmpdir:)
+            workflow = new(workflow_path, workflow_context)
+            workflow.prepare!
+            workflow.start!
+          end
         end
       end
 
-      #: (String, WorkflowParams) -> void
-      def initialize(workflow_path, workflow_params)
+      #: (String, WorkflowContext) -> void
+      def initialize(workflow_path, workflow_context)
         @workflow_path = Pathname.new(workflow_path) #: Pathname
-        @workflow_params = workflow_params #: WorkflowParams
+        @workflow_context = workflow_context #: WorkflowContext
         @workflow_definition = File.read(workflow_path) #: String
         @cog_registry = Cog::Registry.new #: Cog::Registry
         @config_procs = [] #: Array[^() -> void]
@@ -39,7 +42,8 @@ module Roast
         extract_dsl_procs!
         @config_manager = ConfigManager.new(@cog_registry, @config_procs)
         @config_manager.prepare!
-        @execution_manager = ExecutionManager.new(@cog_registry, @config_manager, @execution_procs, @workflow_params, scope_value: @workflow_params)
+        # TODO: probably we should just not pass the params as the top-level scope value anymore
+        @execution_manager = ExecutionManager.new(@cog_registry, @config_manager, @execution_procs, @workflow_context, scope_value: @workflow_context.params)
         @execution_manager.prepare!
 
         @prepared = true
