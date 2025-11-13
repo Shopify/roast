@@ -17,12 +17,14 @@ module Roast
 
       class CogStoppedError < CogOutputAccessError; end
 
-      #: (Cog::Registry, Cog::Store) -> void
-      def initialize(cog_registry, cogs)
+      #: (Cog::Registry, Cog::Store, WorkflowParams) -> void
+      def initialize(cog_registry, cogs, workflow_params)
         @cog_registry = cog_registry
         @cogs = cogs
+        @workflow_params = workflow_params
         @context = CogInputContext.new
         bind_registered_cogs
+        bind_workflow_params
       end
 
       #: CogInputContext
@@ -74,6 +76,72 @@ module Roast
           raise CogFailedError, cog_name if cog.failed?
           raise CogStoppedError, cog_name if cog.stopped?
         end.output
+      end
+
+      #: () -> void
+      def bind_workflow_params
+        target_bang_method = method(:target!)
+        targets_method = method(:targets)
+        arg_question_method = method(:arg?)
+        args_method = method(:args)
+        kwarg_method = method(:kwarg)
+        kwarg_bang_method = method(:kwarg!)
+        kwarg_question_method = method(:kwarg?)
+        kwargs_method = method(:kwargs)
+        @context.instance_eval do
+          define_singleton_method(:target!, proc { target_bang_method.call })
+          define_singleton_method(:targets, proc { targets_method.call })
+          define_singleton_method(:arg?, proc { |value| arg_question_method.call(value) })
+          define_singleton_method(:args, proc { args_method.call })
+          define_singleton_method(:kwarg, proc { |key| kwarg_method.call(key) })
+          define_singleton_method(:kwarg!, proc { |key| kwarg_bang_method.call(key) })
+          define_singleton_method(:kwarg?, proc { |key| kwarg_question_method.call(key) })
+          define_singleton_method(:kwargs, proc { kwargs_method.call })
+        end
+      end
+
+      #: () -> String
+      def target!
+        raise ArgumentError, "expected exactly one target" unless @workflow_params.targets.length == 1
+
+        @workflow_params.targets.first #: as String
+      end
+
+      #: () -> Array[String]
+      def targets
+        @workflow_params.targets.dup
+      end
+
+      #: (Symbol) -> bool
+      def arg?(value)
+        @workflow_params.args.include?(value)
+      end
+
+      #: () -> Array[Symbol]
+      def args
+        @workflow_params.args.dup
+      end
+
+      #: (Symbol) -> String?
+      def kwarg(key)
+        @workflow_params.kwargs[key]
+      end
+
+      #: (Symbol) -> String
+      def kwarg!(key)
+        raise ArgumentError, "expected keyword argument '#{key}' to be present" unless @workflow_params.kwargs.include?(key)
+
+        @workflow_params.kwargs[key] #: as String
+      end
+
+      #: (Symbol) -> bool
+      def kwarg?(key)
+        @workflow_params.kwargs.include?(key)
+      end
+
+      #: () -> Hash[Symbol, String]
+      def kwargs
+        @workflow_params.kwargs.dup
       end
     end
   end

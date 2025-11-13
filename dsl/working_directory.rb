@@ -12,5 +12,5 @@ end
 execute do
   cmd(:cwd) { "echo Current working directory: `pwd`" }
   cmd(:alt) { "echo Alternate working directory: `pwd`" }
-  cmd(:orig) { "echo Back to originl working directory: `pwd`" }
+  cmd(:orig) { "echo Back to original working directory: `pwd`" }
 end

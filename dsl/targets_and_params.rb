@@ -24,4 +24,34 @@ execute do
     # (Note: using explicit formatting for compatibility with Ruby versions < 3.4)
     puts "workflow kwargs: {#{params.kwargs.map { |k, v| "#{k}: #{v.inspect}" }.join(", ")}}"
   end
+
+  # There are convenience methods to access the workflow params from any cog input context in any scope
+  ruby do
+    puts
+    # `target!` will raise an exception unless exactly one target is provided
+    # puts "Explicit target = #{target!}"
+
+    # `targets` will return the (possibly empty) array of targets
+    puts "All targets = #{targets}"
+
+    # `arg?` will return a boolean indicating whether a specific value / flag argument is present
+    puts "Argument 'foo' provided? #{arg?(:foo) ? "yes" : "no"}"
+
+    # `args` will return the (possibly empty) array of simple value / flag arguments
+    puts "All args = #{args}"
+
+    # `kwarg` will return the value associated with a specific keyword argument,
+    # or nil if that keyword argument was not provided
+    puts "Keyword argument 'name': '#{kwarg(:name)}'"
+
+    # `kwarg!` will return the value associated with a specific keyword argument,
+    # or raise an exception if that keyword argument was not provided
+    # puts "Keyword argument 'name': #{kwarg!(:name)}"
+
+    # `kwarg?` will return a boolean indicating whether a specific keyword argument was provided
+    puts "Keyword argument 'name' provided: #{kwarg?(:name) ? "yes" : "no"}"
+
+    # `kwargs` will return the (possibly empty) hash of all keyword arguments
+    # puts "All kwargs = #{kwargs}"
+  end
 end

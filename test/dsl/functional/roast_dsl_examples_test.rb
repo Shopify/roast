@@ -271,6 +271,12 @@ module DSL
           workflow targets: ["one", "two", "three"]
           workflow args: [:a, :b, :c]
           workflow kwargs: {hello: "world", goodnight: "moon"}
+
+          All targets = ["one", "two", "three"]
+          Argument 'foo' provided? no
+          All args = [:a, :b, :c]
+          Keyword argument 'name': ''
+          Keyword argument 'name' provided: no
         EOF
         assert_equal expected_stdout, stdout
       end
@@ -283,7 +289,7 @@ module DSL
         expected_stdout = <<~EOF
           Current working directory: #{Dir.pwd}
           Alternate working directory: /tmp
-          Back to originl working directory: #{Dir.pwd}
+          Back to original working directory: #{Dir.pwd}
         EOF
         assert_equal expected_stdout, stdout
       end
