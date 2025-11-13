@@ -32,9 +32,10 @@ module Roast
 
           #: () -> String
           def valid_prompt!
-            raise Cog::Input::InvalidInputError, "'prompt' is required" unless @prompt.present?
+            valid_prompt = @prompt
+            raise Cog::Input::InvalidInputError, "'prompt' is required" unless valid_prompt.present?
 
-            @prompt
+            valid_prompt
           end
         end
       end
