@@ -50,6 +50,9 @@ unless defined?(T)
   require("roast/sorbet_runtime_stub")
 end
 
+# Require project components that will not get automatically loaded
+require "roast/dsl/nil_assertions"
+
 # Autoloading setup
 require "zeitwerk"
 
