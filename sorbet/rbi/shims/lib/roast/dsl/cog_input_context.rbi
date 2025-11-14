@@ -40,16 +40,16 @@ module Roast
       #             System Cogs
       ########################################
 
-      #: [T] (Roast::DSL::SystemCogs::Call::Output) {() -> T} -> T
+      #: [T] (Roast::DSL::SystemCogs::Call::Output) {(untyped) -> T} -> T
       #: (Roast::DSL::SystemCogs::Call::Output) -> untyped
       def from(call_cog_output, &block); end
 
-      #: [T] (Roast::DSL::SystemCogs::Map::Output) {() -> T} -> Array[T]
+      #: [T] (Roast::DSL::SystemCogs::Map::Output) {(untyped, untyped, Integer) -> T} -> Array[T]
       #: (Roast::DSL::SystemCogs::Map::Output) -> Array[untyped]
       def collect(map_cog_output, &block); end
 
-      #: [A] (Roast::DSL::SystemCogs::Map::Output, ?NilClass) {(A?, untyped) -> A} -> A?
-      #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A) {(A, untyped) -> A} -> A
+      #: [A] (Roast::DSL::SystemCogs::Map::Output, ?NilClass) {(A?, untyped, untyped, Integer) -> A} -> A?
+      #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A) {(A, untyped, untyped, Integer) -> A} -> A
       def reduce(map_cog_output, initial_value = nil, &block); end
 
       #: (Symbol) -> Roast::DSL::SystemCogs::Call::Output?
