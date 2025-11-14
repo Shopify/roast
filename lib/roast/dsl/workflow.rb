@@ -22,7 +22,7 @@ module Roast
       #: (String, WorkflowParams) -> void
       def initialize(workflow_path, workflow_params)
         @workflow_path = Pathname.new(workflow_path) #: Pathname
-        @workflow_params = workflow_params
+        @workflow_params = workflow_params #: WorkflowParams
         @workflow_definition = File.read(workflow_path) #: String
         @cog_registry = Cog::Registry.new #: Cog::Registry
         @config_procs = [] #: Array[^() -> void]
@@ -39,7 +39,7 @@ module Roast
         extract_dsl_procs!
         @config_manager = ConfigManager.new(@cog_registry, @config_procs)
         @config_manager.prepare!
-        @execution_manager = ExecutionManager.new(@cog_registry, @config_manager, @execution_procs, scope_value: @workflow_params)
+        @execution_manager = ExecutionManager.new(@cog_registry, @config_manager, @execution_procs, @workflow_params, scope_value: @workflow_params)
         @execution_manager.prepare!
 
         @prepared = true

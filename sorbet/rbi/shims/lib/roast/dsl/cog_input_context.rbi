@@ -6,6 +6,34 @@ module Roast
     class CogInputContext
 
       ########################################
+      #             Workflow Methods
+      ########################################
+
+      #: () -> String
+      def target!; end
+
+      #: () -> Array[String]
+      def targets; end
+
+      #: (Symbol) -> bool
+      def arg?(value); end
+
+      #: () -> Array[Symbol]
+      def args; end
+
+      #: (Symbol) -> String?
+      def kwarg(key); end
+
+      #: (Symbol) -> String
+      def kwarg!(key); end
+
+      #: (Symbol) -> bool
+      def kwarg?(key); end
+
+      #: () -> Hash[Symbol, String]
+      def kwargs; end
+
+      ########################################
       #             System Cogs
       ########################################
 
