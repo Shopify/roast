@@ -22,7 +22,7 @@ execute do
   end
 
   ruby do
-    puts "RAW OUTPUT: #{cmd!(:json).out}"
+    puts "RAW OUTPUT: #{cmd!(:json).text}"
     puts "SOME VALUE FROM PARSED OUTPUT: #{cmd!(:json).json![:letters].first}"
   end
 end
