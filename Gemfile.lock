@@ -270,8 +270,8 @@ DEPENDENCIES
   rubocop-shopify
   rubocop-sorbet
   simplecov
-  sorbet
-  tapioca
+  sorbet (~> 0.5.12414)
+  tapioca (~> 0.16.11)
   vcr
   webmock
 
