@@ -85,9 +85,10 @@ module Roast
             em = call_cog_output.instance_variable_get(:@execution_manager)
             raise CogInputContext::ContextNotFoundError if em.nil?
 
-            return em.cog_input_context.instance_exec(&block) if block_given?
+            final_output = em.send(:final_output)
+            return em.cog_input_context.instance_exec(final_output, &block) if block_given?
 
-            em.send(:final_output)
+            final_output
           end
         end
       end
