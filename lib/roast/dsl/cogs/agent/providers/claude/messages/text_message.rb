@@ -22,7 +22,7 @@ module Roast
                   super(type:, hash:)
                 end
 
-                #: (ClaudeInvocation::Context) -> String?
+                #: (ClaudeInvocation::Context) -> String
                 def format(context)
                   @text
                 end
