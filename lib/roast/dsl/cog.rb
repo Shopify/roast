@@ -82,6 +82,18 @@ module Roast
           # TODO: better / cleaner handling in the workflow execution manager for a workflow failure
           #   just re-raising this exception for now
           raise e if config.abort_on_error?
+        rescue Input::InvalidInputError => e
+          @failed = true
+          # Format input validation errors in a user-friendly way
+          error_formatter = ErrorFormatter.new
+          error_formatter.print_error(e, step_name: @name.to_s)
+          raise e if config.abort_on_error?
+        rescue => e
+          @failed = true
+          # Format unexpected cog errors
+          error_formatter = ErrorFormatter.new
+          error_formatter.print_error(e, step_name: @name.to_s)
+          raise e if config.abort_on_error?
         end
       end
 
