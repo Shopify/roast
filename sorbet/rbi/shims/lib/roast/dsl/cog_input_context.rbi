@@ -33,6 +33,9 @@ module Roast
       #: () -> Hash[Symbol, String]
       def kwargs; end
 
+      #: () -> Pathname
+      def tmpdir; end
+
       ########################################
       #             System Cogs
       ########################################

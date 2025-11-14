@@ -281,6 +281,17 @@ module DSL
         assert_equal expected_stdout, stdout
       end
 
+      test "temporary_directory.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :temporary_directory do
+          Roast::DSL::Workflow.from_file("dsl/temporary_directory.rb", EMPTY_PARAMS)
+        end
+        assert_empty stderr
+        assert_predicate stdout.length, :>, 0
+        path = Pathname.new(stdout.strip)
+        assert_predicate path, :absolute?
+        refute_predicate path, :exist?
+      end
+
       test "working_directory.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :working_directory do
           Roast::DSL::Workflow.from_file("dsl/working_directory.rb", EMPTY_PARAMS)
