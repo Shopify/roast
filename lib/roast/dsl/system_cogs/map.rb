@@ -136,22 +136,18 @@ module Roast
 
             return ems.map { |em| em.cog_input_context.instance_exec(&block) } if block_given?
 
-            ems.map do |em|
-              last_cog = em.instance_variable_get(:@cog_stack).last
-              raise CogInputManager::CogDoesNotExistError, "no cogs defined in scope" unless last_cog
-
-              last_cog.output
-            end
+            ems.map { |em| em.send(:final_output) }
           end
 
-          #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A?) {(A?) -> A} -> A?
+          #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A?) {(A?, untyped) -> A} -> A?
           def reduce(map_cog_output, initial_value = nil, &block)
             ems = map_cog_output.instance_variable_get(:@execution_managers)
             raise CogInputContext::ContextNotFoundError if ems.nil?
 
             accumulator = initial_value
-            ems.each do |em|
-              new_accumulator = em.cog_input_context.instance_exec(accumulator, &block) unless em.nil?
+            ems.compact.each do |em|
+              final_output = em.send(:final_output)
+              new_accumulator = em.cog_input_context.instance_exec(accumulator, final_output, &block)
               case new_accumulator
               when nil
                 # do not overwrite a non-nil value in the accumulator with a nil value,
