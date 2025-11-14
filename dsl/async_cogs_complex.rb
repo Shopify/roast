@@ -47,7 +47,7 @@ execute do
     # until the named async cog is complete IF AND ONLY IF it has already started.
     # If the named cog is defined later in the workflow and thus not already started,
     # these methods will return immediately.
-    "echo \"fifth (second said: '#{cmd!(:second).out}')\""
+    "echo \"fifth (second said: '#{cmd!(:second).text}')\""
   end
 
   # 'sixth' is async as well, and it will complete before the slow-running 'second' cog AND before the 'fifth' cog

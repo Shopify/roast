@@ -33,7 +33,7 @@ execute do
   # It will block until 'slow_background_task_1' completes.
   # 'fourth' is synchronous, so cogs that follow it will also be forced to wait (whether they are async or not)
   cmd(:fourth) do
-    "echo \"fourth <-- '#{cmd!(:slow_background_task_1).out}'\""
+    "echo \"fourth <-- '#{cmd!(:slow_background_task_1).text}'\""
   end
 
   cmd(:fifth) { "echo fifth" }
