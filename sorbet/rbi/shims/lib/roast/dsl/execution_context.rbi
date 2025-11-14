@@ -9,7 +9,7 @@ module Roast
       #       Special Context Methods
       ########################################
 
-      #: () {() [self: Roast::DSL::CogInputContext] -> untyped} -> void
+      #: () {(untyped, Integer) [self: Roast::DSL::CogInputContext] -> untyped} -> void
       def outputs(&block); end
 
       ########################################
