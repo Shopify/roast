@@ -7,6 +7,7 @@ module Roast
       class Agent < Cog
         class Output < Cog::Output
           include Cog::Output::WithJson
+          include Cog::Output::WithText
 
           #: String
           attr_reader :response
@@ -20,6 +21,10 @@ module Roast
           private
 
           def json_text
+            response
+          end
+
+          def raw_text
             response
           end
         end

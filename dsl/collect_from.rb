@@ -39,21 +39,21 @@ execute do
 
     # Using `from`, you can access cogs from the executor scope that was run by a specific named `call`.
     # The block you pass to `from` runs in the input context of the specified scope, rather than the current scope.
-    original = from(call!(:hello)) { cmd!(:to_original).out }
+    original = from(call!(:hello)) { cmd!(:to_original).text }
     # The type of the return value of `from` is the same type as the return value of the block.
-    upper = from(call!(:hello)) { cmd!(:to_upper) }.out
+    upper = from(call!(:hello)) { cmd!(:to_upper) }.text
     # You can also use this shorthand `from` syntax to get the output of the last cog in the call's executor scope.
     # In this syntax, the return value of `from` is untyped
-    lower = from(call!(:hello)).out
+    lower = from(call!(:hello)).text
     "echo \"#{original} --> #{upper} --> #{lower}\""
   end
 
   cmd do
     # You can also grab the `call`'s output once and pass it to multiple `from` invocations.
     my_scope = call!(:world)
-    original = from(my_scope) { cmd!(:to_original).out }
-    upper = from(my_scope) { cmd!(:to_upper).out }
-    lower = from(my_scope) { cmd!(:to_lower).out }
+    original = from(my_scope) { cmd!(:to_original).text }
+    upper = from(my_scope) { cmd!(:to_upper).text }
+    lower = from(my_scope) { cmd!(:to_lower).text }
     "echo \"#{original} --> #{upper} --> #{lower}\""
   end
 
@@ -61,12 +61,12 @@ execute do
     # Using `collect`, you can access cogs from the executor scopes that were run by a specific named `map`.
     # The block you pass to `collect` runs in the input context of each specified scope.
     # `collect` returns an array containing the output of each invocation of that block.
-    originals = collect(map!(:other_words)) { cmd!(:to_original).out }
+    originals = collect(map!(:other_words)) { cmd!(:to_original).text }
     # The type of the return value of `call` is an Array of the same type as the return value of the block.
-    uppers = collect(map!(:other_words)) { cmd!(:to_upper) }.map(&:out)
+    uppers = collect(map!(:other_words)) { cmd!(:to_upper) }.map(&:text)
     # You can also use this shorthand `collect` syntax to get the output of the last cog in each of the map's executor scopes.
     # In this syntax, the return value of `collect` is Array[untyped]
-    lowers = collect(map!(:other_words)).map(&:out)
+    lowers = collect(map!(:other_words)).map(&:text)
     "echo \"#{originals.join(",")} --> #{uppers.join(",")} --> #{lowers.join(",")}\""
   end
 end
