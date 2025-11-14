@@ -38,6 +38,28 @@ module Roast
             raise NotImplementedError
           end
         end
+
+        # @requires_ancestor: Roast::DSL::Cog::Output
+        module WithText
+          #: () -> String
+          def text
+            raw_text.strip
+          end
+
+          #: () -> Array[String]
+          def lines
+            raw_text.lines.map(&:strip)
+          end
+
+          private
+
+          # Cogs should implement this method to provide the text value of their output
+          #
+          #: () -> String
+          def raw_text
+            raise NotImplementedError
+          end
+        end
       end
     end
   end
