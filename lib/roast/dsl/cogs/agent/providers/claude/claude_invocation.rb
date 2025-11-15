@@ -65,6 +65,7 @@ module Roast
                 @context = Context.new #: Context
                 @result = Result.new #: Result
                 @raw_dump_file = config.valid_dump_raw_agent_messages_to_path #: Pathname?
+                @show_progress = config.show_progress?
               end
 
               #: () -> void
@@ -147,7 +148,7 @@ module Roast
                 @result.session = message.session_id if message.session_id.present?
 
                 formatted_message = message.format(@context)
-                puts formatted_message unless formatted_message.blank?
+                puts formatted_message if formatted_message.present? && @show_progress
 
                 puts "[AGENT MESSAGE: #{message.type}] #{message.inspect}" unless message.unparsed.blank?
                 # TODO: do something better with unhandled data so we can improve the parser
