@@ -51,8 +51,10 @@ module Roast
         @regexp_scoped_configs.fetch(cog_class, {}).select do |pattern, _|
           pattern.match?(name.to_s) unless name.nil?
         end.values.each { |cfg| config = config.merge(cfg) }
-        name_scoped_config = fetch_name_scoped_config(cog_class, name) unless name.nil?
-        config = config.merge(name_scoped_config) if name_scoped_config
+        unless name.nil?
+          name_scoped_config = fetch_name_scoped_config(cog_class, name)
+          config = config.merge(name_scoped_config)
+        end
         config.validate!
         config
       end
