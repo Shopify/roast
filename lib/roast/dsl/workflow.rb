@@ -5,19 +5,29 @@ module Roast
   module DSL
     class Workflow
       class WorkflowError < Roast::Error; end
+
       class WorkflowNotPreparedError < WorkflowError; end
+
       class WorkflowAlreadyPreparedError < WorkflowError; end
+
       class WorkflowAlreadyStartedError < WorkflowError; end
+
       class InvalidCogReference < WorkflowError; end
 
       class << self
         #: (String, WorkflowParams) -> void
         def from_file(workflow_path, params)
-          Dir.mktmpdir("roast-") do |tmpdir|
-            workflow_context = WorkflowContext.new(params:, tmpdir:)
-            workflow = new(workflow_path, workflow_context)
-            workflow.prepare!
-            workflow.start!
+          Sync do
+            Dir.mktmpdir("roast-") do |tmpdir|
+              console_interface = ConsoleInterface.new(false)
+              $console_interface = console_interface
+              console_interface.start!
+              workflow_context = WorkflowContext.new(params:, tmpdir:)
+              workflow = new(workflow_path, workflow_context)
+              workflow.prepare!
+              workflow.start!
+              console_interface.stop!
+            end
           end
         end
       end
