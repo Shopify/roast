@@ -76,7 +76,7 @@ module Roast
           raise CogFailedError, cog_name if cog.failed?
           raise CogStoppedError, cog_name if cog.stopped?
           raise CogNotYetRunError, cog_name unless cog.succeeded?
-        end.output
+        end.output.deep_dup
       end
 
       #: () -> void
