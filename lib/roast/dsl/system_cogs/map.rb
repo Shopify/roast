@@ -104,6 +104,7 @@ module Roast
                   scope: params.run,
                   scope_value: item,
                   scope_index: index + input.initial_index,
+                  workflow_dir: @workflow_dir,
                 )
                 em.prepare!
                 em.run!

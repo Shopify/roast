@@ -17,11 +17,12 @@ module Roast
 
       class CogStoppedError < CogOutputAccessError; end
 
-      #: (Cog::Registry, Cog::Store, WorkflowContext) -> void
-      def initialize(cog_registry, cogs, workflow_context)
+      #: (Cog::Registry, Cog::Store, WorkflowContext, ?Pathname?) -> void
+      def initialize(cog_registry, cogs, workflow_context, workflow_dir = nil)
         @cog_registry = cog_registry
         @cogs = cogs
         @workflow_context = workflow_context
+        @workflow_dir = workflow_dir
         @context = CogInputContext.new
         bind_registered_cogs
         bind_workflow_context
@@ -89,6 +90,7 @@ module Roast
         kwarg_question_method = method(:kwarg?)
         kwargs_method = method(:kwargs)
         tmpdir_method = method(:tmpdir)
+        template_method = method(:template)
         @context.instance_eval do
           define_singleton_method(:target!, proc { target_bang_method.call })
           define_singleton_method(:targets, proc { targets_method.call })
@@ -99,6 +101,7 @@ module Roast
           define_singleton_method(:kwarg?, proc { |key| kwarg_question_method.call(key) })
           define_singleton_method(:kwargs, proc { kwargs_method.call })
           define_singleton_method(:tmpdir, proc { tmpdir_method.call })
+          define_singleton_method(:template, proc { |path, args = {}| template_method.call(path, args) })
         end
       end
 
@@ -149,6 +152,26 @@ module Roast
       #: () -> Pathname
       def tmpdir
         Pathname.new(@workflow_context.tmpdir).realpath
+      end
+
+      #: (String, ?Hash) -> String
+      def template(path, args = {})
+        unless File.exist?(path)
+          if @workflow_dir
+            # Try relative to workflow directory
+            relative_path = @workflow_dir.join("prompts/#{path}.md.erb")
+            path = relative_path.to_s if relative_path.exist?
+          else
+            # Fallback to current working directory
+            path = "prompts/#{path}.md.erb"
+          end
+        end
+
+        unless File.exist?(path)
+          raise CogInputContext::ContextNotFoundError, "The prompt #{path} could not be found"
+        end
+
+        ERB.new(File.read(path)).result_with_hash(args)
       end
     end
   end
