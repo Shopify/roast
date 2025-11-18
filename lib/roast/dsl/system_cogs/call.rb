@@ -70,8 +70,12 @@ module Roast
                 scope_index: input.index,
               )
               em.prepare!
-              em.run!
-
+              begin
+                em.run!
+              rescue ControlFlow::Break
+                # treat `break!` like `next!` in a `call` invocation
+                # TODO: maybe do something with the message passed to break!
+              end
               Output.new(em)
             end
           end
