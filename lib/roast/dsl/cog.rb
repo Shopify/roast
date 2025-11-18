@@ -79,6 +79,9 @@ module Roast
           # TODO: better / cleaner handling in the workflow execution manager for a workflow failure
           #   just re-raising this exception for now
           raise e if config.abort_on_error?
+        rescue ControlFlow::Next, ControlFlow::Break => e
+          @skipped = true
+          raise e
         rescue StandardError => e
           @failed = true
           raise e
@@ -88,6 +91,8 @@ module Roast
       #: () -> void
       def wait
         @task&.wait
+      rescue
+        # Do nothing if the cog's task raised an exception. That is handled elsewhere.
       end
 
       #: () -> bool

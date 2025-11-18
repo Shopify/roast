@@ -124,6 +124,9 @@ module Roast
               ems << em = create_execution_manager_for_map_item(run, item, index + input.initial_index)
               em.prepare!
               em.run!
+            rescue ControlFlow::Break
+              # TODO: do something with the message passed to break!
+              break
             end
             ems.fill(nil, ems.length, input.items.length - ems.length)
             Output.new(ems)
@@ -147,6 +150,9 @@ module Roast
             # noinspection RubyArgCount
             barrier.wait do |task|
               task.wait
+            rescue ControlFlow::Break
+              # TODO: do something with the message passed to break!
+              barrier.stop
             rescue StandardError => e
               barrier.stop
               raise e
