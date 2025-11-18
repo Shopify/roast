@@ -25,6 +25,9 @@ module Roast
 
       class OutputsAlreadyDefinedError < ExecutionManagerError; end
 
+      #: untyped
+      attr_reader :final_output
+
       #: (
       #|  Cog::Registry,
       #|  ConfigManager,
@@ -218,9 +221,6 @@ module Roast
 
         @outputs = outputs
       end
-
-      #: untyped
-      attr_reader :final_output
 
       #: () -> untyped
       def compute_final_output
