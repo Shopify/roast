@@ -46,4 +46,10 @@ execute do
   # - name of the map cog itself can be omitted (anonymous cog)
   # - items over which to map coerced from return value of input proc
   map(run: :capitalize_a_word) { words.reverse }
+
+  # ACCESSING THE OUTPUT OF A SPECIFIC MAP ITERATION
+  ruby do
+    puts ""
+    puts "#{words[2]} -> #{from(map!(:some_name).iteration(2)) { cmd!(:capitalize).text }}"
+  end
 end
