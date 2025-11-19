@@ -250,6 +250,9 @@ module DSL
           First Iteration Result: 7
           Final Iteration Result: 13
           Second-to-last Iteration Result: 10
+          ---
+          All :add cog outputs: [7, 8, 10, 13]
+          Sum of :add cog output: 38
         EOF
         assert_equal expected_stdout, stdout
       end
