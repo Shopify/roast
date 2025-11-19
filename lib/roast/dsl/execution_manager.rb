@@ -59,6 +59,7 @@ module Roast
         @cog_input_manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context) #: CogInputManager
         @barrier = Async::Barrier.new #: Async::Barrier
         @final_output = nil #: untyped
+        @final_output_computed = false #: bool
       end
 
       #: () -> void
@@ -207,25 +208,55 @@ module Roast
 
       def bind_outputs
         on_outputs_method = method(:on_outputs)
-        method_to_bind = proc do |&outputs_proc|
-          on_outputs_method.call(outputs_proc)
-        end
+        on_outputs_bang_method = method(:on_outputs!)
+        method_to_bind = proc { |&outputs_proc| on_outputs_method.call(outputs_proc) }
+        bang_method_to_bind = proc { |&outputs_proc| on_outputs_bang_method.call(outputs_proc) }
         @execution_context.instance_eval do
           define_singleton_method(:outputs, method_to_bind)
+          define_singleton_method(:outputs!, bang_method_to_bind)
         end
       end
 
+      # #: (^(untyped, Integer) -> untyped) -> void
+      # def on_outputs(outputs)
+      #   raise OutputsAlreadyDefinedError if @outputs
+      #
+      #   @outputs = proc do |scope_value, scope_index|
+      #     outputs.call(scope_value, scope_index)
+      #   rescue CogInputManager::CogNotYetRunError, CogInputManager::CogSkippedError, CogInputManager::CogStoppedError
+      #     # Attempting to accessing a cog that was skipped, stopped, or did not run from inside an `outputs` block
+      #     # is more likely to happen when the user `break!`s from a loop. Allowing this access not to result in an
+      #     # exception getting raised immediately will reduce boilerplate code needed to check if the loop was broken
+      #     # and return nil or some fallback value if it was, and the normal outputs value otherwise.
+      #     #
+      #     # `outputs!` should be used instead if the user wants all such errors to be raised always.
+      #     nil
+      #   end
+      # end
+
       #: (^(untyped, Integer) -> untyped) -> void
       def on_outputs(outputs)
-        raise OutputsAlreadyDefinedError if @outputs
+        raise OutputsAlreadyDefinedError if @outputs || @outputs_bang
 
         @outputs = outputs
       end
 
+      #: (^(untyped, Integer) -> untyped) -> void
+      def on_outputs!(outputs)
+        raise OutputsAlreadyDefinedError if @outputs || @outputs_bang
+
+        @outputs_bang = outputs
+      end
+
       #: () -> untyped
       def compute_final_output
-        @final_output = if @outputs
-          @cog_input_manager.context.instance_exec(@scope_value, @scope_index, &@outputs)
+        return if @final_output_computed
+
+        @final_output_computed = true
+        outputs_proc = @outputs_bang || @outputs
+
+        @final_output = if outputs_proc
+          @cog_input_manager.context.instance_exec(@scope_value, @scope_index, &outputs_proc)
         else
           last_cog_name = @cog_stack.last&.name
           raise CogInputManager::CogDoesNotExistError, "no cogs defined in scope" unless last_cog_name
@@ -235,6 +266,18 @@ module Roast
       rescue ControlFlow::SkipCog, ControlFlow::Next
         # TODO: do something with the message passed to the control flow statement
         # Swallow skip! and next! control flow statements in the outputs block
+        # Calling these will just make the final output `nil`.
+        # (As will calling `break!`, but it gets handled elsewhere.)
+        # Calling `fail!` inside `outputs` should actually raise an exception.
+      rescue CogInputManager::CogNotYetRunError, CogInputManager::CogSkippedError, CogInputManager::CogStoppedError => e
+        # Attempting to accessing a cog that was skipped, stopped, or did not run from inside an `outputs` block
+        # is more likely to happen when the user `break!`s from a loop. Allowing this access not to result in an
+        # exception getting raised immediately will reduce boilerplate code needed to check if the loop was broken
+        # and return nil or some fallback value if it was, and the normal outputs value otherwise.
+        #
+        # Using `outputs` to define the scope's outputs will swallow these exceptions.
+        # Using `outputs!` instead will cause the exceptions to be raised.
+        raise e if @outputs_bang.present?
       end
     end
   end
