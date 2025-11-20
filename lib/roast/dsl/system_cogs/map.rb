@@ -22,6 +22,7 @@ module Roast
             @values[:parallel] = 1
           end
 
+          #: () -> void
           def validate!
             valid_parallel!
           end

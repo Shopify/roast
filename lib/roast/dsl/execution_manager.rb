@@ -75,7 +75,7 @@ module Roast
           cog_tasks = @cog_stack.map do |cog|
             cog_config = @config_manager.config_for(cog.class, cog.name)
             cog_task = cog.run!(
-              cog_config,
+              cog_config.deep_dup,
               cog_input_context,
               @scope_value.deep_dup, # Pass a copy to each cog to guard against mutated values being passed between cogs
               @scope_index,
