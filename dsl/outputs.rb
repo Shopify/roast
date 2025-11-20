@@ -21,7 +21,7 @@ execute(:capitalize_a_word) do
     my.args << "-c"
     my.args << "echo \"#{word}\" | tr '[:upper:]' '[:lower:]'"
   end
-  outputs { "Upper: #{cmd!(:to_upper).out}" } # `outputs` can return any kind of value
+  outputs { |word| "Upper: #{cmd!(:to_upper).out}\nOriginal: #{word}" } # `outputs` can return any kind of value
 end
 
 execute do
