@@ -31,7 +31,7 @@ execute do
     # The return value of each invocation of the block will be passed as the 'accumulator' to the next invocation.
     # You can provide an optional initial value for the accumulator as the second argument to `reduce`.
     # If an initial value is present, the return type is non-nilable. If absent, the return type is nilable.
-    words = reduce(map!(:words), "lower case words:") { |acc| acc + " " + cmd!(:to_lower).out }
+    words = reduce(map!(:words), "lower case words:") { |acc| acc + " " + cmd!(:to_lower).text }
     "echo \"#{words}\""
   end
 end

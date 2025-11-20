@@ -32,6 +32,6 @@ execute do
     my.command = "echo"
     # Regardless of the order in which the items were processed by a parallel map,
     # their results will always be provided to `collect` and `reduce` in the order in which they were given.
-    my.args << collect(map!(:words)) { cmd!(:to_upper).out }.join(", ")
+    my.args << collect(map!(:words)) { cmd!(:to_upper).text }.join(", ")
   end
 end

@@ -64,24 +64,6 @@ module Roast
             @values[:print_stderr] = false
           end
 
-          # Configure the cog to strip surrounding whitespace from the values in its output object
-          #
-          # Default: `true`
-          #
-          #: () -> void
-          def clean_output!
-            @values[:raw_output] = false
-          end
-
-          # Configure the cog __not__ to strip surrounding whitespace from the values in its output object
-          #
-          # Default: `false`
-          #
-          #: () -> void
-          def raw_output!
-            @values[:raw_output] = true
-          end
-
           # Check if the cog is configured to write STDOUT to the console
           #
           #: () -> bool
@@ -94,13 +76,6 @@ module Roast
           #: () -> bool
           def print_stderr?
             !!@values[:print_stderr]
-          end
-
-          # Check if the cog is configured to write its output to the console in raw form
-          #
-          #: () -> bool
-          def raw_output?
-            !!@values[:raw_output]
           end
 
           alias_method(:display!, :print_all!)
@@ -140,6 +115,7 @@ module Roast
 
         class Output < Cog::Output
           include Cog::Output::WithJson
+          include Cog::Output::WithText
 
           #: String
           attr_reader :out
@@ -163,6 +139,10 @@ module Roast
           def json_text
             out
           end
+
+          def raw_text
+            out
+          end
         end
 
         #: (Input) -> Output
@@ -179,11 +159,6 @@ module Roast
               stdout_handler: stdout_handler,
               stderr_handler: stderr_handler,
             )
-
-          unless config.raw_output?
-            stdout = stdout.strip
-            stderr = stderr.strip
-          end
 
           Output.new(stdout, stderr, status)
         end
