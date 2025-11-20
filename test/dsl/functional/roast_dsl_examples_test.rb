@@ -133,6 +133,8 @@ module DSL
           GOODNIGHT
           WORLD
           HELLO
+
+          goodnight -> GOODNIGHT
         EOF
         assert_equal expected_stdout, stdout
       end

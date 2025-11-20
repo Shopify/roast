@@ -5,6 +5,10 @@ module Roast
   module DSL
     module SystemCogs
       class Map < SystemCog
+        class MapOutputAccessError < Roast::Error; end
+
+        class MapIterationDidNotRunError < MapOutputAccessError; end
+
         class Config < Cog::Config
           #: (Integer) -> void
           def parallel(value)
@@ -81,6 +85,29 @@ module Roast
           def initialize(execution_managers)
             super()
             @execution_managers = execution_managers
+          end
+
+          #: (Integer) -> bool
+          def iteration?(index)
+            @execution_managers.fetch(index).present?
+          end
+
+          #: (Integer) -> Call::Output
+          def iteration(index)
+            em = @execution_managers.fetch(index)
+            raise MapIterationDidNotRunError, index unless em.present?
+
+            Call::Output.new(em)
+          end
+
+          #: () -> Call::Output
+          def first
+            iteration(0)
+          end
+
+          #: () -> Call::Output
+          def last
+            iteration(-1)
           end
         end
 
