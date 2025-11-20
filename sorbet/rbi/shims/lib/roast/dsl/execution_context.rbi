@@ -22,6 +22,9 @@ module Roast
       #: (?Symbol?, run: Symbol) {(Roast::DSL::SystemCogs::Map::Input, untyped, Integer) [self: Roast::DSL::CogInputContext] -> untyped} -> void
       def map(name = nil, run:, &block); end
 
+      #: (?Symbol?, run: Symbol) ?{(Roast::DSL::SystemCogs::Repeat::Input, untyped, Integer) [self: Roast::DSL::CogInputContext] -> untyped} -> void
+      def repeat(name = nil, run:, &block); end
+
       ########################################
       #            Standard Cogs
       ########################################
