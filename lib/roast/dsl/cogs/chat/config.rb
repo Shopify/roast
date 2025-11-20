@@ -121,7 +121,7 @@ module Roast
           #
           #: (String) -> void
           def base_url(key)
-            @values[:api_key] = key
+            @values[:base_url] = key
           end
 
           # Remove any explicit API base URL that the cog was configured to use when invoking the llm
@@ -139,7 +139,7 @@ module Roast
           #
           #: () -> void
           def use_default_base_url!
-            @values[:model] = nil
+            @values[:base_url] = nil
           end
 
           # Get the validated, configured value of the API base URL the cog is configured to use when invoking the llm
