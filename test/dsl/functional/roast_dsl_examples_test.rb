@@ -113,6 +113,20 @@ module DSL
         assert_equal expected_stdout, stdout
       end
 
+      test "outputs_bang.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :outputs_bang do
+          assert_raises Roast::DSL::CogInputManager::CogSkippedError do
+            Roast::DSL::Workflow.from_file("dsl/outputs_bang.rb", EMPTY_PARAMS)
+          end
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          Using the `outputs` block should return `nil`: nil
+          ❗️ This block is expected to raise an exception ❗️
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
       test "map.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
           Roast::DSL::Workflow.from_file("dsl/map.rb", EMPTY_PARAMS)

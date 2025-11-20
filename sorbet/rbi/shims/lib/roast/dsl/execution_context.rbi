@@ -12,6 +12,9 @@ module Roast
       #: () {(untyped, Integer) [self: Roast::DSL::CogInputContext] -> untyped} -> void
       def outputs(&block); end
 
+      #: () {(untyped, Integer) [self: Roast::DSL::CogInputContext] -> untyped} -> void
+      def outputs!(&block); end
+
       ########################################
       #             System Cogs
       ########################################
