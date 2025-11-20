@@ -48,16 +48,11 @@ module DSL
               ENV["OPENAI_API_BASE_URL"] = "http://mytestingproxy.local/v1"
             end
 
-            # Create dsl directory and copy files there for tests to find
-            Dir.mkdir("dsl")
-            Dir.glob("#{examples_source_path}/*").each do |file|
-              if File.directory?(file)
-                FileUtils.cp_r(file, File.join("dsl", File.basename(file)))
-              else
-                FileUtils.cp(file, File.join("dsl", File.basename(file)))
-              end
+            # Copy DSL examples and preserve Sam's original chdir pattern
+            FileUtils.cp_r("#{examples_source_path}/.", "dsl")
+            Dir.chdir("dsl") do
+              block.call
             end
-            block.call
           end
         end
       end
