@@ -72,9 +72,9 @@ module Roast
           stdin.close
           pid = wait_thread.pid
 
-          # If timeout is specified, start a timer in a separate thread
-          timeout_thread = if timeout
-            Thread.new do
+          # If timeout is specified, start a timer in a separate fiber
+          timeout_task = if timeout
+            Async do
               sleep(timeout)
               kill_process(pid) if pid
             end
@@ -118,8 +118,8 @@ module Roast
           # Wait for the process to complete
           status = wait_thread.value
 
-          # Cancel the timeout thread if it's still running
-          timeout_thread&.kill
+          # Cancel the timeout task if it's still running
+          timeout_task&.stop
 
           # Check if the process was killed due to timeout
           if timeout && status.signaled? && (status.termsig == 15 || status.termsig == 9)
@@ -136,7 +136,9 @@ module Roast
           end
           # If we haven't waited for the process yet, kill it
           if pid && wait_thread&.alive?
-            kill_process(pid)
+            Async do
+              kill_process(pid)
+            end.wait
             wait_thread.join(1) # Give it a second to finish
           end
         end
