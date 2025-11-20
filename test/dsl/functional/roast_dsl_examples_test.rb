@@ -318,6 +318,27 @@ module DSL
         end
       end
 
+      test "code_review_workflow.rb runs successfully" do
+        # Skip unless recording VCR or have cassette
+        unless ENV["RECORD_VCR"] || File.exist?("test/fixtures/vcr_cassettes/dsl_code_review.yml")
+          skip "complex agent+chat workflow requires VCR cassette - run with RECORD_VCR=true to record"
+        end
+
+        VCR.use_cassette("dsl_code_review") do
+          with_agent_mocks do
+            stdout, stderr = in_sandbox :code_review do
+              Roast::DSL::Workflow.from_file("code_review_workflow.rb", EMPTY_PARAMS)
+            end
+            assert_empty stderr
+            # Check that both agent and chat steps executed
+            assert_includes stdout, "[AGENT STATS]"  # From agent calls
+            assert_includes stdout, "Model: gpt-4o-mini"  # From chat calls
+            assert_includes stdout, "[USER PROMPT]"  # From agent show_prompt
+            assert_includes stdout, "[ASSISTANT]"  # From chat responses
+          end
+        end
+      end
+
       test "simple_agent.rb workflow runs successfully" do
         with_agent_mocks do
           stdout, stderr = in_sandbox :simple_agent do
