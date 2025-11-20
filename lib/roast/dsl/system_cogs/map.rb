@@ -178,11 +178,11 @@ module Roast
 
               scope_value = em.instance_variable_get(:@scope_value)
               scope_index = em.instance_variable_get(:@scope_index)
-              final_output = em.send(:final_output)
+              final_output = em.final_output
               em.cog_input_context.instance_exec(final_output, scope_value, scope_index, &block)
             end if block_given?
 
-            ems.map { |em| em&.send(:final_output) }
+            ems.map { |em| em&.final_output }
           end
 
           #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A?) {(A?, untyped) -> A} -> A?
@@ -196,7 +196,7 @@ module Roast
 
               scope_value = em.instance_variable_get(:@scope_value)
               scope_index = em.instance_variable_get(:@scope_index)
-              final_output = em.send(:final_output)
+              final_output = em.final_output
               new_accumulator = em.cog_input_context.instance_exec(accumulator, final_output, scope_value, scope_index, &block)
               case new_accumulator
               when nil
