@@ -106,7 +106,11 @@ module DSL
           Roast::DSL::Workflow.from_file("dsl/outputs.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
-        assert_equal "Upper: HELLO\nOriginal: Hello\n", stdout
+        expected_stdout = <<~EOF
+          From Outputs: "Upper: HELLO - Original: Hello"
+          Explicit Value Access: "HELLO"
+        EOF
+        assert_equal expected_stdout, stdout
       end
 
       test "map.rb workflow runs successfully" do

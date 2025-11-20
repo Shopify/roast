@@ -54,6 +54,7 @@ module Roast
         @execution_context = ExecutionContext.new #: ExecutionContext
         @cog_input_manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context) #: CogInputManager
         @barrier = Async::Barrier.new #: Async::Barrier
+        @final_output = nil #: untyped
       end
 
       #: () -> void
@@ -88,8 +89,10 @@ module Roast
           # Wait on the tasks in their completion order, so that an exception in a task will be raised as soon as it occurs
           # noinspection RubyArgCount
           @barrier.wait { |task| wait_for_task_with_exception_handling(task) }
+          compute_final_output # eagerly compute the final output (so it, too, can 'break!' subsequent executions in a loop)
         ensure
           @barrier.stop
+          compute_final_output
           @running = false
         end
       end
@@ -131,6 +134,7 @@ module Roast
         @barrier.stop
       rescue ControlFlow::Break => e
         @barrier.stop
+        compute_final_output # make sure the final output is always computed, even if the iteration is broken
         raise e
       rescue StandardError => e
         @barrier.stop
@@ -212,14 +216,22 @@ module Roast
         @outputs = outputs
       end
 
+      #: untyped
+      attr_reader :final_output
+
       #: () -> untyped
-      def final_output
-        return @cog_input_manager.context.instance_exec(@scope_value, @scope_index, &@outputs) if @outputs
+      def compute_final_output
+        @final_output = if @outputs
+          @cog_input_manager.context.instance_exec(@scope_value, @scope_index, &@outputs)
+        else
+          last_cog_name = @cog_stack.last&.name
+          raise CogInputManager::CogDoesNotExistError, "no cogs defined in scope" unless last_cog_name
 
-        last_cog = @cog_stack.last
-        raise CogInputManager::CogDoesNotExistError, "no cogs defined in scope" unless last_cog
-
-        last_cog.output
+          @cog_input_manager.send(:cog_output, last_cog_name)
+        end
+      rescue ControlFlow::SkipCog, ControlFlow::Next
+        # TODO: do something with the message passed to the control flow statement
+        # Swallow skip! and next! control flow statements in the outputs block
       end
     end
   end
