@@ -65,7 +65,7 @@ module Roast
                 @context = Context.new #: Context
                 @result = Result.new #: Result
                 @raw_dump_file = config.valid_dump_raw_agent_messages_to_path #: Pathname?
-                @show_progress = config.show_progress?
+                @show_progress = config.show_progress? #: bool
               end
 
               #: () -> void
