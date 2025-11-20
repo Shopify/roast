@@ -48,6 +48,11 @@ module Roast
             super()
             @execution_managers = execution_managers
           end
+
+          #: () -> untyped
+          def value
+            @execution_managers.last&.final_output
+          end
         end
 
         # @requires_ancestor: Roast::DSL::ExecutionManager
@@ -61,6 +66,7 @@ module Roast
               raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 
               ems = [] #: Array[ExecutionManager]
+              scope_value = input.value.deep_dup
               loop do
                 ems << em = ExecutionManager.new(
                   @cog_registry,
@@ -68,11 +74,12 @@ module Roast
                   @all_execution_procs,
                   @workflow_context,
                   scope: params.run,
-                  scope_value: input.value.deep_dup,
+                  scope_value: scope_value,
                   scope_index: ems.length,
                 )
                 em.prepare!
                 em.run!
+                scope_value = em.final_output
               rescue ControlFlow::Break
                 # TODO: do something with the message passed to break!
                 break

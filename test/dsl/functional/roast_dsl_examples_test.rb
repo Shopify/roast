@@ -235,6 +235,21 @@ module DSL
         assert_empty lines
       end
 
+      test "repeat_loop_results.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :repeat_loop_results do
+          Roast::DSL::Workflow.from_file("dsl/repeat_loop_results.rb", EMPTY_PARAMS)
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          iteration 0: 7 + 0 -> 7
+          iteration 1: 7 + 1 -> 8
+          iteration 2: 8 + 2 -> 10
+          iteration 3: 10 + 3 -> 13
+          Final Result: 13
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
       test "ruby_cog.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :ruby_cog do
           Roast::DSL::Workflow.from_file("dsl/ruby_cog.rb", EMPTY_PARAMS)
