@@ -36,6 +36,9 @@ module Roast
       #: () -> Pathname
       def tmpdir; end
 
+      #: (String, ?Hash) -> String
+      def template(path, args = {}); end
+
       ########################################
       #             System Cogs
       ########################################
