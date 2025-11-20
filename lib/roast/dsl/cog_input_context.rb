@@ -9,6 +9,7 @@ module Roast
       include SystemCogs::Map::InputContext
 
       class CogInputContextError < Roast::Error; end
+
       class ContextNotFoundError < CogInputContextError; end
 
       #: (?String?) -> void
@@ -19,6 +20,16 @@ module Roast
       #: (?String?) -> void
       def fail!(message = nil)
         raise ControlFlow::FailCog, message
+      end
+
+      #: (?String?) -> void
+      def next!(message = nil)
+        raise ControlFlow::Next, message
+      end
+
+      #: (?String?) -> void
+      def break!(message = nil)
+        raise ControlFlow::Break, message
       end
 
       #: (String, ?Hash) -> String

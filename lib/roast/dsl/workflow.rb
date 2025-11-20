@@ -55,7 +55,12 @@ module Roast
         raise WorkflowAlreadyStartedError if started? || completed?
 
         @started = true
-        @execution_manager.run!
+        begin
+          @execution_manager.run!
+        rescue ControlFlow::Break
+          # treat `break!` like `next!` in the top-level executor scope
+          # TODO: maybe do something with the message passed to break!
+        end
         @completed = true
       end
 

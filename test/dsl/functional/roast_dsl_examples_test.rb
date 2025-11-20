@@ -161,6 +161,40 @@ module DSL
         assert_equal expected_stdout, stdout
       end
 
+      test "next_break.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :next_break do
+          Roast::DSL::Workflow.from_file("dsl/next_break.rb", EMPTY_PARAMS)
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          [0] middle
+          [0] end
+          [1] beginning
+          Iteration 0: [false, true, true]
+          Iteration 1: [true, false, false]
+          Iteration 2: did not run at all
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
+      test "next_break_parallel.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :next_break_parallel do
+          Roast::DSL::Workflow.from_file("dsl/next_break_parallel.rb", EMPTY_PARAMS)
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          [2] beginning
+          [2] middle
+          [0] middle
+          [0] end
+          [1] beginning
+          Iteration 0: [false, true, true]
+          Iteration 1: [true, false, false]
+          Iteration 2: [true, true, false]
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
       test "parallel_map.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :parallel_map do
           Roast::DSL::Workflow.from_file("dsl/parallel_map.rb", EMPTY_PARAMS)

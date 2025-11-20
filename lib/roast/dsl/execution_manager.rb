@@ -126,6 +126,12 @@ module Roast
       #: (Async::Task) -> void
       def wait_for_task_with_exception_handling(task)
         task.wait
+      rescue ControlFlow::Next
+        # TODO: do something with the message passed to next!
+        @barrier.stop
+      rescue ControlFlow::Break => e
+        @barrier.stop
+        raise e
       rescue StandardError => e
         @barrier.stop
         raise e
