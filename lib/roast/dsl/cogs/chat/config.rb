@@ -191,6 +191,53 @@ module Roast
             @values.fetch(:model, PROVIDERS.dig(valid_provider!, :default_model))
           end
 
+          # Configure the cog to use a specific temperature when invoking the llm
+          #
+          # Temperature controls the randomness of the model's responses:
+          # - Low (0.0-0.3): More deterministic and focused responses
+          # - Medium (0.4-0.7): Balanced creativity and coherence
+          # - High (0.8-1.0): More creative and varied responses
+          #
+          # #### See Also
+          # - `use_default_temperature!`
+          # - `valid_temperature`
+          #
+          #: (Float) -> void
+          def temperature(value)
+            if value < 0.0 || value > 1.0
+              raise ArgumentError, "temperature must be between 0.0 and 1.0, got #{value}"
+            end
+
+            @values[:temperature] = value.to_f
+          end
+
+          # Remove any explicit temperature configuration
+          #
+          # The cog will fall back to the provider's default temperature.
+          #
+          # #### See Also
+          # - `temperature`
+          # - `valid_temperature`
+          #
+          #: () -> void
+          def use_default_temperature!
+            @values.delete(:temperature)
+          end
+
+          # Get the validated, configured temperature value
+          #
+          # Returns `nil` if no temperature was explicitly configured,
+          # which means the provider will use its default.
+          #
+          # #### See Also
+          # - `temperature`
+          # - `use_default_temperature!`
+          #
+          #: () -> Float?
+          def valid_temperature
+            @values[:temperature]
+          end
+
           # Configure the cog to verify that the model exists on the provider before attempting to invoke it
           #
           # Enabled by default.
