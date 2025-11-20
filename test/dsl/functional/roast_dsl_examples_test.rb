@@ -300,6 +300,24 @@ module DSL
         end
       end
 
+      test "data_analysis_workflow.rb runs successfully" do
+        # Skip unless recording VCR or have cassette
+        unless ENV["RECORD_VCR"] || File.exist?("test/fixtures/vcr_cassettes/dsl_data_analysis.yml")
+          skip "complex chat workflow requires VCR cassette - run with RECORD_VCR=true to record"
+        end
+
+        VCR.use_cassette("dsl_data_analysis") do
+          stdout, stderr = in_sandbox :data_analysis do
+            Roast::DSL::Workflow.from_file("data_analysis_workflow.rb", EMPTY_PARAMS)
+          end
+          assert_empty stderr
+          # Check that multiple chat steps executed
+          assert_includes stdout, "Model: gpt-4o-mini"
+          assert_includes stdout, "[USER] I have a CSV file with skateboard"
+          assert_includes stdout, "[ASSISTANT]"
+        end
+      end
+
       test "simple_agent.rb workflow runs successfully" do
         with_agent_mocks do
           stdout, stderr = in_sandbox :simple_agent do

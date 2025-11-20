@@ -1,0 +1,238 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"I have a CSV file with skateboard sales data. Please analyze the structure and provide an overview of what insights we can extract. Focus on identifying key metrics and patterns to investigate."}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 20 Nov 2025 19:00:00 GMT
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "chatcmpl-data1",
+          "object": "chat.completion",
+          "created": 1700505600,
+          "model": "gpt-4o-mini",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Based on skateboard sales data, I can help extract valuable insights including customer metrics, product performance, geographic patterns, revenue analytics, and market trends."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 35,
+            "completion_tokens": 25,
+            "total_tokens": 60
+          }
+        }
+  recorded_at: Thu, 20 Nov 2025 19:00:00 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"## Customer Analysis Request\n\nBased on this initial overview:\n\nBased on skateboard sales data, I can help extract valuable insights including customer metrics, product performance, geographic patterns, revenue analytics, and market trends.\n\nNow please analyze the customer data in depth. Focus on:\n\n1. **Customer Segmentation**: Identify different customer types or purchasing patterns\n2. **Geographic Distribution**: Analyze where customers are located\n3. **Purchase Behavior**: Look for trends in order sizes, frequencies, and preferences\n4. **Customer Value**: Identify high-value customers and segments\n\nPlease provide specific insights that could inform marketing and sales strategies."}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 20 Nov 2025 19:00:05 GMT
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "chatcmpl-data2",
+          "object": "chat.completion",
+          "created": 1700505605,
+          "model": "gpt-4o-mini",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Customer analysis reveals Pro Skaters (15% high-value), Recreational Users (60% price-sensitive), and Parents/Gift Buyers (25% seasonal). West Coast dominates with 45% of sales, urban areas outperform rural 3x."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 85,
+            "completion_tokens": 35,
+            "total_tokens": 120
+          }
+        }
+  recorded_at: Thu, 20 Nov 2025 19:00:05 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"## Product Performance Analysis\n\n**Initial Data Overview:**\nBased on skateboard sales data, I can help extract valuable insights including customer metrics, product performance, geographic patterns, revenue analytics, and market trends.\n\n**Customer Insights:**\nCustomer analysis reveals Pro Skaters (15% high-value), Recreational Users (60% price-sensitive), and Parents/Gift Buyers (25% seasonal). West Coast dominates with 45% of sales, urban areas outperform rural 3x.\n\nNow analyze the product performance data. Focus on:\n\n1. **Top Performers**: Which products/categories are selling best?\n2. **Seasonal Trends**: Are there patterns by time of year?\n3. **Price Analysis**: How does pricing affect sales volume?\n4. **Inventory Insights**: Which products might need restocking or discontinuation?\n\nConsider how the customer insights above might relate to product performance patterns."}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 20 Nov 2025 19:00:10 GMT
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "chatcmpl-data3",
+          "object": "chat.completion",
+          "created": 1700505610,
+          "model": "gpt-4o-mini",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Complete boards dominate with 65% sales and 40% margins. Spring/summer peak (75% annual sales), price sweet spot $80-150. Premium products face cart abandonment above $200. Restock priority: complete boards and safety gear."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 145,
+            "completion_tokens": 40,
+            "total_tokens": 185
+          }
+        }
+  recorded_at: Thu, 20 Nov 2025 19:00:10 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"## Strategic Business Recommendations\n\nPlease synthesize the following analyses into actionable business recommendations:\n\n**Data Overview:**\nBased on skateboard sales data, I can help extract valuable insights including customer metrics, product performance, geographic patterns, revenue analytics, and market trends.\n\n**Customer Analysis:**\nCustomer analysis reveals Pro Skaters (15% high-value), Recreational Users (60% price-sensitive), and Parents/Gift Buyers (25% seasonal). West Coast dominates with 45% of sales, urban areas outperform rural 3x.\n\n**Product Analysis:**\nComplete boards dominate with 65% sales and 40% margins. Spring/summer peak (75% annual sales), price sweet spot $80-150. Premium products face cart abandonment above $200. Restock priority: complete boards and safety gear.\n\nBased on these insights, provide:\n\n1. **Immediate Actions** (next 30 days)\n2. **Short-term Strategy** (next 3-6 months)\n3. **Long-term Growth Opportunities** (6+ months)\n4. **Key Metrics to Track** going forward\n\nFocus on specific, measurable recommendations that this skateboard business can implement."}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 20 Nov 2025 19:00:15 GMT
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "chatcmpl-data4",
+          "object": "chat.completion",
+          "created": 1700505615,
+          "model": "gpt-4o-mini",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "**Immediate**: Lower free shipping to $175, increase spring inventory 25%. **Short-term**: Launch Pro customer VIP program, expand urban marketing. **Long-term**: Enter East Coast markets, develop B2B partnerships. **Track**: Customer LTV, cart abandonment rate, seasonal variance."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 190,
+            "completion_tokens": 50,
+            "total_tokens": 240
+          }
+        }
+  recorded_at: Thu, 20 Nov 2025 19:00:15 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Based on all the previous analyses, create a concise executive summary highlighting the top 3 business insights and actionable recommendations for the skateboard business."}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 20 Nov 2025 19:00:20 GMT
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "chatcmpl-data5",
+          "object": "chat.completion",
+          "created": 1700505620,
+          "model": "gpt-4o-mini",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "**Top 3 Insights**: 1) Pro skaters (15%) drive 35% revenue, 2) West Coast/seasonal dependency creates risk, 3) $200+ cart abandonment hurts premium sales. **Actions**: Reduce shipping threshold to $175, expand geographically, launch Pro VIP program."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 25,
+            "completion_tokens": 55,
+            "total_tokens": 80
+          }
+        }
+  recorded_at: Thu, 20 Nov 2025 19:00:20 GMT
+recorded_with: VCR 6.3.1
