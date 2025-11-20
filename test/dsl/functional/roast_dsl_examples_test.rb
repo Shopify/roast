@@ -298,9 +298,9 @@ module DSL
         end
         assert_empty stderr
         expected_stdout = <<~EOF
-          Current working directory: #{Dir.pwd}
+          Current working directory: /fake-testing-dir
           Alternate working directory: /tmp
-          Back to original working directory: #{Dir.pwd}
+          Back to original working directory: /fake-testing-dir
         EOF
         assert_equal expected_stdout, stdout
       end
