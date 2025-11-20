@@ -70,20 +70,19 @@ module Roast
           #: (Array[untyped]) -> void
           def coerce(input_return_value)
             super
-            @items = Array.wrap(input_return_value) unless @items.present?
+            return if @items.present?
+
+            @items = input_return_value.respond_to?(:each) ? input_return_value.to_a : Array.wrap(input_return_value)
           end
         end
 
         class Output < Cog::Output
-          #: (Array[ExecutionManager]) -> void
+          #: (Array[ExecutionManager?]) -> void
           def initialize(execution_managers)
             super()
             @execution_managers = execution_managers
           end
         end
-
-        #: Config
-        attr_accessor :config
 
         # @requires_ancestor: Roast::DSL::ExecutionManager
         module Manager
@@ -92,38 +91,71 @@ module Roast
           #: (Params, ^(Cog::Input) -> untyped) -> SystemCogs::Map
           def create_map_system_cog(params, input_proc)
             SystemCogs::Map.new(params.name, input_proc) do |input, config|
-              input = input #: as Input
-              config = config #: as Config
               raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 
-              create_and_run_execution_manager = proc do |item, index|
-                em = ExecutionManager.new(
-                  @cog_registry,
-                  @config_manager,
-                  @all_execution_procs,
-                  @workflow_context,
-                  scope: params.run,
-                  scope_value: item,
-                  scope_index: index + input.initial_index,
-                )
+              input = input #: as Input
+              config = config #: as Config
+              max_parallel_tasks = config.valid_parallel!
+              if max_parallel_tasks == 1
+                execute_map_in_series(params.run, input)
+              else
+                execute_map_in_parallel(params.run, input, max_parallel_tasks)
+              end
+            end
+          end
+
+          #: (Symbol, untyped, Integer) -> ExecutionManager
+          def create_execution_manager_for_map_item(scope, scope_value, scope_index)
+            ExecutionManager.new(
+              @cog_registry,
+              @config_manager,
+              @all_execution_procs,
+              @workflow_context,
+              scope:,
+              scope_value:,
+              scope_index:,
+            )
+          end
+
+          #: (Symbol, Map::Input) -> Output
+          def execute_map_in_series(run, input)
+            ems = []
+            input.items.each_with_index do |item, index|
+              ems << em = create_execution_manager_for_map_item(run, item, index + input.initial_index)
+              em.prepare!
+              em.run!
+            end
+            ems.fill(nil, ems.length, input.items.length - ems.length)
+            Output.new(ems)
+          end
+
+          #: (Symbol, Map::Input, Integer?) -> Output
+          def execute_map_in_parallel(run, input, max_parallel_tasks)
+            barrier = Async::Barrier.new
+            semaphore = Async::Semaphore.new(max_parallel_tasks, parent: barrier) if max_parallel_tasks.present?
+            ems = {}
+            input.items.map.with_index do |item, index|
+              (semaphore || barrier).async(finished: false) do |task|
+                task.annotate("Map Invocation #{index + input.initial_index}")
+                ems[index] = em = create_execution_manager_for_map_item(run, item, index + input.initial_index)
                 em.prepare!
                 em.run!
-                em
               end
+            end #: Array[Async::Task]
 
-              max_parallel_tasks = config.valid_parallel!
-              max_parallel_semaphore = Async::Semaphore.new(max_parallel_tasks) if max_parallel_tasks.present?
-              tasks = input.items.map.with_index do |item, index|
-                if max_parallel_semaphore
-                  max_parallel_semaphore.async { create_and_run_execution_manager.call(item, index) }
-                else
-                  Async { create_and_run_execution_manager.call(item, index) }
-                end
-              end
-              ems = tasks.map(&:wait)
-
-              Output.new(ems)
+            # Wait on the tasks in their completion order, so that an exception in a task will be raised as soon as it occurs
+            # noinspection RubyArgCount
+            barrier.wait do |task|
+              task.wait
+            rescue StandardError => e
+              barrier.stop
+              raise e
             end
+
+            Output.new((0...input.items.length).map { |idx| ems[idx] })
+          ensure
+            # noinspection RubyRedundantSafeNavigation
+            barrier&.stop
           end
         end
 
@@ -136,13 +168,15 @@ module Roast
             raise CogInputContext::ContextNotFoundError if ems.nil?
 
             return ems.map do |em|
+              next unless em
+
               scope_value = em.instance_variable_get(:@scope_value)
               scope_index = em.instance_variable_get(:@scope_index)
               final_output = em.send(:final_output)
               em.cog_input_context.instance_exec(final_output, scope_value, scope_index, &block)
             end if block_given?
 
-            ems.map { |em| em.send(:final_output) }
+            ems.map { |em| em&.send(:final_output) }
           end
 
           #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A?) {(A?, untyped) -> A} -> A?
@@ -152,6 +186,8 @@ module Roast
 
             accumulator = initial_value
             ems.compact.each do |em|
+              next unless em
+
               scope_value = em.instance_variable_get(:@scope_value)
               scope_index = em.instance_variable_get(:@scope_index)
               final_output = em.send(:final_output)

@@ -57,11 +57,12 @@ module Roast
         @config = self.class.config_class.new #: untyped
       end
 
-      #: (Cog::Config, CogInputContext, untyped, Integer) -> Async::Task
-      def run!(config, input_context, executor_scope_value, executor_scope_index)
+      #: (Async::Barrier, Cog::Config, CogInputContext, untyped, Integer) -> Async::Task
+      def run!(barrier, config, input_context, executor_scope_value, executor_scope_index)
         raise CogAlreadyStartedError if @task
 
-        @task = Async() do
+        @task = barrier.async(finished: false) do |task|
+          task.annotate("#{self.class.name.not_nil!.demodulize.camelcase} Cog: #{@name}")
           @config = config
           input_instance = self.class.input_class.new
           input_return = input_context.instance_exec(
@@ -78,6 +79,9 @@ module Roast
           # TODO: better / cleaner handling in the workflow execution manager for a workflow failure
           #   just re-raising this exception for now
           raise e if config.abort_on_error?
+        rescue StandardError => e
+          @failed = true
+          raise e
         end
       end
 

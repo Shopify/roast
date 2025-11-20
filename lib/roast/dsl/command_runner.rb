@@ -74,15 +74,18 @@ module Roast
 
           # If timeout is specified, start a timer in a separate fiber
           timeout_task = if timeout
-            Async do
+            Async do |task|
+              task.annotate("CommandRunner Timeout Monitor")
               sleep(timeout)
               kill_process(pid) if pid
             end
           end
 
           # Read stdout and stderr concurrently
-          stdout_content, stderr_content = Sync do
-            stdout_task = Async do
+          stdout_content, stderr_content = Sync do |sync_task|
+            sync_task.annotate("CommandRunner Process Handler")
+            stdout_task = Async do |task|
+              task.annotate("CommandRunner Standard Output Reader")
               buffer = "" #: String
               stdout.each_line do |line|
                 buffer += line
@@ -97,7 +100,8 @@ module Roast
               buffer
             end
 
-            stderr_task = Async do
+            stderr_task = Async do |task|
+              task.annotate("CommandRunner Standard Error Reader")
               buffer = "" #: String
               stderr.each_line do |line|
                 buffer += line
@@ -136,7 +140,8 @@ module Roast
           end
           # If we haven't waited for the process yet, kill it
           if pid && wait_thread&.alive?
-            Async do
+            Async do |task|
+              task.annotate("CommandRunner Process Killer")
               kill_process(pid)
             end.wait
             wait_thread.join(1) # Give it a second to finish
