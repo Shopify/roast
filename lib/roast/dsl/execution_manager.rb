@@ -71,7 +71,7 @@ module Roast
         raise ExecutionManagerCurrentlyRunningError if running?
 
         @running = true
-        Async do
+        Sync do
           cog_tasks = @cog_stack.map do |cog|
             cog_config = @config_manager.config_for(cog.class, cog.name)
             cog_task = cog.run!(
@@ -84,7 +84,7 @@ module Roast
             cog_task
           end
           cog_tasks.map(&:wait)
-        end.wait
+        end
         @running = false
       end
 

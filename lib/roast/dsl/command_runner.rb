@@ -81,7 +81,7 @@ module Roast
           end
 
           # Read stdout and stderr concurrently
-          stdout_content, stderr_content = Async do
+          stdout_content, stderr_content = Sync do
             stdout_task = Async do
               buffer = "" #: String
               stdout.each_line do |line|
@@ -113,7 +113,7 @@ module Roast
             end
 
             [stdout_task.wait, stderr_task.wait]
-          end.wait
+          end
 
           # Wait for the process to complete
           status = wait_thread.value
