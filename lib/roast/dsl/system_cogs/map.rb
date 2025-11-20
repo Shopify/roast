@@ -134,7 +134,12 @@ module Roast
             ems = map_cog_output.instance_variable_get(:@execution_managers)
             raise CogInputContext::ContextNotFoundError if ems.nil?
 
-            return ems.map { |em| em.cog_input_context.instance_exec(&block) } if block_given?
+            return ems.map do |em|
+              scope_value = em.instance_variable_get(:@scope_value)
+              scope_index = em.instance_variable_get(:@scope_index)
+              final_output = em.send(:final_output)
+              em.cog_input_context.instance_exec(final_output, scope_value, scope_index, &block)
+            end if block_given?
 
             ems.map { |em| em.send(:final_output) }
           end
@@ -146,8 +151,10 @@ module Roast
 
             accumulator = initial_value
             ems.compact.each do |em|
+              scope_value = em.instance_variable_get(:@scope_value)
+              scope_index = em.instance_variable_get(:@scope_index)
               final_output = em.send(:final_output)
-              new_accumulator = em.cog_input_context.instance_exec(accumulator, final_output, &block)
+              new_accumulator = em.cog_input_context.instance_exec(accumulator, final_output, scope_value, scope_index, &block)
               case new_accumulator
               when nil
                 # do not overwrite a non-nil value in the accumulator with a nil value,
