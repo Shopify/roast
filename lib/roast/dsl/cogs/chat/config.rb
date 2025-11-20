@@ -103,7 +103,10 @@ module Roast
           #
           #: () -> String
           def valid_api_key!
-            value = @values.fetch(:api_key, ENV[PROVIDERS.dig(valid_provider!, :api_key_env_var).not_nil!])
+            value = @values.fetch(:api_key) do
+              api_key_env_var = PROVIDERS.dig(valid_provider!, :api_key_env_var) #: as !nil
+              ENV[api_key_env_var]
+            end
             raise InvalidConfigError, "no api key provided" unless value
 
             value
@@ -153,8 +156,12 @@ module Roast
           #
           #: () -> String
           def valid_base_url
-            @values.fetch(:api_key, ENV[PROVIDERS.dig(valid_provider!, :base_url_env_var).not_nil!]) ||
-              PROVIDERS.dig(valid_provider!, :default_base_url)
+            value = @values.fetch(:base_url) do
+              base_url_env_var = PROVIDERS.dig(valid_provider!, :base_url_env_var) #: as !nil
+              ENV[base_url_env_var]
+            end
+
+            value || PROVIDERS.dig(valid_provider!, :default_base_url)
           end
 
           # Configure the cog to use a specific model when invoking the agent
