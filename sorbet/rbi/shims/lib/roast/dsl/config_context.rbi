@@ -18,6 +18,9 @@ module Roast
       #: (?(Symbol | Regexp)?) {() [self: Roast::DSL::SystemCogs::Map::Config] -> void} -> void
       def map(name = nil, &block); end
 
+      #: (?(Symbol | Regexp)?) {() [self: Roast::DSL::SystemCogs::Repeat::Config] -> void} -> void
+      def repeat(name = nil, &block); end
+
       ########################################
       #            Standard Cogs
       ########################################

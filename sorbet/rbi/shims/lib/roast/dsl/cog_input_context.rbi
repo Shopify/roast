@@ -70,6 +70,15 @@ module Roast
       #: (Symbol) -> bool
       def map?(name); end
 
+      #: (Symbol) -> Roast::DSL::SystemCogs::Repeat::Output?
+      def repeat(name); end
+
+      #: (Symbol) -> Roast::DSL::SystemCogs::Repeat::Output
+      def repeat!(name); end
+
+      #: (Symbol) -> bool
+      def repeat?(name); end
+
       ########################################
       #            Standard Cogs
       ########################################

@@ -295,6 +295,20 @@ module DSL
         assert_empty stderr
       end
 
+      test "simple_repeat.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :simple_repeat do
+          Roast::DSL::Workflow.from_file("dsl/simple_repeat.rb", EMPTY_PARAMS)
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          iteration 0
+          iteration 1
+          iteration 2
+          iteration 3
+        EOF
+        assert_equal expected_stdout, stdout
+      end
+
       test "targets_and_params.rb workflow runs successfully" do
         params = Roast::DSL::WorkflowParams.new(
           ["one", "two", "three"],

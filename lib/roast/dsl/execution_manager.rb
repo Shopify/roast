@@ -7,6 +7,7 @@ module Roast
     class ExecutionManager
       include SystemCogs::Call::Manager
       include SystemCogs::Map::Manager
+      include SystemCogs::Repeat::Manager
 
       class ExecutionManagerError < Roast::Error; end
 
@@ -189,6 +190,8 @@ module Roast
             create_call_system_cog(cog_params, cog_input_proc)
           elsif cog_class == SystemCogs::Map
             create_map_system_cog(cog_params, cog_input_proc)
+          elsif cog_class == SystemCogs::Repeat
+            create_repeat_system_cog(cog_params, cog_input_proc)
           else
             raise NotImplementedError, "No system cog manager defined for #{cog_class}"
           end

@@ -12,6 +12,7 @@ module Roast
           @cogs = {}
           use(SystemCogs::Call)
           use(SystemCogs::Map)
+          use(SystemCogs::Repeat)
           use(Cogs::Cmd)
           use(Cogs::Chat)
           use(Cogs::Agent)
