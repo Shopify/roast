@@ -15,11 +15,15 @@ module Roast
 
       #: [T] (Roast::DSL::SystemCogs::Map::Output) {() -> T} -> Array[T]
       #: (Roast::DSL::SystemCogs::Map::Output) -> Array[untyped]
-      def collect(map_cog_output, &block); end
+      #: [T] (Roast::DSL::SystemCogs::Repeat::Output) {() -> T} -> Array[T]
+      #: (Roast::DSL::SystemCogs::Repeat::Output) -> Array[untyped]
+      def collect(map_or_repeat_output, &block); end
 
       #: [A] (Roast::DSL::SystemCogs::Map::Output, ?NilClass) {(A?) -> A} -> A?
       #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A) {(A) -> A} -> A
-      def reduce(map_cog_output, initial_value = nil, &block); end
+      #: [A] (Roast::DSL::SystemCogs::Repeat::Output, ?NilClass) {(A?) -> A} -> A?
+      #: [A] (Roast::DSL::SystemCogs::Repeat::Output, ?A) {(A) -> A} -> A
+      def reduce(map_or_repeat_output, initial_value = nil, &block); end
 
       #: (Symbol) -> Roast::DSL::SystemCogs::Call::Output?
       def call(name); end
@@ -38,6 +42,15 @@ module Roast
 
       #: (Symbol) -> bool
       def map?(name); end
+
+      #: (Symbol) -> Roast::DSL::SystemCogs::Repeat::Output?
+      def repeat(name); end
+
+      #: (Symbol) -> Roast::DSL::SystemCogs::Repeat::Output
+      def repeat!(name); end
+
+      #: (Symbol) -> bool
+      def repeat?(name); end
 
       ########################################
       #            Standard Cogs
