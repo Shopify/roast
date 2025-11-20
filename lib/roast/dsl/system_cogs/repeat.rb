@@ -68,6 +68,11 @@ module Roast
           def last
             iteration(-1)
           end
+
+          #: () -> Map::Output
+          def results
+            Map::Output.new(@execution_managers)
+          end
         end
 
         # @requires_ancestor: Roast::DSL::ExecutionManager

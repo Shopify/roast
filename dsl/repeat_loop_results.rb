@@ -25,6 +25,14 @@ execute do
     # NOTE: accessing a specific iteration will raise an IndexException if the requested index is out of bounds
     # for the number of iterations that ran.
   end
+
+  ruby do
+    puts "---"
+    # You can access the results of all iterations in the same manner as you would use `collect` or `reduce`
+    # to access the complete results of a `map` invocation.
+    puts "All :add cog outputs: #{collect(repeat!(:loop).results) { ruby!(:add).value }}"
+    puts "Sum of :add cog output: #{reduce(repeat!(:loop).results, 0) { |acc| acc + ruby!(:add).value }}"
+  end
 end
 
 execute(:loop_body) do
