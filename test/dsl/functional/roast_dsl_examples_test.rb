@@ -245,7 +245,11 @@ module DSL
           iteration 1: 7 + 1 -> 8
           iteration 2: 8 + 2 -> 10
           iteration 3: 10 + 3 -> 13
-          Final Result: 13
+          Ultimate Loop Result: 13
+          ---
+          First Iteration Result: 7
+          Final Iteration Result: 13
+          Second-to-last Iteration Result: 10
         EOF
         assert_equal expected_stdout, stdout
       end

@@ -12,7 +12,18 @@ execute do
   ruby do
     # You can access the final output value of a `repeat` cog directly
     result = repeat!(:loop)
-    puts "Final Result: #{result.value}"
+    puts "Ultimate Loop Result: #{result.value}"
+  end
+
+  ruby do
+    puts "---"
+    # You can also access the final result, or individual cog results, of any specific iteration
+    # In the same manner as you would use `from` to access the results of a single `call` invocation.
+    puts "First Iteration Result: #{from(repeat!(:loop).first)}"
+    puts "Final Iteration Result: #{from(repeat!(:loop).last)}"
+    puts "Second-to-last Iteration Result: #{from(repeat!(:loop).iteration(-2))}"
+    # NOTE: accessing a specific iteration will raise an IndexException if the requested index is out of bounds
+    # for the number of iterations that ran.
   end
 end
 
