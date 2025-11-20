@@ -16,6 +16,8 @@ module Roast
             assume_model_exists: !config.verify_model_exists?,
           )
 
+          chat = chat.with_temperature(config.valid_temperature) if config.valid_temperature
+
           resp = chat.ask(input.prompt)
           chat.messages.each do |message|
             case message.role
