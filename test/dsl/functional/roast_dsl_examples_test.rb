@@ -285,6 +285,21 @@ module DSL
         assert_empty lines
       end
 
+      test "simple_chat.rb workflow runs successfully" do
+        # Skip unless recording VCR or have cassette
+        unless ENV["RECORD_VCR"] || File.exist?("test/fixtures/vcr_cassettes/dsl_simple_chat.yml")
+          skip "chat functionality requires VCR cassette - run with RECORD_VCR=true to record"
+        end
+
+        VCR.use_cassette("dsl_simple_chat") do
+          stdout, stderr = in_sandbox :simple_chat do
+            Roast::DSL::Workflow.from_file("simple_chat.rb", EMPTY_PARAMS)
+          end
+          assert_empty stderr
+          assert_includes stdout, "deepest lake"
+        end
+      end
+
       test "simple_agent.rb workflow runs successfully" do
         skip "work in progress - refactoring the agent cog"
         # Mock the claude CLI response
