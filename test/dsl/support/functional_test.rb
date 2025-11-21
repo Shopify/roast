@@ -13,6 +13,39 @@ module DSL
       Roast::Helpers::Logger.reset
     end
 
+    # Mock agent calls for testing without requiring real claude CLI
+    def with_agent_mocks
+      # Create a mock that simulates the claude CLI response for the simple_agent test
+      mock_status = mock('Process::Status')
+      mock_status.stubs(:success?).returns(true)
+      mock_status.stubs(:signaled?).returns(false)
+
+      # Mock the CommandRunner.execute method to simulate claude CLI response
+      # Use a simple stub that catches all CommandRunner.execute calls
+      original_execute = Roast::DSL::CommandRunner.method(:execute)
+
+      Roast::DSL::CommandRunner.define_singleton_method(:execute) do |command_args, **options|
+        if command_args.is_a?(Array) && command_args.first == "claude"
+          # Simulate calling the stdout_handler with JSON response line
+          json_response = '{"type":"result","session_id":"session-123","result":"Caspian Sea sits,\\nThough called sea, it\'s landlocked, vast -\\nWorld\'s largest true lake.","success":true,"duration_ms":1500,"num_turns":1,"modelUsage":{"claude-3-haiku-20240307":{"inputTokens":15,"outputTokens":25,"costUSD":0.001}}}'
+
+          if options[:stdout_handler]
+            options[:stdout_handler].call(json_response + "\n")
+          end
+
+          [json_response + "\n", "", mock_status]
+        else
+          # Call the original method for non-claude commands
+          original_execute.call(command_args, **options)
+        end
+      end
+
+      yield
+
+      # Restore original method after test
+      Roast::DSL::CommandRunner.define_singleton_method(:execute, original_execute)
+    end
+
     # Set up a temporary sandbox directory with all the examples
     # Parameter workflow_id is an arbitrary namespace/subdirectory within the sandbox
     # Returns an array of strings [stdio_output, stderr_output]
