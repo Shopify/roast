@@ -17,7 +17,6 @@ module Roast
           #
           # #### See Also
           # - `use_default_provider!`
-          # - `valid_provider!`
           #
           #: (Symbol) -> void
           def provider(provider)
@@ -32,7 +31,6 @@ module Roast
           #
           # #### See Also
           # - `provider`
-          # - `valid_provider!`
           #
           #: () -> void
           def use_default_provider!
@@ -60,13 +58,52 @@ module Roast
             provider
           end
 
+<<<<<<< HEAD
+=======
+          # Configure the cog to use a specific base command when invoking the agent
+          #
+          # The command format is provider-specific.
+          #
+          # #### See Also
+          # - `use_default_command!`
+          #
+          #: (String | Array[String]) -> void
+          def command(command)
+            @values[:command] = command
+          end
+
+          # Configure the cog to use the provider's default command when invoking the agent
+          #
+          # Note: the default command will be different for different providers.
+          #
+          # #### See Also
+          # - `command`
+          #
+          #: () -> void
+          def use_default_command!
+            @values[:command] = nil
+          end
+
+          # Get the validated, configured value of the command the cog is configured to use when running the agent
+          #
+          # Returns `nil` if the provider should use its own default command, however that is configured.
+          #
+          # #### See Also
+          # - `command`
+          # - `use_default_command!`
+          #
+          #: () -> (String | Array[String])?
+          def valid_command
+            @values[:command].presence
+          end
+
+>>>>>>> 35a58d9 (Improve documentation comments for agent config)
           # Configure the cog to use a specific model when invoking the agent
           #
           # The model name format is provider-specific.
           #
           # #### See Also
           # - `use_default_model!`
-          # - `valid_model`
           #
           #: (String) -> void
           def model(model)
@@ -87,7 +124,11 @@ module Roast
 
           # Get the validated, configured value of the model the cog is configured to use when running the agent
           #
-          # `nil` means that the provider should use its own default model, however that is configured.
+          # Returns `nil` if the provider should use its own default model, however that is configured.
+          #
+          # #### See Also
+          # - `model`
+          # - `use_default_model!`
           #
           #: () -> String?
           def valid_model
@@ -99,7 +140,6 @@ module Roast
           #
           # #### See Also
           # - `no_initial_prompt!`
-          # - `valid_initial_prompt`
           #
           #: (String) -> void
           def initial_prompt(prompt)
@@ -110,7 +150,6 @@ module Roast
           #
           # #### See Also
           # - `initial_prompt`
-          # - `valid_initial_prompt`
           #
           #: () -> void
           def no_initial_prompt!
@@ -120,7 +159,7 @@ module Roast
           # Get the validated, configured initial prompt that will be appended to the agent's system prompt when
           # the agent is invoked
           #
-          # This value will be `nil` if __no__ prompt should be appended.
+          # Returns `nil` if __no__ prompt should be appended.
           #
           # #### See Also
           # - `initial_prompt`
@@ -394,8 +433,10 @@ module Roast
             show_prompt? || show_progress? || show_response? || show_stats?
           end
 
-          # Dump raw messages received from the agent process to a file
-          # (for development and debugging purposes)
+          # Configure the cog to dump raw messages received from the agent process to a file
+          #
+          # This is intended for development and debugging purposes to inspect the raw message stream
+          # from the agent provider.
           #
           #: (String) -> void
           def dump_raw_agent_messages_to(filename)
@@ -403,7 +444,14 @@ module Roast
           end
 
           # Get the validated, configured path to which raw agent messages should be dumped
-          # (for development and debugging purposes)
+          #
+          # Returns `nil` if no path has been configured.
+          #
+          # This is intended for development and debugging purposes to inspect the raw message stream
+          # from the agent provider.
+          #
+          # #### See Also
+          # - `dump_raw_agent_messages_to`
           #
           #: () -> Pathname?
           def valid_dump_raw_agent_messages_to_path
