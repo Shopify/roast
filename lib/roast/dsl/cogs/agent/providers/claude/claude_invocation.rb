@@ -56,6 +56,7 @@ module Roast
 
               #: (Agent::Config, Agent::Input) -> void
               def initialize(config, input)
+                @base_command = config.valid_command #: (String | Array[String])?
                 @model = config.valid_model #: String?
                 @append_system_prompt = config.valid_initial_prompt #: String?
                 @apply_permissions = config.apply_permissions? #: bool
@@ -157,7 +158,14 @@ module Roast
 
               #: () -> Array[String]
               def command_line
-                command = ["claude", "-p", "--verbose", "--output-format", "stream-json"]
+                command = if @base_command.is_a?(Array)
+                  @base_command.dup
+                elsif @base_command.is_a?(String)
+                  @base_command.split
+                else
+                  ["claude"]
+                end
+                command.push("-p", "--verbose", "--output-format", "stream-json")
                 command.push("--model", @model) if @model
                 command.push("--append-system-prompt", @append_system_prompt) if @append_system_prompt
                 command.push("--fork-session", "--resume", @session) if @session.present?
