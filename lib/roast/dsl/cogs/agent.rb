@@ -24,6 +24,7 @@ module Roast
           # so showing it again is duplicative.
           puts "[AGENT RESPONSE] #{output.response}" if config.show_response? && !config.show_progress?
           puts "[AGENT STATS] #{output.stats}" if config.show_stats?
+          puts "Session ID: #{output.session}" if config.show_stats?
           output
         end
 
