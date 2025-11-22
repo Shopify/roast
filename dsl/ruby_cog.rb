@@ -34,4 +34,35 @@ execute do
     value = ruby!(:whatever).value.map { |n| n.to_s * n }
     my.args = value
   end
+
+  ruby(:advanced_hash_output) do
+    {
+      some_number: 7,
+      some_string: "Hello, world!",
+      multiply: proc { |a, b| a * b },
+    }
+  end
+
+  ruby do
+    # If the output's `value` is a Hash, you can access its items directly from the output object
+    puts "Some Number + 1: #{ruby!(:advanced_hash_output)[:some_number] + 1}"
+    # You can also access its items as getter methods on the output object
+    puts "Some String to Upper: #{ruby!(:advanced_hash_output).some_string.upcase}"
+    # And, if one of those items is a proc, you can call it directly on the output object
+    puts "Multiply 4 * 3: #{ruby!(:advanced_hash_output).multiply(4, 3)}"
+  end
+
+  ruby(:advanced_object_output) do |my|
+    my.value = <<~STRING
+      This is a long block of test
+      Consisting of many lines
+      Three, to be precise
+    STRING
+  end
+
+  ruby do
+    # You can also call methods on the output's `value` directly, regardless of its type
+    puts "The long string has #{ruby!(:advanced_object_output).lines.length} lines"
+    puts "And it has #{ruby!(:advanced_object_output).length} characters"
+  end
 end

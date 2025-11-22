@@ -117,7 +117,9 @@ module Roast
 
       #: () -> bool
       def succeeded?
-        @output.present? && @task&.finished?
+        # NOTE: explicitly checking `@output == nil` because the `ruby` cog's Output class delegates
+        # all missing methods to its `value`, which may be nil when the Output object is actually present.
+        @output != nil && @task&.finished? # rubocop:disable Style/NonNilCheck
       end
 
       protected

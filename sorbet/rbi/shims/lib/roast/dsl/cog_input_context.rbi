@@ -110,10 +110,10 @@ module Roast
       #: (Symbol) -> bool
       def cmd?(name); end
 
-      #: (Symbol) -> Roast::DSL::Cogs::Ruby::Output?
+      #: (Symbol) -> untyped?
       def ruby(name); end
 
-      #: (Symbol) -> Roast::DSL::Cogs::Ruby::Output
+      #: (Symbol) -> untyped
       def ruby!(name); end
 
       #: (Symbol) -> bool
