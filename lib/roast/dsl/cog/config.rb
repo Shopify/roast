@@ -4,18 +4,29 @@
 module Roast
   module DSL
     class Cog
+      # Base configuration class for all cogs
+      #
+      # Provides common configuration methods and utilities for cog behavior.
+      # Cogs extend this class to define their own configuration options using either
+      # the `field` class method for simple fields or custom methods for complex configuration.
       class Config
+        # Parent class for all configuration-related errors
         class ConfigError < Roast::Error; end
 
+        # Raised when a configuration value is invalid or missing
         class InvalidConfigError < ConfigError; end
 
         # Validate that the config instance has all required parameters set in an acceptable manner
         #
-        # Inheriting cog should implement this for its config class if validation is desired.
+        # Inheriting cogs should implement this method for their config class if validation is desired.
+        # This method is called after configuration is complete to ensure all required values are present
+        # and valid.
         #
         #: () -> void
         def validate!; end
 
+        # The internal hash storing all configuration values
+        #
         #: Hash[Symbol, untyped]
         attr_reader :values
 
@@ -24,6 +35,14 @@ module Roast
           @values = initial
         end
 
+        # Merge another config object into this one, returning a new config instance
+        #
+        # Creates a new config object with values from both this config and the provided config.
+        # Values from the provided config take precedence over values from this config.
+        #
+        # #### See Also
+        # - `values`
+        #
         #: (Cog::Config) -> Cog::Config
         def merge(config_object)
           self.class.new(values.merge(config_object.values))
