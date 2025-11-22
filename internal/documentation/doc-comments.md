@@ -185,7 +185,6 @@ Use `-` for bullet lists:
 #
 # #### See Also
 # - `use_default_provider!`
-# - `valid_provider!`
 #
 #: (Symbol) -> void
 def provider(provider)
@@ -216,8 +215,12 @@ end
 **When to include See Also:**
 
 - Complementary methods (setter/getter pairs)
-- Validation methods for configuration methods
 - Alternative approaches to the same goal
+- Related predicate methods (e.g., `show_prompt?`)
+
+**Do NOT include in See Also for Config class methods:**
+
+- `valid_*` validation methods - These are internal implementation details and should not be cross-referenced from user-facing configuration methods
 
 ### Alias and Inverse Method Documentation
 
@@ -350,7 +353,6 @@ end
 #
 # #### See Also
 # - `use_default_provider!`
-# - `valid_provider!`
 #
 #: (Symbol) -> void
 def provider(provider)
@@ -369,7 +371,9 @@ end
 
 ### Validation Getters
 
-Validation getter methods use the `valid_*!` pattern and return a validated/coerced value or raise an error if validation fails. Currently primarily used for not-nil assertions, but will expand to other validations:
+Validation getter methods use the `valid_*!` pattern and return a validated/coerced value or raise an error if validation fails. Currently primarily used for not-nil assertions, but will expand to other validations.
+
+**Important:** These methods are internal implementation details. Configuration setter methods should __not__ cross-reference validation methods in their documentation. However, validation methods may cross-reference their corresponding setter methods.
 
 ```ruby
 # Get the validated, configured value for the working directory path in which the cog should run the agent
@@ -393,7 +397,8 @@ end
 - Raise an error if validation fails
 - Always document what errors can be raised and under what conditions
 - Start descriptions with "Get the validated..."
-- Cross-reference the setter methods
+- These methods may cross-reference their related setter methods
+- Configuration setter methods should __not__ reference validation methods
 
 ### Boolean Predicates
 
@@ -425,14 +430,13 @@ end
 Methods dealing with paths require extra documentation:
 
 ```ruby
-# Configure the cog to run the agent in the specified working directory.
+# Configure the cog to run the agent in the specified working directory
 #
 # The directory given can be relative or absolute.
 # If relative, it will be understood in relation to the directory from which Roast is invoked.
 #
-# #### See also
+# #### See Also
 # - `use_current_working_directory!`
-# - `valid_working_directory_path!`
 #
 #: (String) -> void
 def working_directory(directory)
@@ -444,7 +448,7 @@ end
 
 - Explain relative vs absolute path handling
 - Document the base directory for relative paths
-- Cross-reference validation methods
+- Cross-reference complementary configuration methods
 
 ## ConfigContext Method Documentation
 
@@ -591,7 +595,7 @@ Before finalizing documentation for a public method, verify:
 - [ ] First line does not end with a period
 - [ ] All subsequent lines are complete sentences with proper punctuation
 - [ ] Default behavior is documented (if applicable)
-- [ ] Related methods are cross-referenced
+- [ ] Related methods are cross-referenced (but Config setters do NOT reference `valid_*` methods)
 - [ ] Aliases are documented in an `#### Alias Methods` subsection (if applicable)
 - [ ] The method itself is listed first in its own alias list, followed by aliases in alphabetical order
 - [ ] Nil/false/true semantics are explained when not obvious
