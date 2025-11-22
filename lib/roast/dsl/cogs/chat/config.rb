@@ -19,7 +19,6 @@ module Roast
           #
           # #### See Also
           # - `use_default_provider!`
-          # - `valid_provider!`
           #
           #: (Symbol) -> void
           def provider(provider)
@@ -32,7 +31,6 @@ module Roast
           #
           # #### See Also
           # - `provider`
-          # - `valid_provider!`
           #
           #: () -> void
           def use_default_provider!
@@ -66,7 +64,6 @@ module Roast
           #
           # #### See Also
           # - `use_api_key_from_environment!`
-          # - `valid_api_key!`
           #
           #: (String) -> void
           def api_key(key)
@@ -82,7 +79,6 @@ module Roast
           #
           # #### See Also
           # - `api_key`
-          # - `valid_api_key!`
           #
           #: () -> void
           def use_api_key_from_environment!
@@ -117,7 +113,6 @@ module Roast
           #
           # #### See Also
           # - `use_default_base_url!`
-          # - `valid_base_url`
           #
           #: (String) -> void
           def base_url(key)
@@ -135,7 +130,6 @@ module Roast
           #
           # #### See Also
           # - `base_url`
-          # - `valid_base_url`
           #
           #: () -> void
           def use_default_base_url!
@@ -163,7 +157,6 @@ module Roast
           #
           # #### See Also
           # - `use_default_model!`
-          # - `valid_model`
           #
           #: (String) -> void
           def model(model)
@@ -184,7 +177,11 @@ module Roast
 
           # Get the validated, configured value of the model the cog is configured to use when running the agent
           #
-          # `nil` means that the provider should use its own default model, however that is configured.
+          # Returns the provider's default model if no model was explicitly configured.
+          #
+          # #### See Also
+          # - `model`
+          # - `use_default_model!`
           #
           #: () -> String?
           def valid_model
@@ -200,7 +197,6 @@ module Roast
           #
           # #### See Also
           # - `use_default_temperature!`
-          # - `valid_temperature`
           #
           #: (Float) -> void
           def temperature(value)
@@ -217,7 +213,6 @@ module Roast
           #
           # #### See Also
           # - `temperature`
-          # - `valid_temperature`
           #
           #: () -> void
           def use_default_temperature!
@@ -438,6 +433,8 @@ module Roast
           # Check if the cog is configured to display any output while running
           #
           # #### See Also
+          # - `display!`
+          # - `no_display!`
           # - `show_prompt?`
           # - `show_response?`
           # - `show_stats?`
