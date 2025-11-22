@@ -152,10 +152,18 @@ module Roast
           alias_method(:no_print_stderr!, :no_show_stderr!)
         end
 
+        # Input specification for the cmd cog
+        #
+        # The cmd cog requires a command to execute, optionally with arguments.
+        # The command will be executed in the configured working directory.
         class Input < Cog::Input
+          # The command to execute
+          #
           #: String?
           attr_accessor :command
 
+          # Arguments to pass to the command
+          #
           #: Array[String]
           attr_accessor :args
 
@@ -165,11 +173,27 @@ module Roast
             @args = []
           end
 
+          # Validate that the input has all required parameters
+          #
+          # This method ensures that a command has been provided before the cmd cog executes.
+          #
+          # #### See Also
+          # - `coerce`
+          #
           #: () -> void
           def validate!
             raise Cog::Input::InvalidInputError, "'command' is required" unless command.present?
           end
 
+          # Coerce the input from the return value of the input block
+          #
+          # If the input block returns a String, it will be used as the command value.
+          # If the input block returns an Array, the first element will be used as the command
+          # and the remaining elements will be used as arguments.
+          #
+          # #### See Also
+          # - `validate!`
+          #
           #: (String | Array[untyped]) -> void
           def coerce(input_return_value)
             case input_return_value
@@ -183,16 +207,26 @@ module Roast
           end
         end
 
+        # Output from running the cmd cog
+        #
+        # Contains the standard output, standard error, and exit status from the executed command.
+        # Includes JSON and text parsing capabilities via `WithJson` and `WithText` modules.
         class Output < Cog::Output
           include Cog::Output::WithJson
           include Cog::Output::WithText
 
+          # The standard output (STDOUT) from the command
+          #
           #: String
           attr_reader :out
 
+          # The standard error (STDERR) from the command
+          #
           #: String
           attr_reader :err
 
+          # The exit status of the command process
+          #
           #: Process::Status
           attr_reader :status
 

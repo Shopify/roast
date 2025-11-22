@@ -9,6 +9,15 @@ module Roast
       class Output
         # @requires_ancestor: Roast::DSL::Cog::Output
         module WithJson
+          # Get parsed JSON from the output, raising an error if parsing fails
+          #
+          # This method attempts to parse JSON from the output text using multiple fallback strategies,
+          # including extracting from code blocks and JSON-like patterns. If the input is nil or empty,
+          # an empty hash is returned.
+          #
+          # #### See Also
+          # - `json`
+          #
           #: () -> Hash[Symbol, untyped]
           def json!
             input = json_text
@@ -17,6 +26,14 @@ module Roast
             @json ||= parse_json_with_fallbacks(input)
           end
 
+          # Get parsed JSON from the output, returning nil if parsing fails
+          #
+          # This method provides a safe alternative to `json!` that returns `nil` instead of raising
+          # an error when JSON parsing fails.
+          #
+          # #### See Also
+          # - `json!`
+          #
           #: () -> Hash[Symbol, untyped]?
           def json
             json!
@@ -112,11 +129,26 @@ module Roast
 
         # @requires_ancestor: Roast::DSL::Cog::Output
         module WithText
+          # Get the output as a single string with surrounding whitespace removed
+          #
+          # This method returns the text output with leading and trailing whitespace stripped.
+          #
+          # #### See Also
+          # - `lines`
+          #
           #: () -> String
           def text
             raw_text.strip
           end
 
+          # Get the output as an array of lines with each line's whitespace stripped
+          #
+          # This method splits the output into individual lines and removes leading and trailing
+          # whitespace from each line.
+          #
+          # #### See Also
+          # - `text`
+          #
           #: () -> Array[String]
           def lines
             raw_text.lines.map(&:strip)
