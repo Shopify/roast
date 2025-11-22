@@ -4,7 +4,7 @@
 #: self as Roast::DSL::Workflow
 
 config do
-  cmd { print_all! }
+  cmd { display! }
 
   # Any type of cog can be configured to run asynchronously.
   # The cog that follows it in the workflow will be able to begin running immediately, before the async cog has finished.

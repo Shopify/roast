@@ -4,8 +4,8 @@
 #: self as Roast::DSL::Workflow
 
 config do
-  cmd(:echo) { print_all! }
-  cmd(/date/) { print_all! }
+  cmd(:echo) { display! }
+  cmd(/date/) { display! }
 end
 
 execute do

@@ -4,7 +4,7 @@
 #: self as Roast::DSL::Workflow
 
 config do
-  cmd { print_all! }
+  cmd { display! }
 end
 
 execute do

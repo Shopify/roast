@@ -12,7 +12,7 @@ class MyClass
 end
 
 config do
-  cmd { print_all! }
+  cmd { display! }
 end
 
 execute do
