@@ -5,20 +5,55 @@ module Roast
   module DSL
     module Cogs
       class Agent < Cog
+        # Statistics about agent execution
+        #
+        # Contains metrics tracking the performance and resource usage of an agent execution,
+        # including duration, conversation turns, token usage, and cost. Statistics are broken
+        # down by model when multiple models are used during execution.
         class Stats
           include ActiveSupport::NumberHelper
 
           NO_VALUE = "---"
 
+          # The total execution duration in milliseconds
+          #
+          # Measures the wall-clock time from when the agent started executing until it completed.
+          # This includes all time spent on API calls, processing, and waiting.
+          #
           #: Integer?
           attr_accessor :duration_ms
 
+          # The number of conversation turns in the agent execution
+          #
+          # A turn represents one complete back-and-forth exchange between the user (or system)
+          # and the agent. For example, if the user sends a prompt and the agent responds, that
+          # is one turn. If the agent then uses a tool and responds again, that is another turn.
+          #
           #: Integer?
           attr_accessor :num_turns
 
+          # Aggregate token usage and cost across all models
+          #
+          # Provides the total input tokens, output tokens, and cost in USD for the entire
+          # agent execution, regardless of which models were used.
+          #
+          # #### See Also
+          # - `model_usage` - for per-model usage breakdown
+          # - `Agent::Usage`
+          #
           #: Usage
           attr_accessor :usage
 
+          # Token usage and cost broken down by model
+          #
+          # A hash mapping model names (as strings) to their individual usage statistics.
+          # This allows tracking how much each model contributed to the overall resource usage
+          # when multiple models were used during execution.
+          #
+          # #### See Also
+          # - `usage` - for aggregate usage across all models
+          # - `Agent::Usage`
+          #
           #: Hash[String, Usage]
           attr_accessor :model_usage
 
@@ -27,6 +62,16 @@ module Roast
             @model_usage = {}
           end
 
+          # Get a human-readable string representation of the statistics
+          #
+          # Formats the statistics into a multi-line string with the following information:
+          # - Number of turns
+          # - Total duration (formatted as a human-readable duration)
+          # - Total cost in USD (formatted with 6 decimal places)
+          # - Per-model token usage (input and output tokens)
+          #
+          # Values that are not available are shown as "---".
+          #
           #: () -> String
           def to_s
             lines = []
