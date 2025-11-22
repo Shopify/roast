@@ -60,6 +60,40 @@ module Roast
             provider
           end
 
+          # Configure the cog to use a specific base command when invoking the agent
+          #
+          # The command format is provider-specific.
+          #
+          # #### See Also
+          # - `use_default_command!`
+          # - `valid_command`
+          #
+          #: (String | Array[String]) -> void
+          def command(command)
+            @values[:command] = command
+          end
+
+          # Configure the cog to use the provider's default command when invoking the agent
+          #
+          # Note: the default command will be different for different providers.
+          #
+          # #### See Also
+          # - `command`
+          #
+          #: () -> void
+          def use_default_command!
+            @values[:command] = nil
+          end
+
+          # Get the validated, configured value of the command the cog is configured to use when running the agent
+          #
+          # `nil` means that the provider should use its own default command, however that is configured.
+          #
+          #: () -> (String | Array[String])?
+          def valid_command
+            @values[:command].presence
+          end
+
           # Configure the cog to use a specific model when invoking the agent
           #
           # The model name format is provider-specific.
