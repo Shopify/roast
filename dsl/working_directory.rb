@@ -4,7 +4,7 @@
 #: self as Roast::DSL::Workflow
 
 config do
-  cmd { print_all! }
+  cmd { display! }
   cmd(:alt) { working_directory "/tmp" }
   cmd(:orig) { use_current_working_directory! }
 end
