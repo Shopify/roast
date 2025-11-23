@@ -14,20 +14,20 @@ module Roast
 
           state_repository = StateRepositoryFactory.create(workflow.storage_type)
           output_file = state_repository.save_final_output(workflow, final_output)
-          $stderr.puts "Final output saved to: #{output_file}" if output_file
+          Roast::Log.info("Final output saved to: #{output_file}") if output_file
         rescue => e
           # Don't fail if saving output fails
-          $stderr.puts "Warning: Failed to save final output to session: #{e.message}"
+          Roast::Log.warn("Warning: Failed to save final output to session: #{e.message}")
         end
       end
 
       def write_results(workflow)
         if workflow.output_file
           File.write(workflow.output_file, workflow.final_output)
-          $stdout.puts "Results saved to #{workflow.output_file}"
+          Roast::Log.info("Results saved to #{workflow.output_file}")
         else
-          $stderr.puts "🔥🔥🔥 Final Output: 🔥🔥🔥"
-          $stdout.puts workflow.final_output
+          Roast::Log.info("🔥🔥🔥 Final Output: 🔥🔥🔥")
+          Roast::Log.info(workflow.final_output)
         end
       end
     end

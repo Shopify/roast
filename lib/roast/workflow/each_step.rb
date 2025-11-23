@@ -18,16 +18,16 @@ module Roast
         collection = process_iteration_input(@collection_expr, workflow, coerce_to: :iterable)
 
         unless collection.respond_to?(:each)
-          $stderr.puts "Error: Collection '#{@collection_expr}' is not iterable"
+          Roast::Log.error("Error: Collection '#{@collection_expr}' is not iterable")
           raise ArgumentError, "Collection '#{@collection_expr}' is not iterable"
         end
 
         results = []
-        $stderr.puts "Starting each loop over collection with #{collection.size} items"
+        Roast::Log.info("Starting each loop over collection with #{collection.size} items")
 
         # Iterate over the collection
         collection.each_with_index do |item, index|
-          $stderr.puts "Each loop iteration #{index + 1} with #{@variable_name}=#{item.inspect}"
+          Roast::Log.debug("Each loop iteration #{index + 1} with #{@variable_name}=#{item.inspect}")
 
           # Create a context with the current item as a variable
           define_iteration_variable(item)
@@ -40,7 +40,7 @@ module Roast
           save_iteration_state(index, item) if workflow.respond_to?(:session_name) && workflow.session_name
         end
 
-        $stderr.puts "Each loop completed with #{collection.size} iterations"
+        Roast::Log.info("Each loop completed with #{collection.size} iterations")
         results
       end
 
@@ -82,7 +82,7 @@ module Roast
         state_repository.save_state(workflow, "#{name}_item_#{index}", state_data)
       rescue => e
         # Don't fail the workflow if state saving fails
-        $stderr.puts "Warning: Failed to save iteration state: #{e.message}"
+        Roast::Log.warn("Warning: Failed to save iteration state: #{e.message}")
       end
     end
   end

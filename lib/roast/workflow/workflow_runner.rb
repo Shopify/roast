@@ -19,9 +19,9 @@ module Roast
 
       def begin!
         start_time = Time.now
-        $stderr.puts "Starting workflow..."
-        $stderr.puts "Workflow: #{configuration.workflow_path}"
-        $stderr.puts "Options: #{options}"
+        Roast::Log.info("Starting workflow...")
+        Roast::Log.info("Workflow: #{configuration.workflow_path}")
+        Roast::Log.info("Options: #{options}")
 
         ActiveSupport::Notifications.instrument("roast.workflow.start", {
           workflow_path: configuration.workflow_path,
@@ -31,7 +31,7 @@ module Roast
 
         # Execute pre-processing steps once before any targets
         if @configuration.pre_processing?
-          $stderr.puts "Running pre-processing steps..."
+          Roast::Log.info("Running pre-processing steps...")
           run_pre_processing
         end
 
@@ -45,11 +45,11 @@ module Roast
 
         # Execute post-processing steps once after all targets
         if @configuration.post_processing?
-          $stderr.puts "Running post-processing steps..."
+          Roast::Log.info("Running post-processing steps...")
           run_post_processing
         end
       rescue Roast::Errors::ExitEarly
-        $stderr.puts "Exiting workflow early."
+        Roast::Log.info("Exiting workflow early.")
       ensure
         execution_time = Time.now - start_time
 
@@ -79,17 +79,17 @@ module Roast
         @output_handler.save_final_output(workflow)
         @output_handler.write_results(workflow)
 
-        $stderr.puts "🔥🔥🔥 ROAST COMPLETE! 🔥🔥🔥"
+        Roast::Log.info("🔥🔥🔥 ROAST COMPLETE! 🔥🔥🔥")
       end
 
       def run_for_files(files)
         if @configuration.has_target?
-          $stderr.puts "WARNING: Ignoring target parameter because files were provided: #{@configuration.target}"
+          Roast::Log.warn("WARNING: Ignoring target parameter because files were provided: #{@configuration.target}")
         end
 
         # Execute main workflow for each file
         files.each do |file|
-          $stderr.puts "Running workflow for file: #{file}"
+          Roast::Log.info("Running workflow for file: #{file}")
           run_single_workflow(file.strip)
         end
       end
@@ -100,13 +100,13 @@ module Roast
 
         # Execute main workflow for each target
         target_lines.each do |file|
-          $stderr.puts "Running workflow for file: #{file}"
+          Roast::Log.info("Running workflow for file: #{file}")
           run_single_workflow(file)
         end
       end
 
       def run_targetless
-        $stderr.puts "Running targetless workflow"
+        Roast::Log.info("Running targetless workflow")
         # Execute main workflow
         run_single_workflow(nil)
       end
@@ -211,7 +211,7 @@ module Roast
         rendered_output = ERB.new(template_content, trim_mode: "-").result(template_binding)
         workflow.append_to_final_output(rendered_output)
       rescue => e
-        $stderr.puts "Warning: Failed to apply post-processing output template: #{e.message}"
+        Roast::Log.warn("Warning: Failed to apply post-processing output template: #{e.message}")
       end
     end
   end

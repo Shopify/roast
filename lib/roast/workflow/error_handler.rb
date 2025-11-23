@@ -120,19 +120,19 @@ module Roast
         # Print user-friendly error message based on error type
         case error
         when StepLoader::StepNotFoundError
-          $stderr.puts "\n❌ Step not found: '#{step_name}'"
-          $stderr.puts "   Please check that the step exists in your workflow's steps directory."
-          $stderr.puts "   Looking for: steps/#{step_name}.rb or steps/#{step_name}/prompt.md"
+          Roast::Log.error("\n❌ Step not found: '#{step_name}'")
+          Roast::Log.error("   Please check that the step exists in your workflow's steps directory.")
+          Roast::Log.error("   Looking for: steps/#{step_name}.rb or steps/#{step_name}/prompt.md")
         when NoMethodError
           if error.message.include?("undefined method")
-            $stderr.puts "\n❌ Step error: '#{step_name}'"
-            $stderr.puts "   The step file exists but may be missing the 'call' method."
-            $stderr.puts "   Error: #{error.message}"
+            Roast::Log.error("\n❌ Step error: '#{step_name}'")
+            Roast::Log.error("   The step file exists but may be missing the 'call' method.")
+            Roast::Log.error("   Error: #{error.message}")
           end
         else
-          $stderr.puts "\n❌ Step failed: '#{step_name}'"
-          $stderr.puts "   Error: #{error.message}"
-          $stderr.puts "   This may be an issue with the step's implementation."
+          Roast::Log.error("\n❌ Step failed: '#{step_name}'")
+          Roast::Log.error("   Error: #{error.message}")
+          Roast::Log.error("   This may be an issue with the step's implementation.")
         end
 
         # Wrap the original error with context about which step failed

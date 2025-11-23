@@ -82,12 +82,12 @@ module Roast
       def display_workflow_result(workflow_name, validator, is_valid)
         if is_valid
           if validator.warnings.empty?
-            puts ::CLI::UI.fmt("{{green:✓}} {{bold:#{workflow_name}}}")
+            Roast::Log.info(::CLI::UI.fmt("{{green:✓}} {{bold:#{workflow_name}}}"))
           else
-            puts ::CLI::UI.fmt("{{green:✓}} {{bold:#{workflow_name}}} ({{yellow:#{validator.warnings.size} warning(s)}})")
+            Roast::Log.info(::CLI::UI.fmt("{{green:✓}} {{bold:#{workflow_name}}} ({{yellow:#{validator.warnings.size} warning(s)}})"))
           end
         else
-          puts ::CLI::UI.fmt("{{red:✗}} {{bold:#{workflow_name}}} ({{red:#{validator.errors.size} error(s)}})")
+          Roast::Log.info(::CLI::UI.fmt("{{red:✗}} {{bold:#{workflow_name}}} ({{red:#{validator.errors.size} error(s)}})"))
         end
       end
 
@@ -101,15 +101,15 @@ module Roast
       end
 
       def display_summary(results)
-        puts
+        Roast::Log.info("")
 
         if results.total_errors == 0 && results.total_warnings == 0
-          puts ::CLI::UI.fmt("{{green:All workflows are valid!}}")
+          Roast::Log.info(::CLI::UI.fmt("{{green:All workflows are valid!}}"))
         elsif results.total_errors == 0
-          puts ::CLI::UI.fmt("{{green:All workflows are valid}} with {{yellow:#{results.total_warnings} total warning(s)}}")
+          Roast::Log.info(::CLI::UI.fmt("{{green:All workflows are valid}} with {{yellow:#{results.total_warnings} total warning(s)}}}"))
           display_all_warnings(results)
         else
-          puts ::CLI::UI.fmt("{{red:Validation failed:}} #{results.total_errors} error(s), #{results.total_warnings} warning(s)")
+          Roast::Log.info(::CLI::UI.fmt("{{red:Validation failed:}} #{results.total_errors} error(s), #{results.total_warnings} warning(s)"))
           display_all_errors(results)
           display_all_warnings(results) if results.total_warnings > 0
         end
@@ -126,8 +126,8 @@ module Roast
       def display_errors(errors)
         ::CLI::UI::Frame.open("Errors", color: :red) do
           errors.each do |error|
-            puts ::CLI::UI.fmt("{{red:• #{error[:message]}}}")
-            puts ::CLI::UI.fmt("  {{gray:→ #{error[:suggestion]}}}") if error[:suggestion]
+            Roast::Log.error(::CLI::UI.fmt("{{red:• #{error[:message]}}}"))
+            Roast::Log.error(::CLI::UI.fmt("  {{gray:→ #{error[:suggestion]}}}")) if error[:suggestion]
             puts
           end
         end
@@ -136,8 +136,8 @@ module Roast
       def display_warnings(warnings)
         ::CLI::UI::Frame.open("Warnings", color: :yellow) do
           warnings.each do |warning|
-            puts ::CLI::UI.fmt("{{yellow:• #{warning[:message]}}}")
-            puts ::CLI::UI.fmt("  {{gray:→ #{warning[:suggestion]}}}") if warning[:suggestion]
+            Roast::Log.warn(::CLI::UI.fmt("{{yellow:• #{warning[:message]}}}"))
+            Roast::Log.warn(::CLI::UI.fmt("  {{gray:→ #{warning[:suggestion]}}}")) if warning[:suggestion]
             puts
           end
         end

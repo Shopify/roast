@@ -40,6 +40,13 @@ Roast/UseCmdRunner:
     - 'lib/roast/dsl/command_runner.rb'
     - 'roast-ai.gemspec'
 
+Roast/UseRoastLog:
+  Enabled: true
+  Exclude:
+    - 'test/**/*.rb'
+    - 'dsl/**/*.rb'
+    - '.roast/initializers/**/*.rb'
+
 Style/MethodCallWithArgsParentheses:
   Enabled: true
   Exclude:

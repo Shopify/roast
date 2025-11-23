@@ -48,7 +48,7 @@ module Roast
 
         # Log a warning for ambiguous LLM boolean responses
         def warn_ambiguity(result, reason)
-          $stderr.puts "Warning: Ambiguous LLM response for boolean conversion (#{reason}): '#{result.to_s.strip}'"
+          Roast::Log.warn("Warning: Ambiguous LLM response for boolean conversion (#{reason}): '#{result.to_s.strip}'")
         end
       end
     end

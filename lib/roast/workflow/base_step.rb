@@ -70,8 +70,8 @@ module Roast
 
           # Debug output
           if template_response.is_a?(DotAccessHash) && template_response.recommendations&.is_a?(Array)
-            $stderr.puts "DEBUG: recommendations array has #{template_response.recommendations.size} items"
-            $stderr.puts "DEBUG: first item class: #{template_response.recommendations.first.class}" if template_response.recommendations.first
+            Roast::Log.debug("DEBUG: recommendations array has #{template_response.recommendations.size} items")
+            Roast::Log.debug("DEBUG: first item class: #{template_response.recommendations.first.class}") if template_response.recommendations.first
           end
 
           # Create a binding that includes the wrapped response
