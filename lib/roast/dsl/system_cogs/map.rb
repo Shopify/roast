@@ -4,33 +4,85 @@
 module Roast
   module DSL
     module SystemCogs
+      # Map cog for executing a scope over a collection of items
+      #
+      # Executes a named execution scope (defined with `execute(:name)`) for each item in a collection.
+      # Supports both serial and parallel execution modes. Each iteration receives the current item
+      # as its value and the iteration index.
       class Map < SystemCog
+        # Parent class for all `map` cog output access errors
         class MapOutputAccessError < Roast::Error; end
 
+        # Raised when attempting to access an iteration that did not run
+        #
+        # This can occur when a `break!` is called during iteration, preventing
+        # subsequent iterations from executing.
         class MapIterationDidNotRunError < MapOutputAccessError; end
 
+        # Configuration for the `map` cog
         class Config < Cog::Config
+          # Configure the cog to execute iterations in parallel with a maximum number of concurrent tasks
+          #
+          # Pass `0` to enable unlimited parallelism (no concurrency limit).
+          # Pass a positive integer to limit the number of iterations that can run concurrently.
+          #
+          # Default: serial execution (equivalent to `parallel(1)`)
+          #
+          # #### See Also
+          # - `parallel!`
+          # - `no_parallel!`
+          #
           #: (Integer) -> void
           def parallel(value)
             # treat 0 as unlimited parallelism
             @values[:parallel] = value > 0 ? value : nil
           end
 
+          # Configure the cog to execute iterations in parallel with unlimited concurrency
+          #
+          # This removes any limit on the number of iterations that can run concurrently.
+          # All iterations will start simultaneously.
+          #
+          # #### See Also
+          # - `parallel`
+          # - `no_parallel!`
+          #
           #: () -> void
           def parallel!
             @values[:parallel] = nil
           end
 
+          # Configure the cog to execute iterations serially (one at a time)
+          #
+          # This is the default behavior. Iterations will run sequentially in order.
+          #
+          # #### See Also
+          # - `parallel`
+          # - `parallel!`
+          #
           #: () -> void
           def no_parallel!
             @values[:parallel] = 1
           end
 
+          # Validate the configuration
+          #
           #: () -> void
           def validate!
             valid_parallel!
           end
 
+          # Get the validated, configured parallelism limit
+          #
+          # Returns `nil` for unlimited parallelism, or an `Integer` for the maximum number
+          # of concurrent iterations. This method will raise an `InvalidConfigError` if the
+          # parallelism value is negative.
+          #
+          # #### See Also
+          # - `parallel`
+          # - `parallel!`
+          # - `no_parallel!`
+          #
           #: () -> Integer?
           def valid_parallel!
             parallel = @values.fetch(:parallel, 1)
@@ -41,10 +93,15 @@ module Roast
           end
         end
 
+        # Parameters for the `map` cog
         class Params < SystemCog::Params
+          # The name of the execution scope to invoke for each item
+          #
           #: Symbol
           attr_accessor :run
 
+          # Initialize parameters with the cog name and execution scope
+          #
           #: (?Symbol?, run: Symbol) -> void
           def initialize(name = nil, run:)
             super(name)
@@ -52,25 +109,49 @@ module Roast
           end
         end
 
+        # Input for the `map` cog
+        #
+        # Provides the collection of items to iterate over and an optional starting index.
+        # Each item will be passed to the execution scope along with its index.
         class Input < Cog::Input
+          # The collection of items to iterate over
+          #
+          # This can be any enumerable collection. Each item will be passed as the value
+          # to the execution scope. Required.
+          #
           #: Array[untyped]
           attr_accessor :items
 
+          # The starting index for the first iteration
+          #
+          # Defaults to `0`. This affects the index value passed to each iteration but does
+          # not change which items are processed.
+          #
           #: Integer
           attr_accessor :initial_index
 
+          # Initialize the input with default values
+          #
+          #: () -> void
           def initialize
             super
             @items = []
             @initial_index = 0
           end
 
+          # Validate that required input values are present
+          #
           #: () -> void
           def validate!
             raise Cog::Input::InvalidInputError, "'items' is required" if items.nil?
             raise Cog::Input::InvalidInputError if items.empty? && !coerce_ran?
           end
 
+          # Coerce the input from the return value of the input block
+          #
+          # Sets the items from the input block's return value if not already set directly.
+          # Converts enumerable objects to arrays and wraps non-enumerable single values in an array.
+          #
           #: (Array[untyped]) -> void
           def coerce(input_return_value)
             super
@@ -80,18 +161,60 @@ module Roast
           end
         end
 
+        # Output from running the `map` cog
+        #
+        # Contains results from each iteration, allowing access to individual iteration outputs.
+        # Iterations that did not run (due to `break!`) will be `nil`.
+        #
+        # #### See Also
+        # - `Roast::DSL::CogInputContext#collect` - retrieves all iteration outputs as an array
+        # - `Roast::DSL::CogInputContext#reduce` - reduces iteration outputs to a single value
         class Output < Cog::Output
+          # Initialize the output with results for each iteration
+          #
           #: (Array[ExecutionManager?]) -> void
           def initialize(execution_managers)
             super()
             @execution_managers = execution_managers
           end
 
+          # Check if a specific iteration ran successfully
+          #
+          # Returns `true` if the iteration at the given index executed, `false` if it was
+          # skipped (e.g., due to `break!`). Supports negative indices to count from the end.
+          #
+          # #### See Also
+          # - `iteration`
+          #
           #: (Integer) -> bool
           def iteration?(index)
             @execution_managers.fetch(index).present?
           end
 
+          # Get the output from a specific iteration, in concert with `from`
+          #
+          # Returns a `Roast::DSL::SystemCogs::Call::Output` object for the iteration at the given index.
+          # Supports negative indices to count from the end (e.g., `-1` for the last iteration).
+          # Raises `MapIterationDidNotRunError` if the iteration did not run.
+          #
+          # Use `from` on the return value of this method, as for a single `call` cog invocation, to access the
+          # final output and individual cog outputs from the specified invocation.
+          #
+          # #### Usage
+          # ```ruby
+          # # Access a specific iteration
+          # result = from(map!(:process_items).iteration(2))
+          #
+          # # Access with negative index
+          # result = from(map!(:process_items).iteration(-1))
+          # ```
+          #
+          # #### See Also
+          # - `iteration?`
+          # - `first`
+          # - `last`
+          # - `Roast::DSL::CogInputContext#from`
+          #
           #: (Integer) -> Call::Output
           def iteration(index)
             em = @execution_managers.fetch(index)
@@ -100,11 +223,29 @@ module Roast
             Call::Output.new(em)
           end
 
+          # Get the output from the first iteration
+          #
+          # Convenience method equivalent to `iteration(0)`. Raises `MapIterationDidNotRunError`
+          # if the first iteration did not run.
+          #
+          # #### See Also
+          # - `iteration`
+          # - `last`
+          #
           #: () -> Call::Output
           def first
             iteration(0)
           end
 
+          # Get the output from the last iteration that ran
+          #
+          # Convenience method equivalent to `iteration(-1)`. Raises `MapIterationDidNotRunError`
+          # if the last iteration did not run.
+          #
+          # #### See Also
+          # - `iteration`
+          # - `first`
+          #
           #: () -> Call::Output
           def last
             iteration(-1)
@@ -194,6 +335,36 @@ module Roast
 
         # @requires_ancestor: Roast::DSL::CogInputContext
         module InputContext
+          # Collect the results from all `map` cog iterations into an array
+          #
+          # Extracts the final output from each iteration that ran. When called without a block,
+          # returns an array of the final outputs directly. When called with a block, executes
+          # the block in the context of each iteration's input context, receiving the final output,
+          # the original item value, and the iteration index as arguments.
+          #
+          # Iterations that did not run (due to `break!`) will be represented as `nil` in the
+          # returned array.
+          #
+          # #### Usage
+          # ```ruby
+          # # Get all final outputs directly
+          # results = collect(map!(:process_items))
+          #
+          # # Transform each output with access to the original item and index
+          # results = collect(map!(:process_items)) do |output, item, index|
+          #   { item: item, result: output, position: index }
+          # end
+          #
+          # # Access other cog outputs from within each iteration
+          # results = collect(map!(:process_items)) do |output, item, index|
+          #   inner_cog!(:some_step)
+          # end
+          # ```
+          #
+          # #### See Also
+          # - `reduce`
+          # - `Roast::DSL::SystemCogs::Map::Output`
+          #
           # @rbs [T] (Roast::DSL::SystemCogs::Map::Output) {() -> T} -> Array[T]
           #    | (Roast::DSL::SystemCogs::Map::Output) -> Array[untyped]
           def collect(map_cog_output, &block)
@@ -212,6 +383,40 @@ module Roast
             ems.map { |em| em&.final_output }
           end
 
+          # Reduce the results from all `map` cog iterations to a single value
+          #
+          # Processes each iteration's output sequentially, combining them into an accumulator value.
+          # The block receives the current accumulator value, the final output from the iteration,
+          # the original item value, and the iteration index. The block should return the new
+          # accumulator value.
+          #
+          # If the block returns `nil`, the accumulator will __not__ be updated (preserving any
+          # previous non-nil value). This prevents accidental overwrites with `nil` values.
+          #
+          # Iterations that did not run (due to `break!`) are skipped.
+          #
+          # #### Usage
+          # ```ruby
+          # # Sum all outputs
+          # total = reduce(map!(:calculate_scores), 0) do |sum, output, item, index|
+          #   sum + output
+          # end
+          #
+          # # Build a hash from outputs
+          # results = reduce(map!(:process_items), {}) do |hash, output, item, index|
+          #   hash.merge(item => output)
+          # end
+          #
+          # # Collect with conditional accumulation
+          # valid_results = reduce(map!(:validate_items), []) do |acc, output, item, index|
+          #   output.valid? ? acc + [output] : acc
+          # end
+          # ```
+          #
+          # #### See Also
+          # - `collect`
+          # - `Roast::DSL::SystemCogs::Map::Output`
+          #
           #: [A] (Roast::DSL::SystemCogs::Map::Output, ?A?) {(A?, untyped) -> A} -> A?
           def reduce(map_cog_output, initial_value = nil, &block)
             ems = map_cog_output.instance_variable_get(:@execution_managers)
