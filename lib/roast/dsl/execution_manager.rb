@@ -180,7 +180,7 @@ module Roast
         end
       end
 
-      #: (^() -> untyped) -> void
+      #: (^(untyped, Integer) -> untyped) -> void
       def on_outputs(outputs)
         raise OutputsAlreadyDefinedError if @outputs
 
@@ -189,7 +189,7 @@ module Roast
 
       #: () -> untyped
       def final_output
-        return @cog_input_manager.context.instance_exec(&@outputs) if @outputs
+        return @cog_input_manager.context.instance_exec(@scope_value, @scope_index, &@outputs) if @outputs
 
         last_cog = @cog_stack.last
         raise CogInputManager::CogDoesNotExistError, "no cogs defined in scope" unless last_cog
