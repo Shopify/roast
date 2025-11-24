@@ -7,3 +7,23 @@ type: ruby
 up:
   - ruby
   - bundler
+
+check:
+  style: bundle exec rake rubocop
+  tc: bundle exec rake sorbet
+  test: bundle exec rake minitest_dsl_fast
+
+commands:
+  __default__: execute
+  execute:
+    desc: Execute a roast workflow
+    run: bundle exec roast execute --executor=dsl
+  style:
+    desc: Run Rubocop style checks (and autocorrect)
+    run: bundle exec rake rubocop:autocorrect
+  tc:
+    desc: Run Sorbet type checks
+    run: bundle exec rake sorbet
+  test:
+    desc: Run all tests
+    run: bundle exec rake minitest_dsl_fast
