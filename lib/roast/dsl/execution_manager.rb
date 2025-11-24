@@ -53,6 +53,7 @@ module Roast
         @cog_stack = Cog::Stack.new #: Cog::Stack
         @execution_context = ExecutionContext.new #: ExecutionContext
         @cog_input_manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context) #: CogInputManager
+        @barrier = Async::Barrier.new #: Async::Barrier
       end
 
       #: () -> void
@@ -71,21 +72,31 @@ module Roast
         raise ExecutionManagerCurrentlyRunningError if running?
 
         @running = true
-        Sync do
-          cog_tasks = @cog_stack.map do |cog|
+        Sync do |sync_task|
+          sync_task.annotate("ExecutionManager #{@scope}")
+          @cog_stack.each do |cog|
             cog_config = @config_manager.config_for(cog.class, cog.name)
             cog_task = cog.run!(
+              @barrier,
               cog_config.deep_dup,
               cog_input_context,
-              @scope_value.deep_dup, # Pass a copy to each cog to guard against mutated values being passed between cogs
+              @scope_value.deep_dup,
               @scope_index,
             )
             cog_task.wait unless cog_config.async?
-            cog_task
           end
-          cog_tasks.map(&:wait)
+          # Wait on the tasks in their completion order, so that an exception in a task will be raised as soon as it occurs
+          # noinspection RubyArgCount
+          @barrier.wait { |task| wait_for_task_with_exception_handling(task) }
+        ensure
+          @barrier.stop
+          @running = false
         end
-        @running = false
+      end
+
+      #: () -> void
+      def stop!
+        @barrier.stop
       end
 
       #: () -> bool
@@ -111,6 +122,14 @@ module Roast
       end
 
       private
+
+      #: (Async::Task) -> void
+      def wait_for_task_with_exception_handling(task)
+        task.wait
+      rescue StandardError => e
+        @barrier.stop
+        raise e
+      end
 
       #: () -> Array[^() -> void]
       def my_execution_procs
