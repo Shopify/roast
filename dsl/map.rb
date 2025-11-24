@@ -5,7 +5,7 @@
 
 config do
   cmd do
-    print_all!
+    display!
   end
 end
 
