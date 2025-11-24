@@ -71,10 +71,11 @@ module Roast
         raise CogDoesNotExistError, cog_name unless @cogs.key?(cog_name)
 
         @cogs[cog_name].tap do |cog|
-          raise CogNotYetRunError, cog_name unless cog.ran?
+          cog.wait # attempting to access the output of a running cog will block until that cog completes
           raise CogSkippedError, cog_name if cog.skipped?
           raise CogFailedError, cog_name if cog.failed?
           raise CogStoppedError, cog_name if cog.stopped?
+          raise CogNotYetRunError, cog_name unless cog.succeeded?
         end.output
       end
 
