@@ -14,7 +14,7 @@ execute(:capitalize_a_random_word) do
   cmd(:capitalize) do |my, value_from_call|
     # Optional second block argument lets you use a value passed to the sub-executor by `call`
     # from withing any cog in the sub-executor
-    word = value_from_call || cmd!(:word).out
+    word = value_from_call || cmd!(:word).text
     my.command = "/bin/sh"
     my.args << "-c"
     my.args << "/bin/echo \"#{word}\" | tr '[:lower:]' '[:upper:]'"

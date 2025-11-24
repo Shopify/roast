@@ -22,7 +22,7 @@ execute do
   # Letting you write whatever ruby code you want to generate that output
   ruby(:whatever) do
     # Do whatever you want in this block
-    value = cmd!(:roast).out
+    value = cmd!(:roast).text
     puts "Hello, #{value.upcase}"
     puts "Calling a method: #{MyClass.add_stuff(3, 4)}"
     # The value you return will be exposed as the .value attribute on the cog's output
