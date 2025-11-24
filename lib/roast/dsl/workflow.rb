@@ -111,7 +111,7 @@ module Roast
       # but does not evaluate any of them individually yet.
       #: () -> void
       def extract_dsl_procs!
-        instance_eval(@workflow_definition)
+        instance_eval(@workflow_definition, @workflow_path.realpath.to_s, 1)
       end
     end
   end
