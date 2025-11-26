@@ -53,6 +53,21 @@ module Roast
           def value
             @execution_managers.last&.final_output
           end
+
+          #: (Integer) -> Call::Output
+          def iteration(index)
+            Call::Output.new(@execution_managers.fetch(index))
+          end
+
+          #: () -> Call::Output
+          def first
+            iteration(0)
+          end
+
+          #: () -> Call::Output
+          def last
+            iteration(-1)
+          end
         end
 
         # @requires_ancestor: Roast::DSL::ExecutionManager
