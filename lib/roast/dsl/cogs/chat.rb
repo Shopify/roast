@@ -28,13 +28,6 @@ module Roast
 
         # Execute the chat completion with the given input and return the output
         #
-        # Sends the input prompt to the configured LLM provider and returns the generated response.
-        # Optionally displays the user prompt, LLM response, and basic statistics to the console
-        # based on the cog's configuration.
-        #
-        # The execution is a simple request-response interaction without conversation history
-        # or tool use capabilities.
-        #
         #: (Input) -> Output
         def execute(input)
           chat = ruby_llm_context.chat(
@@ -42,11 +35,12 @@ module Roast
             provider: config.valid_provider!,
             assume_model_exists: !config.verify_model_exists?,
           )
-
+          input.valid_session&.apply!(chat)
           chat = chat.with_temperature(config.valid_temperature) if config.valid_temperature
+          num_existing_messages = chat.messages.length
 
-          resp = chat.ask(input.prompt)
-          chat.messages.each do |message|
+          response = chat.ask(input.valid_prompt!)
+          chat.messages[num_existing_messages..].each do |message|
             case message.role
             when :user
               puts "[USER PROMPT] #{message.content}" if config.show_prompt?
@@ -60,13 +54,13 @@ module Roast
           end
           if config.show_stats?
             puts "[LLM STATS]"
-            puts "\tModel: #{resp.model_id}"
-            puts "\tRole: #{resp.role}"
-            puts "\tInput Tokens: #{resp.input_tokens}"
-            puts "\tOutput Tokens: #{resp.output_tokens}"
+            puts "\tModel: #{response.model_id}"
+            puts "\tRole: #{response.role}"
+            puts "\tInput Tokens: #{response.input_tokens}"
+            puts "\tOutput Tokens: #{response.output_tokens}"
           end
 
-          Output.new(resp.content)
+          Output.new(Session.from_chat(chat), response.content)
         end
 
         private

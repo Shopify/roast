@@ -874,6 +874,17 @@ module Roast
       #       puts "Chat did not run or did not complete successfully"
       #     end
       #   end
+      #
+      #   # Resume from a previous chat session if it ran
+      #   chat(:followup) do |my|
+      #     previous = chat(:optional_chat)
+      #     if previous
+      #       my.prompt = "Can you elaborate on that?"
+      #       my.session = previous.session
+      #     else
+      #       my.prompt = "Analyze this data from scratch..."
+      #     end
+      #   end
       # end
       # ```
       #
@@ -905,6 +916,12 @@ module Roast
       #   chat(:summarizer) do |my|
       #     # Use the previous chat's response
       #     my.prompt = "Summarize this analysis: #{chat!(:analyzer).response}"
+      #   end
+      #
+      #   # Resume a conversation by passing the session
+      #   chat(:continue) do |my|
+      #     my.prompt = "Now provide more details about the first point"
+      #     my.session = chat!(:analyzer).session
       #   end
       #
       #   # Parse JSON responses
