@@ -78,7 +78,7 @@ module Roast
           @failed = true
           # TODO: better / cleaner handling in the workflow execution manager for a workflow failure
           #   just re-raising this exception for now
-          raise e if config.abort_on_error?
+          raise e if config.abort_on_failure?
         rescue ControlFlow::Next, ControlFlow::Break => e
           @skipped = true
           raise e
