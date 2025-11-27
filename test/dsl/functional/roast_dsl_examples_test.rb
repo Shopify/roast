@@ -301,37 +301,18 @@ module DSL
       end
 
       test "simple_agent.rb workflow runs successfully" do
-        skip "work in progress - refactoring the agent cog"
-        # Mock the claude CLI response
-        mock_status = mock
-        mock_status.expects(:success?).returns(true).at_least_once
+        with_agent_mocks do
+          stdout, stderr = in_sandbox :simple_agent do
+            Roast::DSL::Workflow.from_file("simple_agent.rb", EMPTY_PARAMS)
+          end
 
-        Roast::DSL::CommandRunner.expects(:execute)
-          .with(
-            [
-              "claude",
-              "-p",
-              "--model",
-              "haiku",
-              "--append-system-prompt",
-              "Always respond in haiku form",
-              "--dangerously-skip-permissions",
-            ],
-            working_directory: nil,
-            stdin_content: "What is the world's largest lake?",
-          )
-          .returns([
-            "Caspian Sea sits,\nThough called sea, it's landlocked, vast -\nWorld's largest true lake.",
-            "",
-            mock_status,
-          ])
-
-        stdout, stderr = in_sandbox :simple_agent do
-          Roast::DSL::Workflow.from_file("simple_agent.rb", EMPTY_PARAMS)
+          # Check that the agent was invoked correctly
+          assert_includes stdout, "[USER PROMPT] What is the world's largest lake?"
+          assert_includes stdout, "[AGENT STATS]"
+          assert_includes stdout, "claude-3-haiku-20240307"
+          assert_includes stdout, "15 in, 25 out"
+          assert_empty stderr
         end
-
-        assert_includes stdout, "Caspian Sea sits,\nThough called sea, it's landlocked, vast -\nWorld's largest true lake."
-        assert_empty stderr
       end
 
       test "simple_repeat.rb workflow runs successfully" do
