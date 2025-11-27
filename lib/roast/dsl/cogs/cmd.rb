@@ -211,6 +211,11 @@ module Roast
           #: Array[String]
           attr_accessor :args
 
+          # Data to pass to command's standard input
+          #
+          #: String?
+          attr_accessor :stdin
+
           #: () -> void
           def initialize
             super
@@ -304,6 +309,7 @@ module Roast
             .execute(
               [input.command] + input.args,
               working_directory: config.valid_working_directory,
+              stdin_content: input.stdin,
               stdout_handler: stdout_handler,
               stderr_handler: stderr_handler,
             )
