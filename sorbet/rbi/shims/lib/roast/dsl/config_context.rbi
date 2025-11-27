@@ -20,6 +20,22 @@ module Roast
       # end
       # ```
       #
+      # ### Available Options (Common to All Cogs)
+      #
+      # Apply configuration within the block passed to `global`:
+      #
+      # #### Configure asynchronous execution
+      # - `async!` - Run the cog asynchronously in the background
+      # - `no_async!` (alias `sync!`) - Run the cog synchronously (default)
+      #
+      # #### Configure failure behavior
+      # - `abort_on_failure!` - Abort the entire workflow immediately if this cog fails (default)
+      # - `no_abort_on_failure!` (alias `continue_on_failure!`) - Continue the workflow even if this cog fails
+      #
+      # #### Configure the working directory
+      # - `working_directory(path)` - Set the working directory for external commands invoked by the cog
+      # - `use_current_working_directory!` - Use the current working directory
+      #
       #: () {() [self: Roast::DSL::Cog::Config] -> void} -> void
       def global(&block); end
 
@@ -34,7 +50,15 @@ module Roast
       #
       # ### Available Options
       #
-      # The `call` cog currently has no configuration options.
+      # Apply configuration within the block passed to `call`:
+      #
+      # #### Configure asynchronous execution
+      # - `async!` - Run the cog asynchronously in the background
+      # - `no_async!` (alias `sync!`) - Run the cog synchronously (default)
+      #
+      # #### Configure failure behavior
+      # - `abort_on_failure!` - Abort the entire workflow immediately if this cog fails (default)
+      # - `no_abort_on_failure!` (alias `continue_on_failure!`) - Continue the workflow even if this cog fails
       #
       #: (?(Symbol | Regexp)?) {() [self: Roast::DSL::SystemCogs::Call::Config] -> void} -> void
       def call(name = nil, &block); end
@@ -53,9 +77,25 @@ module Roast
       #
       # Apply configuration within the block passed to `map`:
       #
+      # #### Configure parallel execution
       # - `parallel(n)` - Execute up to `n` iterations concurrently (pass `0` for unlimited)
       # - `parallel!` - Execute all iterations concurrently with no limit
       # - `no_parallel!` - Execute iterations serially, one at a time (default)
+      #
+      # #### Configure asynchronous execution
+      # - `async!` - Run the cog asynchronously in the background
+      # - `no_async!` (alias `sync!`) - Run the cog synchronously (default)
+      #
+      # NOTE: parallel processing of the elements passed to the `map` cog is distinct from asynchronous execution of
+      # the `map` cog itself. Use the `parallel!` setting to process multiple items concurrently from the iterable
+      # provided to `map`, and `no_parallel!` to process each item one-at-a-time. Use `async`, on the other hand,
+      # to allow the next cog in the workflow after `map` to begin running while the map is still processing items.
+      # Otherwise, the nect cog will not start until `map` has completed processing all items.
+      # You can use async and no_parallel, or no_async and parallel, or both, or neither, depending on your needs.
+      #
+      # #### Configure failure behavior
+      # - `abort_on_failure!` - Abort the entire workflow immediately if this cog fails (default)
+      # - `no_abort_on_failure!` (alias `continue_on_failure!`) - Continue the workflow even if this cog fails
       #
       #: (?(Symbol | Regexp)?) {() [self: Roast::DSL::SystemCogs::Map::Config] -> void} -> void
       def map(name = nil, &block); end
@@ -72,7 +112,15 @@ module Roast
       #
       # ### Available Options
       #
-      # The `repeat` cog currently has no configuration options.
+      # Apply configuration within the block passed to `repeat`:
+      #
+      # #### Configure asynchronous execution
+      # - `async!` - Run the cog asynchronously in the background
+      # - `no_async!` (alias `sync!`) - Run the cog synchronously (default)
+      #
+      # #### Configure failure behavior
+      # - `abort_on_failure!` - Abort the entire workflow immediately if this cog fails (default)
+      # - `no_abort_on_failure!` (alias `continue_on_failure!`) - Continue the workflow even if this cog fails
       #
       #: (?(Symbol | Regexp)?) {() [self: Roast::DSL::SystemCogs::Repeat::Config] -> void} -> void
       def repeat(name = nil, &block); end
@@ -131,6 +179,18 @@ module Roast
       # #### Configure debugging
       # - `dump_raw_agent_messages_to(filename)` - Dump raw agent messages to a file for debugging
       #
+      # #### Configure asynchronous execution
+      # - `async!` - Run the cog asynchronously in the background
+      # - `no_async!` (alias `sync!`) - Run the cog synchronously (default)
+      #
+      # #### Configure failure behavior
+      # - `abort_on_failure!` - Abort the entire workflow immediately if this cog fails (default)
+      # - `no_abort_on_failure!` (alias `continue_on_failure!`) - Continue the workflow even if this cog fails
+      #
+      # #### Configure the working directory
+      # - `working_directory(path)` - Set the working directory in which the agent will be invoked
+      # - `use_current_working_directory!` - Invoke the agent in the current working directory
+      #
       #: (?(Symbol | Regexp)?) {() [self: Roast::DSL::Cogs::Agent::Config] -> void} -> void
       def agent(name = nil, &block); end
 
@@ -180,6 +240,14 @@ module Roast
       # - `display!` - Display all output (enables all show_ options)
       # - `no_display!` (alias `quiet!`) - Hide all output (disables all show_ options)
       #
+      # #### Configure asynchronous execution
+      # - `async!` - Run the cog asynchronously in the background
+      # - `no_async!` (alias `sync!`) - Run the cog synchronously (default)
+      #
+      # #### Configure failure behavior
+      # - `abort_on_failure!` - Abort the entire workflow immediately if this cog fails (default)
+      # - `no_abort_on_failure!` (alias `continue_on_failure!`) - Continue the workflow even if this cog fails
+      #
       #: (?(Symbol | Regexp)?) {() [self: Roast::DSL::Cogs::Chat::Config] -> void} -> void
       def chat(name = nil, &block); end
 
@@ -196,6 +264,10 @@ module Roast
       #
       # Apply configuration within the block passed to `cmd`:
       #
+      # #### Configure command failure behavior
+      # - `fail_on_error!` - Consider the cog failed if the command returns a non-zero exit status (default)
+      # - `no_fail_on_error!` - Don't fail the cog on non-zero exit status (exit status still available in output)
+      #
       # #### Configure display output
       # - `show_stdout!` - Write STDOUT to the console
       # - `no_show_stdout!` - Don't write STDOUT to the console (default)
@@ -207,6 +279,18 @@ module Roast
       # #### Configure the working directory
       # - `working_directory(path)` - Set the working directory for command execution
       # - `use_current_working_directory!` - Use the current working directory
+      #
+      # #### Configure asynchronous execution
+      # - `async!` - Run the cog asynchronously in the background
+      # - `no_async!` (alias `sync!`) - Run the cog synchronously (default)
+      #
+      # #### Configure failure behavior
+      # - `abort_on_failure!` - Abort the entire workflow immediately if this cog fails (default)
+      # - `no_abort_on_failure!` (alias `continue_on_failure!`) - Continue the workflow even if this cog fails
+      #
+      # #### Configure the working directory
+      # - `working_directory(path)` - Set the working directory in which the command is invoked
+      # - `use_current_working_directory!` - Invoke the command in the current working directory
       #
       #: (?(Symbol | Regexp)?) {() [self: Roast::DSL::Cogs::Cmd::Config] -> void} -> void
       def cmd(name_or_pattern = nil, &block); end
@@ -222,7 +306,15 @@ module Roast
       #
       # ### Available Options
       #
-      # The `ruby` cog currently has no configuration options.
+      # Apply configuration within the block passed to `ruby`:
+      #
+      # #### Configure asynchronous execution
+      # - `async!` - Run the cog asynchronously in the background
+      # - `no_async!` (alias `sync!`) - Run the cog synchronously (default)
+      #
+      # #### Configure failure behavior
+      # - `abort_on_failure!` - Abort the entire workflow immediately if this cog fails (default)
+      # - `no_abort_on_failure!` (alias `continue_on_failure!`) - Continue the workflow even if this cog fails
       #
       #: (?(Symbol | Regexp)?) {() [self: Roast::DSL::Cogs::Ruby::Config] -> void} -> void
       def ruby(name_or_pattern = nil, &block); end
