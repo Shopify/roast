@@ -191,57 +191,47 @@ module Roast
         #
         # Enabled by default.
         #
-        # #### Alias Methods
-        # - `abort_on_error!`
-        # - `exit_on_error!`
-        #
         # #### Inverse Methods
-        # - `continue_on_error!`
-        # - `no_abort_on_error!`
-        # - `no_exit_on_error!`
+        # - `continue_on_failure!`
+        # - `no_abort_on_failure!`
         #
         # #### See Also
-        # - `abort_on_error?`
+        # - `abort_on_failure?`
         #
         #: () -> void
-        def abort_on_error!
-          @values[:exit_on_error] = true
+        def abort_on_failure!
+          @values[:abort_on_failure] = true
         end
 
         # Configure the cog __not__ to abort the workflow if it fails to complete successfully
         #
-        # When a cog is configured not to abort on error, the workflow will continue to run subsequent cogs
-        # even if that cog fails. However, attempts to access that cog's output from another cog will fail.
+        # When a cog is configured not to abort on failure, the workflow will continue to run subsequent cogs
+        # even if a cog fails. However, attempts to access that cog's output from another cog will fail.
         #
         # #### Alias Methods
-        # - `continue_on_error!`
-        # - `no_abort_on_error!`
-        # - `no_exit_on_error!`
+        # - `continue_on_failure!`
         #
         # #### Inverse Methods
-        # - `abort_on_error!`
-        # - `exit_on_error!`
+        # - `abort_on_failure!`
         #
         # #### See Also
-        # - `abort_on_error?`
+        # - `abort_on_failure?`
         #
         #: () -> void
-        def no_abort_on_error!
-          @values[:exit_on_error] = false
+        def no_abort_on_failure!
+          @values[:abort_on_failure] = false
         end
 
-        # Check if the cog is configured to abort the workflow immediately on error
+        # Check if the cog is configured to abort the workflow immediately on failure
         #
         # #### See Also
-        # - `abort_on_error!`
-        # - `continue_on_error!`
-        # - `exit_on_error!`
-        # - `no_abort_on_error!`
-        # - `no_exit_on_error!`
+        # - `abort_on_failure!`
+        # - `continue_on_failure!`
+        # - `no_abort_on_failure!`
         #
         #: () -> bool
-        def abort_on_error?
-          @values[:exit_on_error] ||= true
+        def abort_on_failure?
+          @values[:abort_on_failure] ||= true
         end
 
         # Configure the cog to run external commands in the specified working directory
@@ -309,9 +299,7 @@ module Roast
           path
         end
 
-        alias_method(:exit_on_error!, :abort_on_error!)
-        alias_method(:no_exit_on_error!, :no_abort_on_error!)
-        alias_method(:continue_on_error!, :no_abort_on_error!)
+        alias_method(:continue_on_failure!, :no_abort_on_failure!)
         alias_method(:sync!, :no_async!)
       end
     end

@@ -4,7 +4,6 @@
 #: self as Roast::DSL::Workflow
 
 config do
-  global { exit_on_error! }
   cmd { display! }
   cmd(/to_/) { no_display! }
 end
