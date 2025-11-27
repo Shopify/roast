@@ -1,0 +1,107 @@
+---
+http_interactions:
+  - request:
+      method: post
+      uri: http://mytestingproxy.local/v1/chat/completions
+      body:
+        encoding: UTF-8
+        string:
+          '{"model":"gpt-4o","messages":[{"role":"user","content":"What is the
+          deepest lake?"}],"stream":false}'
+      headers:
+        User-Agent:
+          - Faraday v2.13.1
+        Authorization:
+          - my-token
+        Content-Type:
+          - application/json
+        Accept-Encoding:
+          - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+        Accept:
+          - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Content-Type:
+          - application/json
+        Date:
+          - Thu, 20 Nov 2025 18:00:00 GMT
+      body:
+        encoding: UTF-8
+        string: |
+          {
+            "id": "chatcmpl-test123",
+            "object": "chat.completion",
+            "created": 1700501200,
+            "model": "gpt-4o",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "The deepest lake in the world is Lake Baikal in Russia, with a maximum depth of approximately 1,642 meters (5,387 feet). It contains about 20% of the world's fresh surface water."
+                },
+                "finish_reason": "stop"
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 15,
+              "completion_tokens": 45,
+              "total_tokens": 60
+            }
+          }
+    recorded_at: Thu, 20 Nov 2025 18:00:00 GMT
+  - request:
+      method: post
+      uri: http://mytestingproxy.local/v1/chat/completions
+      body:
+        encoding: UTF-8
+        string: '{"model":"gpt-4o","messages":[{"role":"user","content":"You just told me the following about a lake. Make some stuff up about why that\u0027s nonsense.\n\nThe deepest lake in the world is Lake Baikal in Russia, with a maximum depth of approximately 1,642 meters (5,387 feet). It contains about 20% of the world\u0027s fresh surface water."}],"stream":false}'
+      headers:
+        User-Agent:
+          - Faraday v2.13.1
+        Authorization:
+          - my-token
+        Content-Type:
+          - application/json
+        Accept-Encoding:
+          - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+        Accept:
+          - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Content-Type:
+          - application/json
+        Date:
+          - Thu, 20 Nov 2025 18:00:01 GMT
+      body:
+        encoding: UTF-8
+        string: |
+          {
+            "id": "chatcmpl-test124",
+            "object": "chat.completion",
+            "created": 1700501201,
+            "model": "gpt-4o",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "Well, that's completely wrong! Everyone knows the deepest lake is actually a giant puddle in my backyard after a heavy rainstorm. It reaches depths of at least 3 inches on a good day!"
+                },
+                "finish_reason": "stop"
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 55,
+              "completion_tokens": 35,
+              "total_tokens": 90
+            }
+          }
+    recorded_at: Thu, 20 Nov 2025 18:00:01 GMT
+recorded_with: VCR 6.3.1
