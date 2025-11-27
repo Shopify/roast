@@ -73,11 +73,29 @@ next.
 
 ---
 
+### Chapter 3: Configuration Options
+
+Learn how to configure cogs to control their behavior, use different models for different steps, and manage what
+gets displayed during execution.
+
+**You'll learn:**
+
+- Global vs per-step configuration
+- Pattern-based configuration with regex
+- Display options (`show_prompt!`, `no_show_response!`)
+- Using different models for different steps
+
+**Files:**
+
+- `03_configuration_options/simple_config.rb` - Basic configuration and overrides
+- `03_configuration_options/control_display_and_temperature.rb` - Configuring multiple parameters for multiple steps
+
+---
+
 ### Coming Soon
 
 Future chapters will cover:
 
-- Advanced configuration options
 - Control flow (skip!, fail!)
 - Creating reusable scopes
 - Processing collections
