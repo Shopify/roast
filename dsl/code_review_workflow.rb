@@ -24,7 +24,7 @@ config do
   # Chat for conversational analysis and insights
   chat(:reviewer) do
     model("gpt-4o-mini")
-    assume_model_exists(true)
+    assume_model_exists!
   end
 end
 

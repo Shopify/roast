@@ -12,7 +12,7 @@
 config do
   chat(:analyst) do
     model("gpt-4o-mini")
-    assume_model_exists(true)
+    assume_model_exists!
   end
 end
 
