@@ -9,6 +9,50 @@ module Roast
         #
         # See sorbet/rbi/shims/lib/roast/dsl/config_context.rbi for full class documentation.
         class Config < Cog::Config
+          # Configure the cog to consider itself failed if the command returns a non-zero exit status
+          #
+          # Enabled by default. When enabled, a non-zero exit status will mark the cog as failed,
+          # which may also abort the workflow depending on the cog's `abort_on_failure` configuration.
+          #
+          # #### Inverse Methods
+          # - `no_fail_on_error!`
+          #
+          # #### See Also
+          # - `fail_on_error?`
+          # - `abort_on_failure!`
+          #
+          #: () -> void
+          def fail_on_error!
+            @values[:fail_on_error] = true
+          end
+
+          # Configure the cog __not__ to consider itself failed if the command returns a non-zero exit status
+          #
+          # When disabled, the cog will complete successfully regardless of the command's exit status.
+          # The exit status will still be available in the output for inspection.
+          #
+          # #### Inverse Methods
+          # - `fail_on_error!`
+          #
+          # #### See Also
+          # - `fail_on_error?`
+          #
+          #: () -> void
+          def no_fail_on_error!
+            @values[:fail_on_error] = false
+          end
+
+          # Check if the cog is configured to fail when the command returns a non-zero exit status
+          #
+          # #### See Also
+          # - `fail_on_error!`
+          # - `no_fail_on_error!`
+          #
+          #: () -> bool
+          def fail_on_error?
+            @values[:fail_on_error] != false
+          end
+
           # Configure the cog to write STDOUT to the console
           #
           # Disabled by default.
