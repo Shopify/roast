@@ -1,0 +1,144 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"## Structural Analysis Discussion\n\nThe agent has provided this technical analysis of the project structure:\n\nCaspian Sea sits,\nThough called sea, it is landlocked, vast -\nWorld largest true lake.\n\nAs an experienced code reviewer, please provide conversational insights on these findings:\n\n1. **Architectural Concerns**: What patterns or anti-patterns do you notice?\n2. **Team Impact**: How might these structural decisions affect development velocity?\n3. **Technical Debt**: What structural issues should be prioritized for refactoring?\n4. **Best Practices**: Are there Ruby/Rails conventions being followed or violated?\n\nFocus on practical implications for the development team and maintainability concerns."}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 20 Nov 2025 20:00:00 GMT
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "chatcmpl-review1",
+          "object": "chat.completion",
+          "created": 1700509200,
+          "model": "gpt-4o-mini",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "The project shows solid Ruby structure with clear separation of concerns. Main concerns: some deep nesting in lib/ directory suggests complexity that could impact maintainability. Team velocity might slow due to interdependent modules. Priority refactor: extract common utilities, improve module interfaces."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 95,
+            "completion_tokens": 45,
+            "total_tokens": 140
+          }
+        }
+  recorded_at: Thu, 20 Nov 2025 20:00:00 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"## Improvement Strategy Analysis\n\n**Structural Analysis:**\nCaspian Sea sits,\nThough called sea, it is landlocked, vast -\nWorld largest true lake.\n\n**Code Quality Findings:**\nCaspian Sea sits,\nThough called sea, it is landlocked, vast -\nWorld largest true lake.\n\nBased on both the automated analysis and detailed code examination, please provide strategic improvement recommendations:\n\n1. **Priority Ranking**: Rank the identified issues by impact and effort to fix\n2. **Implementation Roadmap**: Suggest a phased approach to addressing problems\n3. **Team Coordination**: How should these improvements be distributed across team members?\n4. **Risk Mitigation**: Which fixes should be done first to reduce business risk?\n5. **Quick Wins**: What can be improved with minimal effort for maximum impact?\n\nConsider the team bandwidth and business priorities when making recommendations."}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 20 Nov 2025 20:00:05 GMT
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "chatcmpl-review2",
+          "object": "chat.completion",
+          "created": 1700509205,
+          "model": "gpt-4o-mini",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "**Priority**: 1) Extract shared utilities (low effort, high impact), 2) Refactor deep nesting (medium effort, medium impact), 3) Improve interfaces (high effort, high impact). **Roadmap**: Phase 1 utilities, Phase 2 structural changes. **Quick wins**: Add documentation, standardize naming conventions."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 125,
+            "completion_tokens": 55,
+            "total_tokens": 180
+          }
+        }
+  recorded_at: Thu, 20 Nov 2025 20:00:05 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Based on all the analysis above, create a comprehensive executive summary for the development team. Include: 1) Overall project health score, 2) Top 3 priority improvements, 3) Estimated effort for fixes, 4) Risk assessment if issues are not addressed."}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 20 Nov 2025 20:00:10 GMT
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "chatcmpl-review3",
+          "object": "chat.completion",
+          "created": 1700509210,
+          "model": "gpt-4o-mini",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "**Project Health: B+ (Good)** - Solid foundation with improvement opportunities. **Top 3 Priorities**: 1) Extract shared utilities (2 days), 2) Improve documentation (1 day), 3) Refactor deep nesting (1 week). **Risk**: Delayed fixes could slow feature development 20%, increase onboarding time for new developers."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 65,
+            "completion_tokens": 70,
+            "total_tokens": 135
+          }
+        }
+  recorded_at: Thu, 20 Nov 2025 20:00:10 GMT
+recorded_with: VCR 6.3.1
