@@ -283,6 +283,11 @@ module DSL
           Hello, ROAST
           Calling a method: 7
           1 22 333 4444 55555
+          Some Number + 1: 8
+          Some String to Upper: HELLO, WORLD!
+          Multiply 4 * 3: 12
+          The long string has 3 lines
+          And it has 75 characters
         EOF
         assert_equal expected_stdout, stdout
       end
