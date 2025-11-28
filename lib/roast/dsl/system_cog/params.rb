@@ -4,22 +4,26 @@
 module Roast
   module DSL
     class SystemCog
-      # Custom parameters allowable for system cogs only.
+      # Parameters for system cogs set at workflow evaluation time
       #
-      # These parameters are set via arguments passed to the cog method, not via the cog's input block
-      # This allows some aspects of system cogs' input to be set at workflow evaluation time,
-      # rather workflow execution time.
+      # Params are used to provide limited evaluation-time parameterization to system cogs,
+      # such as the name of the execute scope to be invoked by a `call`, `map`, a, `repeat` cog.
       #
-      # Only name is required.
-      # System cogs should extend this class with their own params types if needed.
+      # System cogs also accept input at execution time, just like regular cogs.
       class Params
+        # The name identifier for this system cog instance
+        #
+        # Used to reference this cog's output. Auto-generated if not provided.
+        #
         #: Symbol
         attr_reader :name
 
+        # Initialize parameters with the cog name
+        #
+        # Subclasses should define their own `initialize` accepting specific parameters.
+        #
         #: (Symbol?) -> void
         def initialize(name)
-          # Implementing classes should define an initialize method with the specific arguments they expect
-          # Implementations must provide the system cog's name (if set) via params
           @name = name || Cog.generate_fallback_name
         end
       end
