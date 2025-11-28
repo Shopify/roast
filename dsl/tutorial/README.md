@@ -1,6 +1,7 @@
 ![roast-horiz-logo](https://github.com/user-attachments/assets/f9b1ace2-5478-4f4a-ac8e-5945ed75c5b4)
 
 # Roast Tutorial
+
 🔥 _version 1.0 feature preview_ 🔥
 
 Welcome to the Roast tutorial! This guide will teach you how to build AI workflows using the Roast DSL.
@@ -52,13 +53,31 @@ Quickly learn the basics: how to create and run a simple workflow with a single 
 
 ---
 
+### Chapter 2: Chaining Cogs Together
+
+Learn how to build multi-step workflows by chaining cogs together, where the output of one step becomes the input to the
+next.
+
+**You'll learn:**
+
+- How to name cogs and reference their outputs
+- Using the `!` suffix to access previous results
+- The difference between `agent` and `chat` cogs
+- Using the `ruby` cog for custom logic
+- How data flows through a workflow
+
+**Files:**
+
+- `02_chaining_cogs/simple_chain.rb` - Basic chaining with `chat` cogs
+- `02_chaining_cogs/code_review.rb` - Realistic workflow with `agent`, `chat`, and `ruby`
+
+---
+
 ### Coming Soon
 
 Future chapters will cover:
 
-- Chaining multiple cogs together
-- Working with agent cogs for file access
-- Configuration options
+- Advanced configuration options
 - Control flow (skip!, fail!)
 - Creating reusable scopes
 - Processing collections
