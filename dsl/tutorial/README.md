@@ -112,12 +112,32 @@ whether steps actually ran.
 
 ---
 
+### Chapter 5: Reusable Scopes
+
+Learn how to create reusable `execute` scopes that can be called multiple times with different inputs, making your
+workflows more modular and maintainable.
+
+**You'll learn:**
+
+- Defining named execute scopes
+- Calling scopes with the `call` cog
+- Passing values to scopes
+- Returning values with `outputs`
+- Extracting outputs with `from()`
+
+**Files:**
+
+- `05_reusable_scopes/basic_scope.rb` - Defining and calling named scopes
+- `05_reusable_scopes/parameterized_scope.rb` - Passing values to scopes
+- `05_reusable_scopes/accessing_scope_outputs.rb` - Using `from()` with a block to access specific cog outputs
+
+---
+
 ### Coming Soon
 
 Future chapters will cover:
 
 - Processing collections with `map`
-- Creating reusable scopes
 - Iterative workflows with `repeat`
 
 ---
