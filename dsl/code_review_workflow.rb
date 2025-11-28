@@ -37,14 +37,14 @@ execute do
   # Step 2: Chat provides conversational insights on the structural findings
   chat(:structure_discussion) do
     template("structure_insights", {
-      agent_analysis: agent!(:structure_analysis).response
+      agent_analysis: agent!(:structure_analysis).response,
     })
   end
 
   # Step 3: Agent performs detailed code quality analysis
   agent(:code_quality) do
     template("code_quality_analysis", {
-      structure_insights: chat!(:structure_discussion).response
+      structure_insights: chat!(:structure_discussion).response,
     })
   end
 
@@ -52,14 +52,14 @@ execute do
   chat(:improvement_suggestions) do
     template("improvement_analysis", {
       structure_analysis: agent!(:structure_analysis).response,
-      code_quality: agent!(:code_quality).response
+      code_quality: agent!(:code_quality).response,
     })
   end
 
   # Step 5: Agent validates the suggested improvements
   agent(:validation) do
     template("validate_suggestions", {
-      suggestions: chat!(:improvement_suggestions).response
+      suggestions: chat!(:improvement_suggestions).response,
     })
   end
 

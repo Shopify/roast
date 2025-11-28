@@ -331,10 +331,10 @@ module DSL
             end
             assert_empty stderr
             # Check that both agent and chat steps executed
-            assert_includes stdout, "[AGENT STATS]"  # From agent calls
-            assert_includes stdout, "Model: gpt-4o-mini"  # From chat calls
-            assert_includes stdout, "[USER PROMPT]"  # From agent show_prompt
-            assert_includes stdout, "[ASSISTANT]"  # From chat responses
+            assert_includes stdout, "[AGENT STATS]" # From agent calls
+            assert_includes stdout, "Model: gpt-4o-mini" # From chat calls
+            assert_includes stdout, "[USER PROMPT]" # From agent show_prompt
+            assert_includes stdout, "[ASSISTANT]" # From chat responses
           end
         end
       end

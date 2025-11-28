@@ -25,7 +25,7 @@ execute do
   # Step 2: Customer segmentation analysis
   chat(:customers) do
     template("customer_analysis", {
-      overview: chat!(:overview).response
+      overview: chat!(:overview).response,
     })
   end
 
@@ -33,7 +33,7 @@ execute do
   chat(:products) do
     template("product_analysis", {
       overview: chat!(:overview).response,
-      customer_insights: chat!(:customers).response
+      customer_insights: chat!(:customers).response,
     })
   end
 
@@ -42,7 +42,7 @@ execute do
     template("business_recommendations", {
       overview: chat!(:overview).response,
       customer_analysis: chat!(:customers).response,
-      product_analysis: chat!(:products).response
+      product_analysis: chat!(:products).response,
     })
   end
 
