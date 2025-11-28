@@ -91,7 +91,7 @@ module Roast
 
               lines = block_with_header.lines
               first_line = lines.first&.strip || ""
-              content = lines[1..].not_nil!.join
+              content = (lines[1..] || []).join
 
               case language
               when String
@@ -104,6 +104,8 @@ module Roast
             end
 
             blocks
+          rescue
+            []
           end
 
           # Extract blocks that look like JSON objects or arrays
@@ -125,6 +127,8 @@ module Roast
             # Sort by length (longest first) and deduplicate
             blocks.uniq.sort_by { |b| -b.length }
           end
+        rescue
+          []
         end
 
         # @requires_ancestor: Roast::DSL::Cog::Output
