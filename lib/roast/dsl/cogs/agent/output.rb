@@ -43,9 +43,6 @@ module Roast
           # Contains metrics such as execution duration, number of turns (back-and-forth exchanges
           # with the agent), token usage, and per-model usage breakdown.
           #
-          # #### See Also
-          # - `Agent::Stats`
-          #
           #: Stats
           attr_reader :stats
 

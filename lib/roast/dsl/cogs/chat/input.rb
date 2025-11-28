@@ -20,6 +20,17 @@ module Roast
           #: String?
           attr_accessor :prompt
 
+          # Optional session identifier for maintaining conversation context
+          #
+          # When provided, the chat cog will use this session to maintain context across
+          # multiple invocations, allowing for conversational interactions.
+          #
+          # The chat cog will fork a new session from this point, so multiple conversations can be resumed
+          # from the same session state.
+          #
+          #: Session?
+          attr_accessor :session
+
           # Validate that the input has all required parameters
           #
           # This method ensures that a prompt has been provided before the chat cog executes.
@@ -29,7 +40,7 @@ module Roast
           #
           #: () -> void
           def validate!
-            raise Cog::Input::InvalidInputError, "'prompt' is required" unless prompt.present?
+            valid_prompt!
           end
 
           # Coerce the input from the return value of the input block
@@ -44,6 +55,35 @@ module Roast
             if input_return_value.is_a?(String)
               self.prompt = input_return_value
             end
+          end
+
+          # Get the validated prompt value
+          #
+          # Returns the prompt if it is present, otherwise raises an `InvalidInputError`.
+          #
+          # #### See Also
+          # - `prompt`
+          # - `validate!`
+          #
+          #: () -> String
+          def valid_prompt!
+            valid_prompt = @prompt
+            raise Cog::Input::InvalidInputError, "'prompt' is required" unless valid_prompt.present?
+
+            valid_prompt
+          end
+
+          # Get the session value if one was provided
+          #
+          # Returns the session object if present, otherwise returns `nil`.
+          # This method does not raise an error when the session is absent; providing a session is optional.
+          #
+          # #### See Also
+          # - `session`
+          #
+          #: () -> Session?
+          def valid_session
+            @session
           end
         end
       end

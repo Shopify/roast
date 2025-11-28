@@ -223,10 +223,9 @@ end
 
 ### See Also Sections
 
-Always use `#### See Also` to list related methods in user-facing documentation.
+Always use `#### See Also` to list related user-facing methods and attributes in user-facing documentation.
 
-**Important:** Use fully qualified class/module names for cross-references to other classes.
-Due to name overlap in the system, always specify the complete module path.
+**Critical Rule:** Only reference methods and attributes that users would actually call or access in their workflows, using user-facing syntax. Do __not__ reference class names or internal implementation details.
 
 ```ruby
 # Configure the cog to use the provider's default model when invoking the agent
@@ -235,7 +234,6 @@ Due to name overlap in the system, always specify the complete module path.
 #
 # #### See Also
 # - `model`
-# - `Roast::DSL::Cogs::Agent::Config` - for full configuration options
 #
 #: () -> void
 def use_default_model!
@@ -245,20 +243,25 @@ end
 
 **When to include See Also:**
 
-- Complementary methods (setter/getter pairs) - use method names only
-- Alternative approaches to the same goal - use method names only
-- Related predicate methods (e.g., `show_prompt?`) - use method names only
-- Methods from included modules (e.g., `WithText`, `WithJson`) - use method names only
-- Related classes - use **fully qualified names** (e.g., `Roast::DSL::SystemCogs::Call::Output`)
+- Complementary methods (setter/getter pairs)
+- Alternative approaches to the same goal
+- Related predicate methods (e.g., `show_prompt?`)
+- Methods from included modules (e.g., `text`, `lines`, `json`, `json!`)
+- Other user-facing methods and attributes that users would call in their workflows
 
 **Do NOT include in See Also:**
 
 - `valid_*` validation methods when documenting user-facing Config setter methods - these are internal implementation details
+- Class names (e.g., `Roast::DSL::Cogs::Agent::Config`) - these are not user-facing references
+- Internal implementation details or mechanisms
+- Anything users wouldn't directly reference in their workflow code
 
 **Formatting examples:**
-- ✅ Method reference: `` - `execute` ``
-- ✅ Class reference: `` - `Roast::DSL::Cogs::Agent::Input` ``
-- ❌ Ambiguous class: `` - `Agent::Input` ``
+- ✅ User-facing method: `` - `model` ``
+- ✅ Attribute from same class: `` - `response` ``
+- ✅ Method from included module: `` - `text` ``
+- ❌ Class name: `` - `Roast::DSL::Cogs::Agent::Input` ``
+- ❌ Internal method: `` - `valid_model!` ``
 
 ### Alias and Inverse Method Documentation
 
@@ -670,8 +673,8 @@ Before finalizing user-facing documentation, verify:
 - [ ] First line does not end with a period
 - [ ] All subsequent lines are complete sentences with proper punctuation
 - [ ] Default behavior is documented (if applicable)
-- [ ] Related methods are cross-referenced in `#### See Also` sections (but Config setters do NOT reference `valid_*` methods)
-- [ ] **All class/module references use fully qualified names** (e.g., `Roast::DSL::SystemCogs::Call::Output`, not `Call::Output`)
+- [ ] Related user-facing methods/attributes are cross-referenced in `#### See Also` sections using user-facing syntax only
+- [ ] `#### See Also` does NOT include class names, `valid_*` methods, or other internal implementation details
 - [ ] Aliases are documented in an `#### Alias Methods` subsection (if applicable)
 - [ ] The method itself is listed first in its own alias list, followed by aliases in alphabetical order
 - [ ] Nil/false/true semantics are explained when not obvious

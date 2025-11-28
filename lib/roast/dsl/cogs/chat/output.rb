@@ -29,9 +29,25 @@ module Roast
           #: String
           attr_reader :response
 
-          #: (String response) -> void
-          def initialize(response)
+          # The session object containing the conversation context
+          #
+          # This holds a reference to the complete message history needed to resume or continue a conversation
+          # with the language model. The session can be passed to subsequent `chat` cog invocations
+          # to maintain conversational context.
+          #
+          # Note: you do __not__ have to use the same model for the entire conversation.
+          # You can change models between prompts while maintaining the same session, allowing
+          # different models to participate in the same conversation.
+          #
+          #: Session
+          attr_reader :session
+
+          # Initialize a new chat output with the session and response text
+          #
+          #: (Session, String) -> void
+          def initialize(session, response)
             super()
+            @session = session
             @response = response
           end
 
