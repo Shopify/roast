@@ -112,7 +112,7 @@ result and a potential `NoMethodError` later on.
 
 ## The Agent Cog
 
-The `agent` cog is similar to `chat`, but it runs locally and has access to your filesystem and the ability to use 
+The `agent` cog is similar to `chat`, but it runs locally and has access to your filesystem and the ability to use
 a suite of local tools. Use `agent` when you need to read files, search code, or interact with your local environment:
 
 ```ruby
@@ -225,6 +225,41 @@ end
 
 Data flows: **shell command → agent analysis → chat summary → ruby formatting**
 
+## Resuming Conversations
+
+Both `chat` and `agent` cogs can resume previous conversations by passing their session to a subsequent cog. This allows
+multi-turn conversations where the LLM remembers context from earlier exchanges:
+
+```ruby
+execute do
+  # First turn - tell the LLM something
+  chat(:introduce_topic) do
+    "The secret code word is 'thunderbolt'. Remember it."
+  end
+
+  # Second turn - resume the session and ask about it
+  chat(:recall_code) do |my|
+    my.session = chat!(:introduce_topic).session
+    my.prompt = "What was the secret code word?"
+  end
+end
+```
+
+The same pattern works with `agent` cogs:
+
+```ruby
+execute do
+  agent(:analyze) { "List files in this directory" }
+
+  agent(:followup) do |my|
+    my.session = agent!(:analyze).session
+    my.prompt = "Tell me more about one of those files"
+  end
+end
+```
+
+**Important:** You cannot resume an agent's session in a chat cog, or vice versa. They are not interchangeable.
+
 ## Running the Workflows
 
 To run the examples in this chapter:
@@ -235,9 +270,13 @@ bin/roast execute --executor=dsl dsl/tutorial/02_chaining_cogs/simple_chain.rb
 ```
 
 ```bash
-
 # Realistic code review workflow
 bin/roast execute --executor=dsl dsl/tutorial/02_chaining_cogs/code_review.rb
+```
+
+```bash
+# Session resumption with multi-turn conversations
+bin/roast execute --executor=dsl dsl/tutorial/02_chaining_cogs/session_resumption.rb
 ```
 
 ## Try It Yourself
@@ -259,7 +298,9 @@ bin/roast execute --executor=dsl dsl/tutorial/02_chaining_cogs/code_review.rb
 - Use `agent` for filesystem access, `chat` for pure reasoning
 - Use `ruby` for custom logic and formatting
 - Data flows through your workflow in the order you define steps
-- Reference any past steps' output in a current step's input.
+- Reference any past steps' output in a current step's input
+- Resume conversations by passing `.session` to subsequent cogs with `my.session = ...`
+- Cannot mix chat and agent sessions - they are different types
 
 ## What's Next?
 
