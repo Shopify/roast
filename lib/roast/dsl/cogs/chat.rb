@@ -4,10 +4,37 @@
 module Roast
   module DSL
     module Cogs
+      # Chat cog for pure LLM interaction
+      #
+      # The chat cog provides pure LLM interaction without local system access. While it
+      # cannot access local files or run local tools, it can still perform complex reasoning and
+      # access any cloud-based tools and MCP servers according to the capabilities of the model and
+      # the capabilities that may be provided to it by the LLM provider.
+      #
+      # Key characteristics:
+      # - No access to local filesystem (cannot read or write local files)
+      # - Cannot run local tools or commands
+      # - Can access cloud-based tools and MCP servers provided by the LLM provider
+      # - Performs request-response interactions
+      # - Does not currently maintain conversation state across invocations (not yet implemented)
+      # - Does not currently support automatic session resumption (not yet implemented)
+      #
+      # For tasks requiring local filesystem access or locally-configured tools, use the `agent` cog instead.
       class Chat < Cog
+        # The configuration object for this chat cog instance
+        #
         #: Roast::DSL::Cogs::Chat::Config
         attr_reader :config
 
+        # Execute the chat completion with the given input and return the output
+        #
+        # Sends the input prompt to the configured LLM provider and returns the generated response.
+        # Optionally displays the user prompt, LLM response, and basic statistics to the console
+        # based on the cog's configuration.
+        #
+        # The execution is a simple request-response interaction without conversation history
+        # or tool use capabilities.
+        #
         #: (Input) -> Output
         def execute(input)
           chat = ruby_llm_context.chat(
@@ -42,6 +69,10 @@ module Roast
           Output.new(resp.content)
         end
 
+        private
+
+        # Get a RubyLLM context configured for this chat cog
+        #
         #: () -> RubyLLM::Context
         def ruby_llm_context
           @ruby_llm_context ||= RubyLLM.context do |context|
