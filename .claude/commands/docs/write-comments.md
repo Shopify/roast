@@ -8,15 +8,21 @@ Accepts either:
 
 ## Task
 
-Following the guidelines in `internal/documentation/doc-comments.md`:
+Following the guidelines in `internal/documentation/`:
 
-1. Review existing documentation comments in the target file/class
-2. Write doc comments for any public methods that lack them
-3. Update existing doc comments to match current standards
-4. Cross-reference related methods, including newly documented ones
-5. Replace any rough developer notes with polished documentation
+1. **Determine documentation type:**
+   - For Config, Input, Output classes → Use `doc-comments-external.md` (user-facing, thorough)
+   - For cog classes, Params classes, `execute` methods, internal utilities → Use `doc-comments-internal.md` (developer-facing, concise)
+   - See `doc-comments.md` for the distinction
 
-Focus only on public interface methods in Params, Config, Input, and Output classes within `lib/roast/dsl/`.
+2. Review existing documentation comments in the target file/class
+3. Write doc comments for any public methods that lack them
+4. Update existing doc comments to match current standards
+5. Cross-reference related methods (for user-facing documentation only)
+6. Replace any rough developer notes with polished documentation
+
+**Note:** User-facing documentation should be thorough with `#### See Also` sections.
+Developer-facing documentation should be concise without cross-references.
 
 ## Important Constraints
 
