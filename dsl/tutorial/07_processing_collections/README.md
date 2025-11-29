@@ -1,4 +1,4 @@
-# Chapter 6: Processing Collections
+# Chapter 7: Processing Collections
 
 Learn how to process arrays and other collections with the `map` cog, which applies a named execute scope to each item
 in a collection.
@@ -138,8 +138,8 @@ Try these examples to see `map` in action:
 
 ```bash
 # Basic map with collect, reduce, and accessing specific iterations
-bin/roast execute --executor=dsl dsl/tutorial/06_processing_collections/basic_map.rb
+bin/roast execute --executor=dsl dsl/tutorial/07_processing_collections/basic_map.rb
 
 # Parallel execution
-bin/roast execute --executor=dsl dsl/tutorial/06_processing_collections/parallel_map.rb
+bin/roast execute --executor=dsl dsl/tutorial/07_processing_collections/parallel_map.rb
 ```

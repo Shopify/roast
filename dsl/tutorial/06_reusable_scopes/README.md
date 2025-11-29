@@ -1,4 +1,4 @@
-# Chapter 5: Reusable Scopes
+# Chapter 6: Reusable Scopes
 
 In previous chapters, all your workflows used a single `execute` block. Now you'll learn how to create reusable scopes
 that can be called multiple times with different inputs, making your workflows more modular and maintainable.
@@ -134,17 +134,17 @@ To run the examples in this chapter:
 
 ```bash
 # Basic scope example
-bin/roast execute --executor=dsl dsl/tutorial/05_reusable_scopes/basic_scope.rb
+bin/roast execute --executor=dsl dsl/tutorial/06_reusable_scopes/basic_scope.rb
 ```
 
 ```bash
 # Parameterized scope example
-bin/roast execute --executor=dsl dsl/tutorial/05_reusable_scopes/parameterized_scope.rb
+bin/roast execute --executor=dsl dsl/tutorial/06_reusable_scopes/parameterized_scope.rb
 ```
 
 ```bash
 # Accessing specific scope outputs
-bin/roast execute --executor=dsl dsl/tutorial/05_reusable_scopes/accessing_scope_outputs.rb
+bin/roast execute --executor=dsl dsl/tutorial/06_reusable_scopes/accessing_scope_outputs.rb
 ```
 
 ## Try It Yourself
