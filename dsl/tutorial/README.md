@@ -75,7 +75,7 @@ next.
 
 ---
 
-### Chapter 3: Configuration Options
+### Chapter 4: Configuration Options
 
 Learn how to configure cogs to control their behavior, use different models for different steps, and manage what
 gets displayed during execution.
@@ -89,12 +89,12 @@ gets displayed during execution.
 
 **Files:**
 
-- `03_configuration_options/simple_config.rb` - Basic configuration and overrides
-- `03_configuration_options/control_display_and_temperature.rb` - Configuring multiple parameters for multiple steps
+- `04_configuration_options/simple_config.rb` - Basic configuration and overrides
+- `04_configuration_options/control_display_and_temperature.rb` - Configuring multiple parameters for multiple steps
 
 ---
 
-### Chapter 4: Control Flow
+### Chapter 5: Control Flow
 
 Learn how to create dynamic workflows that adapt based on conditions: skipping steps, handling failures, and checking
 whether steps actually ran.
@@ -108,13 +108,13 @@ whether steps actually ran.
 
 **Files:**
 
-- `04_control_flow/conditional_execution.rb` - Using `skip!` and `?` accessor
-- `04_control_flow/handling_failures.rb` - Command failures with `no_abort_on_failure!`, `no_fail_on_error!`, and
+- `05_control_flow/conditional_execution.rb` - Using `skip!` and `?` accessor
+- `05_control_flow/handling_failures.rb` - Command failures with `no_abort_on_failure!`, `no_fail_on_error!`, and
   explicit `fail!`
 
 ---
 
-### Chapter 5: Reusable Scopes
+### Chapter 6: Reusable Scopes
 
 Learn how to create reusable `execute` scopes that can be called multiple times with different inputs, making your
 workflows more modular and maintainable.
@@ -129,13 +129,13 @@ workflows more modular and maintainable.
 
 **Files:**
 
-- `05_reusable_scopes/basic_scope.rb` - Defining and calling named scopes
-- `05_reusable_scopes/parameterized_scope.rb` - Passing values to scopes
-- `05_reusable_scopes/accessing_scope_outputs.rb` - Using `from()` with a block to access specific cog outputs
+- `06_reusable_scopes/basic_scope.rb` - Defining and calling named scopes
+- `06_reusable_scopes/parameterized_scope.rb` - Passing values to scopes
+- `06_reusable_scopes/accessing_scope_outputs.rb` - Using `from()` with a block to access specific cog outputs
 
 ---
 
-### Chapter 6: Processing Collections
+### Chapter 7: Processing Collections
 
 Learn how to process arrays and collections by applying a named execute scope to each item with the `map` cog.
 
@@ -149,12 +149,12 @@ Learn how to process arrays and collections by applying a named execute scope to
 
 **Files:**
 
-- `06_processing_collections/basic_map.rb` - Basic map usage with collect, reduce, and accessing specific iterations
-- `06_processing_collections/parallel_map.rb` - Serial, limited parallel, and unlimited parallel execution
+- `07_processing_collections/basic_map.rb` - Basic map usage with collect, reduce, and accessing specific iterations
+- `07_processing_collections/parallel_map.rb` - Serial, limited parallel, and unlimited parallel execution
 
 ---
 
-### Chapter 7: Iterative Workflows
+### Chapter 8: Iterative Workflows
 
 Learn how to create iterative workflows with the `repeat` cog, which executes a scope repeatedly until a condition is
 met, with each iteration's output becoming the next iteration's input.
@@ -171,13 +171,13 @@ met, with each iteration's output becoming the next iteration's input.
 
 **Files:**
 
-- `07_iterative_workflows/basic_repeat.rb` - Iterative text refinement showing basic repeat patterns
-- `07_iterative_workflows/conditional_break.rb` - Number guessing game with conditional termination
-- `07_iterative_workflows/skip_with_next.rb` - Processing numbers while skipping even values
+- `08_iterative_workflows/basic_repeat.rb` - Iterative text refinement showing basic repeat patterns
+- `08_iterative_workflows/conditional_break.rb` - Number guessing game with conditional termination
+- `08_iterative_workflows/skip_with_next.rb` - Processing numbers while skipping even values
 
 ---
 
-### Chapter 8: Asynchronous Cogs
+### Chapter 9: Asynchronous Cogs
 
 Learn how to run cogs asynchronously to improve workflow performance when you have independent tasks
 that can run concurrently.
@@ -193,9 +193,9 @@ that can run concurrently.
 
 **Files:**
 
-- `08_async_cogs/basic_async.rb` - Simple async execution with multiple independent agent tasks
-- `08_async_cogs/parallel_analysis.rb` - Parallel code analysis using multiple agents
-- `08_async_cogs/sync_barriers.rb` - Using synchronous cogs to control execution phases
+- `09_async_cogs/basic_async.rb` - Simple async execution with multiple independent agent tasks
+- `09_async_cogs/parallel_analysis.rb` - Parallel code analysis using multiple agents
+- `09_async_cogs/sync_barriers.rb` - Using synchronous cogs to control execution phases
 
 ---
 

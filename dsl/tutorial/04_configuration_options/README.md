@@ -1,4 +1,4 @@
-# Chapter 3: Configuration Options
+# Chapter 4: Configuration Options
 
 In previous chapters, you learned the basics of creating workflows and chaining cogs together. Now you'll learn how to
 configure cogs to control their behavior, use different models for different steps, and manage what gets displayed
@@ -177,12 +177,12 @@ To run the examples in this chapter:
 
 ```bash
 # Simple configuration example
-bin/roast execute --executor=dsl dsl/tutorial/03_configuration_options/simple_config.rb
+bin/roast execute --executor=dsl dsl/tutorial/04_configuration_options/simple_config.rb
 ```
 
 ```bash
 # Configuring multiple parameters for multiple steps
-bin/roast execute --executor=dsl dsl/tutorial/03_configuration_options/control_display_and_temperature.rb
+bin/roast execute --executor=dsl dsl/tutorial/04_configuration_options/control_display_and_temperature.rb
 ```
 
 ## Try It Yourself
