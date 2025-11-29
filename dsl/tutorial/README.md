@@ -177,11 +177,25 @@ met, with each iteration's output becoming the next iteration's input.
 
 ---
 
-### Coming Soon
+### Chapter 8: Asynchronous Cogs
 
-Future chapters will cover:
+Learn how to run cogs asynchronously to improve workflow performance when you have independent tasks
+that can run concurrently.
 
-- Running cogs asynchronously with `async!`
+**You'll learn:**
+
+- How async cogs differ from parallel map execution
+- Configuring cogs to run asynchronously with `async!`
+- How async execution works and when cogs block
+- Using synchronous cogs as synchronization barriers
+- Real-world patterns for parallel code analysis
+- When to use async cogs vs other parallelization methods
+
+**Files:**
+
+- `08_async_cogs/basic_async.rb` - Simple async execution with multiple independent agent tasks
+- `08_async_cogs/parallel_analysis.rb` - Parallel code analysis using multiple agents
+- `08_async_cogs/sync_barriers.rb` - Using synchronous cogs to control execution phases
 
 ---
 
