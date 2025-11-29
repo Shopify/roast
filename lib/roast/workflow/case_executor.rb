@@ -13,7 +13,7 @@ module Roast
       end
 
       def execute_case(case_config)
-        $stderr.puts "Executing case step: #{case_config.inspect}"
+        Roast::Log.debug("Executing case step: #{case_config.inspect}")
 
         # Extract case expression
         case_expr = case_config["case"]
