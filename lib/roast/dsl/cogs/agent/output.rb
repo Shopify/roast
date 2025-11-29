@@ -11,6 +11,7 @@ module Roast
         # and statistics about the agent execution.
         class Output < Cog::Output
           include Cog::Output::WithJson
+          include Cog::Output::WithNumber
           include Cog::Output::WithText
 
           # The agent's final response text
@@ -47,10 +48,6 @@ module Roast
           attr_reader :stats
 
           private
-
-          def json_text
-            response
-          end
 
           def raw_text
             response
