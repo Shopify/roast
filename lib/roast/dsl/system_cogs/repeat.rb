@@ -51,6 +51,13 @@ module Roast
           # Integer
           attr_accessor :index
 
+          # The maximum number of iterations for which the loop may run
+          #
+          # Defaults to `nil`, meaning that no maximum iteration limit is applied
+          #
+          #: Integer?
+          attr_accessor :max_iterations
+
           # Initialize the input with default values
           #
           #: () -> void
@@ -64,6 +71,7 @@ module Roast
           #: () -> void
           def validate!
             raise Cog::Input::InvalidInputError, "'value' is required" if value.nil? && !coerce_ran?
+            raise Cog::Input::InvalidInputError, "'max_iterations' must be >= 1 if present" if (max_iterations || 1) < 1
           end
 
           # Coerce the input from the return value of the input block
@@ -205,6 +213,7 @@ module Roast
 
               ems = [] #: Array[ExecutionManager]
               scope_value = input.value.deep_dup
+              max_iterations = input.max_iterations
               loop do
                 ems << em = ExecutionManager.new(
                   @cog_registry,
@@ -218,6 +227,7 @@ module Roast
                 em.prepare!
                 em.run!
                 scope_value = em.final_output
+                break if max_iterations.present? && ems.length >= max_iterations
               rescue ControlFlow::Break
                 # TODO: do something with the message passed to break!
                 break
