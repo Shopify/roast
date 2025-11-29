@@ -282,6 +282,7 @@ module Roast
               scope:,
               scope_value:,
               scope_index:,
+              workflow_dir: @workflow_dir,
             )
           end
 
