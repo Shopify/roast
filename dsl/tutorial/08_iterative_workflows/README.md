@@ -135,7 +135,7 @@ execute do
     puts "First iteration: #{first}"
     puts "Last iteration: #{last}"
     puts "Third iteration: #{third}"
-    
+
     # Access specific cogs in specific iterations
     answer = from(repeat!(:loop).iteration(-2)) { chat!(:question).text }
     puts "Second-to-last answer: #{answer}"
@@ -222,3 +222,10 @@ bin/roast execute --executor=dsl dsl/tutorial/08_iterative_workflows/basic_repea
 # Using break! to terminate based on conditions
 bin/roast execute --executor=dsl dsl/tutorial/08_iterative_workflows/conditional_break.rb
 ```
+
+## What's Next?
+
+In the final chapter, you'll learn about asynchronous cogs: how to run multiple independent tasks concurrently to improve
+workflow performance without waiting for each task to complete before starting the next.
+
+But first, experiment with `repeat` to create iterative transformations and see how values flow from one iteration to the next!
