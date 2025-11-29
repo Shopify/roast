@@ -67,11 +67,11 @@ Roast uses fibers for efficient asynchronous operation.
 ```ruby
 config do
   map do
-    parallel(3)  # Run up to 3 iterations concurrently for all `map` cogs
+    parallel(3) # Run up to 3 iterations concurrently for all `map` cogs
   end
 
   map(:unlimited) do
-    parallel!  # Run all iterations in parallel for a specific `map` cog
+    parallel! # Run all iterations in parallel for a specific `map` cog
   end
 end
 ```
@@ -116,7 +116,7 @@ execute do
   # Custom starting index
   map(run: :process_with_index) do |my|
     my.items = ["a", "b", "c"]
-    my.initial_index = 1  # Start counting from 1
+    my.initial_index = 1 # Start counting from 1
   end
 end
 ```
@@ -143,3 +143,10 @@ bin/roast execute --executor=dsl dsl/tutorial/07_processing_collections/basic_ma
 # Parallel execution
 bin/roast execute --executor=dsl dsl/tutorial/07_processing_collections/parallel_map.rb
 ```
+
+## What's Next?
+
+In the next chapter, you'll learn about iterative workflows with the `repeat` cog: an easy way to execute a set of
+steps repeatedly until a condition is met.
+
+But first, experiment with `map` to process collections and try different parallel execution strategies!
