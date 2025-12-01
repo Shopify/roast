@@ -82,6 +82,7 @@ GEM
     faraday-retry (2.3.2)
       faraday (~> 2.0)
     ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x86_64-linux-gnu)
     fiber-annotation (0.2.0)
     fiber-local (1.1.0)
       fiber-storage
@@ -215,6 +216,7 @@ GEM
       sorbet-static (= 0.5.12414)
     sorbet-runtime (0.5.12414)
     sorbet-static (0.5.12414-universal-darwin)
+    sorbet-static (0.5.12414-x86_64-linux)
     sorbet-static-and-runtime (0.5.12414)
       sorbet (= 0.5.12414)
       sorbet-runtime (= 0.5.12414)
@@ -226,6 +228,7 @@ GEM
       sorbet-static-and-runtime (>= 0.5.10187)
       thor (>= 0.19.2)
     sqlite3 (2.7.0-arm64-darwin)
+    sqlite3 (2.7.0-x86_64-linux-gnu)
     tapioca (0.16.11)
       benchmark
       bundler (>= 2.2.25)
@@ -258,6 +261,7 @@ GEM
 
 PLATFORMS
   arm64-darwin
+  x86_64-linux
 
 DEPENDENCIES
   cli-ui!
