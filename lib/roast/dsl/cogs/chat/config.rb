@@ -9,7 +9,7 @@ module Roast
           PROVIDERS = {
             openai: {
               api_key_env_var: "OPENAI_API_KEY",
-              base_url_env_var: "OPENAI_API_BASE_URL",
+              base_url_env_var: "OPENAI_API_BASE",
               default_base_url: "https://api.openai.com/v1",
               default_model: "gpt-4o-mini",
             },
@@ -126,7 +126,7 @@ module Roast
           # - A provider-specific default, otherwise.
           #
           # #### Environment Variables
-          # - OpenAI Provider: OPENAI_API_BASE_URL
+          # - OpenAI Provider: OPENAI_API_BASE
           #
           # #### See Also
           # - `base_url`
@@ -139,7 +139,7 @@ module Roast
           # Get the validated, configured value of the API base URL the cog is configured to use when invoking the llm
           #
           # #### Environment Variables
-          # - OpenAI Provider: OPENAI_API_BASE_URL
+          # - OpenAI Provider: OPENAI_API_BASE
           #
           # #### See Also
           # - `base_url`
