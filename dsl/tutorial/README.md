@@ -75,6 +75,25 @@ next.
 
 ---
 
+### Chapter 3: Targets and Parameters
+
+Learn how to make workflows flexible by accepting targets and custom parameters from the command line.
+
+**You'll learn:**
+
+- Using `target!` for single-target workflows (file, url, etc.)
+- Using `targets` for a workflow that can accept multiple targets in one shot 
+- Passing custom arguments with `args` and `kwargs`
+- Checking for argument presence
+- Combining targets with arguments
+
+**Files:**
+
+- `03_targets_and_params/single_target.rb` - Processing a single URL with `target!`
+- `03_targets_and_params/multiple_targets.rb` - Processing multiple files with arguments
+
+---
+
 ### Chapter 4: Configuration Options
 
 Learn how to configure cogs to control their behavior, use different models for different steps, and manage what

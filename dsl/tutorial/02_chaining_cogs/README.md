@@ -304,7 +304,7 @@ bin/roast execute --executor=dsl dsl/tutorial/02_chaining_cogs/session_resumptio
 
 ## What's Next?
 
-In the next chapter, you'll learn more about configuration options: how to fine-tune cog behavior, control what gets
-displayed, and set up different models for different tasks.
+In the next chapter, you'll learn how to make workflows more flexible by accepting targets and custom parameters
+from the command line, so you can reuse the same workflow with different inputs.
 
 But first, make sure you understand how outputs flow between cogs. This is the foundation of all workflows!
