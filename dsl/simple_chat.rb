@@ -4,7 +4,6 @@
 #: self as Roast::DSL::Workflow
 
 config do
-  chat { assume_model_exists! }
   chat(:lake) { model("gpt-4o") }
   chat(:next) { model("gpt-4o-mini") }
 end
