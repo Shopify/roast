@@ -342,6 +342,12 @@ module Roast
       #   chat(:summarizer) do |my|
       #     my.prompt = "Summarize this: #{chat!(:analyzer).response}"
       #   end
+      #
+      #   # Resume a conversation by passing the session
+      #   chat(:followup) do |my|
+      #     my.prompt = "Can you elaborate on the second point?"
+      #     my.session = chat!(:analyzer).session
+      #   end
       # end
       # ```
       #
@@ -350,6 +356,7 @@ module Roast
       # Set these attributes on the `my` input object within the block:
       #
       # - `prompt` (required) - The prompt to send to the language model
+      # - `session` (optional) - Session object for conversation continuity
       #
       # You can also return a String from the block, which will be used as `my.prompt` if not set explicitly.
       #
@@ -357,6 +364,7 @@ module Roast
       #
       # Access these attributes on the output object:
       # - `response` - The LLM's text response
+      # - `session` - Session object for resuming the conversation
       # - `text` - The response text with whitespace stripped (same as `.response.strip`)
       # - `lines` - Array of lines from the response, each with whitespace stripped (same as `.response.lines.map(&:strip)`)
       # - `json` - Parse the response as JSON, returning nil if parsing fails
@@ -365,12 +373,6 @@ module Roast
       # JSON parsing will aggressively and intelligently attempt to extract a JSON object from within surrounding
       # text produced by the LLM, so you should not need to worry if the LLM's response looks like "Here is the
       # JSON object you asked for: ..."
-      #
-      # ### Note
-      #
-      # The `chat` cog does not maintain conversational context across invocations. If you need
-      # the LLM to be aware of previous messages, include the relevant conversation history in
-      # your prompt.
       #
       # ### See Also
       # - `agent` - Run a coding agent with local filesystem access
