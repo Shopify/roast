@@ -65,11 +65,13 @@ next.
 - The difference between `agent` and `chat` cogs
 - Using the `ruby` cog for custom logic
 - How data flows through a workflow
+- Resuming conversations with session management
 
 **Files:**
 
 - `02_chaining_cogs/simple_chain.rb` - Basic chaining with `chat` cogs
 - `02_chaining_cogs/code_review.rb` - Realistic workflow with `agent`, `chat`, and `ruby`
+- `02_chaining_cogs/session_resumption.rb` - Multi-turn conversations with session resumption
 
 ---
 
