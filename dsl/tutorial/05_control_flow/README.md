@@ -1,4 +1,4 @@
-# Chapter 4: Control Flow
+# Chapter 5: Control Flow
 
 In previous chapters, you learned how to chain cogs together and configure them. Now you'll learn how to create
 dynamic workflows that adapt based on conditions: skipping steps when needed, handling failures gracefully, and
@@ -122,12 +122,12 @@ To run the examples in this chapter:
 
 ```bash
 # Conditional execution example
-bin/roast execute --executor=dsl dsl/tutorial/04_control_flow/conditional_execution.rb
+bin/roast execute --executor=dsl dsl/tutorial/05_control_flow/conditional_execution.rb
 ```
 
 ```bash
 # Handling failures example
-bin/roast execute --executor=dsl dsl/tutorial/04_control_flow/handling_failures.rb
+bin/roast execute --executor=dsl dsl/tutorial/05_control_flow/handling_failures.rb
 ```
 
 ## Try It Yourself

@@ -1,4 +1,4 @@
-# Chapter 7: Iterative Workflows
+# Chapter 8: Iterative Workflows
 
 Learn how to create iterative workflows with the `repeat` cog, which executes a named scope repeatedly until a condition
 is met. Unlike `map` which processes a collection holding a fix number of items, `repeat` continues indefinitely until
@@ -217,8 +217,8 @@ Try these examples to see `repeat` in action:
 
 ```bash
 # Basic iterative transformation
-bin/roast execute --executor=dsl dsl/tutorial/07_iterative_workflows/basic_repeat.rb
+bin/roast execute --executor=dsl dsl/tutorial/08_iterative_workflows/basic_repeat.rb
 
 # Using break! to terminate based on conditions
-bin/roast execute --executor=dsl dsl/tutorial/07_iterative_workflows/conditional_break.rb
+bin/roast execute --executor=dsl dsl/tutorial/08_iterative_workflows/conditional_break.rb
 ```
