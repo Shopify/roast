@@ -227,8 +227,8 @@ module Roast
       # #### Configure LLM parameters
       # - `temperature(float)` - Set the temperature (0.0-1.0) for response randomness
       # - `use_default_temperature!` - Use the provider's default temperature
-      # - `verify_model_exists!` - Verify the model exists before invoking (default)
-      # - `no_verify_model_exists!` (alias `assume_model_exists!`) - Skip model verification
+      # - `verify_model_exists!` - Verify the model exists before invoking
+      # - `no_verify_model_exists!` (alias `assume_model_exists!`) - Skip model verification (default)
       #
       # #### Configure display output
       # - `show_prompt!` - Display the user prompt

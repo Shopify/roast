@@ -3,12 +3,10 @@
 
 config do
   chat(:low_temp) do
-    assume_model_exists!
     temperature(0.0)
   end
 
   chat(:high_temp) do
-    assume_model_exists!
     temperature(1.0)
   end
 end
