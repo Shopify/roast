@@ -11,6 +11,7 @@ module Roast
               class UserMessage < Message
                 IGNORED_FIELDS = [
                   :parent_tool_use_id,
+                  :tool_use_result,
                 ].freeze
 
                 #: Array[Message]

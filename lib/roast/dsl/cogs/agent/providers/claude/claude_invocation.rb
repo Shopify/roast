@@ -151,9 +151,13 @@ module Roast
                 formatted_message = message.format(@context)
                 puts formatted_message if formatted_message.present? && @show_progress
 
-                puts "[AGENT MESSAGE: #{message.type}] #{message.inspect}" unless message.unparsed.blank?
-                # TODO: do something better with unhandled data so we can improve the parser
-                puts "[WARNING] Unhandled data in Claude #{message.type} message: #{message.unparsed}\n" unless message.unparsed.blank?
+                unless message.unparsed.blank?
+                  # TODO: do something better with unhandled data so we can improve the parser
+                  puts "[WARNING] Unhandled data in Claude #{message.type} message:"
+                  puts JSON.pretty_generate(message.unparsed)
+                  puts "[FULL MESSAGE: #{message.type}]"
+                  pp(message)
+                end
               end
 
               #: () -> Array[String]
