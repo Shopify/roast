@@ -154,11 +154,33 @@ Learn how to process arrays and collections by applying a named execute scope to
 
 ---
 
+### Chapter 7: Iterative Workflows
+
+Learn how to create iterative workflows with the `repeat` cog, which executes a scope repeatedly until a condition is
+met, with each iteration's output becoming the next iteration's input.
+
+**You'll learn:**
+
+- Using the `repeat` cog for iterative transformations
+- How output from one iteration becomes input to the next
+- Breaking out of loops with `break!`
+- Skipping to the next iteration with `next!`
+- Accessing specific iterations and the final result with `from`
+- Processing all iterations with `collect` and `reduce`
+- Using the `outputs` block for controlling iteration values
+
+**Files:**
+
+- `07_iterative_workflows/basic_repeat.rb` - Iterative text refinement showing basic repeat patterns
+- `07_iterative_workflows/conditional_break.rb` - Number guessing game with conditional termination
+- `07_iterative_workflows/skip_with_next.rb` - Processing numbers while skipping even values
+
+---
+
 ### Coming Soon
 
 Future chapters will cover:
 
-- Iterative workflows with `repeat`
 - Running cogs asynchronously with `async!`
 
 ---
