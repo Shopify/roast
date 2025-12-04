@@ -92,14 +92,33 @@ gets displayed during execution.
 
 ---
 
+### Chapter 4: Control Flow
+
+Learn how to create dynamic workflows that adapt based on conditions: skipping steps, handling failures, and checking
+whether steps actually ran.
+
+**You'll learn:**
+
+- Conditional execution with `skip!`
+- Early termination with `fail!`
+- Checking if cogs ran with `?` accessor
+- The difference between `!`, `?`, and non-bang accessors
+
+**Files:**
+
+- `04_control_flow/conditional_execution.rb` - Using `skip!` and `?` accessor
+- `04_control_flow/handling_failures.rb` - Command failures with `no_abort_on_failure!`, `no_fail_on_error!`, and
+  explicit `fail!`
+
+---
+
 ### Coming Soon
 
 Future chapters will cover:
 
-- Control flow (skip!, fail!)
+- Processing collections with `map`
 - Creating reusable scopes
-- Processing collections
-- Iterative workflows
+- Iterative workflows with `repeat`
 
 ---
 
