@@ -75,7 +75,7 @@ module Roast
     option :replay, type: :string, aliases: "-r", desc: "Resume workflow from a specific step. Format: step_name or session_timestamp:step_name"
     option :pause, type: :string, aliases: "-p", desc: "Pause workflow after a specific step. Format: step_name"
     option :file_storage, type: :boolean, aliases: "-f", desc: "Use filesystem storage for sessions instead of SQLite"
-    option :executor, type: :string, default: "default", desc: "Set workflow executor - experimental syntax"
+    option :executor, type: :string, default: "default", desc: "Set workflow executor (use 'dsl' for Roast 1.0 Feature Preview)"
 
     def execute(*paths)
       raise Thor::Error, "Workflow configuration file is required" if paths.empty?
@@ -83,7 +83,7 @@ module Roast
       workflow_path, *files = paths
 
       if options[:executor] == "dsl"
-        puts "⚠️ WARNING: This is an experimental syntax and may break at any time. Don't depend on it."
+        $stderr.puts "⚠️ WARNING: You are using Roast 1.0 feature preview. This syntax has not yet been officially released and should not be considered fully stable."
         targets, workflow_args, workflow_kwargs = parse_custom_workflow_args(files, ARGV)
         targets.unshift(options[:target]) if options[:target]
         workflow_params = Roast::DSL::WorkflowParams.new(targets, workflow_args, workflow_kwargs)
