@@ -133,12 +133,31 @@ workflows more modular and maintainable.
 
 ---
 
+### Chapter 6: Processing Collections
+
+Learn how to process arrays and collections by applying a named execute scope to each item with the `map` cog.
+
+**You'll learn:**
+
+- Using the `map` cog to process collections
+- Collecting and reducing results with `collect` and `reduce`
+- Parallel execution with `parallel` configuration
+- Accessing specific iteration outputs
+- Working with iteration indices
+
+**Files:**
+
+- `06_processing_collections/basic_map.rb` - Basic map usage with collect, reduce, and accessing specific iterations
+- `06_processing_collections/parallel_map.rb` - Serial, limited parallel, and unlimited parallel execution
+
+---
+
 ### Coming Soon
 
 Future chapters will cover:
 
-- Processing collections with `map`
 - Iterative workflows with `repeat`
+- Running cogs asynchronously with `async!`
 
 ---
 
