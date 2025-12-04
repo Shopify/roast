@@ -41,7 +41,7 @@ execute do
 
   # Summarize for stakeholders
   chat(:summary) do
-    "Summarize this technical review for non-technical stakeholders:\n\n#{agent!(:review).response}"
+    "Summarize this for non-technical stakeholders:\n\n#{agent!(:review).response}"
   end
 end
 ```
