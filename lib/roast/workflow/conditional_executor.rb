@@ -13,7 +13,7 @@ module Roast
       end
 
       def execute_conditional(conditional_config)
-        $stderr.puts "Executing conditional step: #{conditional_config.inspect}"
+        Roast::Log.debug("Executing conditional step: #{conditional_config.inspect}")
 
         # Determine if this is an 'if' or 'unless' condition
         condition_expr = conditional_config["if"] || conditional_config["unless"]

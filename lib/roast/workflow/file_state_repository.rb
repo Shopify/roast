@@ -28,7 +28,7 @@ module Roast
           File.write(step_file, JSON.pretty_generate(state_data))
         end
       rescue => e
-        $stderr.puts "Failed to save state for step #{step_name}: #{e.message}"
+        Roast::Log.error("Failed to save state for step #{step_name}: #{e.message}")
       end
 
       def load_state_before_step(workflow, step_name, timestamp: nil)
@@ -55,7 +55,7 @@ module Roast
 
         # Extract the loaded step name for diagnostics
         loaded_step = File.basename(state_file).split("_", 3)[2].to_s.sub(/\.json$/, "")
-        $stderr.puts "Found state from step: #{loaded_step} (will replay from here to #{step_name})"
+        Roast::Log.info("Found state from step: #{loaded_step} (will replay from here to #{step_name})")
 
         # If no timestamp provided and workflow has no session, copy states to new session
         should_copy = !timestamp && workflow.session_timestamp.nil?
@@ -77,7 +77,7 @@ module Roast
         File.write(output_file, output_content)
         output_file
       rescue => e
-        $stderr.puts "Failed to save final output: #{e.message}"
+        Roast::Log.error("Failed to save final output: #{e.message}")
         nil
       end
 

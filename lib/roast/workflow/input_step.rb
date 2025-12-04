@@ -69,7 +69,7 @@ module Roast
           end
 
           if required && result.to_s.strip.empty?
-            puts ::CLI::UI.fmt("{{red:This field is required. Please provide a value.}}")
+            Roast::Log.error(::CLI::UI.fmt("{{red:This field is required. Please provide a value.}}"))
             next
           end
 
@@ -104,7 +104,7 @@ module Roast
           end
 
           if required && result.to_s.strip.empty?
-            puts ::CLI::UI.fmt("{{red:This field is required. Please provide a value.}}")
+            Roast::Log.error(::CLI::UI.fmt("{{red:This field is required. Please provide a value.}}"))
             next
           end
 
@@ -125,7 +125,7 @@ module Roast
             $stdin.gets.chomp
           end
 
-          puts # Add newline after password input
+          Roast::Log.info("") # Add newline after password input
           password
         end
       end
@@ -144,10 +144,10 @@ module Roast
       end
 
       def handle_timeout
-        puts ::CLI::UI.fmt("{{yellow:Input timed out after #{timeout} seconds}}")
+        Roast::Log.warn(::CLI::UI.fmt("{{yellow:Input timed out after #{timeout} seconds}}"))
 
         if default
-          puts ::CLI::UI.fmt("{{yellow:Using default value: #{default}}}")
+          Roast::Log.info(::CLI::UI.fmt("{{yellow:Using default value: #{default}}}"))
           default
         elsif required
           raise_config_error("Required input timed out with no default value")

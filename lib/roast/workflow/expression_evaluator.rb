@@ -15,7 +15,7 @@ module Roast
         begin
           @workflow.instance_eval(expr)
         rescue => e
-          $stderr.puts "Warning: Error evaluating expression '#{expr}': #{e.message}"
+          Roast::Log.warn("Warning: Error evaluating expression '#{expr}': #{e.message}")
           nil
         end
       end
@@ -33,10 +33,10 @@ module Roast
 
           # Print command output in verbose mode
           if @workflow.verbose
-            $stderr.puts "Evaluating command: #{cmd}"
-            $stderr.puts "Command output:"
-            $stderr.puts output
-            $stderr.puts
+            Roast::Log.debug("Evaluating command: #{cmd}")
+            Roast::Log.debug("Command output:")
+            Roast::Log.debug(output)
+            Roast::Log.debug("")
           end
 
           if for_condition
@@ -48,7 +48,7 @@ module Roast
             output.strip
           end
         rescue => e
-          $stderr.puts "Warning: Error executing command '#{cmd}': #{e.message}"
+          Roast::Log.warn("Warning: Error executing command '#{cmd}': #{e.message}")
           for_condition ? false : nil
         end
       end

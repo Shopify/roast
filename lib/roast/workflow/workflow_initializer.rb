@@ -56,58 +56,58 @@ module Roast
         ::CLI::UI::Frame.open("{{red:Raix Configuration Missing}}", color: :red) do
           case provider
           when :openai
-            puts ::CLI::UI.fmt("{{yellow:⚠️  Warning: Raix OpenAI client is not configured!}}")
+            Roast::Log.warn(::CLI::UI.fmt("{{yellow:⚠️  Warning: Raix OpenAI client is not configured!}}"))
           when :openrouter
-            puts ::CLI::UI.fmt("{{yellow:⚠️  Warning: Raix OpenRouter client is not configured!}}")
+            Roast::Log.warn(::CLI::UI.fmt("{{yellow:⚠️  Warning: Raix OpenRouter client is not configured!}}"))
           else
-            puts ::CLI::UI.fmt("{{yellow:⚠️  Warning: Raix is not configured!}}")
+            Roast::Log.warn(::CLI::UI.fmt("{{yellow:⚠️  Warning: Raix is not configured!}}"))
           end
-          puts
-          puts "Roast requires Raix to be properly initialized to make API calls."
-          puts ::CLI::UI.fmt("To fix this, create a file at {{cyan:.roast/initializers/raix.rb}} with:")
-          puts
-          puts ::CLI::UI.fmt("{{cyan:# frozen_string_literal: true}}")
-          puts
-          puts ::CLI::UI.fmt("{{cyan:require \"raix\"}}")
+          Roast::Log.info("")
+          Roast::Log.info("Roast requires Raix to be properly initialized to make API calls.")
+          Roast::Log.info(::CLI::UI.fmt("To fix this, create a file at {{cyan:.roast/initializers/raix.rb}} with:"))
+          Roast::Log.info("")
+          Roast::Log.info(::CLI::UI.fmt("{{cyan:# frozen_string_literal: true}}"))
+          Roast::Log.info("")
+          Roast::Log.info(::CLI::UI.fmt("{{cyan:require \"raix\"}}"))
 
           if provider == :openrouter
-            puts ::CLI::UI.fmt("{{cyan:require \"open_router\"}}")
-            puts
-            puts ::CLI::UI.fmt("{{cyan:Raix.configure do |config|}}")
-            puts ::CLI::UI.fmt("{{cyan:  config.openrouter_client = OpenRouter::Client.new(}}")
-            puts ::CLI::UI.fmt("{{cyan:    access_token: ENV.fetch(\"OPENROUTER_API_KEY\"),}}")
-            puts ::CLI::UI.fmt("{{cyan:    uri_base: \"https://openrouter.ai/api/v1\",}}")
-            puts ::CLI::UI.fmt("{{cyan:  )}}")
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:require \"open_router\"}}"))
+            Roast::Log.info("")
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:Raix.configure do |config|}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:  config.openrouter_client = OpenRouter::Client.new(}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:    access_token: ENV.fetch(\"OPENROUTER_API_KEY\"),}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:    uri_base: \"https://openrouter.ai/api/v1\",}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:  )}}"))
           else
-            puts
-            puts ::CLI::UI.fmt("{{cyan:faraday_retry = false}}")
-            puts ::CLI::UI.fmt("{{cyan:begin}}")
-            puts ::CLI::UI.fmt("{{cyan:  require \"faraday/retry\"}}")
-            puts ::CLI::UI.fmt("{{cyan:  faraday_retry = true}}")
-            puts ::CLI::UI.fmt("{{cyan:rescue LoadError}}")
-            puts ::CLI::UI.fmt("{{cyan:  # Do nothing}}")
-            puts ::CLI::UI.fmt("{{cyan:end}}")
-            puts
-            puts ::CLI::UI.fmt("{{cyan:Raix.configure do |config|}}")
-            puts ::CLI::UI.fmt("{{cyan:  config.openai_client = OpenAI::Client.new(}}")
-            puts ::CLI::UI.fmt("{{cyan:    access_token: ENV.fetch(\"OPENAI_API_KEY\"),}}")
-            puts ::CLI::UI.fmt("{{cyan:    uri_base: \"https://api.openai.com/v1\",}}")
-            puts ::CLI::UI.fmt("{{cyan:  ) do |f|}}")
-            puts ::CLI::UI.fmt("{{cyan:    if faraday_retry}}")
-            puts ::CLI::UI.fmt("{{cyan:      f.request(:retry, {}}")
-            puts ::CLI::UI.fmt("{{cyan:        max: 2,}}")
-            puts ::CLI::UI.fmt("{{cyan:        interval: 0.05,}}")
-            puts ::CLI::UI.fmt("{{cyan:        interval_randomness: 0.5,}}")
-            puts ::CLI::UI.fmt("{{cyan:        backoff_factor: 2,}}")
-            puts ::CLI::UI.fmt("{{cyan:      })}}")
-            puts ::CLI::UI.fmt("{{cyan:    end}}")
-            puts ::CLI::UI.fmt("{{cyan:  end}}")
+            Roast::Log.info("")
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:faraday_retry = false}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:begin}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:  require \"faraday/retry\"}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:  faraday_retry = true}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:rescue LoadError}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:  # Do nothing}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:end}}"))
+            Roast::Log.info("")
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:Raix.configure do |config|}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:  config.openai_client = OpenAI::Client.new(}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:    access_token: ENV.fetch(\"OPENAI_API_KEY\"),}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:    uri_base: \"https://api.openai.com/v1\",}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:  ) do |f|}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:    if faraday_retry}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:      f.request(:retry, {}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:        max: 2,}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:        interval: 0.05,}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:        interval_randomness: 0.5,}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:        backoff_factor: 2,}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:      )}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:    end}}"))
+            Roast::Log.info(::CLI::UI.fmt("{{cyan:  end}}"))
           end
-          puts ::CLI::UI.fmt("{{cyan:end}}")
-          puts
-          puts "For Shopify users, you need to use the LLM gateway proxy instead."
-          puts "Check the #roast slack channel for more information."
-          puts
+          Roast::Log.info(::CLI::UI.fmt("{{cyan:end}}"))
+          Roast::Log.info("")
+          Roast::Log.info("For Shopify users, you need to use the LLM gateway proxy instead.")
+          Roast::Log.info("Check the #roast slack channel for more information.")
+          Roast::Log.info("")
         end
         raise ::CLI::Kit::Abort, "Please configure Raix before running workflows."
       end

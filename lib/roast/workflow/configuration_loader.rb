@@ -202,8 +202,8 @@ module Roast
 
           ::CLI::UI::Frame.open("Validation Warnings", color: :yellow) do
             warnings.each do |warning|
-              puts ::CLI::UI.fmt("{{yellow:#{warning[:message]}}}")
-              puts ::CLI::UI.fmt("  {{gray:→ #{warning[:suggestion]}}}") if warning[:suggestion]
+              Roast::Log.warn(::CLI::UI.fmt("{{yellow:#{warning[:message]}}}"))
+              Roast::Log.warn(::CLI::UI.fmt("  {{gray:→ #{warning[:suggestion]}}}")) if warning[:suggestion]
               puts
             end
           end

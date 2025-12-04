@@ -82,7 +82,7 @@ module Roast
       workflow_path, *files = paths
 
       if options[:executor] == "dsl"
-        puts "⚠️ WARNING: This is an experimental syntax and may break at any time. Don't depend on it."
+        Roast::Log.warn("⚠️ WARNING: This is an experimental syntax and may break at any time. Don't depend on it.")
         targets, workflow_args, workflow_kwargs = parse_custom_workflow_args(files, ARGV)
         targets.unshift(options[:target]) if options[:target]
         workflow_params = Roast::DSL::WorkflowParams.new(targets, workflow_args, workflow_kwargs)
@@ -104,7 +104,7 @@ module Roast
       if options[:verbose]
         raise e
       else
-        $stderr.puts e.message
+        Roast::Log.error(e.message)
       end
     end
 
@@ -148,7 +148,7 @@ module Roast
 
     desc "version", "Display the current version of Roast"
     def version
-      puts "Roast version #{Roast::VERSION}"
+      Roast::Log.info("Roast version #{Roast::VERSION}")
     end
 
     desc "init", "Initialize a new Roast workflow from an example"
@@ -175,16 +175,16 @@ module Roast
         raise Thor::Error, "No workflow.yml files found in roast/ directory"
       end
 
-      puts "Available workflows:"
-      puts
+      Roast::Log.info("Available workflows:")
+      Roast::Log.info("")
 
       workflow_files.each do |file|
         workflow_name = File.dirname(file.sub("#{roast_dir}/", ""))
-        puts "  #{workflow_name} (from project)"
+        Roast::Log.info("  #{workflow_name} (from project)")
       end
 
-      puts
-      puts "Run a workflow with: roast execute <workflow_name>"
+      Roast::Log.info("")
+      Roast::Log.info("Run a workflow with: roast execute <workflow_name>")
     end
 
     desc "validate [WORKFLOW_CONFIGURATION_FILE]", "Validate a workflow configuration"
@@ -208,7 +208,7 @@ module Roast
 
       if options[:cleanup] && options[:older_than]
         count = repository.cleanup_old_sessions(options[:older_than])
-        puts "Cleaned up #{count} old sessions"
+        Roast::Log.info("Cleaned up #{count} old sessions")
         return
       end
 
@@ -219,23 +219,23 @@ module Roast
       )
 
       if sessions.empty?
-        puts "No sessions found"
+        Roast::Log.info("No sessions found")
         return
       end
 
-      puts "Found #{sessions.length} session(s):"
-      puts
+      Roast::Log.info("Found #{sessions.length} session(s):")
+      Roast::Log.info("")
 
       sessions.each do |session|
         id, workflow_name, _, status, current_step, created_at, updated_at = session
 
-        puts "Session: #{id}"
-        puts "  Workflow: #{workflow_name}"
-        puts "  Status: #{status}"
-        puts "  Current step: #{current_step || "N/A"}"
-        puts "  Created: #{created_at}"
-        puts "  Updated: #{updated_at}"
-        puts
+        Roast::Log.info("Session: #{id}")
+        Roast::Log.info("  Workflow: #{workflow_name}")
+        Roast::Log.info("  Status: #{status}")
+        Roast::Log.info("  Current step: #{current_step || "N/A"}")
+        Roast::Log.info("  Created: #{created_at}")
+        Roast::Log.info("  Updated: #{updated_at}")
+        Roast::Log.info("")
       end
     end
 
@@ -257,33 +257,33 @@ module Roast
       states = details[:states]
       events = details[:events]
 
-      puts "Session: #{session[0]}"
-      puts "Workflow: #{session[1]}"
-      puts "Path: #{session[2]}"
-      puts "Status: #{session[3]}"
-      puts "Created: #{session[6]}"
-      puts "Updated: #{session[7]}"
+      Roast::Log.info("Session: #{session[0]}")
+      Roast::Log.info("Workflow: #{session[1]}")
+      Roast::Log.info("Path: #{session[2]}")
+      Roast::Log.info("Status: #{session[3]}")
+      Roast::Log.info("Created: #{session[6]}")
+      Roast::Log.info("Updated: #{session[7]}")
 
       if session[5]
-        puts
-        puts "Final output:"
-        puts session[5]
+        Roast::Log.info("")
+        Roast::Log.info("Final output:")
+        Roast::Log.info(session[5])
       end
 
       if states && !states.empty?
-        puts
-        puts "Steps executed:"
+        Roast::Log.info("")
+        Roast::Log.info("Steps executed:")
         states.each do |step_index, step_name, created_at|
-          puts "  #{step_index}: #{step_name} (#{created_at})"
+          Roast::Log.info("  #{step_index}: #{step_name} (#{created_at})")
         end
       end
 
       if events && !events.empty?
-        puts
-        puts "Events:"
+        Roast::Log.info("")
+        Roast::Log.info("Events:")
         events.each do |event_name, event_data, received_at|
-          puts "  #{event_name} at #{received_at}"
-          puts "    Data: #{event_data}" if event_data
+          Roast::Log.info("  #{event_name} at #{received_at}")
+          Roast::Log.info("    Data: #{event_data}") if event_data
         end
       end
     end
@@ -299,7 +299,7 @@ module Roast
       generator = WorkflowDiagramGenerator.new(workflow, workflow_file)
       output_path = generator.generate(options[:output])
 
-      puts ::CLI::UI.fmt("{{success:✓}} Diagram generated: #{output_path}")
+      Roast::Log.info(::CLI::UI.fmt("{{success:✓}} Diagram generated: #{output_path}"))
     rescue Roast::Error => e
       raise Thor::Error, "Error generating diagram: #{e.message}"
     end
@@ -328,11 +328,11 @@ module Roast
       examples = available_examples
 
       if examples.empty?
-        puts "No examples found!"
+        Roast::Log.info("No examples found!")
         return
       end
 
-      puts "Select an option:"
+      Roast::Log.info("Select an option:")
       choices = ["Pick from examples", "New from prompt (coming soon)"]
 
       selected = run_picker(choices, "Select initialization method:")
@@ -373,34 +373,34 @@ module Roast
       target_path = File.join(roast_dir, example_name)
 
       unless File.directory?(source_path)
-        puts "Example '#{example_name}' not found!"
+        Roast::Log.info("Example '#{example_name}' not found!")
         return
       end
 
       if File.exist?(target_path)
-        puts "Directory '#{example_name}' already exists in current directory!"
+        Roast::Log.info("Directory '#{example_name}' already exists in current directory!")
         return
       end
 
       FileUtils.cp_r(source_path, target_path)
-      puts "Successfully copied example '#{example_name}' to current directory."
+      Roast::Log.info("Successfully copied example '#{example_name}' to current directory.")
     end
 
     def show_coming_soon_message
-      puts
-      puts ::CLI::UI.fmt("{{bold:Workflow Generator - Coming Soon}}")
-      puts
-      puts "The 'New from prompt' workflow generator is being rebuilt to ensure"
-      puts "generated workflows are reliable and properly validated."
-      puts
-      puts "This feature will return with:"
-      puts "  • Better AI-generated workflow quality"
-      puts "  • Validation to ensure generated workflows actually work"
-      puts "  • Integration with Roast's upcoming DSL features"
-      puts
-      puts "For now, please use 'Pick from examples' to get started."
-      puts "You can then customize the example workflow for your needs."
-      puts
+      Roast::Log.info("")
+      Roast::Log.info(::CLI::UI.fmt("{{bold:Workflow Generator - Coming Soon}}"))
+      Roast::Log.info("")
+      Roast::Log.info("The 'New from prompt' workflow generator is being rebuilt to ensure")
+      Roast::Log.info("generated workflows are reliable and properly validated.")
+      Roast::Log.info("")
+      Roast::Log.info("This feature will return with:")
+      Roast::Log.info("  • Better AI-generated workflow quality")
+      Roast::Log.info("  • Validation to ensure generated workflows actually work")
+      Roast::Log.info("  • Integration with Roast's upcoming DSL features")
+      Roast::Log.info("")
+      Roast::Log.info("For now, please use 'Pick from examples' to get started.")
+      Roast::Log.info("You can then customize the example workflow for your needs.")
+      Roast::Log.info("")
     end
 
     class << self
