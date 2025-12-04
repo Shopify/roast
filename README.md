@@ -7,7 +7,7 @@ A Ruby-based domain-specific language for creating structured AI workflows. Buil
 
 > #### ⚠️ Deprecation announcement ⚠️
 > The YAML-based workflow syntax of Roast `v0.x` will be removed in `v1.0`.
-> All `v0.x` functionality is current still supported during the feature preview.
+> All `v0.x` functionality is still supported during the feature preview.
 > For the existing documentation for Roast `v0.x` , see [README_LEGACY.md](README_LEGACY.md)  
 
 ## Overview
