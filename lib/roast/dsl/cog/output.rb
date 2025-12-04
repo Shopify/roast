@@ -20,7 +20,7 @@ module Roast
           #
           #: () -> Hash[Symbol, untyped]
           def json!
-            input = json_text
+            input = raw_text
             return {} if input.nil? || input.strip.empty?
 
             @json ||= parse_json_with_fallbacks(input)
@@ -46,7 +46,7 @@ module Roast
           # Cogs should implement this method to provide the text value that should be parsed to provide the 'json' attribute
           #
           #: () -> String?
-          def json_text
+          def raw_text
             raise NotImplementedError
           end
 
@@ -132,6 +132,136 @@ module Roast
         end
 
         # @requires_ancestor: Roast::DSL::Cog::Output
+        module WithNumber
+          # Get parsed float from the output, raising an error if parsing fails
+          #
+          # This method attempts to parse a float from the output text using multiple permissive fallback
+          # strategies to extract a substring that looks like a number.
+          #
+          # Raises `ArgumentError` if output text does not contain any value that can be parsed as a number.
+          #
+          # #### See Also
+          # - `float`
+          # - `integer!`
+          # - `integer`
+          #
+          #: () -> Float
+          def float!
+            @float ||= parse_number_with_fallbacks(raw_text || "")
+          end
+
+          # Get parsed float from the output, returning nil if parsing fails
+          #
+          # This method attempts to parse a float from the output text using multiple permissive fallback
+          # strategies to extract a substring that looks like a number.
+          #
+          # Returns `nil` if output text does not contain any value that can be parsed as a number.
+          #
+          # #### See Also
+          # - `float!`
+          # - `integer!`
+          # - `integer`
+          #
+          #: () -> Float?
+          def float
+            float!
+          rescue ArgumentError
+            nil
+          end
+
+          # Get parsed integer from the output, raising an error if parsing fails
+          #
+          # This method attempts to parse an integer from the output text using multiple permissive fallback
+          # strategies to extract a substring that looks like a number. This method will attempt to parse
+          # and round a floating point value; it will not strictly match only integers in the source text.
+          #
+          # Raises `ArgumentError` if output text does not contain any value that can be parsed as a number.
+          #
+          # #### See Also
+          # - `integer`
+          # - `float!`
+          # - `float`
+          #
+          #: () -> Integer
+          def integer!
+            @integer ||= float!.round
+          end
+
+          # Get parsed integer from the output, returning nil if parsing fails
+          #
+          # This method attempts to parse an integer from the output text using multiple permissive fallback
+          # strategies to extract a substring that looks like a number. This method will attempt to parse
+          # and round a floating point value; it will not strictly match only integers in the source text.
+          #
+          # Returns `nil` if output text does not contain any value that can be parsed as a number.
+          #
+          # #### See Also
+          # - `integer!`
+          # - `float!`
+          # - `float`
+          #
+          #: () -> Integer?
+          def integer
+            integer!
+          rescue ArgumentError
+            nil
+          end
+
+          private
+
+          # Try parsing a number from various possible formats in priority order
+          #
+          #: (String) -> Float
+          def parse_number_with_fallbacks(input)
+            candidates = extract_number_candidates(input)
+            candidates.each do |candidate|
+              normalized = normalize_number_string(candidate)
+              next if normalized.nil?
+
+              return Float(normalized)
+            rescue ArgumentError, TypeError
+              next
+            end
+            raise ArgumentError, "Could not parse number from input:\n---\n#{input}\n---"
+          end
+
+          # Extract potential number strings in priority order
+          #
+          #: (String) -> Array[String]
+          def extract_number_candidates(input)
+            candidates = []
+
+            # 1. Try the entire string
+            candidates << input.strip
+
+            # 2. Try each line from bottom up (with whitespace stripped)
+            lines = input.lines.map(&:strip).reject(&:empty?)
+            candidates.concat(lines.reverse)
+
+            # 3. Try to extract numbers from each line from bottom up
+            lines.reverse.each do |line|
+              # Look for numbers with various separators, formats, and currency symbols (very permissive)
+              # Matches: 123, 1,234, 1_234, 1 234, 1.23, -1.23, 1.23e10, 1.23e-10
+              matches = line.scan(/-?[\d\s$¢£€¥.,_]+(?:[eE][+-]?\d+)?/) #: as Array[String]
+              candidates.concat(matches.map(&:strip))
+            end
+
+            candidates.compact.uniq
+          end
+
+          # Normalize a number string by removing separators and currency codes and validating format
+          #
+          #: (String) -> String?
+          def normalize_number_string(raw)
+            # Remove common digit separators and currency codes
+            normalized = raw.strip.gsub(/[\s$¢£€¥,_]/, "")
+
+            # Validate it looks like a number (optional minus, digits, optional decimal, optional scientific notation)
+            normalized if normalized.match?(/\A-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?\z/)
+          end
+        end
+
+        # @requires_ancestor: Roast::DSL::Cog::Output
         module WithText
           # Get the output as a single string with surrounding whitespace removed
           #
@@ -166,6 +296,16 @@ module Roast
           def raw_text
             raise NotImplementedError
           end
+        end
+
+        private
+
+        # Cogs should implement this method to provide the text value that should be parsed to provide the
+        # the values produced by the `WithText`, `WithJson`, and `WithNumber` modules.
+        #
+        #: () -> String?
+        def raw_text
+          raise NotImplementedError
         end
       end
     end

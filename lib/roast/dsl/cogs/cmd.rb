@@ -262,6 +262,7 @@ module Roast
         # Includes JSON and text parsing capabilities via `WithJson` and `WithText` modules.
         class Output < Cog::Output
           include Cog::Output::WithJson
+          include Cog::Output::WithNumber
           include Cog::Output::WithText
 
           # The standard output (STDOUT) from the command
@@ -288,10 +289,6 @@ module Roast
           end
 
           private
-
-          def json_text
-            out
-          end
 
           def raw_text
             out

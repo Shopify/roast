@@ -12,6 +12,7 @@ module Roast
         # or as an array of lines through the included `WithText` and `WithJson` modules.
         class Output < Cog::Output
           include Cog::Output::WithJson
+          include Cog::Output::WithNumber
           include Cog::Output::WithText
 
           # The LLM's response text
@@ -52,10 +53,6 @@ module Roast
           end
 
           private
-
-          def json_text
-            response
-          end
 
           def raw_text
             response
