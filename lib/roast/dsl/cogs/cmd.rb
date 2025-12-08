@@ -310,6 +310,9 @@ module Roast
               stdout_handler: stdout_handler,
               stderr_handler: stderr_handler,
             )
+          if !status.success? && config.fail_on_error?
+            raise ControlFlow::FailCog, "Process exited with status code #{status.exitstatus}"
+          end
 
           Output.new(stdout, stderr, status)
         end
