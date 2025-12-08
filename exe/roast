@@ -13,5 +13,5 @@ unshift_path.call("lib")
 require "bundler/setup"
 require "roast"
 
-$stderr.puts "🔥🔥🔥 Everyone loves a good roast 🔥🔥🔥\n\n"
+$stderr.puts "🔥🔥🔥 Everyone loves a good roast 🔥🔥🔥\n\n" if $stderr.tty?
 Roast::CLI.start(ARGV)
