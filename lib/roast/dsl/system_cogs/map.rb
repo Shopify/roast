@@ -292,6 +292,9 @@ module Roast
               ems << em = create_execution_manager_for_map_item(run, item, index + input.initial_index)
               em.prepare!
               em.run!
+            rescue ControlFlow::Next
+              # TODO: do something with the message passed to next!
+              # proceed to next iteration
             rescue ControlFlow::Break
               # TODO: do something with the message passed to break!
               break
@@ -311,6 +314,9 @@ module Roast
                 ems[index] = em = create_execution_manager_for_map_item(run, item, index + input.initial_index)
                 em.prepare!
                 em.run!
+              rescue ControlFlow::Next
+                # TODO: do something with the message passed to next!
+                # proceed to next iteration
               end
             end #: Array[Async::Task]
 

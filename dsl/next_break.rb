@@ -17,6 +17,11 @@ execute do
       puts "Iteration #{index}: #{iteration_results.presence || "did not run at all"}"
     end
   end
+
+  call(:once, run: :loop_body) do |my|
+    my.value = 1
+    my.index = 1
+  end
 end
 
 execute(:loop_body) do

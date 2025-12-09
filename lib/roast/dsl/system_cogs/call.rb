@@ -106,9 +106,10 @@ module Roast
               em.prepare!
               begin
                 em.run!
-              rescue ControlFlow::Break
+              rescue ControlFlow::Next, ControlFlow::Break
                 # treat `break!` like `next!` in a `call` invocation
-                # TODO: maybe do something with the message passed to break!
+                # just end the execution early and return like normal
+                # TODO: maybe do something with the message passed to next! or break!
               end
               Output.new(em)
             end

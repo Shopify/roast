@@ -193,6 +193,7 @@ module DSL
           Iteration 0: [false, true, true]
           Iteration 1: [true, false, false]
           Iteration 2: did not run at all
+          [1] beginning
         EOF
         assert_equal expected_stdout, stdout
       end
