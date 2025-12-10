@@ -65,7 +65,7 @@ module Roast
           stdin, stdout, stderr, wait_thread = Open3 #: as untyped
             .popen3(
               { "PWD" => working_directory&.to_s }.compact,
-              *args,
+              *args.map(&:to_s),
               { chdir: working_directory }.compact,
             )
           stdin.puts stdin_content if stdin_content.present?
