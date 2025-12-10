@@ -147,7 +147,7 @@ module Roast
           #
           #: () -> String
           def valid_base_url
-            @values.fetch(:api_key, ENV[PROVIDERS.dig(valid_provider!, :base_url_env_var).not_nil!]) ||
+            @values.fetch(:base_url, ENV[PROVIDERS.dig(valid_provider!, :base_url_env_var).not_nil!]) ||
               PROVIDERS.dig(valid_provider!, :default_base_url)
           end
 

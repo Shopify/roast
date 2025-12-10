@@ -377,6 +377,60 @@ module DSL
         assert_equal expected_stdout, stdout
       end
 
+      test "chat base_url configuration is respected" do
+        workflow_code = <<~RUBY
+          # typed: false
+          # frozen_string_literal: true
+
+          #: self as Roast::DSL::Workflow
+
+          config do
+            chat(:test) do
+              model("gpt-4o")
+              api_key("dummy-test-key")
+              base_url("http://custom-base-url.example.com/v1")
+              assume_model_exists!
+            end
+          end
+
+          execute do
+            chat(:test) { "test message" }
+          end
+        RUBY
+
+        mock_chat = mock
+        mock_chat.stubs(:messages).returns([])
+        mock_chat.stubs(:with_temperature).returns(mock_chat)
+
+        mock_response = mock
+        mock_response.stubs(:content).returns("test response")
+        mock_response.stubs(:model_id).returns("gpt-4o")
+        mock_response.stubs(:input_tokens).returns(10)
+        mock_response.stubs(:output_tokens).returns(5)
+
+        mock_chat.expects(:ask).with("test message").returns(mock_response)
+
+        mock_context = mock
+        mock_context.expects(:chat).with(
+          model: "gpt-4o",
+          provider: :openai,
+          assume_model_exists: true,
+        ).returns(mock_chat)
+
+        RubyLLM.expects(:context).yields(mock_context).returns(mock_context)
+
+        mock_context.expects(:openai_api_key=).with("dummy-test-key")
+        mock_context.expects(:openai_api_base=).with("http://custom-base-url.example.com/v1")
+
+        _stdout, stderr = in_sandbox :base_url_config_test do
+          File.write("dsl/base_url_config_test.rb", workflow_code)
+          Roast::DSL::Workflow.from_file("dsl/base_url_config_test.rb", EMPTY_PARAMS)
+          File.delete("dsl/base_url_config_test.rb")
+        end
+
+        assert_empty stderr
+      end
+
       test "temporary_directory.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :temporary_directory do
           Roast::DSL::Workflow.from_file("dsl/temporary_directory.rb", EMPTY_PARAMS)
