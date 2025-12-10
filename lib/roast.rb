@@ -83,7 +83,7 @@ module Roast
       workflow_path, *files = paths
 
       if options[:executor] == "dsl"
-        $stderr.puts "⚠️ WARNING: You are using Roast 1.0 feature preview. This syntax has not yet been officially released and should not be considered fully stable."
+        $stderr.puts "⚠️ WARNING: You are using Roast 1.0 feature preview. This syntax has not yet been officially released and should not be considered fully stable." if $stderr.tty?
         targets, workflow_args, workflow_kwargs = parse_custom_workflow_args(files, ARGV)
         targets.unshift(options[:target]) if options[:target]
         workflow_params = Roast::DSL::WorkflowParams.new(targets, workflow_args, workflow_kwargs)
