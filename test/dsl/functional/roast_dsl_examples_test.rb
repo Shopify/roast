@@ -339,6 +339,39 @@ module DSL
         assert_empty stderr
       end
 
+      test "VCR infrastructure works for DSL chat workflows" do
+        workflow_code = <<~RUBY
+          # typed: false
+          # frozen_string_literal: true
+
+          #: self as Roast::DSL::Workflow
+
+          config do
+            chat(:test) do
+              model("gpt-4o")
+              assume_model_exists!
+            end
+          end
+
+          execute do
+            chat(:test) { "What is the deepest lake?" }
+          end
+        RUBY
+
+        VCR.use_cassette("dsl_vcr_test") do
+          stdout, stderr = in_sandbox :vcr_test do
+            File.write("dsl/vcr_test.rb", workflow_code)
+            result = Roast::DSL::Workflow.from_file("dsl/vcr_test.rb", EMPTY_PARAMS)
+            File.delete("dsl/vcr_test.rb")
+            result
+          end
+
+          assert_empty stderr
+          assert_predicate stdout, :present?
+          assert_match(/deepest/i, stdout)
+        end
+      end
+
       test "simple_repeat.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :simple_repeat do
           Roast::DSL::Workflow.from_file("dsl/simple_repeat.rb", EMPTY_PARAMS)

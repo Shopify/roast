@@ -1,0 +1,441 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o","messages":[{"role":"user","content":"What is the
+        deepest lake?"}],"temperature":1.0,"max_tokens":null,"top_p":1.0,"frequency_penalty":0.0,"presence_penalty":0.0,"response_format":null,"seed":null,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Content-Type:
+      - application/json
+      Authorization:
+      - my-token
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '200'
+    body:
+      encoding: UTF-8
+      string: '{"choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"Lake
+        Baikal in Siberia, Russia is the deepest lake in the world, reaching depths
+        of over 5,300 feet (1,600 meters).","refusal":null,"annotations":[]}}],"model":"gpt-4o","usage":{"prompt_tokens":10,"completion_tokens":20,"total_tokens":30}}'
+  recorded_at: Mon, 09 Dec 2024 21:30:00 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o","messages":[{"role":"user","content":"What is the
+        deepest lake?"}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 09 Dec 2025 23:49:55 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9ab866cba820840e-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '1405'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2832'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '30000000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '29999990'
+      X-Ratelimit-Reset-Requests:
+      - 6ms
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_779f54594b3a4dce8a8103263e8d964a
+      Set-Cookie:
+      - __cf_bm=NVCz9veOxuxKvbDejQK.PLa.ozdGRLgBBHEaYFQ2nyM-1765324192.5862405-1.0.1.1-y_SR21CuQaXmAoBgAAtKeiOMrdD..F6mWcxcxNvNOLxuMUMLkkankEnJ.UoS74KZEnPImwYFfr3mj5jlDu7OcCRaQd7oUSuEkgHGqmEx9Z2a3.lETqpO0_lBtD2anq61;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Wed, 10 Dec 2025
+        00:19:55 GMT
+      - shopify-proxy-session=1765324192588-irls80d9bt; Path=/; Expires=Wed, 10 Dec
+        2025 23:49:52 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-Cl1kooi7k0yRiNURZCjAYThYIrGds",
+          "object": "chat.completion",
+          "created": 1765324194,
+          "model": "gpt-4o-2024-08-06",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "The deepest lake in the world is Lake Baikal in Siberia, Russia. It reaches a maximum depth of about 1,642 meters (5,387 feet). Lake Baikal is not only the deepest but also one of the oldest and largest freshwater lakes by volume in the world.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 13,
+            "completion_tokens": 58,
+            "total_tokens": 71,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_83554c687e"
+        }
+  recorded_at: Tue, 09 Dec 2025 23:49:55 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o","messages":[{"role":"user","content":"What is the
+        deepest lake?"}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Wed, 10 Dec 2025 00:01:55 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '259'
+      Connection:
+      - keep-alive
+      Vary:
+      - Origin
+      X-Request-Id:
+      - req_4b88b66497fe425eb844518fb7b0059c
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=mWGdKuMXPAtrfyuufXAwXfQr.Zf7XVuQhmHd7TRJNR4-1765324915-1.0.1.1-9fnp_bm4KcC8kUJ4ND2_bKMbOWd10l1LTpuGhPBazwpYgdw.34gcSBwmPlM8yKwEbpLPn.udcIt15TdpBcFvd0TFuKTmDTYUe4LrR.ptyuQ;
+        path=/; expires=Wed, 10-Dec-25 00:31:55 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=iBsppfWCFnSLmtGR2BWsw.zk_DfOFfmFrw3nNDvrq5I-1765324915649-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9ab878724cdbd325-YVR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: UTF-8
+      string: |
+        {
+            "error": {
+                "message": "Incorrect API key provided: dummy-key. You can find your API key at https://platform.openai.com/account/api-keys.",
+                "type": "invalid_request_error",
+                "param": null,
+                "code": "invalid_api_key"
+            }
+        }
+  recorded_at: Wed, 10 Dec 2025 00:01:55 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"google:gemini-2.0-flash-exp","messages":[{"role":"user","content":"What
+        is the deepest lake?"}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Wed, 10 Dec 2025 00:05:09 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '259'
+      Connection:
+      - keep-alive
+      Vary:
+      - Origin
+      X-Request-Id:
+      - req_3bcf4caae9f84b3cb8cf9da539c94968
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=1x6f2U9kZpcyLOdbhU.eYp23q8Qh_tCalcEFlaZtfEU-1765325109-1.0.1.1-JeMwOzzvpRtjNE8c1WVEzZ0OxAsIsjM.Ei.JIVFh0jSaxQsEUnyM8Md_4NBD.VxnYXuhak9X.pX2dU0k71BIBvQqQ5oNIwVSKeY9REbpUa4;
+        path=/; expires=Wed, 10-Dec-25 00:35:09 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=9YWGrOXdWZOw7NCy5VgvNRcFLhBvamswfygW7FFtiLk-1765325109220-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9ab87d2c2d9ff573-YVR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: UTF-8
+      string: |
+        {
+            "error": {
+                "message": "Incorrect API key provided: dummy-key. You can find your API key at https://platform.openai.com/account/api-keys.",
+                "type": "invalid_request_error",
+                "param": null,
+                "code": "invalid_api_key"
+            }
+        }
+  recorded_at: Wed, 10 Dec 2025 00:05:09 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"google:gemini-2.0-flash-exp","messages":[{"role":"user","content":"What
+        is the deepest lake?"}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Wed, 10 Dec 2025 00:05:35 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '259'
+      Connection:
+      - keep-alive
+      Vary:
+      - Origin
+      X-Request-Id:
+      - req_14d605e3d196431d9b9dfa9d5700ed04
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=inMFvI85zE9BOGwujJaUV0KMbpymjodauHyYR9N1D4w-1765325135-1.0.1.1-MH3JLB0ZFfPCFxvcS9jAyf.Rj3SzRdiwLkaQGClWljY9F2ru7kOn0AyZiwu7jtNO8YWns6CskQQfAip8CBZn3lZLBgUMA7zhvXRKEl.eggs;
+        path=/; expires=Wed, 10-Dec-25 00:35:35 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=djEC3fz7PQQ6j0smwWC.lJfJJYZPeMZ3YzuAQtLaMpw-1765325135161-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9ab87dce3e402c3d-YVR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: UTF-8
+      string: |
+        {
+            "error": {
+                "message": "Incorrect API key provided: dummy-key. You can find your API key at https://platform.openai.com/account/api-keys.",
+                "type": "invalid_request_error",
+                "param": null,
+                "code": "invalid_api_key"
+            }
+        }
+  recorded_at: Wed, 10 Dec 2025 00:05:35 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"google:gemini-2.5-flash","messages":[{"role":"user","content":"What
+        is the deepest lake?"}],"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Wed, 10 Dec 2025 00:06:01 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '259'
+      Connection:
+      - keep-alive
+      Vary:
+      - Origin
+      X-Request-Id:
+      - req_9eee53d1b1014fcc8de96bb52e63c78f
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=AF_1ZTeacxhdoLztKfIY4riq88XVQYuqEwEJzCG_qow-1765325161-1.0.1.1-BKeU3STixo4.2HDzeIWlpj1l1ZPONl0CNjaicKnd7DrqRp2bMnNIx8MPyg7qvccOtljpHCEerONIgQ9OI5Ks9iLxnpJsOOhdm3hcRNNdv1k;
+        path=/; expires=Wed, 10-Dec-25 00:36:01 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=n8NL1J7doU6equnhBrsKROnmKsruIR3uQxkcyecHhx0-1765325161727-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9ab87e748801db4e-YVR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: UTF-8
+      string: |
+        {
+            "error": {
+                "message": "Incorrect API key provided: dummy-key. You can find your API key at https://platform.openai.com/account/api-keys.",
+                "type": "invalid_request_error",
+                "param": null,
+                "code": "invalid_api_key"
+            }
+        }
+  recorded_at: Wed, 10 Dec 2025 00:06:01 GMT
+recorded_with: VCR 6.3.1

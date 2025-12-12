@@ -4,12 +4,27 @@ module DSL
   class FunctionalTest < ActiveSupport::TestCase
     setup do
       Roast::Helpers::Logger.reset
+
+      # Configure environment variables for VCR testing (same pattern as YAML tests)
+      # DSL chat cogs respect OPENAI_API_BASE environment variable
+      unless ENV["RECORD_VCR"]
+        ENV["OPENAI_API_KEY"] = "dummy-key"
+        ENV["GOOGLE_API_KEY"] = "dummy-key"
+        ENV["OPENAI_API_BASE"] = "http://mytestingproxy.local/v1"
+      end
     end
 
     # Set up a temporary sandbox directory with all the examples
     # Parameter workflow_id is an arbitrary namespace/subdirectory within the sandbox
     # Returns an array of strings [stdio_output, stderr_output]
     def in_sandbox(workflow_id, &block)
+      _run_in_sandbox(workflow_id, &block)
+    end
+
+    private
+
+    # Internal helper that sets up sandbox environment
+    def _run_in_sandbox(workflow_id, &block)
       root_project_path = Dir.pwd
       examples_source_path = File.join(root_project_path, "dsl")
 
