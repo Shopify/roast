@@ -154,6 +154,31 @@ module Roast
         Pathname.new(@workflow_context.tmpdir).realpath
       end
 
+      # Template rendering method for DSL workflows
+      #
+      # Resolves template files using a comprehensive search strategy and renders them with ERB.
+      # Supports both relative shorthand paths like "greeting" and full absolute paths.
+      #
+      # @param path [String, Pathname] The template path to resolve. Can be:
+      #   - Shorthand name: "greeting" -> searches for prompts/greeting.md.erb
+      #   - With extension: "template.erb" -> searches for template.erb
+      #   - Absolute path: "/full/path/to/template.erb" -> uses as-is
+      # @param args [Hash] Template variables for ERB interpolation
+      # @return [String] The rendered template content
+      #
+      # @example Basic usage
+      #   template("greeting", name: "World")  # -> "Hello World!"
+      #
+      # @example With custom variables
+      #   template("email", user: user, subject: "Welcome")
+      #
+      # Search priority:
+      # 1. Absolute path as-is (if absolute)
+      # 2-4. Workflow directory: path, path.erb, path.md.erb
+      # 5-7. Workflow directory prompts/: prompts/path, prompts/path.erb, prompts/path.md.erb
+      # 8-10. Current directory: path, path.erb, path.md.erb
+      # 11-13. Current directory prompts/: prompts/path, prompts/path.erb, prompts/path.md.erb
+      #
       #: (String | Pathname, ?Hash) -> String
       def template(path, args = {})
         path = Pathname.new(path) unless path.is_a?(Pathname)
