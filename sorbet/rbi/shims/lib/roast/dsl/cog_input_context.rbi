@@ -284,7 +284,7 @@ module Roast
       #: () -> Pathname
       def tmpdir; end
 
-      #: (String, ?Hash) -> String
+      #: (String | Pathname, ?Hash) -> String
       def template(path, args = {}); end
 
       ########################################

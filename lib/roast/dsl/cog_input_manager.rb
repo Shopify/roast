@@ -17,12 +17,11 @@ module Roast
 
       class CogStoppedError < CogOutputAccessError; end
 
-      #: (Cog::Registry, Cog::Store, WorkflowContext, ?Pathname?) -> void
-      def initialize(cog_registry, cogs, workflow_context, workflow_dir = nil)
+      #: (Cog::Registry, Cog::Store, WorkflowContext) -> void
+      def initialize(cog_registry, cogs, workflow_context)
         @cog_registry = cog_registry
         @cogs = cogs
         @workflow_context = workflow_context
-        @workflow_dir = workflow_dir
         @context = CogInputContext.new
         bind_registered_cogs
         bind_workflow_context
@@ -155,24 +154,46 @@ module Roast
         Pathname.new(@workflow_context.tmpdir).realpath
       end
 
-      #: (String, ?Hash) -> String
+      #: (String | Pathname, ?Hash) -> String
       def template(path, args = {})
-        unless File.exist?(path)
-          if @workflow_dir
-            # Try relative to workflow directory
-            relative_path = @workflow_dir.join("prompts/#{path}.md.erb")
-            path = relative_path.to_s if relative_path.exist?
-          else
-            # Fallback to current working directory
-            path = "prompts/#{path}.md.erb"
-          end
+        path = Pathname.new(path) unless path.is_a?(Pathname)
+
+        # Priority stack of places to look for a matching file
+        candidate_paths = []
+
+        # 1. Absolute path as-is
+        candidate_paths << path if path.absolute?
+
+        # 2-4. Relative to workflow directory
+        workflow_dir = @workflow_context.workflow_dir
+        candidate_paths << workflow_dir / path
+        candidate_paths << workflow_dir / "#{path}.erb"
+        candidate_paths << workflow_dir / "#{path}.md.erb"
+
+        # 5-7. Relative to workflow directory prompts folder
+        candidate_paths << workflow_dir / "prompts" / path
+        candidate_paths << workflow_dir / "prompts" / "#{path}.erb"
+        candidate_paths << workflow_dir / "prompts" / "#{path}.md.erb"
+
+        # 8-10. Relative to current working directory
+        pwd = Pathname.pwd
+        candidate_paths << pwd / path
+        candidate_paths << pwd / "#{path}.erb"
+        candidate_paths << pwd / "#{path}.md.erb"
+
+        # 11-13. Relative to current working directory prompts folder
+        candidate_paths << pwd / "prompts" / path
+        candidate_paths << pwd / "prompts" / "#{path}.erb"
+        candidate_paths << pwd / "prompts" / "#{path}.md.erb"
+
+        # Use the first path that exists
+        resolved_path = candidate_paths.find(&:exist?)
+
+        unless resolved_path
+          raise CogInputContext::ContextNotFoundError, "The file '#{path}' could not be found"
         end
 
-        unless File.exist?(path)
-          raise CogInputContext::ContextNotFoundError, "The prompt #{path} could not be found"
-        end
-
-        ERB.new(File.read(path)).result_with_hash(args)
+        ERB.new(resolved_path.read).result_with_hash(args)
       end
     end
   end
