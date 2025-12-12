@@ -35,8 +35,7 @@ module Roast
       #|  WorkflowContext,
       #|  ?scope: Symbol?,
       #|  ?scope_value: untyped?,
-      #|  ?scope_index: Integer,
-      #|  ?workflow_dir: Pathname?
+      #|  ?scope_index: Integer
       #| ) -> void
       def initialize(
         cog_registry,
@@ -45,8 +44,7 @@ module Roast
         workflow_context,
         scope: nil,
         scope_value: nil,
-        scope_index: 0,
-        workflow_dir: nil
+        scope_index: 0
       )
         @cog_registry = cog_registry
         @config_manager = config_manager
@@ -55,11 +53,10 @@ module Roast
         @scope = scope
         @scope_value = scope_value
         @scope_index = scope_index
-        @workflow_dir = workflow_dir
         @cogs = Cog::Store.new #: Cog::Store
         @cog_stack = Cog::Stack.new #: Cog::Stack
         @execution_context = ExecutionContext.new #: ExecutionContext
-        @cog_input_manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context, @workflow_dir) #: CogInputManager
+        @cog_input_manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context) #: CogInputManager
         @barrier = Async::Barrier.new #: Async::Barrier
         @final_output = nil #: untyped
         @final_output_computed = false #: bool

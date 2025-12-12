@@ -14,7 +14,8 @@ module Roast
         #: (String, WorkflowParams) -> void
         def from_file(workflow_path, params)
           Dir.mktmpdir("roast-") do |tmpdir|
-            workflow_context = WorkflowContext.new(params:, tmpdir:)
+            workflow_dir = Pathname.new(workflow_path).dirname
+            workflow_context = WorkflowContext.new(params: params, tmpdir: tmpdir, workflow_dir: workflow_dir)
             workflow = new(workflow_path, workflow_context)
             workflow.prepare!
             workflow.start!
@@ -43,7 +44,7 @@ module Roast
         @config_manager = ConfigManager.new(@cog_registry, @config_procs)
         @config_manager.not_nil!.prepare!
         # TODO: probably we should just not pass the params as the top-level scope value anymore
-        @execution_manager = ExecutionManager.new(@cog_registry, @config_manager.not_nil!, @execution_procs, @workflow_context, scope_value: @workflow_context.params, workflow_dir: @workflow_path.dirname)
+        @execution_manager = ExecutionManager.new(@cog_registry, @config_manager.not_nil!, @execution_procs, @workflow_context, scope_value: @workflow_context.params)
         @execution_manager.not_nil!.prepare!
 
         @prepared = true
