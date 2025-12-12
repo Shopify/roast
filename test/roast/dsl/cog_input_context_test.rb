@@ -31,17 +31,17 @@ module Roast
         @workflow_context = mock("workflow_context")
         @workflow_context.stubs(:params).returns(@params)
         @workflow_context.stubs(:tmpdir).returns(@temp_dir)
+        @workflow_context.stubs(:workflow_dir).returns(Pathname.new(@workflow_dir))
       end
 
       def teardown
         FileUtils.rm_rf(@temp_dir) if @temp_dir && File.exist?(@temp_dir)
       end
 
-      test "template method resolves shorthand paths relative to workflow directory when provided" do
-        workflow_dir = Pathname.new(@workflow_dir)
-        manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context, workflow_dir)
+      test "template method resolves shorthand paths relative to workflow directory" do
+        manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context)
 
-        # Change to different directory to test the fix
+        # Change to different directory to verify template resolution
         Dir.chdir(@temp_dir) do
           result = manager.context.template("test_template", { name: "Workflow Dir" })
           assert_includes result, "Hello Workflow Dir!"
@@ -49,8 +49,11 @@ module Roast
         end
       end
 
-      test "template method falls back to current working directory when workflow_dir not provided" do
-        manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context, nil)
+      test "template method falls back to current working directory" do
+        # Create a separate workflow context that points to a non-existent directory
+        # to test the current working directory fallback
+        @workflow_context.stubs(:workflow_dir).returns(Pathname.new("/non/existent/path"))
+        manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context)
 
         Dir.chdir(@workflow_dir) do
           result = manager.context.template("test_template", { name: "Fallback" })
@@ -59,20 +62,22 @@ module Roast
         end
       end
 
-      test "template method fails with shorthand syntax when not in correct directory and no workflow_dir" do
-        manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context, nil)
+      test "template method fails when template cannot be found in any search locations" do
+        # Use a non-existent workflow directory and change to a directory without templates
+        @workflow_context.stubs(:workflow_dir).returns(Pathname.new("/non/existent/path"))
+        manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context)
 
-        # This test demonstrates the bug when workflow_dir is not provided
-        Dir.chdir(@temp_dir) do # Change to temp_dir, not the workflow dir
+        # Change to temp_dir which has no prompts directory
+        Dir.chdir(@temp_dir) do
           error = assert_raises(CogInputContext::ContextNotFoundError) do
             manager.context.template("test_template", { name: "World" })
           end
-          assert_includes error.message, "The prompt prompts/test_template.md.erb could not be found"
+          assert_includes error.message, "The file 'test_template' could not be found"
         end
       end
 
       test "template method works with full path" do
-        manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context, nil)
+        manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context)
 
         result = manager.context.template(@template_path, { name: "Full Path" })
         assert_includes result, "Hello Full Path!"
@@ -80,7 +85,7 @@ module Roast
       end
 
       test "template method fails when template file does not exist" do
-        manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context, nil)
+        manager = CogInputManager.new(@cog_registry, @cogs, @workflow_context)
 
         error = assert_raises(CogInputContext::ContextNotFoundError) do
           manager.context.template("nonexistent_template")
