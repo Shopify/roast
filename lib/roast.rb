@@ -87,8 +87,20 @@ module Roast
         targets, workflow_args, workflow_kwargs = parse_custom_workflow_args(files, ARGV)
         targets.unshift(options[:target]) if options[:target]
         workflow_params = Roast::DSL::WorkflowParams.new(targets, workflow_args, workflow_kwargs)
-        Dir.chdir(ENV["ROAST_WORKING_DIRECTORY"] || Dir.pwd) do
-          Roast::DSL::Workflow.from_file(workflow_path, workflow_params)
+
+        # If the workflow is running with a working directory specified to be different from the current directory
+        # from which Roast was run, and the workflow file if specified with a relative path, check for it relative
+        # to the current directory first, and then relative to the working directory specified for the workflow.
+        roast_working_directory = Pathname.new(File.expand_path(ENV["ROAST_WORKING_DIRECTORY"] || Dir.pwd))
+        workflow_path = Pathname.new(workflow_path)
+        real_workflow_path = if workflow_path.absolute? || workflow_path.exist?
+          workflow_path
+        else
+          roast_working_directory / workflow_path
+        end.realpath
+
+        Dir.chdir(roast_working_directory) do
+          Roast::DSL::Workflow.from_file(real_workflow_path, workflow_params)
         end
       else
         expanded_workflow_path = if workflow_path.include?("workflow.yml")
