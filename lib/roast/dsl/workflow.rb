@@ -11,7 +11,7 @@ module Roast
       class InvalidCogReference < WorkflowError; end
 
       class << self
-        #: (String, WorkflowParams) -> void
+        #: (String | Pathname, WorkflowParams) -> void
         def from_file(workflow_path, params)
           Dir.mktmpdir("roast-") do |tmpdir|
             workflow_context = WorkflowContext.new(params:, tmpdir:)
@@ -22,7 +22,7 @@ module Roast
         end
       end
 
-      #: (String, WorkflowContext) -> void
+      #: (String | Pathname, WorkflowContext) -> void
       def initialize(workflow_path, workflow_context)
         @workflow_path = Pathname.new(workflow_path) #: Pathname
         @workflow_context = workflow_context #: WorkflowContext
