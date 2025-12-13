@@ -18,9 +18,9 @@ execute do
     my.session = chat!(:lake).session
   end
 
-  # Ask a question with a template prompt. You can pass variables to it as you would an ERB template
+  # Ask a question with a template prompt using full path
   chat { template("dsl/prompts/simple_prompt.md.erb", { lake_answer: chat!(:lake).response }) }
 
-  # Shorthand to look up a template prompt
-  # chat { template("simple_prompt", { lake_answer: chat!(:lake).response }) }
+  # Same thing using shorthand template syntax - searches prompts/ directory automatically
+  chat { template("simple_prompt", { lake_answer: chat!(:lake).response }) }
 end
