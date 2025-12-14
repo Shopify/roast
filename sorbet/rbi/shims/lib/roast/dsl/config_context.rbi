@@ -152,9 +152,11 @@ module Roast
       # - `model(string)` - Set the model to use
       # - `use_default_model!` - Use the provider's default model
       #
-      # #### Configure the initial system prompt
-      # - `initial_prompt(string)` - Set an initial prompt component to append to the agent's system prompt
-      # - `no_initial_prompt!` - Don't append an initial prompt component
+      # #### Configure the system prompt
+      # - `replace_system_prompt(string)` - Completely replace the agent's default system prompt
+      # - `no_replace_system_prompt!` - Don't replace the default system prompt (default)
+      # - `append_system_prompt(string)` - Append a prompt component to the agent's system prompt
+      # - `no_append_system_prompt!` - Don't append to the system prompt (default)
       #
       # #### Configure the working directory
       # - `working_directory(path)` - Set the working directory for agent execution

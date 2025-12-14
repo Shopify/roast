@@ -132,39 +132,83 @@ module Roast
             @values[:model].presence
           end
 
-          # Configure the cog with an initial prompt component that will be appended to the agent's system prompt
-          # every time the agent is invoked
+          # Configure the cog with a custom system prompt that will completely replace the agent's
+          # default system prompt every time the agent is invoked
           #
           # #### See Also
-          # - `no_initial_prompt!`
+          # - `no_replace_system_prompt!`
+          # - `append_system_prompt`
           #
           #: (String) -> void
-          def initial_prompt(prompt)
-            @values[:initial_prompt] = prompt
+          def replace_system_prompt(prompt)
+            @values[:replace_system_prompt] = prompt
           end
 
-          # Configure the cog __not__ to append an initial prompt to the agent's system prompt when the agent is invoked
+          # Configure the cog __not__ to replace the agent's default system prompt
+          #
+          # This is the default behaviour.
           #
           # #### See Also
-          # - `initial_prompt`
+          # - `replace_system_prompt`
           #
           #: () -> void
-          def no_initial_prompt!
-            @values[:initial_prompt] = ""
+          def no_replace_system_prompt!
+            @values[:replace_system_prompt] = ""
           end
 
-          # Get the validated, configured initial prompt that will be appended to the agent's system prompt when
+          # Get the validated, configured replacement system prompt
+          #
+          # Returns `nil` if the default system prompt should __not__ be replaced.
+          #
+          # #### See Also
+          # - `replace_system_prompt`
+          # - `no_replace_system_prompt!`
+          #
+          #: () -> String?
+          def valid_replace_system_prompt
+            @values[:replace_system_prompt].presence
+          end
+
+          # Configure the cog with a prompt component that will be appended to the agent's system prompt
+          # every time the agent is invoked
+          #
+          # Use this to add custom instructions while preserving the provider's default system prompt.
+          #
+          # This can also be combined with with `replace_system_prompt`.
+          #
+          # #### See Also
+          # - `no_append_system_prompt!`
+          # - `replace_system_prompt`
+          #
+          #: (String) -> void
+          def append_system_prompt(prompt)
+            @values[:append_system_prompt] = prompt
+          end
+
+          # Configure the cog __not__ to append anything to the agent's system prompt when the agent is invoked
+          #
+          # This is the default behaviour.
+          #
+          # #### See Also
+          # - `append_system_prompt`
+          #
+          #: () -> void
+          def no_append_system_prompt!
+            @values[:append_system_prompt] = ""
+          end
+
+          # Get the validated, configured prompt that will be appended to the agent's system prompt when
           # the agent is invoked
           #
           # Returns `nil` if __no__ prompt should be appended.
           #
           # #### See Also
-          # - `initial_prompt`
-          # - `no_initial_prompt!`
+          # - `append_system_prompt`
+          # - `no_append_system_prompt!`
           #
           #: () -> String?
-          def valid_initial_prompt
-            @values[:initial_prompt].presence
+          def valid_append_system_prompt
+            @values[:append_system_prompt].presence
           end
 
           # Configure the cog to apply the default set of system and user permissions when running the agent
