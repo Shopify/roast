@@ -4,6 +4,11 @@ module DSL
   class FunctionalTest < ActiveSupport::TestCase
     setup do
       Roast::Helpers::Logger.reset
+
+      unless ENV["RECORD_VCR"]
+        ENV["OPENAI_API_KEY"] = "dummy-key"
+        ENV["OPENAI_API_BASE"] = "https://api.openai.com/v1"
+      end
     end
 
     # Set up a temporary sandbox directory with all the examples
