@@ -7,7 +7,7 @@ config do
   agent do
     provider :claude
     model "haiku"
-    initial_prompt "Always respond in haiku form"
+    append_system_prompt "Always respond in haiku form"
     show_prompt!
     dump_raw_agent_messages_to "tmp/claude-messages.log"
   end

@@ -58,7 +58,8 @@ module Roast
               def initialize(config, input)
                 @base_command = config.valid_command #: (String | Array[String])?
                 @model = config.valid_model #: String?
-                @append_system_prompt = config.valid_initial_prompt #: String?
+                @append_system_prompt = config.valid_append_system_prompt #: String?
+                @replace_system_prompt = config.valid_replace_system_prompt #: String?
                 @apply_permissions = config.apply_permissions? #: bool
                 @working_directory = config.valid_working_directory #: Pathname?
                 @prompt = input.valid_prompt! #: String
@@ -171,6 +172,7 @@ module Roast
                 end
                 command.push("-p", "--verbose", "--output-format", "stream-json")
                 command.push("--model", @model) if @model
+                command.push("--system-prompt", @replace_system_prompt) if @replace_system_prompt
                 command.push("--append-system-prompt", @append_system_prompt) if @append_system_prompt
                 command.push("--fork-session", "--resume", @session) if @session.present?
                 command << "--dangerously-skip-permissions" unless @apply_permissions
