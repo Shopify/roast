@@ -339,6 +339,21 @@ module DSL
         assert_empty stderr
       end
 
+      test "vcr_test_workflow.rb runs with VCR cassette" do
+        VCR.use_cassette("dsl_vcr_test") do
+          stdout, stderr = in_sandbox :vcr_test_workflow do
+            Roast::DSL::Workflow.from_file("dsl/vcr_test_workflow.rb", EMPTY_PARAMS)
+          end
+
+          assert_empty stderr
+          assert_predicate stdout, :present?
+          assert_match(/Lake Baikal/i, stdout)
+          assert_match(/deepest/i, stdout)
+          assert_match(/Siberia, Russia/i, stdout)
+          assert_match(/1,642 meters/i, stdout)
+        end
+      end
+
       test "simple_repeat.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :simple_repeat do
           Roast::DSL::Workflow.from_file("dsl/simple_repeat.rb", EMPTY_PARAMS)

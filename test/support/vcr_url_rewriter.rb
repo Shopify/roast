@@ -60,40 +60,29 @@ module VCRURLRewriter
     def configure!
       return if @configured
 
-      if ENV["RECORD_VCR"]
-        setup_recording_mode!
-      else
-        setup_replay_mode!
-      end
+      # Recording mode: Use temp directory with URL transformation
+      # Replay mode: Nothing special needed - VCR matches placeholder URLs as-is
+      setup_recording_mode! if ENV["RECORD_VCR"]
 
       @configured = true
     end
 
     private
 
-    # Recording mode: Use temp directory with URL transformation
     def setup_recording_mode!
       @original_cassette_dir = "test/fixtures/vcr_cassettes"
       @temp_cassette_dir = Dir.mktmpdir("vcr-cassettes-")
 
-      # Copy existing cassettes to temp and transform URLs
       copy_and_transform_cassettes(
         from: @original_cassette_dir,
         to: @temp_cassette_dir,
         transform: :placeholder_to_actual,
       )
 
-      # Point VCR to temp directory for recording
       VCR.configure do |config|
         config.cassette_library_dir = @temp_cassette_dir
-
-        # After recording: scrub sensitive data
-        config.before_record do |interaction|
-          scrub_sensitive_headers!(interaction)
-        end
       end
 
-      # Register cleanup hook to copy back and transform
       at_exit do
         copy_and_transform_cassettes(
           from: @temp_cassette_dir,
@@ -104,12 +93,6 @@ module VCRURLRewriter
       end
     end
 
-    # Replay mode: Use normal cassettes with placeholder URLs
-    def setup_replay_mode!
-      # Nothing special needed - VCR will match placeholder URLs
-    end
-
-    # Copy cassettes and optionally transform URLs
     def copy_and_transform_cassettes(from:, to:, transform:)
       return unless Dir.exist?(from)
 
@@ -130,7 +113,6 @@ module VCRURLRewriter
       end
     end
 
-    # Transform URLs in a cassette file
     def transform_cassette_file(source, dest, direction)
       cassette = YAML.load_file(source)
 
@@ -140,45 +122,37 @@ module VCRURLRewriter
 
         case direction
         when :placeholder_to_actual
-          # Replace placeholder with actual API URL from ENV
           actual_url = actual_api_url
           interaction["request"]["uri"] = request_uri.gsub(PLACEHOLDER_API_URL, actual_url)
         when :actual_to_placeholder
-          # Replace any OpenAI URL with placeholder
           if request_uri.include?("/chat/completions")
             uri = URI.parse(request_uri)
             interaction["request"]["uri"] = "#{PLACEHOLDER_API_URL}#{uri.path}"
           end
+
+          scrub_interaction_data!(interaction)
         end
       end
 
       File.write(dest, YAML.dump(cassette))
     end
 
-    # Get actual API URL from environment or default
     def actual_api_url
       base = ENV["OPENAI_API_BASE"] || "https://api.openai.com/v1"
       base.chomp("/")
     end
 
-    # Scrub sensitive headers from interactions
-    def scrub_sensitive_headers!(interaction)
-      request = interaction.request
-      response = interaction.response
-
-      # Scrub auth to dummy value
-      if request.headers["Authorization"]
-        request.headers["Authorization"] = ["Bearer dummy-key"]
+    def scrub_interaction_data!(interaction)
+      if interaction.dig("request", "headers", "Authorization")
+        interaction["request"]["headers"]["Authorization"] = ["Bearer dummy-key"]
       end
 
-      # Remove sensitive response headers
-      if response["headers"]
-        response["headers"].delete("X-Shopify-Proxy-Provider")
-        response["headers"].delete("Openai-Organization")
-        response["headers"].delete("Openai-Project")
-        response["headers"].delete("Set-Cookie")
-        response["headers"].delete("Cf-Ray")
-        response["headers"].delete("Cf-Cache-Status")
+      response_headers = interaction.dig("response", "headers")
+      if response_headers
+        safe_headers = %w[Content-Type Content-Length Date Transfer-Encoding]
+        interaction["response"]["headers"] = response_headers.select do |key, _|
+          safe_headers.include?(key)
+        end
       end
     end
   end
