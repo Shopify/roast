@@ -185,35 +185,28 @@ module Roast
         # This is tracked in issue https://github.com/Shopify/roast/issues/663.
         path = Pathname.new(path) unless path.is_a?(Pathname)
 
-        # Priority stack of places to look for a matching file
         candidate_paths = []
 
-        # 1. Absolute path as-is
         candidate_paths << path if path.absolute?
 
-        # 2-4. Relative to workflow directory
         workflow_dir = @workflow_context.workflow_dir
         candidate_paths << workflow_dir / path
         candidate_paths << workflow_dir / "#{path}.erb"
         candidate_paths << workflow_dir / "#{path}.md.erb"
 
-        # 5-7. Relative to workflow directory prompts folder
         candidate_paths << workflow_dir / "prompts" / path
         candidate_paths << workflow_dir / "prompts" / "#{path}.erb"
         candidate_paths << workflow_dir / "prompts" / "#{path}.md.erb"
 
-        # 8-10. Relative to current working directory
         pwd = Pathname.pwd
         candidate_paths << pwd / path
         candidate_paths << pwd / "#{path}.erb"
         candidate_paths << pwd / "#{path}.md.erb"
 
-        # 11-13. Relative to current working directory prompts folder
         candidate_paths << pwd / "prompts" / path
         candidate_paths << pwd / "prompts" / "#{path}.erb"
         candidate_paths << pwd / "prompts" / "#{path}.md.erb"
 
-        # Use the first path that exists
         resolved_path = candidate_paths.find(&:exist?)
 
         unless resolved_path
