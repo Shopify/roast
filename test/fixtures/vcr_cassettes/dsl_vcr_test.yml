@@ -2,7 +2,7 @@
 http_interactions:
   - request:
       method: post
-      uri: https://api.openai.com/v1/chat/completions
+      uri: https://api.openai.com:443/v1/chat/completions
       body:
         encoding: UTF-8
         string:

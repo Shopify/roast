@@ -54,9 +54,23 @@ module VCRURLRewriter
   PLACEHOLDER_API_URL = "https://api.openai.com/v1"
 
   class << self
-    attr_reader :temp_cassette_dir, :original_cassette_dir
+    # The temporary directory where cassettes are processed during recording
+    #
+    #: String?
+    attr_reader :temp_cassette_dir
+
+    # The original directory containing VCR cassettes
+    #
+    #: String?
+    attr_reader :original_cassette_dir
 
     # Set up VCR with URL rewriting for recording mode
+    #
+    # In replay mode, this method does nothing since cassettes work as-is.
+    # In recording mode (RECORD_VCR=true), sets up temporary directory with
+    # URL transformation to handle different API endpoints.
+    #
+    #: () -> void
     def configure!
       return if @configured
 
@@ -127,7 +141,10 @@ module VCRURLRewriter
         when :actual_to_placeholder
           if request_uri.include?("/chat/completions")
             uri = URI.parse(request_uri)
-            interaction["request"]["uri"] = "#{PLACEHOLDER_API_URL}#{uri.path}"
+            uri.scheme = "https"
+            uri.host = "api.openai.com"
+            uri.port = 443
+            interaction["request"]["uri"] = uri.to_s
           end
 
           scrub_interaction_data!(interaction)
@@ -149,7 +166,7 @@ module VCRURLRewriter
 
       response_headers = interaction.dig("response", "headers")
       if response_headers
-        safe_headers = %w[Content-Type Content-Length Date Transfer-Encoding]
+        safe_headers = ["Content-Type", "Content-Length", "Date", "Transfer-Encoding"]
         interaction["response"]["headers"] = response_headers.select do |key, _|
           safe_headers.include?(key)
         end
