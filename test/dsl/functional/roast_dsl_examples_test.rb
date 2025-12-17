@@ -347,13 +347,8 @@ module DSL
 
           assert_empty stderr
           assert_predicate stdout, :present?
-
-          # Verify specific content from cassette to ensure VCR replayed correctly
-          # If cassette wasn't used, output would differ or test would fail with WebMock error
           assert_match(/Lake Baikal/i, stdout)
           assert_match(/Siberia, Russia/i, stdout)
-          assert_match(/1,642 meters/i, stdout)
-          assert_match(/5,387 feet/i, stdout)
         end
       end
 

@@ -143,7 +143,6 @@ module VCRURLRewriter
             uri = URI.parse(request_uri)
             uri.scheme = "https"
             uri.host = "api.openai.com"
-            uri.port = 443
             interaction["request"]["uri"] = uri.to_s
           end
 
