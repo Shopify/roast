@@ -21,6 +21,6 @@ execute do
   # Ask a question with a template prompt. You can pass variables to it as you would an ERB template
   chat { template("examples/prompts/simple_prompt.md.erb", { lake_answer: chat!(:lake).response }) }
 
-  # Same thing using shorthand template syntax - searches prompts/ directory automatically
+  # Shorthand template syntax - searches prompts/ directory automatically
   chat { template("simple_prompt", { lake_answer: chat!(:lake).response }) }
 end
