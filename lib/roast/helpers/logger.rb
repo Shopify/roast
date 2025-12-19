@@ -27,9 +27,9 @@ module Roast
 
       private
 
-      def initialize(stdout: $stdout, log_level: ENV["ROAST_LOG_LEVEL"] || "INFO")
+      def initialize(output: $stderr, log_level: ENV["ROAST_LOG_LEVEL"] || "INFO")
         @log_level = validate_log_level(log_level)
-        @logger = create_logger(stdout)
+        @logger = create_logger(output)
       end
 
       def validate_log_level(level)
@@ -41,8 +41,8 @@ module Roast
         level_str
       end
 
-      def create_logger(stdout)
-        ::Logger.new(stdout).tap do |logger|
+      def create_logger(output)
+        ::Logger.new(output).tap do |logger|
           logger.level = ::Logger.const_get(@log_level)
           logger.formatter = proc do |severity, datetime, _progname, msg|
             msg_string = format_message(msg)
