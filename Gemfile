@@ -14,6 +14,7 @@ gem "cli-ui", github: "Shopify/cli-ui", branch: "main"
 group :development, :test do
   gem "guard-minitest"
   gem "guard"
+  gem "minitest", "~> 5.0"
   gem "minitest-rg"
   gem "mocha"
   gem "rake", require: false
