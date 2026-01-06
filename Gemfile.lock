@@ -17,7 +17,7 @@ PATH
       diff-lcs (>= 1.5)
       json-schema (>= 5.1)
       open_router (>= 0.3)
-      raix (>= 1.0.2)
+      raix (~> 1.0.2)
       rake (>= 13.3.0)
       ruby-graphviz (>= 1.2)
       ruby_llm (>= 1.8)
@@ -267,6 +267,7 @@ DEPENDENCIES
   cli-ui!
   guard
   guard-minitest
+  minitest (~> 5.0)
   minitest-rg
   mocha
   rake

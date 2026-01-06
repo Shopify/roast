@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency("diff-lcs", ">= 1.5")
   spec.add_dependency("json-schema", ">= 5.1")
   spec.add_dependency("open_router", ">= 0.3")
-  spec.add_dependency("raix", ">= 1.0.2")
+  spec.add_dependency("raix", "~> 1.0.2")
   spec.add_dependency("rake", ">= 13.3.0") # NOTE: required by Thor
   spec.add_dependency("ruby-graphviz", ">= 1.2")
   spec.add_dependency("ruby_llm", ">= 1.8")
