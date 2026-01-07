@@ -242,7 +242,9 @@ module Roast
         # ---
         #
         # __Important Note__: this configuration option only applies to external commands invoked by a cog
-        # It does not affect the working directory in which Roast is running.
+        # It does not affect the working directory in which Roast is running. In fact, changing the working
+        # directory of the Roast process can have unpredictable results when running async cogs and/or
+        # parallel maps.
         #
         # ---
         #
