@@ -21,6 +21,7 @@ require "mocha/minitest"
 require "support/fixture_helpers"
 require "support/improved_assertions"
 require "support/functional_test"
+require "support/vcr_url_rewriter"
 require "dsl/support/functional_test"
 require "vcr"
 require "webmock"
@@ -38,19 +39,6 @@ VCR.configure do |config|
   config.cassette_library_dir = "test/fixtures/vcr_cassettes"
   config.hook_into :webmock
 
-  config.filter_sensitive_data("http://mytestingproxy.local/v1/chat/completions") do |interaction|
-    interaction.request.uri
-  end
-
-  config.filter_sensitive_data("my-token") do |interaction|
-    interaction.request.headers["Authorization"].first
-  end
-
-  config.filter_sensitive_data("<FILTERED>") do |interaction|
-    interaction.request.headers["Set-Cookie"]
-  end
-
-  config.filter_sensitive_data("<FILTERED>") do |interaction|
-    interaction.response.headers["Set-Cookie"]
-  end
+  # Apply URL rewriting and scrubbing hooks
+  VCRURLRewriter.configure!
 end

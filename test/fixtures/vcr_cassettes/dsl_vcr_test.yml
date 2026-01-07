@@ -1,0 +1,59 @@
+---
+http_interactions:
+  - request:
+      method: post
+      uri: https://api.openai.com/v1/chat/completions
+      body:
+        encoding: UTF-8
+        string:
+          '{"model":"gpt-4o","messages":[{"role":"user","content":"What is the
+          deepest lake?"}],"temperature":1.0,"max_tokens":null,"top_p":1.0,"frequency_penalty":0.0,"presence_penalty":0.0,"response_format":null,"seed":null,"stream":false}'
+      headers:
+        User-Agent:
+          - Faraday v2.13.1
+        Content-Type:
+          - application/json
+        Authorization:
+          - Bearer dummy-key
+        Accept-Encoding:
+          - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+        Accept:
+          - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Content-Type:
+          - application/json
+        Date:
+          - Tue, 09 Dec 2025 23:49:55 GMT
+      body:
+        encoding: UTF-8
+        string: |-
+          {
+            "id": "chatcmpl-test123",
+            "object": "chat.completion",
+            "created": 1733785795,
+            "model": "gpt-4o-2024-08-06",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "Lake Baikal in Siberia, Russia is the deepest lake in the world, reaching a maximum depth of about 1,642 meters (5,387 feet). It is also one of the oldest and largest freshwater lakes by volume in the world.",
+                  "refusal": null
+                },
+                "logprobs": null,
+                "finish_reason": "stop"
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 13,
+              "completion_tokens": 58,
+              "total_tokens": 71
+            },
+            "system_fingerprint": "fp_test"
+          }
+    recorded_at: Tue, 09 Dec 2025 23:49:55 GMT
+recorded_with: VCR 6.3.1
