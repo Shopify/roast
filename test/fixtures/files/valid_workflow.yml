@@ -1,7 +1,0 @@
-name: My Workflow
-steps:
-  - step1
-  - step2
-tools:
-  - tool1
-  - tool2

@@ -1,8 +1,0 @@
-name: My Workflow
-tools: 
-  - tool1
-  - tool2
-steps:
-  - first_step
-  - nested_step_1
-  - nested_step_2
