@@ -6,6 +6,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - This is a Ruby gem called Roast. Its purpose is to run AI workflows defined in a YAML file.
 - Note that this project now uses Zeitwerk, which means you don't have to manually require project files anymore
 
+## Agent Cog Providers
+The `agent` cog supports multiple providers for running local coding agents:
+
+- **`:claude`** (default) - Claude Code CLI (`claude`). Uses stream-json output format and supports session resumption.
+- **`:codex`** - OpenAI Codex CLI (`codex exec`). Uses non-interactive mode with `--full-auto` for file edits.
+- **`:opencode`** - Opencode CLI (`opencode run`). For Gemini models via the opencode CLI.
+
+To configure a provider in your workflow:
+```ruby
+config do
+  agent do
+    provider :codex  # or :claude (default), or :opencode
+    model "gpt-4"    # optional, provider-specific
+  end
+end
+```
+
+Provider implementations are in `lib/roast/dsl/cogs/agent/providers/`.
+
 ## Commands
 - Default THE SUITE RUNS FAST SO USE THIS  IN MOST CASES (tests + lint w/autocorrect): `bundle exec rake`
 - Run single test: `bundle exec ruby -Itest test/path/to/test_file.rb`

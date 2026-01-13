@@ -6,7 +6,7 @@ module Roast
     module Cogs
       class Agent < Cog
         class Config < Cog::Config
-          VALID_PROVIDERS = [:claude].freeze #: Array[Symbol]
+          VALID_PROVIDERS = [:claude, :codex, :opencode].freeze #: Array[Symbol]
 
           # Configure the cog to use a specified provider when invoking an agent
           #

@@ -152,7 +152,7 @@ module Roast
                 formatted_message = message.format(@context)
                 puts formatted_message if formatted_message.present? && @show_progress
 
-                unless message.unparsed.blank?
+                if @show_progress && !message.unparsed.blank?
                   # TODO: do something better with unhandled data so we can improve the parser
                   puts "[WARNING] Unhandled data in Claude #{message.type} message:"
                   puts JSON.pretty_generate(message.unparsed)

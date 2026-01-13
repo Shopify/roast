@@ -1,0 +1,31 @@
+# typed: true
+# frozen_string_literal: true
+
+module Roast
+  module DSL
+    module Cogs
+      class Agent < Cog
+        module Providers
+          class Codex < Provider
+            class Output < Agent::Output
+              delegate :response, :session, :stats, to: :@invocation_result
+
+              #: (CodexInvocation::Result) -> void
+              def initialize(invocation_result)
+                super()
+                @invocation_result = invocation_result
+              end
+            end
+
+            #: (Agent::Input) -> Agent::Output
+            def invoke(input)
+              invocation = CodexInvocation.new(@config, input)
+              invocation.run!
+              Output.new(invocation.result)
+            end
+          end
+        end
+      end
+    end
+  end
+end

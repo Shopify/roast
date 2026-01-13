@@ -54,7 +54,7 @@ bin/roast execute --executor=dsl analyze_codebase.rb
 ## Core Cogs
 
 - **`chat`** - Send prompts to cloud-based LLMs (OpenAI, Anthropic, Gemini, etc.)
-- **`agent`** - Run local coding agents with filesystem access (Claude Code CLI, etc.)
+- **`agent`** - Run local coding agents with filesystem access (Claude Code, Codex, Opencode)
 - **`ruby`** - Execute custom Ruby code within workflows
 - **`cmd`** - Run shell commands and capture output
 - **`map`** - Process collections in serial or parallel
@@ -76,7 +76,10 @@ gem 'roast-ai'
 
 - Ruby 3.0+
 - API keys for your AI provider (OpenAI/Anthropic)
-- Claude Code CLI installed (for agent cog)
+- Agent CLI installed (for agent cog):
+  - **Claude**: Claude Code CLI (`claude`)
+  - **Codex**: OpenAI Codex CLI (`codex`)
+  - **Opencode**: Opencode CLI (`opencode`) for Gemini models
 
 ## Getting Started
 
