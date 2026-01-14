@@ -19,7 +19,7 @@ module Roast
     # ### Invocation
     # Invoke a workflow with a single target like this:
     # ```bash
-    # roast execute --executor=dsl my_workflow.rb my_target_file.txt
+    # roast execute my_workflow.rb my_target_file.txt
     # ```
     #
     # ### Usage
@@ -49,11 +49,11 @@ module Roast
     # ### Invocation
     # Invoke a workflow with multiple targets like this:
     # ```bash
-    # roast execute --executor=dsl my_workflow.rb target_one.txt target_two.txt
+    # roast execute my_workflow.rb target_one.txt target_two.txt
     # ```
     # or using shell globs like this:
     # ```bash
-    # roast execute --executor=dsl my_workflow.rb target_*.txt
+    # roast execute my_workflow.rb target_*.txt
     # ```
     #
     # ### Usage
@@ -83,7 +83,7 @@ module Roast
     # ### Invocation
     # Invoke a workflow with flag arguments like this:
     # ```bash
-    # roast execute --executor=dsl my_workflow.rb [TARGETS] -- retry force
+    # roast execute my_workflow.rb [TARGETS] -- retry force
     # ```
     #
     # ### Usage
@@ -113,7 +113,7 @@ module Roast
     # ### Invocation
     # Invoke a workflow with flag arguments like this:
     # ```bash
-    # roast execute --executor=dsl my_workflow.rb [TARGETS] -- retry force
+    # roast execute my_workflow.rb [TARGETS] -- retry force
     # ```
     #
     # ### Usage
@@ -140,7 +140,7 @@ module Roast
     # ### Invocation
     # Invoke a workflow with keyword arguments like this:
     # ```bash
-    # roast execute --executor=dsl my_workflow.rb [TARGETS] -- name=Samantha project=Roast
+    # roast execute my_workflow.rb [TARGETS] -- name=Samantha project=Roast
     # ```
     #
     # ### Usage
@@ -172,7 +172,7 @@ module Roast
     # ### Invocation
     # Invoke a workflow with keyword arguments like this:
     # ```bash
-    # roast execute --executor=dsl my_workflow.rb [TARGETS] -- name=Samantha project=Roast
+    # roast execute my_workflow.rb [TARGETS] -- name=Samantha project=Roast
     # ```
     #
     # ### Usage
@@ -202,7 +202,7 @@ module Roast
     # ### Invocation
     # Invoke a workflow with keyword arguments like this:
     # ```bash
-    # roast execute --executor=dsl my_workflow.rb [TARGETS] -- name=Samantha project=Roast
+    # roast execute my_workflow.rb [TARGETS] -- name=Samantha project=Roast
     # ```
     #
     # ### Usage
@@ -232,7 +232,7 @@ module Roast
     # ### Invocation
     # Invoke a workflow with keyword arguments like this:
     # ```bash
-    # roast execute --executor=dsl my_workflow.rb [TARGETS] -- name=Samantha project=Roast
+    # roast execute my_workflow.rb [TARGETS] -- name=Samantha project=Roast
     # ```
     #
     # ### Usage

@@ -187,11 +187,11 @@ Try these examples to see async cogs in action:
 
 ```bash
 # Basic async execution
-bin/roast execute --executor=dsl dsl/tutorial/09_async_cogs/basic_async.rb
+bin/roast execute tutorial/09_async_cogs/basic_async.rb
 
 # Parallel analysis with multiple agents
-bin/roast execute --executor=dsl dsl/tutorial/09_async_cogs/parallel_analysis.rb
+bin/roast execute tutorial/09_async_cogs/parallel_analysis.rb
 
 # Synchronous barriers controlling execution order
-bin/roast execute --executor=dsl dsl/tutorial/09_async_cogs/sync_barriers.rb
+bin/roast execute tutorial/09_async_cogs/sync_barriers.rb
 ```

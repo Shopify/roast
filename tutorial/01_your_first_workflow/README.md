@@ -140,13 +140,13 @@ To run any workflow in this chapter:
 
 ```bash
 # From the project root
-bin/roast execute --executor=dsl dsl/tutorial/01_your_first_workflow/hello.rb
+bin/roast execute tutorial/01_your_first_workflow/hello.rb
 ```
 
 Or the configured version:
 
 ```bash
-bin/roast execute --executor=dsl dsl/tutorial/01_your_first_workflow/configured_chat.rb
+bin/roast execute tutorial/01_your_first_workflow/configured_chat.rb
 ```
 
 You should see:
@@ -168,7 +168,7 @@ You should see:
 - The `chat` cog sends prompts to cloud-based LLMs
 - Use `<<~PROMPT ... PROMPT` for multi-line prompts
 - The `config do ... end` block (before execute) sets up cog behavior
-- Run workflows with `bin/roast execute --executor=dsl path/to/workflow.rb`
+- Run workflows with `bin/roast execute path/to/workflow.rb`
 
 ## What's Next?
 

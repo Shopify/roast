@@ -48,7 +48,7 @@ end
 
 Run with:
 ```bash
-bin/roast execute --executor=dsl analyze_codebase.rb
+bin/roast execute analyze_codebase.rb
 ```
 
 ## Core Cogs
@@ -82,7 +82,7 @@ gem 'roast-ai'
 
 The best way to learn Roast is through the interactive tutorial:
 
-📚 **[Start the Tutorial](https://github.com/Shopify/roast/blob/main/dsl/tutorial/README.md)**
+📚 **[Start the Tutorial](https://github.com/Shopify/roast/blob/main/tutorial/README.md)**
 
 The tutorial covers:
 1. Your first workflow
@@ -97,7 +97,7 @@ The tutorial covers:
 
 ## Documentation
 
-- [Tutorial](https://github.com/Shopify/roast/blob/main/dsl/tutorial/README.md) - Step-by-step guide with examples
+- [Tutorial](https://github.com/Shopify/roast/blob/main/tutorial/README.md) - Step-by-step guide with examples
 - [Functional Tests](https://github.com/Shopify/roast/tree/main/dsl) - Toy workflows that demonstrate all functional patterns, use for end-to-end test
 - [API Reference](https://github.com/Shopify/roast/tree/main/sorbet/rbi/shims/lib/roast/dsl) - Complete cog documentation
 
@@ -113,7 +113,7 @@ The public interfaces of the new Roast are extensively documented in
 class and method comments on the relevant classes.
 
 * __Tutorial and Examples__
-    * [Tutorial -- Table of Contents](https://github.com/Shopify/roast/tree/main/dsl/tutorial) (contains step-by-step guides and runnable examples showing real-world usage)
+    * [Tutorial -- Table of Contents](https://github.com/Shopify/roast/tree/main/tutorial) (contains step-by-step guides and runnable examples showing real-world usage)
     * [Additional Example Workflows](https://github.com/Shopify/roast/tree/main/dsl) (these comprise the Roast end-to-end test suite)
 * __Configuation__
     * [General configuration block: `config-context.rbi`](https://github.com/Shopify/roast/blob/main/sorbet/rbi/shims/lib/roast/dsl/config_context.rbi)

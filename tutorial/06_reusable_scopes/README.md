@@ -134,17 +134,17 @@ To run the examples in this chapter:
 
 ```bash
 # Basic scope example
-bin/roast execute --executor=dsl dsl/tutorial/06_reusable_scopes/basic_scope.rb
+bin/roast execute tutorial/06_reusable_scopes/basic_scope.rb
 ```
 
 ```bash
 # Parameterized scope example
-bin/roast execute --executor=dsl dsl/tutorial/06_reusable_scopes/parameterized_scope.rb
+bin/roast execute tutorial/06_reusable_scopes/parameterized_scope.rb
 ```
 
 ```bash
 # Accessing specific scope outputs
-bin/roast execute --executor=dsl dsl/tutorial/06_reusable_scopes/accessing_scope_outputs.rb
+bin/roast execute tutorial/06_reusable_scopes/accessing_scope_outputs.rb
 ```
 
 ## Try It Yourself

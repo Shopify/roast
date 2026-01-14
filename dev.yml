@@ -17,7 +17,7 @@ commands:
   __default__: execute
   execute:
     desc: Execute a roast workflow
-    run: bundle exec roast execute --executor=dsl
+    run: bundle exec roast execute
   style:
     desc: Run Rubocop style checks (and autocorrect)
     run: bundle exec rake rubocop:autocorrect

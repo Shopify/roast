@@ -30,7 +30,7 @@ Each chapter is a self-contained lesson with:
 To run any example:
 
 ```bash
-bin/roast execute --executor=dsl dsl/tutorial/CHAPTER_NAME/workflow_name.rb
+bin/roast execute tutorial/CHAPTER_NAME/workflow_name.rb
 ```
 
 ## Tutorial Chapters
@@ -219,4 +219,4 @@ that can run concurrently.
 ---
 
 Let's get started with
-[Chapter 1](https://github.com/Shopify/roast/blob/edge/dsl/tutorial/01_your_first_workflow/README.md)!
+[Chapter 1](https://github.com/Shopify/roast/blob/edge/tutorial/01_your_first_workflow/README.md)!

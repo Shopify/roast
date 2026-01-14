@@ -266,17 +266,17 @@ To run the examples in this chapter:
 
 ```bash
 # Simple chaining example
-bin/roast execute --executor=dsl dsl/tutorial/02_chaining_cogs/simple_chain.rb
+bin/roast execute tutorial/02_chaining_cogs/simple_chain.rb
 ```
 
 ```bash
 # Realistic code review workflow
-bin/roast execute --executor=dsl dsl/tutorial/02_chaining_cogs/code_review.rb
+bin/roast execute tutorial/02_chaining_cogs/code_review.rb
 ```
 
 ```bash
 # Session resumption with multi-turn conversations
-bin/roast execute --executor=dsl dsl/tutorial/02_chaining_cogs/session_resumption.rb
+bin/roast execute tutorial/02_chaining_cogs/session_resumption.rb
 ```
 
 ## Try It Yourself
