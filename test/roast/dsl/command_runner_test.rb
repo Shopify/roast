@@ -136,7 +136,7 @@ module Roast
           # We can't easily get the PID from outside, but we can verify
           # that a very short timeout doesn't leave sleep running
           # by checking process list (external check, not using CommandRunner)
-          output = %x(ps aux | grep "sleep 2" | grep -v grep) # rubocop:disable Roast/UseCmdRunner
+          output = %x(ps aux | grep "sleep 2" | grep -v grep)
           assert_empty output, "sleep process should be killed after timeout"
         end
         assert_operator time, :<, 1, "command ran for much longer than configured timeout"
