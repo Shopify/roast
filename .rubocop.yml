@@ -1,8 +1,5 @@
 inherit_from: .rubocop_todo.yml
 
-require:
-  - ./rubocop/cop/roast
-
 plugins:
   - rubocop-sorbet
 
@@ -32,13 +29,6 @@ Sorbet/FalseSigil:
     - "test/**/*"
     - "examples/**/*"
     - "lib/roast/sorbet_runtime_stub.rb"
-
-Roast/UseCmdRunner:
-  Enabled: true
-  Exclude:
-    - 'lib/roast/helpers/cmd_runner.rb'
-    - 'lib/roast/dsl/command_runner.rb'
-    - 'roast-ai.gemspec'
 
 Style/MethodCallWithArgsParentheses:
   Enabled: true
