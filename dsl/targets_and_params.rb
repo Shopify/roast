@@ -21,8 +21,7 @@ execute do
     puts "workflow args: #{params.args}" # [:hello, :world] (args are parsed as symbols)
 
     # {abc: "pqr", foo: "bar"} (keys are parsed as symbols, values as strings)
-    # (Note: using explicit formatting for compatibility with Ruby versions < 3.4)
-    puts "workflow kwargs: {#{params.kwargs.map { |k, v| "#{k}: #{v.inspect}" }.join(", ")}}"
+    puts "workflow kwargs: #{params.kwargs}"
   end
 
   # There are convenience methods to access the workflow params from any cog input context in any scope

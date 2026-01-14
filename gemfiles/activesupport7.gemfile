@@ -1,4 +1,0 @@
-# frozen_string_literal: true
-
-eval_gemfile "../Gemfile"
-gem "activesupport", "~> 7.0"
