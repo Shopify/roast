@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 # This workflow demonstrates accessing specific cog outputs from a called scope.
 # It shows how to use from() with a block to extract outputs from multiple cogs,

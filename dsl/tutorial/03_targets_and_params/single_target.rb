@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 # This workflow demonstrates using target! to process a single URL.
 # It expects exactly one URL to be provided on the command line.

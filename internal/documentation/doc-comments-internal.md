@@ -238,7 +238,7 @@ Use backticks for:
 - Method names: `` `execute` ``
 - Values: `` `true` ``, `` `:claude` ``
 - Cog names: `` `call` ``, `` `map` ``, `` `agent` `` (they appear as methods from a user's perspective)
-- Class names: Use **fully qualified names** (e.g., `` `Roast::DSL::Cogs::Agent::Input` ``)
+- Class names: Use **fully qualified names** (e.g., `` `Roast::Cogs::Agent::Input` ``)
 
 **Important:** Always use fully qualified class/module names in documentation to avoid ambiguity.
 Due to significant name overlap in the system (e.g., multiple `Input`, `Output`, `Config` classes),
@@ -256,7 +256,7 @@ end
 ```
 
 **Examples:**
-- ✅ Good: `` `Roast::DSL::SystemCogs::Call::Output` ``
+- ✅ Good: `` `Roast::SystemCogs::Call::Output` ``
 - ❌ Bad: `` `Call::Output` `` (ambiguous)
 
 ### Bold Emphasis

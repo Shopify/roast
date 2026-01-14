@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 use "simple", from: "plugin_gem_example"
 use "MyCogNamespace::Other", from: "plugin_gem_example"

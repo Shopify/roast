@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 # This workflow demonstrates basic named execute scopes and the call cog.
 # It shows how to define reusable logic and invoke it multiple times.
