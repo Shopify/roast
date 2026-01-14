@@ -1,8 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
-class Local < Roast::DSL::Cog
-  class Input < Roast::DSL::Cog::Input
+class Local < Roast::Cog
+  class Input < Roast::Cog::Input
     def validate!
       true
     end

@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 # This workflow demonstrates parameterized scopes.
 # It shows how to pass values to scopes and use them within the scope's cogs.

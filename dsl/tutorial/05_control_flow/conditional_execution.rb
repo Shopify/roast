@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 # This workflow demonstrates conditional execution using skip! and the ? accessor.
 # It checks a random number and runs different steps based on whether it's even or odd.

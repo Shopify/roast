@@ -4,7 +4,7 @@ Write documentation comments for public methods in the specified file or class.
 
 Accepts either:
 - A file path, like `lib/roast/dsl/cogs/chat/config.rb`
-- A class name, like `Roast::DSL::Cogs::Chat::Config`
+- A class name, like `Roast::Cogs::Chat::Config`
 
 ## Task
 

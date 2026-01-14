@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 config do
   cmd { display! }
@@ -33,7 +33,7 @@ execute do
     begin
       # There is no :to_upper cog that this could sensibly be referring to
       cmd(:to_upper)
-    rescue Roast::DSL::CogInputManager::CogDoesNotExistError
+    rescue Roast::CogInputManager::CogDoesNotExistError
       puts "Could not access :to_upper directly"
     end
 

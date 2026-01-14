@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 # This workflow demonstrates failure handling with both no_abort_on_failure! and no_fail_on_error!
 # It shows how workflows can continue even when individual cogs fail.

@@ -3,7 +3,7 @@
 
 # This type annotation helps Sorbet type-check your workflow.
 # It's optional if you don't want to use Sorbet.
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 # This is the simplest possible Roast workflow.
 # It sends a single prompt to a chat LLM and displays the response.

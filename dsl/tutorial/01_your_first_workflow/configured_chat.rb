@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 # This workflow demonstrates how to configure chat cogs.
 # Configuration is set in a 'config' block before the 'execute' block.

@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 module MyCogNamespace
-  class Other < Roast::DSL::Cog
-    class Input < Roast::DSL::Cog::Input
+  class Other < Roast::Cog
+    class Input < Roast::Cog::Input
       def validate!
         true
       end
