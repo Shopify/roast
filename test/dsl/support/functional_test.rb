@@ -2,10 +2,6 @@
 
 module DSL
   class FunctionalTest < ActiveSupport::TestCase
-    setup do
-      Roast::Helpers::Logger.reset
-    end
-
     # Set up a temporary sandbox directory with all the examples
     # Parameter workflow_id is an arbitrary namespace/subdirectory within the sandbox
     # Returns an array of strings [stdio_output, stderr_output]
