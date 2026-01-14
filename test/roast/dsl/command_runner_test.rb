@@ -193,20 +193,17 @@ module Roast
         end
       end
 
-      test "handler exceptions are logged to debug" do
+      test "handler exceptions are written to stderr" do
         failing_handler = ->(_line) { raise StandardError, "Test error" }
 
-        # Capture debug calls
-        debug_calls = []
-        Roast::Helpers::Logger.stub(:debug, ->(msg) { debug_calls << msg }) do
+        _, stderr = capture_io do
           CommandRunner.execute(
             ["echo", "test"],
             stdout_handler: failing_handler,
           )
         end
 
-        assert_equal 1, debug_calls.size
-        assert_match(/stdout_handler raised: StandardError - Test error/, debug_calls.first)
+        assert_match(/stdout_handler raised: StandardError - Test error/, stderr)
       end
 
       test "runs command in current working directory if no working directory specified" do
