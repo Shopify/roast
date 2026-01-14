@@ -6,6 +6,6 @@
 --ignore=vendor/
 --ignore=test/
 --ignore=bin/
---ignore=dsl/demo
+--ignore=examples/demo
 --enable-experimental-requires-ancestor
 --enable-experimental-rbs-comments
