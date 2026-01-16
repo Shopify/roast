@@ -89,6 +89,7 @@ module Roast
       kwarg_question_method = method(:kwarg?)
       kwargs_method = method(:kwargs)
       tmpdir_method = method(:tmpdir)
+      template_method = method(:template)
       @context.instance_eval do
         define_singleton_method(:target!, proc { target_bang_method.call })
         define_singleton_method(:targets, proc { targets_method.call })
@@ -99,6 +100,7 @@ module Roast
         define_singleton_method(:kwarg?, proc { |key| kwarg_question_method.call(key) })
         define_singleton_method(:kwargs, proc { kwargs_method.call })
         define_singleton_method(:tmpdir, proc { tmpdir_method.call })
+        define_singleton_method(:template, proc { |path, args = {}| template_method.call(path, args) })
       end
     end
 
@@ -149,6 +151,75 @@ module Roast
     #: () -> Pathname
     def tmpdir
       Pathname.new(@workflow_context.tmpdir).realpath
+    end
+
+    # Template rendering method for DSL workflows
+    #
+    # Resolves template files using a comprehensive search strategy and renders them with ERB.
+    # Supports both relative shorthand paths like "greeting" and full absolute paths.
+    #
+    # @param path [String, Pathname] The template path to resolve. Can be:
+    #   - Shorthand name: "greeting" -> searches for prompts/greeting.md.erb
+    #   - With extension: "template.erb" -> searches for template.erb
+    #   - Absolute path: "/full/path/to/template.erb" -> uses as-is
+    # @param args [Hash] Template variables for ERB interpolation
+    # @return [String] The rendered template content
+    #
+    # @example Basic usage
+    #   template("greeting", name: "World")  # -> "Hello World!"
+    #
+    # @example With custom variables
+    #   template("email", user: user, subject: "Welcome")
+    #
+    # Search priority:
+    # 1. Absolute path as-is (if absolute)
+    # 2-4. Workflow directory: path, path.erb, path.md.erb
+    # 5-7. Workflow directory prompts/: prompts/path, prompts/path.erb, prompts/path.md.erb
+    # 8-10. Current directory: path, path.erb, path.md.erb
+    # 11-13. Current directory prompts/: prompts/path, prompts/path.erb, prompts/path.md.erb
+    #
+    #: (String | Pathname, ?Hash) -> String
+    def template(path, args = {})
+      # NOTE: Pathname does not expand ~ for home directory automatically.
+      # This is tracked in issue https://github.com/Shopify/roast/issues/663.
+      path = Pathname.new(path) unless path.is_a?(Pathname)
+
+      # Priority stack of places to look for a matching file
+      candidate_paths = []
+
+      # 1. Absolute path as-is
+      candidate_paths << path if path.absolute?
+
+      # 2-4. Relative to workflow directory
+      workflow_dir = @workflow_context.workflow_dir
+      candidate_paths << workflow_dir / path
+      candidate_paths << workflow_dir / "#{path}.erb"
+      candidate_paths << workflow_dir / "#{path}.md.erb"
+
+      # 5-7. Relative to workflow directory prompts folder
+      candidate_paths << workflow_dir / "prompts" / path
+      candidate_paths << workflow_dir / "prompts" / "#{path}.erb"
+      candidate_paths << workflow_dir / "prompts" / "#{path}.md.erb"
+
+      # 8-10. Relative to current working directory
+      pwd = Pathname.pwd
+      candidate_paths << pwd / path
+      candidate_paths << pwd / "#{path}.erb"
+      candidate_paths << pwd / "#{path}.md.erb"
+
+      # 11-13. Relative to current working directory prompts folder
+      candidate_paths << pwd / "prompts" / path
+      candidate_paths << pwd / "prompts" / "#{path}.erb"
+      candidate_paths << pwd / "prompts" / "#{path}.md.erb"
+
+      # Use the first path that exists
+      resolved_path = candidate_paths.find(&:exist?)
+
+      unless resolved_path
+        raise CogInputContext::ContextNotFoundError, "The file '#{path}' could not be found"
+      end
+
+      ERB.new(resolved_path.read).result_with_hash(args)
     end
   end
 end

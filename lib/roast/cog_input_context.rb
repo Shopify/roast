@@ -30,13 +30,5 @@ module Roast
     def break!(message = nil)
       raise ControlFlow::Break, message
     end
-
-    #: (String, ?Hash) -> String
-    def template(path, args = {})
-      path = "prompts/#{path}.md.erb" unless File.exist?(path)
-      fail!("The prompt #{path} could not be found") unless File.exist?(path)
-
-      ERB.new(File.read(path)).result_with_hash(args)
-    end
   end
 end

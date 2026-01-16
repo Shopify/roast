@@ -13,7 +13,8 @@ module Roast
       #: (String | Pathname, WorkflowParams) -> void
       def from_file(workflow_path, params)
         Dir.mktmpdir("roast-") do |tmpdir|
-          workflow_context = WorkflowContext.new(params:, tmpdir:)
+          workflow_dir = Pathname.new(workflow_path).dirname
+          workflow_context = WorkflowContext.new(params: params, tmpdir: tmpdir, workflow_dir: workflow_dir)
           workflow = new(workflow_path, workflow_context)
           workflow.prepare!
           workflow.start!
