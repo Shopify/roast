@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-module DSL
+module Examples
   class FunctionalTest < ActiveSupport::TestCase
     # Set up a temporary sandbox directory with all the examples
     # Parameter workflow_id is an arbitrary namespace/subdirectory within the sandbox
     # Returns an array of strings [stdio_output, stderr_output]
     def in_sandbox(workflow_id, &block)
       root_project_path = Dir.pwd
-      examples_source_path = File.join(root_project_path, "dsl")
+      examples_source_path = File.join(root_project_path, "examples")
 
       tmpdir_root = File.join(root_project_path, "tmp/sandboxes")
       tmpdir = nil
