@@ -164,7 +164,7 @@ Regardless of which type of documentation you're writing, follow these universal
 - Use double underscores (`__word__`) for bold emphasis on critical negating words
 - Use backticks (`` `code` ``) for method names, values, symbols, class names, and cog names
 - **Cog names should always be stylized with backticks** (e.g., `` `call` ``, `` `map` ``, `` `agent` ``) since they appear as methods from a user's perspective
-- **Always use fully qualified class/module names** (e.g., `Roast::DSL::SystemCogs::Call::Output`, not `Call::Output`) to avoid ambiguity
+- **Always use fully qualified class/module names** (e.g., `Roast::SystemCogs::Call::Output`, not `Call::Output`) to avoid ambiguity
 - Use `####` for subsection headers in user-facing documentation only
 - Use `-` for bullet lists
 

@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 # This workflow demonstrates processing multiple targets with custom arguments.
 # It accepts any number of files and optional arguments for controlling output.

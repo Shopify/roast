@@ -52,14 +52,13 @@ unless defined?(T)
 end
 
 # Require project components that will not get automatically loaded
-require "roast/dsl/nil_assertions"
+require "roast/nil_assertions"
 
 # Autoloading setup
 require "zeitwerk"
 
 # Set up Zeitwerk autoloader
 loader = Zeitwerk::Loader.for_gem
-loader.inflector.inflect("dsl" => "DSL")
 loader.ignore("#{__dir__}/roast-ai.rb")
 loader.setup
 
@@ -79,7 +78,7 @@ module Roast
 
       targets, workflow_args, workflow_kwargs = parse_custom_workflow_args(files, ARGV)
       targets.unshift(options[:target]) if options[:target]
-      workflow_params = Roast::DSL::WorkflowParams.new(targets, workflow_args, workflow_kwargs)
+      workflow_params = Roast::WorkflowParams.new(targets, workflow_args, workflow_kwargs)
 
       # If the workflow is running with a working directory specified to be different from the current directory
       # from which Roast was run, and the workflow file if specified with a relative path, check for it relative
@@ -93,7 +92,7 @@ module Roast
       end.realpath
 
       Dir.chdir(roast_working_directory) do
-        Roast::DSL::Workflow.from_file(real_workflow_path, workflow_params)
+        Roast::Workflow.from_file(real_workflow_path, workflow_params)
       end
     rescue => e
       if options[:verbose]

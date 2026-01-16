@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 # This workflow demonstrates using agent and chat cogs together.
 # Agent reads/analyzes code, chat summarizes findings, ruby formats output.

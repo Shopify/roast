@@ -152,7 +152,7 @@ Use backticks for:
 - Values: `` `true` ``, `` `:claude` ``
 - Symbols: `` `:name` ``
 - Cog names: `` `call` ``, `` `map` ``, `` `agent` `` (they appear as methods from a user's perspective)
-- Class names: Use **fully qualified names** (e.g., `` `Roast::DSL::Cog::Config::InvalidConfigError` ``)
+- Class names: Use **fully qualified names** (e.g., `` `Roast::Cog::Config::InvalidConfigError` ``)
 
 **Important:** Always use fully qualified class/module names in documentation to avoid ambiguity.
 Due to significant name overlap in the system (e.g., multiple `Input`, `Output`, `Config` classes),
@@ -173,8 +173,8 @@ end
 ```
 
 **Examples:**
-- ✅ Good: `` `Roast::DSL::SystemCogs::Call::Output` ``
-- ✅ Good: `` `Roast::DSL::Cogs::Agent::Config` ``
+- ✅ Good: `` `Roast::SystemCogs::Call::Output` ``
+- ✅ Good: `` `Roast::Cogs::Agent::Config` ``
 - ❌ Bad: `` `Call::Output` `` (ambiguous)
 - ❌ Bad: `` `Agent::Config` `` (which Agent?)
 
@@ -252,7 +252,7 @@ end
 **Do NOT include in See Also:**
 
 - `valid_*` validation methods when documenting user-facing Config setter methods - these are internal implementation details
-- Class names (e.g., `Roast::DSL::Cogs::Agent::Config`) - these are not user-facing references
+- Class names (e.g., `Roast::Cogs::Agent::Config`) - these are not user-facing references
 - Internal implementation details or mechanisms
 - Anything users wouldn't directly reference in their workflow code
 
@@ -260,7 +260,7 @@ end
 - ✅ User-facing method: `` - `model` ``
 - ✅ Attribute from same class: `` - `response` ``
 - ✅ Method from included module: `` - `text` ``
-- ❌ Class name: `` - `Roast::DSL::Cogs::Agent::Input` ``
+- ❌ Class name: `` - `Roast::Cogs::Agent::Input` ``
 - ❌ Internal method: `` - `valid_model!` ``
 
 ### Alias and Inverse Method Documentation
@@ -537,7 +537,7 @@ Methods in `config_context.rbi` expose cog configuration interfaces and are the 
 # - `apply_permissions!` - Apply permissions when running the agent
 # - `skip_permissions!` (alias `no_apply_permissions!`) - Skip permissions (default)
 #
-#: (?(Symbol | Regexp)?) {() [self: Roast::DSL::Cogs::Agent::Config] -> void} -> void
+#: (?(Symbol | Regexp)?) {() [self: Roast::Cogs::Agent::Config] -> void} -> void
 def agent(name = nil, &block); end
 ```
 

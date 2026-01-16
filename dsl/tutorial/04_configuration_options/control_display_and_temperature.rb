@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-#: self as Roast::DSL::Workflow
+#: self as Roast::Workflow
 
 # This workflow demonstrates controlling what gets displayed during execution.
 # Shows how to use show_prompt!, no_show_prompt!, show_response!, no_show_response!, and temperature.
