@@ -217,10 +217,10 @@ Try these examples to see `repeat` in action:
 
 ```bash
 # Basic iterative transformation
-bin/roast execute --executor=dsl dsl/tutorial/08_iterative_workflows/basic_repeat.rb
+bin/roast execute tutorial/08_iterative_workflows/basic_repeat.rb
 
 # Using break! to terminate based on conditions
-bin/roast execute --executor=dsl dsl/tutorial/08_iterative_workflows/conditional_break.rb
+bin/roast execute tutorial/08_iterative_workflows/conditional_break.rb
 ```
 
 ## What's Next?

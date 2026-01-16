@@ -7,15 +7,15 @@
 # It accepts any number of files and optional arguments for controlling output.
 #
 # Run it with:
-#   bin/roast execute --executor=dsl dsl/tutorial/03_targets_and_params/multiple_targets.rb \
+#   bin/roast execute tutorial/03_targets_and_params/multiple_targets.rb \
 #     Gemfile Gemfile.lock
 #
 # Or try:
-#   bin/roast execute --executor=dsl dsl/tutorial/03_targets_and_params/multiple_targets.rb \
+#   bin/roast execute tutorial/03_targets_and_params/multiple_targets.rb \
 #     dsl/**/*.rb -- count format=detailed
 #
 # Or get a little crazy:
-#   bin/roast execute --executor=dsl dsl/tutorial/03_targets_and_params/multiple_targets.rb \
+#   bin/roast execute tutorial/03_targets_and_params/multiple_targets.rb \
 #     dsl/**/*.md -- format=json
 
 config do

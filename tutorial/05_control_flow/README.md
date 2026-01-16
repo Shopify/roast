@@ -122,12 +122,12 @@ To run the examples in this chapter:
 
 ```bash
 # Conditional execution example
-bin/roast execute --executor=dsl dsl/tutorial/05_control_flow/conditional_execution.rb
+bin/roast execute tutorial/05_control_flow/conditional_execution.rb
 ```
 
 ```bash
 # Handling failures example
-bin/roast execute --executor=dsl dsl/tutorial/05_control_flow/handling_failures.rb
+bin/roast execute tutorial/05_control_flow/handling_failures.rb
 ```
 
 ## Try It Yourself

@@ -18,10 +18,10 @@ Targets are inputs that you want your workflow to process—files, URLs, or any 
 command line after your workflow file path:
 
 ```bash
-bin/roast execute --executor=dsl workflow.rb https://example.com
-bin/roast execute --executor=dsl workflow.rb README.md
-bin/roast execute --executor=dsl workflow.rb src/*.rb
-bin/roast execute --executor=dsl workflow.rb Gemfile Gemfile.lock
+bin/roast execute workflow.rb https://example.com
+bin/roast execute workflow.rb README.md
+bin/roast execute workflow.rb src/*.rb
+bin/roast execute workflow.rb Gemfile Gemfile.lock
 ```
 
 Shell globs are expanded automatically, so `src/*.rb` will pass all Ruby files in the `src/` directory.
@@ -45,7 +45,7 @@ end
 
 Run it with:
 ```bash
-bin/roast execute --executor=dsl workflow.rb https://example.com
+bin/roast execute workflow.rb https://example.com
 ```
 
 **Important:** `target!` raises an error if zero or multiple targets are provided. Use it when your workflow is
@@ -75,7 +75,7 @@ The `targets` method always returns an array, which will be empty if the workflo
 Custom arguments let you pass additional data to your workflows. They come after `--` on the command line:
 
 ```bash
-bin/roast execute --executor=dsl workflow.rb -- hello world
+bin/roast execute workflow.rb -- hello world
 ```
 
 ### Simple Arguments (args)
@@ -97,11 +97,11 @@ end
 
 Run it with:
 ```bash
-bin/roast execute --executor=dsl workflow.rb -- hello world
+bin/roast execute workflow.rb -- hello world
 ```
 Or:
 ```bash
-bin/roast execute --executor=dsl workflow.rb -- save_data something_else
+bin/roast execute workflow.rb -- save_data something_else
 ```
 
 ### Key-Value Arguments (kwargs)
@@ -132,11 +132,11 @@ end
 
 Run it with:
 ```bash
-bin/roast execute --executor=dsl workflow.rb -- name=Alice format=json
+bin/roast execute workflow.rb -- name=Alice format=json
 ```
 Or:
 ```bash
-bin/roast execute --executor=dsl workflow.rb -- name=Alice email=alice@example.net
+bin/roast execute workflow.rb -- name=Alice email=alice@example.net
 ```
 
 **Notes:**
@@ -149,7 +149,7 @@ bin/roast execute --executor=dsl workflow.rb -- name=Alice email=alice@example.n
 You can use targets and custom arguments together:
 
 ```bash
-bin/roast execute --executor=dsl workflow.rb file1.rb file2.rb -- save_data format=summary
+bin/roast execute workflow.rb file1.rb file2.rb -- save_data format=summary
 ```
 
 In your workflow:
@@ -193,12 +193,12 @@ To run the examples in this chapter:
 
 ```bash
 # Single target workflow (with a URL)
-bin/roast execute --executor=dsl dsl/tutorial/03_targets_and_params/single_target.rb https://example.com
+bin/roast execute tutorial/03_targets_and_params/single_target.rb https://example.com
 ```
 
 ```bash
 # Multiple targets with arguments
-bin/roast execute --executor=dsl dsl/tutorial/03_targets_and_params/multiple_targets.rb \
+bin/roast execute tutorial/03_targets_and_params/multiple_targets.rb \
   Gemfile Gemfile.lock -- save_data format=summary
 ```
 

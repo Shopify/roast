@@ -138,10 +138,10 @@ Try these examples to see `map` in action:
 
 ```bash
 # Basic map with collect, reduce, and accessing specific iterations
-bin/roast execute --executor=dsl dsl/tutorial/07_processing_collections/basic_map.rb
+bin/roast execute tutorial/07_processing_collections/basic_map.rb
 
 # Parallel execution
-bin/roast execute --executor=dsl dsl/tutorial/07_processing_collections/parallel_map.rb
+bin/roast execute tutorial/07_processing_collections/parallel_map.rb
 ```
 
 ## What's Next?

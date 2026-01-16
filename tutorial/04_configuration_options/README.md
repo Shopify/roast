@@ -177,12 +177,12 @@ To run the examples in this chapter:
 
 ```bash
 # Simple configuration example
-bin/roast execute --executor=dsl dsl/tutorial/04_configuration_options/simple_config.rb
+bin/roast execute tutorial/04_configuration_options/simple_config.rb
 ```
 
 ```bash
 # Configuring multiple parameters for multiple steps
-bin/roast execute --executor=dsl dsl/tutorial/04_configuration_options/control_display_and_temperature.rb
+bin/roast execute tutorial/04_configuration_options/control_display_and_temperature.rb
 ```
 
 ## Try It Yourself

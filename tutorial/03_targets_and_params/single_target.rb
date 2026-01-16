@@ -7,7 +7,7 @@
 # It expects exactly one URL to be provided on the command line.
 #
 # Run it with:
-#   bin/roast execute --executor=dsl dsl/tutorial/03_targets_and_params/single_target.rb \
+#   bin/roast execute tutorial/03_targets_and_params/single_target.rb \
 #     https://example.com
 #
 # Try running it with no URLs or multiple URLs to see how target! validates input.

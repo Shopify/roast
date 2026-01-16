@@ -4,7 +4,7 @@
 module Roast
   # The canonical way to execute shell commands in Roast.
   #
-  # CommandRunner is the standard command execution interface for DSL cogs
+  # CommandRunner is the standard command execution interface for Roast
   # and should be used for all command invocations in this project.
   #
   # Features:
