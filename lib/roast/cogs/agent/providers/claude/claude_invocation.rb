@@ -153,10 +153,10 @@ module Roast
 
               unless message.unparsed.blank?
                 # TODO: do something better with unhandled data so we can improve the parser
-                puts "[WARNING] Unhandled data in Claude #{message.type} message:"
-                puts JSON.pretty_generate(message.unparsed)
-                puts "[FULL MESSAGE: #{message.type}]"
-                pp(message)
+                Roast::Log.warn("Unhandled data in Claude #{message.type} message:")
+                Roast::Log.warn(JSON.pretty_generate(message.unparsed))
+                Roast::Log.debug("[FULL MESSAGE: #{message.type}]")
+                Roast::Log.debug(message.inspect)
               end
             end
 
