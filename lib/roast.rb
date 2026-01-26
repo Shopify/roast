@@ -98,7 +98,7 @@ module Roast
       if options[:verbose]
         raise e
       else
-        $stderr.puts e.message
+        Roast::Log.error(e.message)
       end
     end
 
