@@ -32,6 +32,10 @@ def slow_test!
   skip "slow test" unless ["1", "true"].include?(ENV["ROAST_RUN_SLOW_TESTS"])
 end
 
+# Set dummy credentials for tests (VCR will filter these in recordings)
+ENV["OPENAI_API_KEY"] ||= "my-token"
+ENV["OPENAI_API_BASE"] ||= "http://mytestingproxy.local/v1"
+
 VCR.configure do |config|
   config.cassette_library_dir = "test/fixtures/vcr_cassettes"
   config.hook_into :webmock
