@@ -1,0 +1,69 @@
+Write tests for classes that do not have test coverage.
+
+## Arguments
+
+Accepts either:
+- A file path, like `lib/roast/cog_input_context.rb`
+- A class name, like `Roast::CogInputContext`
+
+## Task
+
+1. **Locate the source file:**
+   - If given a class name, find the corresponding file in `lib/`
+   - Read the source file to understand the class's behavior
+
+2. **Check for existing tests:**
+   - Search `test/` for existing test files for this class
+   - If tests exist, identify gaps in coverage
+
+3. **Study project test patterns:**
+   - Look at similar test files in `test/roast/` to understand conventions
+   - Note the test framework (ActiveSupport::TestCase) and assertion styles
+
+4. **Write the tests:**
+   - Create the test file at the appropriate location (e.g., `test/roast/<filename>_test.rb`)
+   - Test only behavior defined in the class itself, not inherited or included behavior
+   - Test each public method with representative cases
+   - Test edge cases (nil arguments, error conditions, etc.)
+
+5. **Run the tests:**
+   - Execute the test file to verify all tests pass
+   - Fix any failures before completing
+
+## Important Constraints
+
+- **Avoid mocking direct dependencies** - use real instances where possible
+- **Simple mocks are acceptable for second-order dependencies** (dependencies of dependencies)
+- **Do not test inherited behavior** - only test methods defined in the class itself
+- **Do not test included module behavior** - unless the class overrides or extends it
+- **Do not test type signatures** - Sorbet handles type checking, so don't test that methods return the correct type (e.g., `assert_instance_of String, @context.tmpdir`)
+- **Do not test simple data classes** - Classes that only have `attr_reader`/`attr_accessor` and an initializer don't need tests unless they have complex initialization logic
+- **Follow existing test conventions** in the project
+
+## Test File Structure
+
+```ruby
+# frozen_string_literal: true
+
+require "test_helper"
+
+module Roast
+  class <ClassName>Test < ActiveSupport::TestCase
+    def setup
+      # Create instance and any required fixtures
+    end
+
+    def teardown
+      # Clean up temporary resources if needed
+    end
+
+    test "method_name does expected behavior" do
+      # Arrange, Act, Assert
+    end
+  end
+end
+```
+
+## Immediate Instructions
+
+Write tests for: $ARGUMENTS
