@@ -8,17 +8,26 @@ module Examples
     def in_sandbox(workflow_id, &block)
       root_project_path = Dir.pwd
       examples_source_path = File.join(root_project_path, "examples")
+      cassette_path = File.join(root_project_path, "test/fixtures/vcr_cassettes", "#{workflow_id}.yml")
 
       tmpdir_root = File.join(root_project_path, "tmp/sandboxes")
       tmpdir = nil
 
       FileUtils.mkdir_p(tmpdir_root) unless Dir.exist?(tmpdir_root)
 
+      # Skip if cassette doesn't exist and we're not recording
+      if !File.exist?(cassette_path) && !ENV["RECORD_VCR"]
+        skip "VCR cassette not found. Run with RECORD_VCR=true to record: #{cassette_path}"
+      end
+
       out, err = capture_io do
         in_tmpdir(workflow_id.to_s, tmpdir_root) do |workflow_dir|
           tmpdir = workflow_dir
           FileUtils.cp_r(examples_source_path, workflow_dir)
-          block.call
+
+          VCR.use_cassette(workflow_id.to_s, record: ENV["RECORD_VCR"] ? :all : :none) do
+            block.call
+          end
         end
       end
 

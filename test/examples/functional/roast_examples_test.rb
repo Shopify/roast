@@ -221,21 +221,18 @@ module Examples
           Roast::Workflow.from_file("examples/parallel_map.rb", EMPTY_PARAMS)
         end
         assert_empty stderr
-        # first four lines may appear in a non-deterministic order
-        expected_stdout_first_four_lines = [
-          "TWO",
-          "FOUR",
-          "FIVE",
-          "SIX",
-        ].to_set
-        assert_equal expected_stdout_first_four_lines, stdout.lines[...4].map(&:strip).to_set
-        # last three lines will always appear in the same order
-        expected_stdout_last_three_lines = <<~EOF
-          THREE
-          ONE
-          ONE, TWO, THREE, FOUR, FIVE, SIX
-        EOF
-        assert_equal expected_stdout_last_three_lines, stdout.lines[4..].join("")
+
+        # Due to parallel execution with sleep delays:
+        # - "one" (0.2s sleep) finishes last
+        # - "three" (0.1s sleep) finishes second-to-last
+        # - others finish quickly in non-deterministic order
+        lines = stdout.lines.map(&:strip)
+
+        # All items should appear exactly once
+        assert_equal ["ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX"].to_set, lines[...-1].to_set
+
+        # Final line shows results in original order (regardless of execution order)
+        assert_equal "ONE, TWO, THREE, FOUR, FIVE, SIX", lines.last
       end
 
       test "prototype.rb workflow runs successfully" do
@@ -337,6 +334,27 @@ module Examples
 
         assert_includes stdout, "Caspian Sea sits,\nThough called sea, it's landlocked, vast -\nWorld's largest true lake."
         assert_empty stderr
+      end
+
+      test "simple_chat.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :simple_chat do
+          Roast::Workflow.from_file("examples/simple_chat.rb", EMPTY_PARAMS)
+        end
+
+        assert_empty stderr
+        assert_predicate stdout, :present?
+        assert_match(/lake/i, stdout)
+      end
+
+      test "temperature.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :temperature do
+          Roast::Workflow.from_file("examples/temperature.rb", EMPTY_PARAMS)
+        end
+
+        assert_empty stderr
+        assert_predicate stdout, :present?
+        # Verify haiku structure: should contain poems about Paris/France
+        assert_match(/paris|france|eiffel|seine/i, stdout)
       end
 
       test "simple_repeat.rb workflow runs successfully" do

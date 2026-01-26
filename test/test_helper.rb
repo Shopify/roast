@@ -32,16 +32,21 @@ def slow_test!
   skip "slow test" unless ["1", "true"].include?(ENV["ROAST_RUN_SLOW_TESTS"])
 end
 
+unless ENV["RECORD_VCR"]
+  ENV["OPENAI_API_KEY"] ||= "my-token"
+  ENV["OPENAI_API_BASE"] ||= "http://mytestingproxy.local"
+end
+
 VCR.configure do |config|
   config.cassette_library_dir = "test/fixtures/vcr_cassettes"
   config.hook_into :webmock
 
-  config.filter_sensitive_data("http://mytestingproxy.local/v1/chat/completions") do |interaction|
+  config.filter_sensitive_data("http://mytestingproxy.local/chat/completions") do |interaction|
     interaction.request.uri
   end
 
   config.filter_sensitive_data("my-token") do |interaction|
-    interaction.request.headers["Authorization"].first
+    interaction.request.headers["Authorization"]&.first
   end
 
   config.filter_sensitive_data("<FILTERED>") do |interaction|
