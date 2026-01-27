@@ -37,6 +37,7 @@ Accepts either:
 - **Do not test inherited behavior** - only test methods defined in the class itself
 - **Do not test included module behavior** - unless the class overrides or extends it
 - **Do not test type signatures** - Sorbet handles type checking, so don't test that methods return the correct type (e.g., `assert_instance_of String, @context.tmpdir`)
+- **Do not test class hierarchies** - Don't test inheritance relationships like "InputError is a subclass of Roast::Error". These are not useful tests.
 - **Do not test simple data classes** - Classes that only have `attr_reader`/`attr_accessor` and an initializer don't need tests unless they have complex initialization logic
 - **Follow existing test conventions** in the project
 
