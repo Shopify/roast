@@ -98,8 +98,7 @@ The tutorial covers:
 ## Documentation
 
 - [Tutorial](https://github.com/Shopify/roast/blob/main/tutorial/README.md) - Step-by-step guide with examples
-- [Functional Tests](https://github.com/Shopify/roast/tree/main/dsl) - Toy workflows that demonstrate all functional patterns, use for end-to-end test
-- [API Reference](https://github.com/Shopify/roast/tree/main/sorbet/rbi/shims/lib/roast/dsl) - Complete cog documentation
+- [Workflow Examples](https://github.com/Shopify/roast/tree/main/examples) - Toy workflows that demonstrate all functional patterns, use for end-to-end test
 
 ## Documentation & References
 
@@ -114,7 +113,7 @@ class and method comments on the relevant classes.
 
 * __Tutorial and Examples__
     * [Tutorial -- Table of Contents](https://github.com/Shopify/roast/tree/main/tutorial) (contains step-by-step guides and runnable examples showing real-world usage)
-    * [Additional Example Workflows](https://github.com/Shopify/roast/tree/main/dsl) (these comprise the Roast end-to-end test suite)
+    * [Additional Example Workflows]([https://github.com/Shopify/roast/tree/main/dsl](https://github.com/Shopify/roast/tree/main/examples)) (these comprise the Roast end-to-end test suite)
 * __Configuation__
     * [General configuration block: `config-context.rbi`](https://github.com/Shopify/roast/blob/main/sorbet/rbi/shims/lib/roast/dsl/config_context.rbi)
     * [Global cog configuration: `cog/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cog/config.rb)
