@@ -21,6 +21,11 @@ module Roast
                 :agents,
                 :skills,
                 :plugins,
+                :hook_name,
+                :hook_event,
+                :stdout,
+                :stderr,
+                :exit_code,
               ].freeze
 
               #: String?
