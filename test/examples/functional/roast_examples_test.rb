@@ -339,6 +339,17 @@ module Examples
         assert_empty stderr
       end
 
+      test "deepest_lake.rb runs with VCR cassette" do
+        stdout, stderr = in_sandbox :deepest_lake do
+          Roast::Workflow.from_file("examples/deepest_lake.rb", EMPTY_PARAMS)
+        end
+
+        assert_empty stderr
+        assert_predicate stdout, :present?
+        assert_match(/Lake Baikal/i, stdout)
+        assert_match(/Siberia, Russia/i, stdout)
+      end
+
       test "simple_repeat.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :simple_repeat do
           Roast::Workflow.from_file("examples/simple_repeat.rb", EMPTY_PARAMS)

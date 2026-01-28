@@ -8,6 +8,7 @@ module Examples
     def in_sandbox(workflow_id, &block)
       root_project_path = Dir.pwd
       examples_source_path = File.join(root_project_path, "examples")
+      cassette_path = File.join(root_project_path, "test/fixtures/vcr_cassettes", "#{workflow_id}.yml")
 
       tmpdir_root = File.join(root_project_path, "tmp/sandboxes")
       tmpdir = nil
@@ -18,7 +19,15 @@ module Examples
         in_tmpdir(workflow_id.to_s, tmpdir_root) do |workflow_dir|
           tmpdir = workflow_dir
           FileUtils.cp_r(examples_source_path, workflow_dir)
-          block.call
+
+          # Use VCR cassette if one exists for this workflow
+          if File.exist?(cassette_path)
+            VCR.use_cassette(workflow_id.to_s) do
+              block.call
+            end
+          else
+            block.call
+          end
         end
       end
 
