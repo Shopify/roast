@@ -44,16 +44,4 @@ class LogTest < ActiveSupport::TestCase
       end
     end
   end
-
-  private
-
-  def with_log_level(level)
-    Roast::Log.reset!
-    original_level = ENV["ROAST_LOG_LEVEL"]
-    ENV["ROAST_LOG_LEVEL"] = level
-    yield
-  ensure
-    ENV["ROAST_LOG_LEVEL"] = original_level
-    Roast::Log.reset!
-  end
 end
