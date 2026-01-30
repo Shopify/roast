@@ -1,0 +1,306 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+module Roast
+  module Cogs
+    class Cmd < Cog
+      class ConfigTest < ActiveSupport::TestCase
+        def setup
+          @config = Config.new
+        end
+
+        # fail_on_error configuration tests
+        test "fail_on_error? returns true by default" do
+          assert @config.fail_on_error?
+        end
+
+        test "fail_on_error! sets fail_on_error to true" do
+          @config.no_fail_on_error!
+          @config.fail_on_error!
+
+          assert @config.fail_on_error?
+        end
+
+        test "no_fail_on_error! sets fail_on_error to false" do
+          @config.no_fail_on_error!
+
+          refute @config.fail_on_error?
+        end
+
+        # show_stdout configuration tests
+        test "show_stdout? returns false by default" do
+          refute @config.show_stdout?
+        end
+
+        test "show_stdout! enables stdout display" do
+          @config.show_stdout!
+
+          assert @config.show_stdout?
+        end
+
+        test "no_show_stdout! disables stdout display" do
+          @config.show_stdout!
+          @config.no_show_stdout!
+
+          refute @config.show_stdout?
+        end
+
+        # show_stderr configuration tests
+        test "show_stderr? returns false by default" do
+          refute @config.show_stderr?
+        end
+
+        test "show_stderr! enables stderr display" do
+          @config.show_stderr!
+
+          assert @config.show_stderr?
+        end
+
+        test "no_show_stderr! disables stderr display" do
+          @config.show_stderr!
+          @config.no_show_stderr!
+
+          refute @config.show_stderr?
+        end
+
+        # display! and no_display! configuration tests
+        test "display! enables both stdout and stderr" do
+          @config.display!
+
+          assert @config.show_stdout?
+          assert @config.show_stderr?
+        end
+
+        test "no_display! disables both stdout and stderr" do
+          @config.display!
+          @config.no_display!
+
+          refute @config.show_stdout?
+          refute @config.show_stderr?
+        end
+
+        test "display? returns true when stdout is enabled" do
+          @config.show_stdout!
+
+          assert @config.display?
+        end
+
+        test "display? returns true when stderr is enabled" do
+          @config.show_stderr!
+
+          assert @config.display?
+        end
+
+        test "display? returns false when both are disabled" do
+          @config.no_display!
+
+          refute @config.display?
+        end
+
+        # Alias tests
+        test "quiet! is alias for no_display!" do
+          @config.display!
+          @config.quiet!
+
+          refute @config.show_stdout?
+          refute @config.show_stderr?
+        end
+
+        test "print_all! is alias for display! with deprecation" do
+          error = assert_raises(RuntimeError) do
+            @config.print_all!
+          end
+
+          assert_match(/DEPRECATION.*display!.*print_all/, error.message)
+        end
+
+        test "print_none! is alias for no_display! with deprecation" do
+          error = assert_raises(RuntimeError) do
+            @config.print_none!
+          end
+
+          assert_match(/DEPRECATION.*no_display!.*print_none/, error.message)
+        end
+
+        test "print_stdout! raises deprecation error" do
+          error = assert_raises(RuntimeError) do
+            @config.print_stdout!
+          end
+
+          assert_match(/DEPRECATION.*show_stdout!.*print_stdout/, error.message)
+        end
+
+        test "no_print_stdout! raises deprecation error" do
+          error = assert_raises(RuntimeError) do
+            @config.no_print_stdout!
+          end
+
+          assert_match(/DEPRECATION.*no_show_stdout!.*no_print_stdout/, error.message)
+        end
+
+        test "print_stderr! raises deprecation error" do
+          error = assert_raises(RuntimeError) do
+            @config.print_stderr!
+          end
+
+          assert_match(/DEPRECATION.*show_stderr!.*print_stderr/, error.message)
+        end
+
+        test "no_print_stderr! raises deprecation error" do
+          error = assert_raises(RuntimeError) do
+            @config.no_print_stderr!
+          end
+
+          assert_match(/DEPRECATION.*no_show_stderr!.*no_print_stderr/, error.message)
+        end
+      end
+
+      class InputTest < ActiveSupport::TestCase
+        def setup
+          @input = Input.new
+        end
+
+        # validate! tests
+        test "validate! raises error when command is nil" do
+          error = assert_raises(Cog::Input::InvalidInputError) do
+            @input.validate!
+          end
+
+          assert_equal "'command' is required", error.message
+        end
+
+        test "validate! raises error when command is empty string" do
+          @input.command = ""
+
+          error = assert_raises(Cog::Input::InvalidInputError) do
+            @input.validate!
+          end
+
+          assert_equal "'command' is required", error.message
+        end
+
+        test "validate! raises error when command is whitespace only" do
+          @input.command = "   "
+
+          error = assert_raises(Cog::Input::InvalidInputError) do
+            @input.validate!
+          end
+
+          assert_equal "'command' is required", error.message
+        end
+
+        test "validate! succeeds when command is present" do
+          @input.command = "echo"
+
+          assert_nothing_raised do
+            @input.validate!
+          end
+        end
+
+        # coerce tests
+        test "coerce sets command from string" do
+          @input.coerce("ls -la")
+
+          assert_equal "ls -la", @input.command
+        end
+
+        test "coerce sets command and args from array" do
+          @input.coerce(["echo", "hello", "world"])
+
+          assert_equal "echo", @input.command
+          assert_equal ["hello", "world"], @input.args
+        end
+
+        test "coerce converts array elements to strings" do
+          @input.coerce([:echo, 123, :test])
+
+          assert_equal "echo", @input.command
+          assert_equal ["123", "test"], @input.args
+        end
+
+        test "coerce does nothing for non-string non-array values" do
+          @input.coerce(42)
+
+          assert_nil @input.command
+          assert_equal [], @input.args
+        end
+
+        test "coerce does nothing for nil" do
+          @input.coerce(nil)
+
+          assert_nil @input.command
+          assert_equal [], @input.args
+        end
+      end
+
+      class OutputTest < ActiveSupport::TestCase
+        ProcessStatus = Struct.new(:exitstatus, :success, keyword_init: true) do
+          def success?
+            success
+          end
+        end
+
+        def setup
+          @status = ProcessStatus.new(exitstatus: 0, success: true)
+        end
+
+        test "initialize sets out, err, and status" do
+          output = Output.new("stdout content", "stderr content", @status)
+
+          assert_equal "stdout content", output.out
+          assert_equal "stderr content", output.err
+          assert_same @status, output.status
+        end
+
+        test "provides text parsing from stdout" do
+          output = Output.new("  Test output  \n", "", @status)
+
+          assert_equal "Test output", output.text
+        end
+
+        test "provides line parsing from stdout" do
+          output = Output.new("  line1  \n  line2  ", "", @status)
+
+          assert_equal ["line1", "line2"], output.lines
+        end
+
+        test "provides JSON parsing from stdout" do
+          output = Output.new('{"key": "value"}', "", @status)
+
+          assert_equal({ key: "value" }, output.json!)
+        end
+
+        test "provides safe JSON parsing from stdout" do
+          output = Output.new("not json", "", @status)
+
+          assert_nil output.json
+        end
+
+        test "provides float parsing from stdout" do
+          output = Output.new("42.5", "", @status)
+
+          assert_equal 42.5, output.float!
+        end
+
+        test "provides safe float parsing from stdout" do
+          output = Output.new("not a number", "", @status)
+
+          assert_nil output.float
+        end
+
+        test "provides integer parsing from stdout" do
+          output = Output.new("42", "", @status)
+
+          assert_equal 42, output.integer!
+        end
+
+        test "provides safe integer parsing from stdout" do
+          output = Output.new("not a number", "", @status)
+
+          assert_nil output.integer
+        end
+      end
+    end
+  end
+end
