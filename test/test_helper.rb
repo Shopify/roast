@@ -32,6 +32,14 @@ def slow_test!
   skip "slow test" unless ["1", "true"].include?(ENV["ROAST_RUN_SLOW_TESTS"])
 end
 
+def with_env(key, value)
+  original = ENV[key]
+  ENV[key] = value
+  yield
+ensure
+  ENV[key] = original
+end
+
 VCR.configure do |config|
   config.cassette_library_dir = "test/fixtures/vcr_cassettes"
   config.hook_into :webmock
