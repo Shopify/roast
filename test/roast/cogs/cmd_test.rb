@@ -301,6 +301,68 @@ module Roast
           assert_nil output.integer
         end
       end
+
+      class ExecuteTest < ActiveSupport::TestCase
+        test "run! executes command and captures stdout" do
+          cog = Cmd.new(:echo_test, ->(_input, _scope, _index) { "echo hello world" })
+
+          run_cog(cog)
+
+          assert cog.succeeded?
+          assert_equal "hello world", cog.output.text
+        end
+
+        test "run! executes command with arguments from array" do
+          cog = Cmd.new(:echo_args, ->(_input, _scope, _index) { ["echo", "foo", "bar"] })
+
+          run_cog(cog)
+
+          assert cog.succeeded?
+          assert_equal "foo bar", cog.output.text
+        end
+
+        test "run! marks cog as failed when command fails with fail_on_error" do
+          cog = Cmd.new(:failing_cmd, ->(_input, _scope, _index) { "exit 1" })
+
+          run_cog(cog)
+
+          assert cog.failed?
+        end
+
+        test "run! succeeds when command fails with no_fail_on_error" do
+          cog = Cmd.new(:failing_cmd, ->(_input, _scope, _index) { "exit 42" })
+          config = Config.new
+          config.no_fail_on_error!
+
+          run_cog(cog, config: config)
+
+          assert cog.succeeded?
+          assert_equal 42, cog.output.status.exitstatus
+        end
+
+        test "run! captures stderr" do
+          cog = Cmd.new(:stderr_test, ->(_input, _scope, _index) { "echo error >&2" })
+          config = Config.new
+          config.no_fail_on_error!
+
+          run_cog(cog, config: config)
+
+          assert cog.succeeded?
+          assert_equal "error\n", cog.output.err
+        end
+
+        test "run! allows setting command via input block" do
+          cog = Cmd.new(:input_block, ->(input, _scope, _index) {
+            input.command = "echo"
+            input.args = ["configured", "via", "input"]
+          })
+
+          run_cog(cog)
+
+          assert cog.succeeded?
+          assert_equal "configured via input", cog.output.text
+        end
+      end
     end
   end
 end
