@@ -22,7 +22,7 @@ Accepts either:
 
 4. **Write the tests:**
    - Create the test file at the appropriate location (e.g., `test/roast/<filename>_test.rb`)
-   - Test only behavior defined in the class itself, not inherited or included behavior
+   - Test only behavior defined in the class itself, not inherited behavior
    - Test each public method with representative cases
    - Test edge cases (nil arguments, error conditions, etc.)
 
@@ -35,7 +35,6 @@ Accepts either:
 - **Avoid mocking direct dependencies** - use real instances where possible
 - **Simple mocks are acceptable for second-order dependencies** (dependencies of dependencies)
 - **Do not test inherited behavior** - only test methods defined in the class itself
-- **Do not test included module behavior** - unless the class overrides or extends it
 - **Do not test type signatures** - Sorbet handles type checking, so don't test that methods return the correct type (e.g., `assert_instance_of String, @context.tmpdir`)
 - **Do not test class hierarchies** - Don't test inheritance relationships like "InputError is a subclass of Roast::Error". These are not useful tests.
 - **Do not test simple data classes** - Classes that only have `attr_reader`/`attr_accessor` and an initializer don't need tests unless they have complex initialization logic
