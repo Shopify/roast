@@ -32,6 +32,16 @@ def slow_test!
   skip "slow test" unless ["1", "true"].include?(ENV["ROAST_RUN_SLOW_TESTS"])
 end
 
+def with_log_level(level)
+  Roast::Log.reset!
+  original_level = ENV["ROAST_LOG_LEVEL"]
+  ENV["ROAST_LOG_LEVEL"] = level
+  yield
+ensure
+  ENV["ROAST_LOG_LEVEL"] = original_level
+  Roast::Log.reset!
+end
+
 VCR.configure do |config|
   config.cassette_library_dir = "test/fixtures/vcr_cassettes"
   config.hook_into :webmock
