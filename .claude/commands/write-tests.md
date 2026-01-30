@@ -40,6 +40,29 @@ Accepts either:
 - **Do not test simple data classes** - Classes that only have `attr_reader`/`attr_accessor` and an initializer don't need tests unless they have complex initialization logic
 - **Follow existing test conventions** in the project
 
+## Test Helpers
+
+### `run_cog(cog, config: nil, scope_value: nil, scope_index: 0)`
+
+Run a cog through the full async execution path for integration testing. Use this when testing cog execution rather than testing individual Input/Output/Config classes in isolation.
+
+```ruby
+test "cog executes and returns expected output" do
+  cog = MyCog.new(:test_cog, ->(_input, _scope, _index) { "some value" })
+
+  run_cog(cog)
+
+  assert cog.succeeded?
+  assert_equal "expected", cog.output.value
+end
+```
+
+Parameters:
+- `cog` - The cog instance to run
+- `config:` - Optional config (defaults to cog's config class)
+- `scope_value:` - Optional executor scope value passed to input proc
+- `scope_index:` - Optional executor scope index passed to input proc
+
 ## Test File Structure
 
 ```ruby

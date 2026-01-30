@@ -40,6 +40,27 @@ ensure
   ENV[key] = original
 end
 
+# Run a cog through the full async execution path for integration testing.
+#
+# @param cog [Roast::Cog] The cog instance to run
+# @param config [Roast::Cog::Config] Optional config (defaults to cog's config class)
+# @param scope_value [Object] Optional executor scope value passed to input proc
+# @param scope_index [Integer] Optional executor scope index passed to input proc
+# @return [Roast::Cog] The cog after execution completes
+def run_cog(cog, config: nil, scope_value: nil, scope_index: 0)
+  config ||= cog.class.config_class.new
+
+  Sync do
+    barrier = Async::Barrier.new
+    input_context = Roast::CogInputContext.new
+
+    cog.run!(barrier, config, input_context, scope_value, scope_index)
+    barrier.wait
+  end
+
+  cog
+end
+
 VCR.configure do |config|
   config.cassette_library_dir = "test/fixtures/vcr_cassettes"
   config.hook_into :webmock
