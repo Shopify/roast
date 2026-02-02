@@ -1,0 +1,5397 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 27 Jan 2026 21:00:08 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c4b2d868ba395a2-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Set-Cookie:
+      - __cf_bm=4pj3giRB9_0Q9E1BSkFwRp2Az77eeSaoh_Yk91O0gVI-1769547608-1.0.1.1-qhVlak8BtZEERTEB8LaLX9ANKB6yBr83O7ZwHPqS7tAUhNSo5Ol_oaHG2TJvJwwpweL_OoH9Px9R_GWvPzTtlNPibzfLku89lGPhCMe4AT8;
+        path=/; expires=Tue, 27-Jan-26 21:30:08 GMT; domain=.proxy.shopify.ai; HttpOnly;
+        Secure; SameSite=None
+      - shopify-proxy-session=1769547608092-wifv1pxplx; Path=/; Expires=Wed, 28 Jan
+        2026 21:00:08 GMT; HttpOnly; Secure; SameSite=Lax
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 6c61a610-c3d5-43d2-b3c2-df1763bff773
+      Azureml-Model-Session:
+      - d20251214100634-9856757b6b614f8a
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499987'
+      X-Ratelimit-Remaining-Tokens:
+      - '149988955'
+      X-Request-Id:
+      - 31d8b71b-3a4b-4489-88c2-068f34c7be9b
+      Vary:
+      - Accept-Encoding
+      Server:
+      - cloudflare
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D2kSO1WRn1aJuPeN3v13BdzZHEt2I",
+          "object": "chat.completion",
+          "created": 1769547608,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Tue, 27 Jan 2026 21:00:08 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 27 Jan 2026 21:00:09 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c4b2d8939b695a2-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 3e5239e7-b627-467d-a337-a9d89ba5ddf9
+      Azureml-Model-Session:
+      - d20260114152410-4db911ed1d274309
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499986'
+      X-Ratelimit-Remaining-Tokens:
+      - '149988944'
+      X-Request-Id:
+      - 31278918-caf6-4c87-aaec-1aa8094bb2fa
+      Set-Cookie:
+      - __cf_bm=lDeXVFpDAEwGk7Ww5kq.u3UZ0dVdWdoQUbyAVfRSpK8-1769547608.5194154-1.0.1.1-arpvtlfW5J57Ch6YFBbayeQgNNgNBzKIJvtiQg1lAHsjMyOnZ9unhBU5JgObKJJU.3WCn1FG1jYEGJ8n8aG591AtQvg39pghj_Ds6GAVPRaJKBMrkVvpqgp.RlWZxLRc;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Tue, 27 Jan 2026
+        21:30:09 GMT
+      - shopify-proxy-session=1769547608520-ny7j5o54yvc; Path=/; Expires=Wed, 28 Jan
+        2026 21:00:08 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D2kSOMhnOKtHAtlg1QggiP0elvP6N",
+          "object": "chat.completion",
+          "created": 1769547608,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of bright lights,  \nSeine whispers through ancient stones,  \nEiffel touches skies.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 20,
+            "total_tokens": 37,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Tue, 27 Jan 2026 21:00:08 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:10:56 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bb814180770f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '665'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '180000'
+      X-Ratelimit-Limit-Tokens:
+      - '450000000'
+      X-Ratelimit-Remaining-Requests:
+      - '179999'
+      X-Ratelimit-Remaining-Tokens:
+      - '449999985'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_20b1ed809d8740749e1c5e7eb7aeebb2
+      Set-Cookie:
+      - __cf_bm=Mlt9gNtROdqshAjfDM4vd9JMQeGHbozIuqqUewlnyx0-1769721055.3773148-1.0.1.1-OI0EcjVbVc57vTsMKes8q8yZBRRpZVLEPOL5HEUHNIJHTa8FGw5zpVwSZHhE2mh_kN3QLBmDzBzpGDsDAxYujy1wW.8elC3vS6n4XJuO0_eALuPiJzLikzNfGoYWo2dC;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:40:56 GMT
+      - shopify-proxy-session=1769721055379-oprvp9fpcj9; Path=/; Expires=Fri, 30 Jan
+        2026 21:10:55 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TZvQv6i1Pne6ihpTRwQqDczx8Ax",
+          "object": "chat.completion",
+          "created": 1769721055,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 17,
+            "total_tokens": 34,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Thu, 29 Jan 2026 21:10:56 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:10:57 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bb81c0bc870f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 50352ec1-7d35-46e2-a36d-731ba0857a86
+      Azureml-Model-Session:
+      - d20260129183233-44635901bd72
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499973'
+      X-Ratelimit-Remaining-Tokens:
+      - '149913054'
+      X-Request-Id:
+      - 521b0030-0660-4f09-9d85-9e45d438adf8
+      Set-Cookie:
+      - __cf_bm=179_b1UYzeOBaeZiH7rTTOt1YvjHcD6oqWillXZOfd8-1769721056.646307-1.0.1.1-1jwfeDaGbPG1WwSp6pMCzTgbXo2ShfJrUeyoCmanm49o6IRYOT3uXxmoivBbDr_dbryMa_03x_D743HXel16QwN5c6u_p4pRi4vnhCOD12Xs6gr4gvmkcG3e_FnSBTH5;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:40:57 GMT
+      - shopify-proxy-session=1769721056647-9xzxtd2qye; Path=/; Expires=Fri, 30 Jan
+        2026 21:10:56 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TZxMFGj9mLU9WjgNKtrHCPA9Gyo",
+          "object": "chat.completion",
+          "created": 1769721057,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "Eiffel's graceful form,  \nSeine whispers through twilight hues,  \nParis dreams in light.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 21,
+            "total_tokens": 38,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 21:10:57 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:22:16 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bc8b0590270f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 2f145a68-1046-47e8-b51a-c24ad1870b79
+      Azureml-Model-Session:
+      - d20260129143238-55f2009e9583
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499977'
+      X-Ratelimit-Remaining-Tokens:
+      - '149955464'
+      X-Request-Id:
+      - 00235ba4-2502-4b97-a489-39c9be86660e
+      Set-Cookie:
+      - __cf_bm=bgo1DpwdL2AxO61Jt6cR6cXTS.5HOqsgyqjpTdtdrEQ-1769721735.7336314-1.0.1.1-i7rHKTEnW1ayT4.kU91KIpqpwXW9JsEhkoxmppVWrO12DSNICmzFZ6EDn89MEcdnVuwzczx5C.C5EUB5LiHkOWH84cDEdBi4_uzbKkSoRaW0XWPlCpBKsfXIsC.Yn.g3;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:52:16 GMT
+      - shopify-proxy-session=1769721735735-agphxgmt6zu; Path=/; Expires=Fri, 30 Jan
+        2026 21:22:15 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TktN9h2tBG8SX9lIEmCKEWFlA0A",
+          "object": "chat.completion",
+          "created": 1769721735,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nParis whispers dreams.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 17,
+            "total_tokens": 34,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 21:22:16 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:22:17 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bc8b5bc3970f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 7b28f75a-0437-4211-9a5f-94286313eb0d
+      Azureml-Model-Session:
+      - d20251214095915-c2de3b050c49450f
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499977'
+      X-Ratelimit-Remaining-Tokens:
+      - '149956647'
+      X-Request-Id:
+      - 44eb7ada-baa4-4080-a749-46e9d6bbe67e
+      Set-Cookie:
+      - __cf_bm=nu.uM3taknH6NSBywUqObksfxKXzDaYbtiMNavxmCCU-1769721736.594667-1.0.1.1-xbYKGY.hbgy2QNkGKjd609G3K6n0MhhKeG1hbf2IDfBUt3wX_YXDQvOer81dEhh.PuVxA5q7CaRim2435KIQosG5_QQKxuXfvE5pQNSY_eN1ssUKomU4tuHHCqqtZFaL;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:52:17 GMT
+      - shopify-proxy-session=1769721736596-xdp2gbo4rkn; Path=/; Expires=Fri, 30 Jan
+        2026 21:22:16 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TkuEDaxjPXCG81rGHZXCz2Unzs5",
+          "object": "chat.completion",
+          "created": 1769721736,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "Eiffel tower stands,  \nWhispers of romance and light,  \nParis breathes, heart glows.  ",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 24,
+            "total_tokens": 41,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 21:22:17 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:23:59 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bcb373c5370f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 8206b09a-6073-4e1f-a19f-0a29c6f665a2
+      Azureml-Model-Session:
+      - d20251214100634-9856757b6b614f8a
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499980'
+      X-Ratelimit-Remaining-Tokens:
+      - '149960589'
+      X-Request-Id:
+      - 662861af-56be-40a5-b934-89e0fb9ad231
+      Set-Cookie:
+      - __cf_bm=gjKC7QWRXJB_iMlJqCMv61czMTkc4NidVp7Xn0Mg6qw-1769721839.2394905-1.0.1.1-Iu9R5RaugZt5qryAZhlH2V9UAoMqp8v7PXRo4dEGSr4NpDZaEsTkNYduTIEu9S7WYiMqgWlyP5LY_xhXDbSOUfLyIMTULuqVb78UFTCKw7OqNrCIm_1ZvAuspgSupliX;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:53:59 GMT
+      - shopify-proxy-session=1769721839241-pbpztlvwuw9; Path=/; Expires=Fri, 30 Jan
+        2026 21:23:59 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TmZHUCG4LCvtX73Fs6DSedN5mg2",
+          "object": "chat.completion",
+          "created": 1769721839,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 21:23:59 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:24:00 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bcb3b5f6270f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '840'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '180000'
+      X-Ratelimit-Limit-Tokens:
+      - '450000000'
+      X-Ratelimit-Remaining-Requests:
+      - '179999'
+      X-Ratelimit-Remaining-Tokens:
+      - '449999985'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_582f16fa699b4f46b22435692aefd48e
+      Set-Cookie:
+      - __cf_bm=.NsRLd3O56CnW9RS1rV2pk9_KwyDT.BvAXaaGg5eJZE-1769721839.89955-1.0.1.1-xsKoTr3exMfLSH_JGPsdFfB9yWMk5cFL.j5HaOVR21Jwyo4jwH0m4H7B_QKVqbPE72k08C7c628CufUi23vRf..8r0VQmE5Fg1gAXv.4zB7rnU0JWORP5_aHcMlVoPhi;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:54:00 GMT
+      - shopify-proxy-session=1769721839901-gqu04m11ou; Path=/; Expires=Fri, 30 Jan
+        2026 21:23:59 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJjaGF0Y21wbC1EM1RtYTlUZ0ptbXpLSHBXM1J4SFY4aGxHa2Y2WCIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc2OTcyMTg0MCwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiQmVuZWF0aCB0aGUgd3JvdWdodCBza3ksICBcblNlaW5lIHdoaXNwZXJzIHRocm91Z2ggY29iYmxlc3RvbmVz4oCUICBcblBhcmlzIGRyZWFtcyBpbiBsaWdodC4iLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAibG9ncHJvYnMiOiBudWxsLAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiAxNywKICAgICJjb21wbGV0aW9uX3Rva2VucyI6IDIyLAogICAgInRvdGFsX3Rva2VucyI6IDM5LAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiAiZnBfMTU5MGY5M2Y5ZCIKfQ==
+  recorded_at: Thu, 29 Jan 2026 21:24:01 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:26:23 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bceb69c1370f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 8fd09669-f3fe-4b75-9c42-02df240144d9
+      Azureml-Model-Session:
+      - d20251214084336-049fd1c8ee3d4c98
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499984'
+      X-Ratelimit-Remaining-Tokens:
+      - '149961963'
+      X-Request-Id:
+      - 2da97aed-edf5-44dc-b743-2085615237d6
+      Set-Cookie:
+      - __cf_bm=GDI_j1RmWZhTEZwunQbvrWm7yYM1RKPoyUXuWJShCOI-1769721982.4973476-1.0.1.1-FBQXcXiGY7oNrCjBBhLzVERopydT902uFzP6NuFrB50lRcyqshv2BFk8c0LF7QpPObBbm23eQNZixAQ2DqY.Wq_4jdzVxrGSj29GJkRownGOpXeA0BK.JVzihyvzzMfV;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:56:23 GMT
+      - shopify-proxy-session=1769721982499-1atfk908xh6; Path=/; Expires=Fri, 30 Jan
+        2026 21:26:22 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TotYalPlL98Zi4epgM6hLH2KPXa",
+          "object": "chat.completion",
+          "created": 1769721983,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 21:26:23 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:26:24 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bcebe4ff770f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - '093f31b3-fd2f-47d8-bbbc-55b5ade627f5'
+      Azureml-Model-Session:
+      - d20251214084336-049fd1c8ee3d4c98
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499983'
+      X-Ratelimit-Remaining-Tokens:
+      - '149961952'
+      X-Request-Id:
+      - d3b9a92d-7897-9a7f-a814-beae4ca2209d
+      Set-Cookie:
+      - __cf_bm=tFluxeGl8h4Ef2DUNbINdVQRoOMvfcedReXHv2BHM_M-1769721983.7226777-1.0.1.1-LGjEnKdaeu3pWHmaD5b3wBLGH.WC4xqL6kvAtifTjwzsrx1s7puCXzfYAlfKYrfr5U.hJAZnt5uP_zw70uuqBCZHcxK6c6TNaH.Orw57qKETza.tYtwODg4uSZvsL.q4;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:56:24 GMT
+      - shopify-proxy-session=1769721983724-qqqjy6xqme; Path=/; Expires=Fri, 30 Jan
+        2026 21:26:23 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3ToteUs0NStSaOBPi9sMasMSUMSt",
+          "object": "chat.completion",
+          "created": 1769721983,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "In Paris, hearts glow,  \nSeine whispers secrets of time,  \nEiffel towers dreams.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 21,
+            "total_tokens": 38,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 21:26:24 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:27:07 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bcfcafdd670f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '641'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '180000'
+      X-Ratelimit-Limit-Tokens:
+      - '450000000'
+      X-Ratelimit-Remaining-Requests:
+      - '179999'
+      X-Ratelimit-Remaining-Tokens:
+      - '449999992'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_a5be1cbee62d4b2d81c7a7d576438922
+      Set-Cookie:
+      - __cf_bm=6V2ssCnJX2jkMoRQUfYOqf2LCnoCr_3pAMFJKG7YsGk-1769722026.7203763-1.0.1.1-qcM6.CSO6NWMlleo6TlEZlSggR3bvdwBcqt3UFbEhkE7SDMj89SnfZOYTpOYizXs7bRi4O9rVLcdZauud3DDws4v7cj1K2UjTXb87qhmZRCqGsJwwWJP1ebXyJt.UtSY;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:57:07 GMT
+      - shopify-proxy-session=1769722026721-zmrgmvb736; Path=/; Expires=Fri, 30 Jan
+        2026 21:27:06 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TpbRybrT4UbQCw7HRqbnr9JhyUL",
+          "object": "chat.completion",
+          "created": 1769722027,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 17,
+            "total_tokens": 34,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Thu, 29 Jan 2026 21:27:07 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:27:08 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bcfd168eb70f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '809'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '180000'
+      X-Ratelimit-Limit-Tokens:
+      - '450000000'
+      X-Ratelimit-Remaining-Requests:
+      - '179998'
+      X-Ratelimit-Remaining-Tokens:
+      - '449999985'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_31785746bc954c4dbedbb59721d73870
+      Set-Cookie:
+      - __cf_bm=Y6JzfueFgij3KlXeeo_DEmsFMqTE2RnDokgs33RrE9M-1769722027.7453206-1.0.1.1-3Db.TVN1VNt1d_TXYsKSR5QgEhJRJZBldXHC5FyQ5hk5D0eW9F8wyX8DxcE40AK5EVTbJlf4GNhpnQ3_gz8F8NtskMSF13BkuE22cF.QvUKrdvc4LaKKF71G62.jdOii;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:57:08 GMT
+      - shopify-proxy-session=1769722027747-ns23jldguw; Path=/; Expires=Fri, 30 Jan
+        2026 21:27:07 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TpbBU7FtTc2wV8xpq3ijRztG3dM",
+          "object": "chat.completion",
+          "created": 1769722027,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "City of romance,  \nEiffel towers in moonlight,  \nWhispers of the past.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 19,
+            "total_tokens": 36,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Thu, 29 Jan 2026 21:27:08 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:28:47 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bd239eab970f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '635'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '180000'
+      X-Ratelimit-Limit-Tokens:
+      - '450000000'
+      X-Ratelimit-Remaining-Requests:
+      - '179999'
+      X-Ratelimit-Remaining-Tokens:
+      - '449999992'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_adc64dd06dde425b831ef8b6c90b9a23
+      Set-Cookie:
+      - __cf_bm=StclD268c4MKgUwEQamFitmaiDM_aXbkfKX7P2Rn1Pg-1769722126.3864202-1.0.1.1-nag9gO_4IklUh2drax.ZqcuCPz63.EkHQINYgLhnRsWUSLzpPDM1RfOaoEb6rbSpurbRGLMktwXUy2R0tsnaUCx0e6vSIfhvvPi1D8do96AMSiC9YLL7_JFAASQ75QE1;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:58:47 GMT
+      - shopify-proxy-session=1769722126388-dbp9wrvs9aw; Path=/; Expires=Fri, 30 Jan
+        2026 21:28:46 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TrC7WT2to3nHvUUaOJ4YCdlzaXS",
+          "object": "chat.completion",
+          "created": 1769722126,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 17,
+            "total_tokens": 34,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Thu, 29 Jan 2026 21:28:47 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:28:48 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bd2405e8a70f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '609'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '180000'
+      X-Ratelimit-Limit-Tokens:
+      - '450000000'
+      X-Ratelimit-Remaining-Requests:
+      - '179999'
+      X-Ratelimit-Remaining-Tokens:
+      - '449999992'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_18ec6818a7344a958ed40fd3273d2766
+      Set-Cookie:
+      - __cf_bm=4XFs4HVGopndZkLhgNkhNHcyefNNRjSmo4JrDqFhibA-1769722127.4182847-1.0.1.1-V61t33v_06KCZHda8VHMpN1lm2XeJHSlsV.NqtmU_0AAKqBbMmCu_F.bQ0818PtLkxzWSPrajT5BE.J2MzzT4CtS8.GKo1G6VGapdElODSMcPfCThAtBKRXCLEWWKXLP;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        21:58:48 GMT
+      - shopify-proxy-session=1769722127420-vd0zzgdm1f; Path=/; Expires=Fri, 30 Jan
+        2026 21:28:47 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TrDsMdFVGOvXAtxyTZadlxSBl4X",
+          "object": "chat.completion",
+          "created": 1769722127,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Eiffel's towers rise,  \nSeine whispers through the night glow,  \nParis dreams in lights.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 21,
+            "total_tokens": 38,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Thu, 29 Jan 2026 21:28:48 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:30:59 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bd570e8c870f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 1633eb99-28fe-47eb-a5da-762b63b644c1
+      Azureml-Model-Session:
+      - d20251214084336-049fd1c8ee3d4c98
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499974'
+      X-Ratelimit-Remaining-Tokens:
+      - '149857063'
+      X-Request-Id:
+      - 2e0576fa-224a-9e5a-9579-34e99fc6eb17
+      Set-Cookie:
+      - __cf_bm=jZfOSFM.Wj.u0CFo3Uw4CtanAefiuBag5YQq5T67HM8-1769722258.0635588-1.0.1.1-ajE.95yq8rS5bx8BxjMhyk8yqYcS907OCxfqCfE1g_mZcCUASLUkLaTYCPnOC_DWOmmEYaJFzZBTXGtm2QXd.k6p14dWF1fYN0kLNnn8zY4kizeeIPaQV9E7jJF1ycHH;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        22:00:59 GMT
+      - shopify-proxy-session=1769722258065-yb8jfalbcj; Path=/; Expires=Fri, 30 Jan
+        2026 21:30:58 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TtKiSwRzfr650vHLKjKfXJuuzGV",
+          "object": "chat.completion",
+          "created": 1769722258,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 21:30:58 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:30:59 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bd5778c1e70f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '539'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '180000'
+      X-Ratelimit-Limit-Tokens:
+      - '450000000'
+      X-Ratelimit-Remaining-Requests:
+      - '179998'
+      X-Ratelimit-Remaining-Tokens:
+      - '449999985'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_7e0ce7e69d064b65ae485be4d19ed542
+      Set-Cookie:
+      - __cf_bm=T2slvw675vug6BCToQU2JqsNhdVWLd_jjUFU94ANCSc-1769722259.1290946-1.0.1.1-7JyI4d4qHRcpgny68.lwIzZ_jAzG0TiGAtvzMtsGFDCWKHYewPjbHzKCI2zKO2vVDJjN9gonH3zAPUXEpi0iHBt.9pya.rQItT1kOYAJ8mLe1ofC38hLxoMj5Rqupcnp;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        22:00:59 GMT
+      - shopify-proxy-session=1769722259132-dszhd4e3l1d; Path=/; Expires=Fri, 30 Jan
+        2026 21:30:59 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TtLZNcE2gCconnhZaI26hkuqRiV",
+          "object": "chat.completion",
+          "created": 1769722259,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Eiffel towers high,  \nSeine whispers timeless stories,  \nParis dreams at dusk.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Thu, 29 Jan 2026 21:30:59 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:32:58 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bd85dc87870f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 76244d40-09aa-4c18-a253-ea0091b37d8e
+      Azureml-Model-Session:
+      - d20251214084336-049fd1c8ee3d4c98
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499984'
+      X-Ratelimit-Remaining-Tokens:
+      - '149959945'
+      X-Request-Id:
+      - 1d032a48-6239-4fae-81bd-03cf5b735526
+      Set-Cookie:
+      - __cf_bm=Crk2h95OnFbmCrnxNEOcBVcfWOuXZiP_lXUPOiSA3sU-1769722377.8867037-1.0.1.1-JUTTL_EL_yJ5AsPlmZ5uIMyeOXchtT6zsIuErybB1wxdFVMtPP_tbhJUBetdvgzBhf43cNHuo7WZ8Y4IjEcjgP0BlbBTywJp6aPihCTu49uSXjIBGaDzg9BaBjk1B.WO;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        22:02:58 GMT
+      - shopify-proxy-session=1769722377889-a4ev2qkfg4w; Path=/; Expires=Fri, 30 Jan
+        2026 21:32:57 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3TvGdKU7HevuTxeGiU4GWz468J2Z",
+          "object": "chat.completion",
+          "created": 1769722378,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 21:32:58 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 21:32:58 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5bd8613a6970f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - eaf8dceb-7425-464f-976c-3c8cc29f87bc
+      Azureml-Model-Session:
+      - d20251214084336-049fd1c8ee3d4c98
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499982'
+      X-Ratelimit-Remaining-Tokens:
+      - '149958739'
+      X-Request-Id:
+      - b449244e-6f70-4440-ac78-54fca9e48204
+      Set-Cookie:
+      - __cf_bm=EXjTe7S9_15SeRhYbgjM80BQEpe6yPIOBbjymL8fK80-1769722378.4314265-1.0.1.1-SPX5sLy8GNIrvKQbaHojno_I7DmpgbOoHbTAG1lO4FB_CqRydxSndIx3_iAKPfDNeCUk5PLJCD6kDpQjqF9e9aYVtMlDyHmQ.ws2QNLzkKHtgCJGZvRHIoDQg8ATQXfR;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        22:02:58 GMT
+      - shopify-proxy-session=1769722378433-xiw642iypo7; Path=/; Expires=Fri, 30 Jan
+        2026 21:32:58 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJjaGF0Y21wbC1EM1R2R0lxZEFGNGQ5VWVNSUJWUVVaZHRRRUJsSCIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc2OTcyMjM3OCwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJhbm5vdGF0aW9ucyI6IFtdLAogICAgICAgICJjb250ZW50IjogIkNpdHkgb2Ygcm9tYW5jZSwgIFxuVW5kZXJuZWF0aCB0aGUgRWlmZmVs4oCZcyBnYXplLCAgXG5QYXJpcyBsaWdodHMgdGhlIG5pZ2h0LiIsCiAgICAgICAgInJlZnVzYWwiOiBudWxsLAogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIKICAgICAgfSwKICAgICAgImxvZ3Byb2JzIjogbnVsbCwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogMTcsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiAxOSwKICAgICJ0b3RhbF90b2tlbnMiOiAzNiwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInN5c3RlbV9maW5nZXJwcmludCI6ICJmcF9mOTdlZmYzMmM1IiwKICAic2VydmljZV90aWVyIjogbnVsbAp9
+  recorded_at: Thu, 29 Jan 2026 21:32:58 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 22:07:22 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5c0ac5cb8570f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 41ad00ed-2cb8-4dea-9f09-2a1b8357701f
+      Azureml-Model-Session:
+      - d20260129143238-55f2009e9583
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499996'
+      X-Ratelimit-Remaining-Tokens:
+      - '149999698'
+      X-Request-Id:
+      - 6708c897-85fd-416c-ae3b-09d40363bfcf
+      Set-Cookie:
+      - __cf_bm=hBkyoEzgH8pJltJr2isbPuNa3QoQGL9U0pTyfwgR390-1769724442.5314531-1.0.1.1-rkl_PpEXtjGaqwD6rnkvwf_w9wclT0xvNQFQgP15EU8dLh2iOydcbHUEMLu04wPenne3JxnS.bI.2ptst_kZZixOfIsMi0sa5S4L7RpctafBCuqYJKRVj2TK58qsrHnG;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        22:37:22 GMT
+      - shopify-proxy-session=1769724442533-5tj8cntwm4a; Path=/; Expires=Fri, 30 Jan
+        2026 22:07:22 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3USYwFl1ZffWA3tPAIZqmx0RywvW",
+          "object": "chat.completion",
+          "created": 1769724442,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 22:07:22 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 22:07:23 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5c0ac96db470f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 6ee46a81-4d02-415a-a500-6fe1ae231d15
+      Azureml-Model-Session:
+      - d20260129183233-44635901bd72
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499995'
+      X-Ratelimit-Remaining-Tokens:
+      - '149999687'
+      X-Request-Id:
+      - 5f526861-027d-41b7-b070-b0b922e43cf2
+      Set-Cookie:
+      - __cf_bm=liNQ3CpZedozA89C_84jrwDGUOjNQiH4Q2uj8HGgdY8-1769724443.1073377-1.0.1.1-DNqPavG6R1kK05glN9vZ85NPLJoWN2K2wQaxl11xtFKGA3mlNwGP.quY89pZ4MOu4HdvcepwtoOicNLTiC8fQA1PcPTxHTbhxq4IIXb1q71SRXq_4Zzs2RlC0yyIZDbI;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        22:37:23 GMT
+      - shopify-proxy-session=1769724443109-wj2x9bm9n8g; Path=/; Expires=Fri, 30 Jan
+        2026 22:07:23 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3USZX1LCi28FSTaRm1Eb13cUuVxk",
+          "object": "chat.completion",
+          "created": 1769724443,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "Eiffel Tower's gleam,  \nSeine whispers tales of old dreams,  \nParis, love's soft theme.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 25,
+            "total_tokens": 42,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 22:07:23 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 22:08:59 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5c0d207a1070f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 1d79f978-855e-486d-b1bd-4ad4525ff737
+      Azureml-Model-Session:
+      - d20260129155222-684bd5cec442
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499997'
+      X-Ratelimit-Remaining-Tokens:
+      - '149997973'
+      X-Request-Id:
+      - 3c1c8299-91e6-4504-afaa-dc9d6efacdaf
+      Set-Cookie:
+      - __cf_bm=IfiJ09JoaAsH9MKMFv8yqOzxRkGvP1WKZt1ZpDiMij0-1769724538.9601169-1.0.1.1-hwdtgdQbX6R4HaFzUMAR01y1oUA3a_SdYNOm5Yws2bYkBbLfDyqLsIJ8KGDmwIca34pFcq.xcqj7oGxcrJd8VdAKgMsXlsAw5500jj.hTeOv8.kZA2nj0Q7tC1wZtA5_;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        22:38:59 GMT
+      - shopify-proxy-session=1769724538961-4ua22nezzxc; Path=/; Expires=Fri, 30 Jan
+        2026 22:08:58 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3UU7NNfaaOK9ebeULZRoChnsJiU9",
+          "object": "chat.completion",
+          "created": 1769724539,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 22:08:59 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 22:09:00 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c5c0d25ddb570f4-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 8384282a-eea8-43a2-8b49-7e87ad5173a5
+      Azureml-Model-Session:
+      - d20251214084336-049fd1c8ee3d4c98
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499996'
+      X-Ratelimit-Remaining-Tokens:
+      - '149997962'
+      X-Request-Id:
+      - e399808d-d13b-4274-8082-b18f4cea120c
+      Set-Cookie:
+      - __cf_bm=CuiKE_GF5ki0Iv.fE3H5ood9KLoAKLiq0wSFD6zZcUw-1769724539.8176863-1.0.1.1-PLFWXSq1zoj4ZK4geocR0WsBZQ8OxYS4aptPlWs00pg5PSo2sev4VYqt_y.Kh6MwByH.3gum71GTyhe3GU9y5JI5CK.S6xydehNT26Xoz43zJGUiXZep8GfinGJFhsKc;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        22:39:00 GMT
+      - shopify-proxy-session=1769724539819-05y31m2rns7; Path=/; Expires=Fri, 30 Jan
+        2026 22:08:59 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3UU79Qgp4a1U7jbBKDiM9zC4UtHP",
+          "object": "chat.completion",
+          "created": 1769724539,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "Seine whispers secrets,  \nEiffel stands in twilight's glow,  \nParis dreams in light.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 21,
+            "total_tokens": 38,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 22:09:00 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 22:09:46 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Request-Id:
+      - 3c1c8299-91e6-4504-afaa-dc9d6efacdaf
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Vary:
+      - accept-encoding
+      Set-Cookie:
+      - __cf_bm=LiB17vep4RLMHsS4vJKGCm4hc6Uq_R.sQlXk9Ji93t4-1769724586.4711938-1.0.1.1-Cre7V5D2kCfMovwRXSq.kGZTEQST3RPEctRgfU9i.Z1sZlssZI._hw9cKzyKNZoY3JY9Wg1Fn0XvcQEPVTtK_HGZv4KKzFCVADYVijklm_455ZHpBpxOQiV7vWOKOCmc;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        22:39:46 GMT
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9c5c0e497af870f4-YVR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3UU7NNfaaOK9ebeULZRoChnsJiU9",
+          "object": "chat.completion",
+          "created": 1769724539,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 22:09:46 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 29 Jan 2026 22:09:46 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Request-Id:
+      - e399808d-d13b-4274-8082-b18f4cea120c
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Vary:
+      - accept-encoding
+      Set-Cookie:
+      - __cf_bm=xvKOS.o9sM8K.no2DHO8Bm7VZv7ZCxx9.09wC8djhKA-1769724586.5442238-1.0.1.1-KgWdW3WD_2BFmjqiQdw8hPASOzlF3ON7byPjHspaglJZsc3ImfqvdCMVtq0KKpTO3.13Fe9CqoJlT9rpgOJZDGnVzTwZsIchG9ms571e2HG.9EmW42ztDaQlmXzWk6CV;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Thu, 29 Jan 2026
+        22:39:46 GMT
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9c5c0e49eb3970f4-YVR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D3UU79Qgp4a1U7jbBKDiM9zC4UtHP",
+          "object": "chat.completion",
+          "created": 1769724539,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "Seine whispers secrets,  \nEiffel stands in twilight's glow,  \nParis dreams in light.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 21,
+            "total_tokens": 38,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Thu, 29 Jan 2026 22:09:46 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 17:28:05 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b67276918d214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 6a87f66f-7968-4849-aa0d-35bb1c690541
+      Azureml-Model-Session:
+      - d20251214084336-049fd1c8ee3d4c98
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499121'
+      X-Ratelimit-Remaining-Tokens:
+      - '148371550'
+      X-Request-Id:
+      - faae9c3d-a70f-48af-a142-174d7d003cd6
+      Set-Cookie:
+      - __cf_bm=UVpcquWYH9y8umLjmhH.ZonfPMNF_o44yCFa5u3dOgI-1770053285.028245-1.0.1.1-Al1di39G8pP4zk6tXfB3L6UXP76dZLeVipWWkF6sSE..JzMMo.ulkR5W7srT7hbct42V08.smDZi_s6FQgo._ng1D_CnC_eSHhrfrqcUdZUqrae10_l9vchgkxrheWcS;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        17:58:05 GMT
+      - shopify-proxy-session=1770053285029-ji6679iack; Path=/; Expires=Tue, 03 Feb
+        2026 17:28:05 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4s0TpH48pVXcy60k3zcNjqcBbroI",
+          "object": "chat.completion",
+          "created": 1770053285,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 17:28:05 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 17:28:06 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b672aebb9d214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - c3d32d39-5c18-4d52-a709-8230113ae00c
+      Azureml-Model-Session:
+      - d20260130180628-0c9849df049d
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499129'
+      X-Ratelimit-Remaining-Tokens:
+      - '148377961'
+      X-Request-Id:
+      - 3cb3c2e6-9cd8-4550-8a73-67f47e6a47fe
+      Set-Cookie:
+      - __cf_bm=8S9lTgy2w_SquHzPnvIvqZanqebrre_mfy38jf24YRA-1770053285.586954-1.0.1.1-99QQQxZxZCGcoxZJ1G2OUn.x62uFq4W235OySWiO.2FSgRkry4I_gx96NOg2rS9DJlcvRL07y8MoScWyB3WnRreuYK9aMg1abR3NFSNHybSns1i3RoYj8ZX4D_EDNZCx;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        17:58:06 GMT
+      - shopify-proxy-session=1770053285589-uu0pvngcrg; Path=/; Expires=Tue, 03 Feb
+        2026 17:28:05 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4s0T5EEoBkaAKKtfZpFOLBqldZZG",
+          "object": "chat.completion",
+          "created": 1770053285,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "Seine whispers at dusk,  \nEiffel's shadow holds the dreams,  \nParis, lights aglow.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 23,
+            "total_tokens": 40,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 17:28:06 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 17:33:29 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b6f0c3d7cd214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - f3a59801-2229-4359-85df-140a6846957f
+      Azureml-Model-Session:
+      - d20260101084922-c3da2acb3f204100
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499936'
+      X-Ratelimit-Remaining-Tokens:
+      - '149600194'
+      X-Request-Id:
+      - 74d8578e-d2ff-4d9f-8d48-c0eb27ac07fd
+      Set-Cookie:
+      - __cf_bm=M21.ZXyDaJRtoADpO4EFz2Fs8HTb4r2IoGmTWjwj5SE-1770053608.3542037-1.0.1.1-mjZ4EA2Yinyj0NXhZmMe_Mt1fUEbgXH_9a5fQPvxFIsKxliVB9D9CvXd6Jy2ALt59dv9xAh6mZ.3Ncj6wqWnr_ZYIFnM1kzR9QAfO47nXxgpORolcEzcBYz6ITkED5jQ;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:03:29 GMT
+      - shopify-proxy-session=1770053608355-h8qazjt5y2t; Path=/; Expires=Tue, 03 Feb
+        2026 17:33:28 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4s5hfnLFP01lPG7v5mKl2ehqwKdM",
+          "object": "chat.completion",
+          "created": 1770053609,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 17:33:29 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 17:33:30 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b6f173a3bd214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - ab988b1d-8b29-4a56-a371-9190fe469ea7
+      Azureml-Model-Session:
+      - d20251214084336-049fd1c8ee3d4c98
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499937'
+      X-Ratelimit-Remaining-Tokens:
+      - '149599658'
+      X-Request-Id:
+      - d163e0ec-0211-4ebd-af27-a22d583b9770
+      Set-Cookie:
+      - __cf_bm=oGggNHLQJa9Yw4fZNJeiHnGEw2IPrIec2eTvttK4kfE-1770053610.131984-1.0.1.1-f5qFS1fFPswEx1Ea3zzSQdxVG6qdMcuii.jLHB5Cx5h2GVP3C.xGAJuNidVWkMCIYoRakK.E0GgBsDXhNoXfbI.oYt3bp4TUmX6_wDIA8wbKkC7jqoBDnoP59MLwKLBZ;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:03:30 GMT
+      - shopify-proxy-session=1770053610133-pbrk8bnktz8; Path=/; Expires=Tue, 03 Feb
+        2026 17:33:30 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4s5is8ikRNFpM7jpgUSjHXsU6Rif",
+          "object": "chat.completion",
+          "created": 1770053610,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "Eiffel Tower stands,  \nSeine whispers through the streets low,  \nParis lights the night.  ",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 22,
+            "total_tokens": 39,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 17:33:30 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 17:34:11 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Request-Id:
+      - 74d8578e-d2ff-4d9f-8d48-c0eb27ac07fd
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Vary:
+      - accept-encoding
+      Set-Cookie:
+      - __cf_bm=2e.VK8tdwCSt_S_bVPuiY9G3ykPmXj55OO482jnxaYU-1770053651.2250981-1.0.1.1-oR0pPuoeMhugOPdTyiNnCXrw9u1nP8sKNshZ74MdaZ7ravpUpL_LBTGTm33RZicKeK0V.7roLgurZpGeigXodaj2fXvJsviROn2Ufi4UP7A0gV6N6Nj2M1eJG0ILawUN;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:04:11 GMT
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9c7b70182900d214-YVR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4s5hfnLFP01lPG7v5mKl2ehqwKdM",
+          "object": "chat.completion",
+          "created": 1770053609,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 17:34:11 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 17:34:11 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Request-Id:
+      - d163e0ec-0211-4ebd-af27-a22d583b9770
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Vary:
+      - accept-encoding
+      Set-Cookie:
+      - __cf_bm=dkOoZCV4oupQ9EcvXyn1rMjc4HGAfYdUgcD_j1sauD8-1770053651.314609-1.0.1.1-1_DWXAgeym8uhglOyPADjGRaxdJYRjTdU3.DnSAJi_cTobpSFnU2ksYXf7n8FAmg16n4jJAJf8Y4lK3BkDmuxg.SJmwCNEvJ2FV7bHfYVQEWxNs7T9joeTwdjkExHNWk;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:04:11 GMT
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9c7b7018b942d214-YVR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4s5is8ikRNFpM7jpgUSjHXsU6Rif",
+          "object": "chat.completion",
+          "created": 1770053610,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "Eiffel Tower stands,  \nSeine whispers through the streets low,  \nParis lights the night.  ",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 22,
+            "total_tokens": 39,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 17:34:11 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 17:35:33 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b72175cb9d214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 592611e6-7e3d-4f2a-9392-d66faa1c817b
+      Azureml-Model-Session:
+      - d20251214084336-049fd1c8ee3d4c98
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499955'
+      X-Ratelimit-Remaining-Tokens:
+      - '149414103'
+      X-Request-Id:
+      - 0b08a638-9f87-491f-b961-dc9833381cb0
+      Set-Cookie:
+      - __cf_bm=gGb7OQSz3tYR2LT7sCpQFLi78TpDvC_F6x1ooCf8EpU-1770053733.014834-1.0.1.1-olsSIKpn1YJafjRQVzFOlzslfN809TZN71YY5KHqsYBgjvUOw.Iu.MH4goRoHe4FZfnu.c.vdsBsbOGXjU7Bu1cHToTJLZAS1uweUWxNgPpqJtoH.4Ajc61WfLwOgDSV;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:05:33 GMT
+      - shopify-proxy-session=1770053733016-1zormw5qs7r; Path=/; Expires=Tue, 03 Feb
+        2026 17:35:33 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4s7h9nYl7ObSJYudtKwXgeIB7t5G",
+          "object": "chat.completion",
+          "created": 1770053733,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 17:35:33 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 17:35:34 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b721c3ed7d214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 6f939298-8976-4cc4-9a7b-d3b9e2e00aa5
+      Azureml-Model-Session:
+      - d20251214084336-049fd1c8ee3d4c98
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499954'
+      X-Ratelimit-Remaining-Tokens:
+      - '149414092'
+      X-Request-Id:
+      - 10fde02c-cff6-4414-8c2c-93197d0d8fdc
+      Set-Cookie:
+      - __cf_bm=TPRt44eKJDsKKTZEME6ajjqrP9_5dUSofnmTSWrE.0Q-1770053733.7988522-1.0.1.1-Y0ePG_1xHn3t6Es_6HhxnMk0a4D8onWybVeDSZNq9T3ovYx0ihCJ4lM5W1.dlSoL1Um9l09nsMypP1gvxzNxdtL3eGvyL8O5KQ.pArdMnysZHQCN1WxdQdmWd1e8.mu3;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:05:34 GMT
+      - shopify-proxy-session=1770053733800-bbziu61rgxl; Path=/; Expires=Tue, 03 Feb
+        2026 17:35:33 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4s7hOGQjMfO4MnuqecRvzLxO3zvl",
+          "object": "chat.completion",
+          "created": 1770053733,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches skies,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 17:35:34 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 17:43:19 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b7d6e6cafd214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - cea04ad1-75d3-4c37-8f84-af810f2b6b5e
+      Azureml-Model-Session:
+      - d20260130172301-55907ae962e1
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499987'
+      X-Ratelimit-Remaining-Tokens:
+      - '149743640'
+      X-Request-Id:
+      - 83921b84-06b7-4355-afe3-0c2af42309b9
+      Set-Cookie:
+      - __cf_bm=Auz9S2a_xP.U.8enKOvkTfRpBXOclgODWXHTAZMHS1k-1770054197.5080624-1.0.1.1-6MHkz7Nx_aViVjJuSD3A9MIOGjMK1sn28ZB2ZkrQFyr_oAbNvOQUWgfksh_hWVg1AYxrBf5Ws5aZ3J2ydqQIjpQujDUSZNEumco9IA7YCfukGdd1JFrcCBpohKmRmejd;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:13:19 GMT
+      - shopify-proxy-session=1770054197509-bi4sq4vazck; Path=/; Expires=Tue, 03 Feb
+        2026 17:43:17 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4sFCtq5nc0IdZYmuVf4dcJJJLKok",
+          "object": "chat.completion",
+          "created": 1770054198,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 17:43:19 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 17:43:20 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b7d7deba2d214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - df10b56e-4e5e-4371-8857-446ab0043df4
+      Azureml-Model-Session:
+      - d20260130181318-379716d6a0ac
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499986'
+      X-Ratelimit-Remaining-Tokens:
+      - '149743629'
+      X-Request-Id:
+      - 66fa5613-2aec-41b7-9278-73c91dd2df4d
+      Set-Cookie:
+      - __cf_bm=R_IMbiX9OFXL3kWzmRY_S2YcJdLEbpkFFnlM6R0iOWA-1770054199.9909828-1.0.1.1-z_CbJ4E8PvNCwpl7hwK38MWUMYTsSkug56rDWNMTFBI5AIlXXwjXST2Qa1wb7OkSjGgZ.G3jLAitJl77.NrGqoeG61kNvpQfQAtQZrMTQM7ts5ui.In4jt_k_6x3jZ7Z;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:13:20 GMT
+      - shopify-proxy-session=1770054199992-qc1cuiuznuh; Path=/; Expires=Tue, 03 Feb
+        2026 17:43:19 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4sFEos3bK2BYwRbkCibtf9qqf8MO",
+          "object": "chat.completion",
+          "created": 1770054200,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "Seine whispers softly,  \nBeneath the lights, dreams take flight,  \nParis, heart of art.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 24,
+            "total_tokens": 41,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 17:43:20 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:00:00 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b95e0ef92d214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 5c7daf2f-78d8-4940-9613-81bdbc232ba1
+      Azureml-Model-Session:
+      - d20251214084336-049fd1c8ee3d4c98
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499996'
+      X-Ratelimit-Remaining-Tokens:
+      - '149998994'
+      X-Request-Id:
+      - a9e595aa-3e16-4467-91e4-c27eeb6649d6
+      Set-Cookie:
+      - __cf_bm=f08nZwjWTucTZZnNIV_ZvzHnvtiVdPIyfsQmVG0vC4M-1770055198.864069-1.0.1.1-nHNoi7cQrHLm7coGKzQ2k8AOC5B9zZKIo6_Jk47p46yf0gdc8Oh6oFBv9ihW19Zxs7wtgGMuteNq8s7vh5iPiWE.HcNeHq_JDYZOBIBZfeL3b8szs83tAw1sQ58lgLDP;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:30:00 GMT
+      - shopify-proxy-session=1770055198865-4bnmw590j6n; Path=/; Expires=Tue, 03 Feb
+        2026 17:59:58 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4sVLtdbZDDf6CwYztIFjGAJw2Dha",
+          "object": "chat.completion",
+          "created": 1770055199,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nParis whispers dreams.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 17,
+            "total_tokens": 34,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 18:00:00 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:00:01 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b95ebad65d214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - f20eaefc-8484-4d2f-9a8f-39ec676d15f9
+      Azureml-Model-Session:
+      - d20251214100634-9856757b6b614f8a
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499995'
+      X-Ratelimit-Remaining-Tokens:
+      - '149998983'
+      X-Request-Id:
+      - db343979-b8d7-4a61-a182-4cc38e75a0ad
+      Set-Cookie:
+      - __cf_bm=9BZdxO_ww9jZK1mQdOW5hxr1VYo3fSDwETOlxE1hLrM-1770055200.5864604-1.0.1.1-EpiVFS9MCa9b5UOgrAHOVHAZYEiEHGP0H4Qqnn9VXAKF1DZgPzNpvXAmzLZgeDarcGAMPr10o5FJHEWlv6cuxOZCoMUIeknDvYkvaW_BJqjccck8lURiJpp1tB1AF6m8;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:30:01 GMT
+      - shopify-proxy-session=1770055200588-y9xzdm9fhz; Path=/; Expires=Tue, 03 Feb
+        2026 18:00:00 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4sVMqKleeaz0yLdTDKvVxGWobSan",
+          "object": "chat.completion",
+          "created": 1770055200,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "River Seine flows bright,  \nBeneath the Eiffel's great gaze,  \nParis dreams at night.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 22,
+            "total_tokens": 39,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 18:00:01 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:01:41 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Request-Id:
+      - a9e595aa-3e16-4467-91e4-c27eeb6649d6
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Vary:
+      - accept-encoding
+      Set-Cookie:
+      - __cf_bm=sXg5q3Djkhcb6DeZw5M2s7YG5K4HmNGcxlOEfV95gck-1770055301.7882092-1.0.1.1-0HTYnN4WM2GHRrmfcPv9capTjFMNQdFWhBRzJsu5GdrHE7CpppHtwf9lWN5yNq4DubTBS9LnbVlUgt4YNWppbXyie3HKN2GGZG3D8hQ.tYyrfvMBc_fQXIgWwGBgA8UN;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:31:41 GMT
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9c7b98642b3ed214-YVR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4sVLtdbZDDf6CwYztIFjGAJw2Dha",
+          "object": "chat.completion",
+          "created": 1770055199,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nParis whispers dreams.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 17,
+            "total_tokens": 34,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 18:01:41 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:01:42 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b98655bc1d214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 57b0ed4b-4205-4fd1-b281-81b05c0b92e1
+      Azureml-Model-Session:
+      - d20251214100634-9856757b6b614f8a
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499986'
+      X-Ratelimit-Remaining-Tokens:
+      - '149994869'
+      X-Request-Id:
+      - c7ae00a6-abea-4595-844c-eb9753ccd017
+      Set-Cookie:
+      - __cf_bm=Uhdmt_h0.ZTYdEoG8CP72QT0t9F6FNgjG1WAfqlsnTE-1770055301.9743316-1.0.1.1-nxUpB3qjaQD3fpOSKgiirr5qlpB0RdFAbZRT_jbRr4BirRar2nktWUjGII9qMTw3KH1kBHFeqR6lb0qHbAfNfgLGRPMtQgxFIJylDTA9fgRq1RNIxJ4uenclixAcG2qn;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:31:42 GMT
+      - shopify-proxy-session=1770055301976-jp456ce40wq; Path=/; Expires=Tue, 03 Feb
+        2026 18:01:41 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4sX0Nt3zyoZMH20lXgxpRchV3WAU",
+          "object": "chat.completion",
+          "created": 1770055302,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower lights the night,  \nSeine whispers secrets.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 19,
+            "total_tokens": 36,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 18:01:42 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:02:20 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b994e6e91d214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '591'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '180000'
+      X-Ratelimit-Limit-Tokens:
+      - '450000000'
+      X-Ratelimit-Remaining-Requests:
+      - '179999'
+      X-Ratelimit-Remaining-Tokens:
+      - '449999992'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_59b5391f39524884861bda50e730e255
+      Set-Cookie:
+      - __cf_bm=Udvx7RjOppgTl4qKhuKMRMsukysyR_F6nKvF5jm41ek-1770055339.267348-1.0.1.1-VoHRRayAElrshmLD7I4VzwUn0bf5xN1C9htTbGZ0tC0Ipliowamek8m8KGY7fS6JN_I39c.fjssw3wT0xDViYUqk8BGhFB_CEt6iP8M65dTOQTfkXSaQ.lRl7XW1.Wtz;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:32:20 GMT
+      - shopify-proxy-session=1770055339269-gmxjfmu76a; Path=/; Expires=Tue, 03 Feb
+        2026 18:02:19 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4sXbgFIvG6nydih46s27Xx2sj7VU",
+          "object": "chat.completion",
+          "created": 1770055339,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 17,
+            "total_tokens": 34,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Mon, 02 Feb 2026 18:02:20 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:02:21 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7b9953e8ccd214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '804'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '180000'
+      X-Ratelimit-Limit-Tokens:
+      - '450000000'
+      X-Ratelimit-Remaining-Requests:
+      - '179999'
+      X-Ratelimit-Remaining-Tokens:
+      - '449999985'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_02129f88ad204c348117a4c35a21c6a3
+      Set-Cookie:
+      - __cf_bm=2Dqii5Vdv2hXbYf7gXMK1pS37e3yCWS1gLtJHouBwGw-1770055340.142388-1.0.1.1-3W1Frggi1c2QtCC_FQ7L.OXPbCOjGB5Fe9CrNg9LxOcS.L4UkEsJCfNhOqzscsBHQchhbjLTTM1rzI20BK_oLWLsyoyEhPQt8mZAbFuxvG16902.ZfxXB5GF5dXOhFdu;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:32:21 GMT
+      - shopify-proxy-session=1770055340144-8vfw0o4nmsc; Path=/; Expires=Tue, 03 Feb
+        2026 18:02:20 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4sXcCHhDlqgY1kRkPGTrjY0dCCfI",
+          "object": "chat.completion",
+          "created": 1770055340,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Seine flows through cobblestones,  \nEiffel towers touch the skies,  \nParis whispers dreams.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 21,
+            "total_tokens": 38,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Mon, 02 Feb 2026 18:02:21 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:02:39 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Request-Id:
+      - req_59b5391f39524884861bda50e730e255
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Vary:
+      - accept-encoding
+      Set-Cookie:
+      - __cf_bm=AAUB6CCh2NPQduBGPrv.ACQcpW8tMLG3ZPRXWWsQNak-1770055359.797284-1.0.1.1-iVuawthE4uktLG_YlLmv8Ubp2N2pjDqJtCxCXQNvW7hY6aT0v5n5r6JaiSZkDV2kI4URMFgREtFxBmwdgsDfIUISgkA1RURHnh8IzKBfchiKq7AYYrxjb5QUpUPdZr02;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:32:39 GMT
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9c7b99cebe55d214-YVR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4sXbgFIvG6nydih46s27Xx2sj7VU",
+          "object": "chat.completion",
+          "created": 1770055339,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 17,
+            "total_tokens": 34,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Mon, 02 Feb 2026 18:02:39 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:02:39 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Request-Id:
+      - req_02129f88ad204c348117a4c35a21c6a3
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Vary:
+      - accept-encoding
+      Set-Cookie:
+      - __cf_bm=gr91BDsxKTpUiiyJwHlQ1SO7NBnXp.CKDvufGVtwP0Q-1770055359.8683379-1.0.1.1-PH56YHT2xTnCdSo9CELoAGzmiW.eHxVRQCpiiASa.Gq3o1Qd1fvCFTmRgtn5LLzutDw9r8w_qjF1JYvJRaaGv1zfIB2nAIor5vd120XTHnR8Av6xn_upFBz07Urb1qBr;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:32:39 GMT
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9c7b99cf2e7dd214-YVR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4sXcCHhDlqgY1kRkPGTrjY0dCCfI",
+          "object": "chat.completion",
+          "created": 1770055340,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Seine flows through cobblestones,  \nEiffel towers touch the skies,  \nParis whispers dreams.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 21,
+            "total_tokens": 38,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Mon, 02 Feb 2026 18:02:39 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:18:36 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7bb1240e50d214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '502'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '180000'
+      X-Ratelimit-Limit-Tokens:
+      - '450000000'
+      X-Ratelimit-Remaining-Requests:
+      - '179999'
+      X-Ratelimit-Remaining-Tokens:
+      - '449999992'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_7069ade068a44461b04084536d4f2f04
+      Set-Cookie:
+      - __cf_bm=GK3OGXQsh77MMiAwPaettvMCSiHA4WufIWGvDrZKQu0-1770056315.5285518-1.0.1.1-OhoWUFqjEMP967aR4PhZaPsNpSFPV5nefVqb2EagbbSvkDeSu4Z6300X5qZ6YYpeUEcIE4hOZW7zI2OZcJHrd9IXtu0mDKgdgrojoA0pI4trfc82r5kZcFYVwy8GLPwD;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:48:36 GMT
+      - shopify-proxy-session=1770056315530-4rz443pfxyl; Path=/; Expires=Tue, 03 Feb
+        2026 18:18:35 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4snLoOILk43eM0hp9OHKwzvrMIRC",
+          "object": "chat.completion",
+          "created": 1770056315,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nSeine whispers secrets.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 17,
+            "total_tokens": 34,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Mon, 02 Feb 2026 18:18:36 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:18:37 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7bb12a297bd214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Content-Type-Options:
+      - nosniff
+      X-Shopify-Proxy-Provider:
+      - openai_sandbox_2
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - shopify-hack-days
+      Openai-Processing-Ms:
+      - '878'
+      Openai-Project:
+      - proj_RHxuweUBa4b19Xbb7FCw7ryR
+      Openai-Version:
+      - '2020-10-01'
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      X-Ratelimit-Limit-Requests:
+      - '180000'
+      X-Ratelimit-Limit-Tokens:
+      - '450000000'
+      X-Ratelimit-Remaining-Requests:
+      - '179999'
+      X-Ratelimit-Remaining-Tokens:
+      - '449999992'
+      X-Ratelimit-Reset-Requests:
+      - 0s
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_1c8f5ad79e2048dfabd753e4cdcb6309
+      Set-Cookie:
+      - __cf_bm=bzN88z11AvceYNjkngd6NVFNQiGLEfVcuhrl0bhuwwM-1770056316.5070262-1.0.1.1-rwRLE2JEBVDEONuKwAxZyikvTyhm8sFU2HujCVCBMcv99ZyN7YzU.3tOOhG08mGWBmrXWpWVKHMbFfEjLI4K_snKi6iEWR_peMjtabUrjxLVmAy_S8d5JKumQXzwhtVm;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:48:37 GMT
+      - shopify-proxy-session=1770056316508-r1gyc865so8; Path=/; Expires=Tue, 03 Feb
+        2026 18:18:36 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4snMkKgEfZeFWAKZPXdpoejUOYbK",
+          "object": "chat.completion",
+          "created": 1770056316,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "City of romance,  \nEiffel Tower pierces skies,  \nSeine whispers secrets.",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 18,
+            "total_tokens": 35,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d"
+        }
+  recorded_at: Mon, 02 Feb 2026 18:18:37 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":0.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:25:23 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7bbb13e951d214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - 599a7c65-e2f3-45c5-9302-f252d19bd00e
+      Azureml-Model-Session:
+      - d20251214095915-c2de3b050c49450f
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499990'
+      X-Ratelimit-Remaining-Tokens:
+      - '149986088'
+      X-Request-Id:
+      - e5e02262-3df8-4531-8da0-79261cc5536b
+      Set-Cookie:
+      - __cf_bm=HGWBMi3t.6pz5e5m27baXStpyyVH5L_Sgmijx4mDQ3Y-1770056722.5470524-1.0.1.1-jkSsBEkyThsWHcxXWwtNMS8IV.gIoKzRpaV9o4XTuPcrhL8Xg32AofizXptfR4xtPtJS83QqLriXT1cSQHjbYC9gQppEYFPMK8nTRuiVtS3k95K80UHOzgmqKZWsq.TN;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:55:23 GMT
+      - shopify-proxy-session=1770056722548-hv8qf15d0y7; Path=/; Expires=Tue, 03 Feb
+        2026 18:25:22 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4stvfG2eetxerEi7HMdkF4yD1UVc",
+          "object": "chat.completion",
+          "created": 1770056723,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nEiffel Tower touches sky,  \nParis whispers dreams.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 17,
+            "total_tokens": 34,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 18:25:23 GMT
+- request:
+    method: post
+    uri: http://mytestingproxy.local/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Write
+        a haiku about the capital of France."}],"stream":false,"temperature":1.0}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.1
+      Authorization:
+      - my-token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 02 Feb 2026 18:25:24 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9c7bbb1b8c3ad214-YVR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Access-Control-Allow-Origin:
+      - "*"
+      Server:
+      - cloudflare
+      Vary:
+      - accept-encoding
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains; preload
+      Access-Control-Allow-Headers:
+      - "*"
+      Access-Control-Allow-Methods:
+      - "*"
+      Access-Control-Max-Age:
+      - '86400'
+      X-Shopify-Proxy-Provider:
+      - azureopenai-dev-eastus
+      Apim-Request-Id:
+      - ba35cd54-35e3-4324-b5a3-8edeabb7e54f
+      Azureml-Model-Session:
+      - d20260130181318-379716d6a0ac
+      X-Content-Type-Options:
+      - nosniff
+      X-Ms-Deployment-Name:
+      - gpt-4o-mini-2024-07-18
+      X-Ms-Rai-Invoked:
+      - 'true'
+      X-Ms-Region:
+      - East US
+      X-Ratelimit-Limit-Requests:
+      - '1500000'
+      X-Ratelimit-Limit-Tokens:
+      - '150000000'
+      X-Ratelimit-Remaining-Requests:
+      - '1499989'
+      X-Ratelimit-Remaining-Tokens:
+      - '149986077'
+      X-Request-Id:
+      - 5fec5b92-30ae-4e62-8ab0-13c1c1f91abd
+      Set-Cookie:
+      - __cf_bm=h9iPR4_wcSt6wUGRClNdrz_1CMjIGFjo2nMWgJntO_A-1770056723.76294-1.0.1.1-JNqEk5j9Am1RSy5d5EdXAo.LI0fpkHeOL.4LQT_yKFeki3JqOoTtjTJ1R7uI8E0yUHSEfa2Xw6TkQtaLILlujIrfQ9KkchkJBUd5yjZNF1dfIIovYd4wBvI_P_cKnb3r;
+        HttpOnly; Secure; Path=/; Domain=proxy.shopify.ai; Expires=Mon, 02 Feb 2026
+        18:55:24 GMT
+      - shopify-proxy-session=1770056723764-csjzivzdr0v; Path=/; Expires=Tue, 03 Feb
+        2026 18:25:23 GMT; HttpOnly; Secure; SameSite=Lax
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "id": "chatcmpl-D4stvCNnL53ad5fi6NP14g18SI7Eb",
+          "object": "chat.completion",
+          "created": 1770056723,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "annotations": [],
+                "content": "City of romance,  \nUnderneath the Eiffel's glow,  \nParis dreams in light.",
+                "refusal": null,
+                "role": "assistant"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 19,
+            "total_tokens": 36,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0,
+              "audio_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "system_fingerprint": "fp_f97eff32c5",
+          "service_tier": null
+        }
+  recorded_at: Mon, 02 Feb 2026 18:25:24 GMT
+recorded_with: VCR 6.3.1
