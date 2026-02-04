@@ -179,30 +179,34 @@ module Roast
 
       # Exception should not propagate from handler
       assert_nothing_raised do
-        stdout, _, status = CommandRunner.execute(
-          ["bash", "-c", "echo 'line1' && echo 'line2' && echo 'line3'"],
-          stdout_handler: failing_handler,
-        )
+        _, _ = capture_io do
+          stdout, _, status = CommandRunner.execute(
+            ["bash", "-c", "echo 'line1' && echo 'line2' && echo 'line3'"],
+            stdout_handler: failing_handler,
+          )
 
-        # Should still capture all output even though handler crashed
-        assert_equal "line1\nline2\nline3\n", stdout
-        # Handler was called for all 3 lines (even after exception)
-        assert_equal 3, stdout_lines.size
-        assert_equal 0, status.exitstatus
+          # Should still capture all output even though handler crashed
+          assert_equal "line1\nline2\nline3\n", stdout
+          # Handler was called for all 3 lines (even after exception)
+          assert_equal 3, stdout_lines.size
+          assert_equal 0, status.exitstatus
+        end
       end
     end
 
     test "handler exceptions are written to stderr" do
       failing_handler = ->(_line) { raise StandardError, "Test error" }
 
-      _, stderr = capture_io do
-        CommandRunner.execute(
-          ["echo", "test"],
-          stdout_handler: failing_handler,
-        )
-      end
+      with_log_level("DEBUG") do
+        _, stderr = capture_io do
+          CommandRunner.execute(
+            ["echo", "test"],
+            stdout_handler: failing_handler,
+          )
+        end
 
-      assert_match(/stdout_handler raised: StandardError - Test error/, stderr)
+        assert_match(/stdout_handler raised: StandardError - Test error/, stderr)
+      end
     end
 
     test "runs command in current working directory if no working directory specified" do

@@ -32,6 +32,13 @@ def slow_test!
   skip "slow test" unless ["1", "true"].include?(ENV["ROAST_RUN_SLOW_TESTS"])
 end
 
+def with_log_level(level, &block)
+  Roast::Log.reset!
+  with_env("ROAST_LOG_LEVEL", level, &block)
+ensure
+  Roast::Log.reset!
+end
+
 def with_env(key, value)
   original = ENV[key]
   ENV[key] = value
