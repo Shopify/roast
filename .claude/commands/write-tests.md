@@ -22,7 +22,7 @@ Accepts either:
 
 4. **Write the tests:**
    - Create the test file at the appropriate location (e.g., `test/roast/<filename>_test.rb`)
-   - Test only behavior defined in the class itself, not inherited or included behavior
+   - Test only behavior defined in the class itself, not inherited behavior
    - Test each public method with representative cases
    - Test edge cases (nil arguments, error conditions, etc.)
 
@@ -35,11 +35,33 @@ Accepts either:
 - **Avoid mocking direct dependencies** - use real instances where possible
 - **Simple mocks are acceptable for second-order dependencies** (dependencies of dependencies)
 - **Do not test inherited behavior** - only test methods defined in the class itself
-- **Do not test included module behavior** - unless the class overrides or extends it
 - **Do not test type signatures** - Sorbet handles type checking, so don't test that methods return the correct type (e.g., `assert_instance_of String, @context.tmpdir`)
 - **Do not test class hierarchies** - Don't test inheritance relationships like "InputError is a subclass of Roast::Error". These are not useful tests.
 - **Do not test simple data classes** - Classes that only have `attr_reader`/`attr_accessor` and an initializer don't need tests unless they have complex initialization logic
 - **Follow existing test conventions** in the project
+
+## Test Helpers
+
+### `run_cog(cog, config: nil, scope_value: nil, scope_index: 0)`
+
+Run a cog through the full async execution path for integration testing. Use this when testing cog execution rather than testing individual Input/Output/Config classes in isolation.
+
+```ruby
+test "cog executes and returns expected output" do
+  cog = MyCog.new(:test_cog, ->(_input, _scope, _index) { "some value" })
+
+  run_cog(cog)
+
+  assert cog.succeeded?
+  assert_equal "expected", cog.output.value
+end
+```
+
+Parameters:
+- `cog` - The cog instance to run
+- `config:` - Optional config (defaults to cog's config class)
+- `scope_value:` - Optional executor scope value passed to input proc
+- `scope_index:` - Optional executor scope index passed to input proc
 
 ## Test File Structure
 

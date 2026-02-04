@@ -15,10 +15,22 @@ module Examples
       FileUtils.mkdir_p(tmpdir_root) unless Dir.exist?(tmpdir_root)
 
       out, err = capture_io do
-        in_tmpdir(workflow_id.to_s, tmpdir_root) do |workflow_dir|
-          tmpdir = workflow_dir
-          FileUtils.cp_r(examples_source_path, workflow_dir)
-          block.call
+        # Set up test environment variables for VCR playback
+        # When recording (RECORD_VCR=true), uses real credentials from environment
+        # When playing back, uses fake credentials (VCR intercepts all requests)
+        recording = ENV["RECORD_VCR"]
+
+        with_env("OPENAI_API_KEY", recording ? ENV["OPENAI_API_KEY"] : "my-token") do
+          with_env("OPENAI_API_BASE", recording ? ENV["OPENAI_API_BASE"] : "http://mytestingproxy.local/v1") do
+            in_tmpdir(workflow_id.to_s, tmpdir_root) do |workflow_dir|
+              tmpdir = workflow_dir
+              FileUtils.cp_r(examples_source_path, workflow_dir)
+
+              VCR.use_cassette(workflow_id.to_s, record: recording ? :all : :none) do
+                block.call
+              end
+            end
+          end
         end
       end
 
