@@ -247,14 +247,23 @@ module Roast
               assert_equal "session_123", command[resume_index + 1]
             end
 
-            test "command_line includes dangerously-skip-permissions by default" do
+            test "command_line includes dangerously-skip-permissions when permissions skipped" do
+              @config.skip_permissions!
               command = @invocation.send(:command_line)
 
-              assert_includes command, "--dangerously-skip-permissions"
+              refute_includes command, "--dangerously-skip-permissions"
             end
 
             test "command_line omits dangerously-skip-permissions when permissions applied" do
               @config.apply_permissions!
+              invocation = ClaudeInvocation.new(@config, @input)
+
+              command = invocation.send(:command_line)
+
+              refute_includes command, "--dangerously-skip-permissions"
+            end
+
+            test "command_line omits dangerously-skip-permissions by default" do
               invocation = ClaudeInvocation.new(@config, @input)
 
               command = invocation.send(:command_line)
