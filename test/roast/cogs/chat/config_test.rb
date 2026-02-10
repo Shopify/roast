@@ -87,7 +87,9 @@ module Roast
         end
 
         test "valid_base_url returns default when not set" do
-          assert_equal "https://api.openai.com/v1", @config.valid_base_url
+          with_env("OPENAI_API_BASE", nil) do
+            assert_equal "https://api.openai.com/v1", @config.valid_base_url
+          end
         end
 
         test "valid_base_url returns environment value when set" do
