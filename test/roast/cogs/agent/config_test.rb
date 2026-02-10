@@ -124,30 +124,44 @@ module Roast
 
         # Permissions configuration tests
         test "apply_permissions! enables permissions" do
+          # ensure that configured value is initially the opposite of what we want to test
+          @config.no_apply_permissions!
+          refute @config.apply_permissions?
+
           @config.apply_permissions!
 
           assert @config.apply_permissions?
         end
 
         test "no_apply_permissions! disables permissions" do
+          # ensure that configured value is initially the opposite of what we want to test
           @config.apply_permissions!
+          assert @config.apply_permissions?
+
           @config.no_apply_permissions!
 
           refute @config.apply_permissions?
         end
 
-        test "apply_permissions? returns false by default" do
-          refute @config.apply_permissions?
+        test "apply_permissions? returns true by default" do
+          assert @config.apply_permissions?
         end
 
         test "skip_permissions! is alias for no_apply_permissions!" do
+          # ensure that configured value is initially the opposite of what we want to test
           @config.apply_permissions!
+          assert @config.apply_permissions?
+
           @config.skip_permissions!
 
           refute @config.apply_permissions?
         end
 
         test "no_skip_permissions! is alias for apply_permissions!" do
+          # ensure that configured value is initially the opposite of what we want to test
+          @config.no_apply_permissions!
+          refute @config.apply_permissions?
+
           @config.no_skip_permissions!
 
           assert @config.apply_permissions?
