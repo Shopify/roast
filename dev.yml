@@ -11,7 +11,7 @@ up:
 check:
   style: bundle exec rake rubocop
   tc: bundle exec rake sorbet
-  test: bundle exec rake minitest_dsl_fast
+  test: bundle exec rake minitest_fast
 
 commands:
   __default__: execute
@@ -26,4 +26,4 @@ commands:
     run: bundle exec rake sorbet
   test:
     desc: Run all tests
-    run: bundle exec rake minitest_dsl_fast
+    run: bundle exec rake minitest_fast
