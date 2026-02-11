@@ -4,40 +4,9 @@ require "test_helper"
 
 module Roast
   class ExecutionManagerTest < ActiveSupport::TestCase
-    class TestInput < Cog::Input
-      attr_accessor :value
-
-      def validate!
-        raise InvalidInputError if value.nil? && !coerce_ran?
-      end
-
-      def coerce(input_return_value)
-        super
-        @value = input_return_value
-      end
-    end
-
-    class TestOutput < Cog::Output
-      attr_reader :value
-
-      def initialize(value)
-        super()
-        @value = value
-      end
-    end
-
-    class TestCog < Cog
-      class Config < Cog::Config; end
-      class Input < TestInput; end
-
-      def execute(input)
-        TestOutput.new(input.value)
-      end
-    end
-
     def setup
       @registry = Cog::Registry.new
-      @registry.use(TestCog)
+      @registry.use(TestCogSupport::TestCog)
 
       @config_manager = ConfigManager.new(@registry, [])
       @config_manager.prepare!
