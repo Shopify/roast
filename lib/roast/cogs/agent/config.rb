@@ -214,7 +214,7 @@ module Roast
         #
         # How these permissions are defined and configured is specific to the agent provider being used.
         #
-        # The cog's default behaviour is to run with __no__ permissions.
+        # The cog's default behaviour is to run __with__ permissions applied.
         #
         # #### Alias Methods
         # - `apply_permissions!`
@@ -231,7 +231,7 @@ module Roast
 
         # Configure the cog to run the agent with __no__ permissions applied
         #
-        # The cog's default behaviour is to run with __no__ permissions.
+        # The cog's default behaviour is to run __with__ permissions.
         #
         # #### Alias Methods
         # - `no_apply_permissions!`
@@ -256,7 +256,7 @@ module Roast
         #
         #: () -> bool
         def apply_permissions?
-          !!@values[:apply_permissions]
+          @values.fetch(:apply_permissions, true)
         end
 
         # Configure the cog to display the prompt when running the agent

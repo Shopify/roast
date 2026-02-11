@@ -42,6 +42,33 @@ Accepts either:
 
 ## Test Helpers
 
+### `TestCogSupport` (from `test/support/test_cog.rb`)
+
+Shared test cog infrastructure. Use this when you need a generic cog for integration testing instead of defining your own. Provides:
+
+- `TestCogSupport::TestInput` - A `Cog::Input` with `value` accessor, validation, and coercion
+- `TestCogSupport::TestOutput` - A `Cog::Output` with a `value` reader
+- `TestCogSupport::TestCog` - A `Cog` subclass that executes input into output, with its own `Config` and `Input` classes
+
+Use these directly or alias them in your test class:
+
+```ruby
+class MyTest < ActiveSupport::TestCase
+  # For integration tests that need a cog registered in a Registry:
+  def setup
+    @registry = Cog::Registry.new
+    @registry.use(TestCogSupport::TestCog)
+  end
+
+  # For SystemCog subclasses that need a concrete Input:
+  class TestSystemCog < SystemCog
+    class Input < TestCogSupport::TestInput; end
+  end
+end
+```
+
+Only define a custom test cog when the class under test requires specific Config fields (e.g., `field :timeout, 30`) that `Cog::Config` doesn't provide.
+
 ### `run_cog(cog, config: nil, scope_value: nil, scope_index: 0)`
 
 Run a cog through the full async execution path for integration testing. Use this when testing cog execution rather than testing individual Input/Output/Config classes in isolation.
@@ -62,6 +89,13 @@ Parameters:
 - `config:` - Optional config (defaults to cog's config class)
 - `scope_value:` - Optional executor scope value passed to input proc
 - `scope_index:` - Optional executor scope index passed to input proc
+
+## Style Rules
+
+- Do NOT use `%w[]` word arrays — use `["a", "b"]` bracket style
+- Do NOT add section comments (e.g., `# --- Config ---`) in test files
+- Use `class << self` for class method definitions, not `def self.method_name`
+- Use Ruby 1.9 hash syntax (`key:` not `:key =>`)
 
 ## Test File Structure
 
