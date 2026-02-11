@@ -4,34 +4,12 @@ require "test_helper"
 
 module Roast
   class SystemCogTest < ActiveSupport::TestCase
-    class TestInput < Cog::Input
-      attr_accessor :value
-
-      def validate!
-        raise InvalidInputError if value.nil? && !coerce_ran?
-      end
-
-      def coerce(input_return_value)
-        super
-        @value = input_return_value
-      end
-    end
-
-    class TestOutput < Cog::Output
-      attr_reader :value
-
-      def initialize(value)
-        super()
-        @value = value
-      end
-    end
-
     class TestSystemCog < SystemCog
-      class Input < TestInput; end
+      class Input < TestCogSupport::TestInput; end
     end
 
     class CustomParamsSystemCog < SystemCog
-      class Input < TestInput; end
+      class Input < TestCogSupport::TestInput; end
 
       class Params < SystemCog::Params
         attr_reader :custom_param
@@ -54,13 +32,8 @@ module Roast
     end
 
     test "execute calls the on_execute block with input and config" do
-      received_input = nil
-      received_config = nil
-
-      cog = TestSystemCog.new(:test_cog, ->(_input, _scope, _index) { "value" }) do |input, config|
-        received_input = input
-        received_config = config
-        TestOutput.new("executed")
+      cog = TestSystemCog.new(:test_cog, ->(_input, _scope, _index) { "value" }) do |_input, _config|
+        TestCogSupport::TestOutput.new("executed")
       end
 
       run_cog(cog)
@@ -75,7 +48,7 @@ module Roast
 
       cog = TestSystemCog.new(:config_cog, ->(_input, _scope, _index) { "value" }) do |_input, config|
         captured_config = config
-        TestOutput.new("done")
+        TestCogSupport::TestOutput.new("done")
       end
 
       run_cog(cog, config: custom_config)
