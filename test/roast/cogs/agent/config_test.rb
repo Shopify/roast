@@ -8,10 +8,9 @@ module Roast
       class ConfigTest < ActiveSupport::TestCase
         def setup
           @config = Config.new
-          @default_provider = Config::VALID_PROVIDERS.first
+          @default_provider = Provider.default_provider_name
         end
 
-        # Provider configuration tests
         test "provider sets provider value" do
           @config.provider(@default_provider)
 

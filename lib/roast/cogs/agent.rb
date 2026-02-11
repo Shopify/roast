@@ -61,11 +61,12 @@ module Roast
 
       #: () -> Provider
       def provider
-        @provider ||= case config.valid_provider!
-        when :claude
-          Providers::Claude.new(config)
-        else
-          raise UnknownProviderError, "Unknown provider: #{config.valid_provider!}"
+        @provider ||= begin
+          provider_name = config.valid_provider!
+          provider_class = Provider.resolve(provider_name)
+          raise UnknownProviderError, "Unknown provider: #{provider_name}" unless provider_class
+
+          provider_class.new(config)
         end
       end
     end

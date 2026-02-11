@@ -6,6 +6,8 @@ module Roast
     class Agent < Cog
       module Providers
         class Claude < Provider
+          Provider.register(:claude, self, default: true)
+
           class Output < Agent::Output
             delegate :response, :session, :stats, to: :@invocation_result
 

@@ -5,8 +5,6 @@ module Roast
   module Cogs
     class Agent < Cog
       class Config < Cog::Config
-        VALID_PROVIDERS = [:claude].freeze #: Array[Symbol]
-
         # Configure the cog to use a specified provider when invoking an agent
         #
         # The provider is the source of the agent tool itself.
@@ -49,9 +47,10 @@ module Roast
         #
         #: () -> Symbol
         def valid_provider!
-          provider = @values[:provider] || VALID_PROVIDERS.first
-          unless VALID_PROVIDERS.include?(provider)
-            raise ArgumentError, "'#{provider}' is not a valid provider. Available providers include: #{VALID_PROVIDERS.join(", ")}"
+          provider = @values[:provider] || Provider.default_provider_name
+          unless Provider.registered?(provider)
+            raise ArgumentError,
+              "'#{provider}' is not a valid provider. Available providers include: #{Provider.registered_provider_names.join(", ")}"
           end
 
           provider
