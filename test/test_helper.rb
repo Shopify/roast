@@ -19,6 +19,7 @@ require "minitest/rg"
 require "mocha/minitest"
 # Test support files
 require "support/improved_assertions"
+require "support/test_cog"
 require "examples/support/functional_test"
 require "vcr"
 require "webmock"
