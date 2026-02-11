@@ -84,6 +84,7 @@ module Roast
 
             @initialized = true
             register(:claude, Providers::Claude, default: true)
+            register(:opencode, Providers::Opencode)
           end
         end
 
