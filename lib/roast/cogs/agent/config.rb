@@ -5,7 +5,17 @@ module Roast
   module Cogs
     class Agent < Cog
       class Config < Cog::Config
-        VALID_PROVIDERS = [:claude].freeze #: Array[Symbol]
+        #: (?Hash[Symbol, untyped]) -> void
+        def initialize(initial = {})
+          super(initial)
+
+          @provider_registry = {}
+        end
+
+        def validate!
+          # Provider registry is responsible for ensuring the validity of providers
+          @values[:provider] = @provider_registry.fetch(@values[:provider]).new(self)
+        end
 
         # Configure the cog to use a specified provider when invoking an agent
         #
@@ -34,27 +44,6 @@ module Roast
         #: () -> void
         def use_default_provider!
           @values[:provider] = nil
-        end
-
-        # Get the validated provider name that the cog is configured to use when invoking an agent
-        #
-        # Note: this method will return the name of a valid provider or raise an `InvalidConfigError`.
-        # It will __not__, however, validate that the agent is properly installed on your system.
-        # If the agent is not properly installed, you will likely experience a failure when Roast attempts to
-        # run your workflow.
-        #
-        # #### See Also
-        # - `provider`
-        # - `use_default_provider!`
-        #
-        #: () -> Symbol
-        def valid_provider!
-          provider = @values[:provider] || VALID_PROVIDERS.first
-          unless VALID_PROVIDERS.include?(provider)
-            raise ArgumentError, "'#{provider}' is not a valid provider. Available providers include: #{VALID_PROVIDERS.join(", ")}"
-          end
-
-          provider
         end
 
         # Configure the cog to use a specific base command when invoking the agent
