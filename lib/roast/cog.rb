@@ -62,6 +62,7 @@ module Roast
 
       @task = barrier.async(finished: false) do |task|
         task.annotate("#{self.class.name.not_nil!.demodulize.camelcase} Cog: #{@name}")
+        TaskContext.begin(@name)
         @config = config
         input_instance = self.class.input_class.new
         input_return = input_context.instance_exec(
@@ -84,6 +85,8 @@ module Roast
       rescue StandardError => e
         @failed = true
         raise e
+      ensure
+        TaskContext.end
       end
     end
 
