@@ -3,46 +3,46 @@
 require "test_helper"
 
 class NilAssertionsTest < ActiveSupport::TestCase
-  test "not_nil! returns self for non-nil objects" do
+  test "! returns self for non-nil objects" do
     str = "hello"
-    result = str.not_nil!
+    result = str.!
 
     assert_equal str, result
     assert_same str, result
   end
 
-  test "not_nil! returns self for numeric values" do
+  test "! returns self for numeric values" do
     num = 42
-    result = num.not_nil!
+    result = num.!
 
     assert_equal num, result
   end
 
-  test "not_nil! returns self for arrays" do
+  test "! returns self for arrays" do
     arr = [1, 2, 3]
-    result = arr.not_nil!
+    result = arr.!
 
     assert_equal arr, result
     assert_same arr, result
   end
 
-  test "not_nil! returns self for hashes" do
+  test "! returns self for hashes" do
     hash = { key: "value" }
-    result = hash.not_nil!
+    result = hash.!
 
     assert_equal hash, result
     assert_same hash, result
   end
 
-  test "not_nil! returns self for false" do
-    result = false.not_nil!
+  test "! returns self for false" do
+    result = false.!
 
     assert_equal false, result
   end
 
-  test "not_nil! raises UnexpectedNilError for nil" do
+  test "! raises UnexpectedNilError for nil" do
     error = assert_raises(UnexpectedNilError) do
-      nil.not_nil!
+      nil.!
     end
 
     assert_equal "Unexpected nil value encountered.", error.message
@@ -60,15 +60,15 @@ class NilAssertionsTest < ActiveSupport::TestCase
     assert_equal "Unexpected nil value encountered.", error.message
   end
 
-  test "not_nil! can be chained with other methods on non-nil values" do
-    result = "hello".not_nil!.upcase
+  test "! can be chained with other methods on non-nil values" do
+    result = "hello".!.upcase
 
     assert_equal "HELLO", result
   end
 
-  test "not_nil! raises before chaining when value is nil" do
+  test "! raises before chaining when value is nil" do
     assert_raises(UnexpectedNilError) do
-      nil.not_nil!.upcase
+      nil.!.upcase
     end
   end
 end

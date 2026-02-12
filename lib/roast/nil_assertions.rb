@@ -3,7 +3,7 @@
 
 module Kernel
   #: -> self
-  def not_nil!
+  def !
     self
   end
 end
@@ -11,7 +11,7 @@ end
 class NilClass
   # @override
   #: -> bot
-  def not_nil!
+  def !
     raise UnexpectedNilError
   end
 end

@@ -61,7 +61,7 @@ module Roast
       raise CogAlreadyStartedError if @task
 
       @task = barrier.async(finished: false) do |task|
-        task.annotate("#{self.class.name.not_nil!.demodulize.camelcase} Cog: #{@name}")
+        task.annotate("#{self.class.name.!.demodulize.camelcase} Cog: #{@name}")
         @config = config
         input_instance = self.class.input_class.new
         input_return = input_context.instance_exec(
