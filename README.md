@@ -94,10 +94,12 @@ The tutorial covers:
 7. Processing collections
 8. Iterative workflows
 9. Async execution
+10. Custom cogs
+11. Custom agent providers
 
 ## Documentation
 
-- [Tutorial](https://github.com/Shopify/roast/blob/main/tutorial/README.md) - Step-by-step guide with examples
+- [Tutorial](https://github.com/Shopify/roast/blob/main/tutorial/README.md) - Step-by-step guide covering workflows, configuration, control flow, and extensibility
 - [Workflow Examples](https://github.com/Shopify/roast/tree/main/examples) - Toy workflows that demonstrate all functional patterns, use for end-to-end test
 
 ## Documentation & References
@@ -121,6 +123,9 @@ class and method comments on the relevant classes.
     * [Chat cog configuration: `chat/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/chat/config.rb)
     * [Cmd cog configuration: `cmd/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/cmd.rb)
     * [Map cog configuration: `map.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/system_cogs/map.rb)
+* __Agent Providers__
+    * [Agent provider base class: `provider.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/agent/provider.rb)
+    * [Provider registry: `provider_registry.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/provider_registry.rb)
 * __Execution__
     * [General Execution block: `execution-context.rbi`](https://github.com/Shopify/roast/blob/main/sorbet/rbi/shims/lib/roast/dsl/execution_context.rbi)
 * __Input and Output__
