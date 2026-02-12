@@ -22,7 +22,7 @@ module Roast
     end
 
     test "prepare! transitions to prepared state" do
-      manager = ConfigManager.new(@registry, [])
+      manager = ConfigManager.new(@registry, [], ProviderRegistry.new)
 
       refute manager.prepared?
       manager.prepare!
@@ -30,7 +30,7 @@ module Roast
     end
 
     test "prepare! raises when called twice" do
-      manager = ConfigManager.new(@registry, [])
+      manager = ConfigManager.new(@registry, [], ProviderRegistry.new)
       manager.prepare!
 
       assert_raises(ConfigManager::ConfigManagerAlreadyPreparedError) do
@@ -44,14 +44,14 @@ module Roast
         test_cog { timeout 60 }
         timeout_set = true
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], ProviderRegistry.new)
       manager.prepare!
 
       assert timeout_set
     end
 
     test "config_for raises when not prepared" do
-      manager = ConfigManager.new(@registry, [])
+      manager = ConfigManager.new(@registry, [], ProviderRegistry.new)
 
       assert_raises(ConfigManager::ConfigManagerNotPreparedError) do
         manager.config_for(TestCog)
@@ -59,7 +59,7 @@ module Roast
     end
 
     test "config_for returns default config when no config procs are provided" do
-      manager = ConfigManager.new(@registry, [])
+      manager = ConfigManager.new(@registry, [], ProviderRegistry.new)
       manager.prepare!
 
       config = manager.config_for(TestCog)
@@ -71,7 +71,7 @@ module Roast
       config_proc = proc do
         test_cog { timeout 60 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], ProviderRegistry.new)
       manager.prepare!
 
       config = manager.config_for(TestCog)
@@ -83,7 +83,7 @@ module Roast
       config_proc = proc do
         test_cog(:my_step) { timeout 90 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], ProviderRegistry.new)
       manager.prepare!
 
       scoped_config = manager.config_for(TestCog, :my_step)
@@ -97,7 +97,7 @@ module Roast
       config_proc = proc do
         test_cog(/^api_/) { timeout 120 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], ProviderRegistry.new)
       manager.prepare!
 
       matching_config = manager.config_for(TestCog, :api_call)
@@ -112,7 +112,7 @@ module Roast
         test_cog { async! }
         test_cog(:my_step) { timeout 90 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], ProviderRegistry.new)
       manager.prepare!
 
       config = manager.config_for(TestCog, :my_step)
@@ -125,12 +125,35 @@ module Roast
       config_proc = proc do
         global { abort_on_failure! }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], ProviderRegistry.new)
       manager.prepare!
 
       config = manager.config_for(TestCog)
 
       assert config.abort_on_failure?
+    end
+
+    test "config_for injects provider registry into Agent::Config" do
+      registry = Cog::Registry.new
+      provider_registry = ProviderRegistry.new
+      provider_registry.register(Cogs::Agent::Providers::Claude, :claude)
+
+      manager = ConfigManager.new(registry, [], provider_registry)
+      manager.prepare!
+
+      config = manager.config_for(Cogs::Agent)
+
+      assert_equal provider_registry, config.instance_variable_get(:@provider_registry)
+    end
+
+    test "config_for does not inject provider registry into non-Agent configs" do
+      manager = ConfigManager.new(@registry, [], ProviderRegistry.new)
+      manager.prepare!
+
+      config = manager.config_for(TestCog)
+
+      refute config.respond_to?(:provider_registry)
+      refute config.instance_variable_defined?(:@provider_registry)
     end
 
     test "prepare! raises IllegalCogNameError when cog name conflicts with existing method" do
@@ -144,7 +167,7 @@ module Roast
       end
       @registry.use(conflicting_cog)
 
-      manager = ConfigManager.new(@registry, [])
+      manager = ConfigManager.new(@registry, [], ProviderRegistry.new)
 
       assert_raises(ConfigManager::IllegalCogNameError) do
         manager.prepare!

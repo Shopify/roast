@@ -8,35 +8,63 @@ module Roast
       class ConfigTest < ActiveSupport::TestCase
         def setup
           @config = Config.new
-          @default_provider = Config::VALID_PROVIDERS.first
+          @default_provider = :claude
         end
 
         # Provider configuration tests
         test "provider sets provider value" do
           @config.provider(@default_provider)
 
-          assert_equal @default_provider, @config.valid_provider!
+          assert_equal @default_provider, @config.values[:provider]
         end
 
         test "use_default_provider! clears provider value" do
           @config.provider(:fake_provider)
           @config.use_default_provider!
 
-          assert_equal @default_provider, @config.valid_provider!
+          assert_nil @config.values[:provider]
         end
 
-        test "valid_provider! returns default when not set" do
-          assert_equal @default_provider, @config.valid_provider!
+        test "initialize sets provider_registry to empty hash" do
+          config = Config.new
+
+          assert_equal({}, config.instance_variable_get(:@provider_registry))
         end
 
-        test "valid_provider! raises on invalid provider" do
-          @config.provider(:invalid_provider)
+        test "validate! resolves provider from registry and instantiates with config" do
+          mock_provider_instance = mock("provider_instance")
+          mock_provider_class = mock("provider_class")
+          mock_provider_class.expects(:new).with(@config).returns(mock_provider_instance)
 
-          error = assert_raises(ArgumentError) do
-            @config.valid_provider!
+          registry = { claude: mock_provider_class }
+          @config.provider(:claude)
+          @config.instance_variable_set(:@provider_registry, registry)
+          @config.validate!
+
+          assert_equal mock_provider_instance, @config.values[:provider]
+        end
+
+        test "validate! uses nil provider key when provider not explicitly set" do
+          mock_provider_instance = mock("provider_instance")
+          mock_provider_class = mock("provider_class")
+          mock_provider_class.expects(:new).with(@config).returns(mock_provider_instance)
+
+          registry = mock("registry")
+          registry.expects(:fetch).with(nil).returns(mock_provider_class)
+          @config.instance_variable_set(:@provider_registry, registry)
+          @config.validate!
+
+          assert_equal mock_provider_instance, @config.values[:provider]
+        end
+
+        test "validate! raises when provider not found in registry" do
+          registry = ProviderRegistry.new
+          @config.provider(:nonexistent)
+          @config.instance_variable_set(:@provider_registry, registry)
+
+          assert_raises(ProviderRegistry::ProviderNotFoundError) do
+            @config.validate!
           end
-
-          assert_match(/invalid_provider.*not a valid provider/, error.message)
         end
 
         # Command configuration tests

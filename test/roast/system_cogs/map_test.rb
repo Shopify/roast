@@ -9,7 +9,7 @@ module Roast
         @registry = Cog::Registry.new
         @registry.use(TestCogSupport::TestCog)
 
-        @config_manager = ConfigManager.new(@registry, [])
+        @config_manager = ConfigManager.new(@registry, [], ProviderRegistry.new)
         @config_manager.prepare!
 
         @workflow_context = WorkflowContext.new(
@@ -359,7 +359,7 @@ module Roast
 
       test "map executes in parallel when configured" do
         config_proc = proc { map { parallel! } }
-        config_manager = ConfigManager.new(@registry, [config_proc])
+        config_manager = ConfigManager.new(@registry, [config_proc], ProviderRegistry.new)
         config_manager.prepare!
 
         exec_procs = {
