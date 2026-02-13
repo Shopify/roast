@@ -97,9 +97,8 @@ module Roast
       (@execution_procs[scope] ||= []) << block
     end
 
-    def use(loadables = [], from: nil)
+    def use(*loadables, from: nil)
       require from if from
-      loadables = Array.wrap(loadables)
 
       if from
         # Load gem - no special requires, gem must handle everything

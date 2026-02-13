@@ -202,13 +202,13 @@ The `use` directive automatically loads `.rb` files from the `cogs/` directory r
 
 ```ruby
 # Load multiple cogs from a gem
-use ["simple", "other"], from: "my_gem"
+use "simple", "other", from: "my_gem"
 
 # Load namespaced cogs
 use "MyCogNamespace::Other", from: "my_gem"
 
 # Mix gem and local cogs
-use ["simple", "other"], from: "my_gem"
+use "simple", "other", from: "my_gem"
 use "local"
 
 execute do
@@ -423,7 +423,7 @@ gem "my-roast-cogs", path: "../my-roast-cogs"
 
 ```ruby
 # workflow.rb
-use ["simple", "weather", "database_query"], from: "my_roast_cogs"
+use "simple", "weather", "database_query", from: "my_roast_cogs"
 
 execute do
   weather { city "Portland" }
