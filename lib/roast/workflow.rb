@@ -128,5 +128,10 @@ module Roast
     def extract_dsl_procs!
       instance_eval(@workflow_definition, @workflow_path.realpath.to_s, 1)
     end
+
+    # Register the built in agent providers.
+    def add_providers!
+      @provider_registry.register(Roast::Cogs::Agent::Providers::Claude, :claude)
+    end
   end
 end
