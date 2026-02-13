@@ -139,6 +139,7 @@ module Roast
     # Register the built in agent providers.
     def add_providers!
       @provider_registry.register(Roast::Cogs::Agent::Providers::Claude, :claude)
+      @provider_registry.register(Roast::Cogs::Agent::Providers::Opencode, :opencode)
     end
   end
 end
