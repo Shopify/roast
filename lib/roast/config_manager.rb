@@ -8,9 +8,10 @@ module Roast
     class ConfigManagerAlreadyPreparedError < ConfigManagerError; end
     class IllegalCogNameError < ConfigManagerError; end
 
-    #: (Cog::Registry, Array[^() -> void]) -> void
-    def initialize(cog_registry, config_procs)
+    #: (Cog::Registry, Array[^() -> void], ProviderRegistry) -> void
+    def initialize(cog_registry, config_procs, provider_registry)
       @cog_registry = cog_registry
+      @provider_registry = provider_registry
       @config_procs = config_procs
       @config_context = ConfigContext.new #: ConfigContext
       @global_config = Cog::Config.new #: Cog::Config
@@ -54,6 +55,16 @@ module Roast
         name_scoped_config = fetch_name_scoped_config(cog_class, name)
         config = config.merge(name_scoped_config)
       end
+
+      # Special case for agent cog. Insert the provider registry.
+      # This is the only cog that needs this right now - revisit in the future to
+      # see if we need a way to define hooks for custom cog data to be distributed
+      # at config time.
+      # NOTE: This must happen after all merges, since merge creates new Config instances.
+      if config.is_a?(Cogs::Agent::Config)
+        config.instance_variable_set(:@provider_registry, @provider_registry)
+      end
+
       config.validate!
       config
     end

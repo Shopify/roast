@@ -28,6 +28,7 @@ module Roast
       @workflow_context = workflow_context #: WorkflowContext
       @workflow_definition = File.read(workflow_path) #: String
       @cog_registry = Cog::Registry.new #: Cog::Registry
+      @provider_registry = ProviderRegistry.new #: ProviderRegistry
       @config_procs = [] #: Array[^() -> void]
       @execution_procs = { nil: [] } #: Hash[Symbol?, Array[^() -> void]]
       @config_manager = nil #: ConfigManager?
@@ -40,7 +41,8 @@ module Roast
 
       @preparing = true
       extract_dsl_procs!
-      @config_manager = ConfigManager.new(@cog_registry, @config_procs)
+      add_providers!
+      @config_manager = ConfigManager.new(@cog_registry, @config_procs, @provider_registry)
       @config_manager.not_nil!.prepare!
       # TODO: probably we should just not pass the params as the top-level scope value anymore
       @execution_manager = ExecutionManager.new(@cog_registry, @config_manager.not_nil!, @execution_procs, @workflow_context, scope_value: @workflow_context.params)
@@ -117,6 +119,11 @@ module Roast
     #: () -> void
     def extract_dsl_procs!
       instance_eval(@workflow_definition, @workflow_path.realpath.to_s, 1)
+    end
+
+    # Register the built in agent providers.
+    def add_providers!
+      @provider_registry.register(Roast::Cogs::Agent::Providers::Claude, :claude)
     end
   end
 end

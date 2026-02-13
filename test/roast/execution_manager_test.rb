@@ -8,7 +8,7 @@ module Roast
       @registry = Cog::Registry.new
       @registry.use(TestCogSupport::TestCog)
 
-      @config_manager = ConfigManager.new(@registry, [])
+      @config_manager = ConfigManager.new(@registry, [], ProviderRegistry.new)
       @config_manager.prepare!
 
       @workflow_context = WorkflowContext.new(
@@ -68,7 +68,7 @@ module Roast
       conflicting_registry.use(conflicting_cog)
 
       # Use a clean registry for config_manager so it doesn't hit the same conflict
-      config_manager = ConfigManager.new(Cog::Registry.new, [])
+      config_manager = ConfigManager.new(Cog::Registry.new, [], ProviderRegistry.new)
       config_manager.prepare!
 
       manager = ExecutionManager.new(
