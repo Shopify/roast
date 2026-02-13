@@ -7,7 +7,7 @@ module Roast
     class WorkflowNotPreparedError < WorkflowError; end
     class WorkflowAlreadyPreparedError < WorkflowError; end
     class WorkflowAlreadyStartedError < WorkflowError; end
-    class InvalidCogReference < WorkflowError; end
+    class InvalidLoadableReference < WorkflowError; end
 
     class << self
       #: (String | Pathname, WorkflowParams) -> void
@@ -94,18 +94,28 @@ module Roast
       (@execution_procs[scope] ||= []) << block
     end
 
-    def use(cogs = [], from: nil)
-      require from if from
+    def use(*loadables, from: nil)
+      if from
+        # Load gem - no special requires, gem must handle everything
+        require from
+      else
+        # Load from local path
+        loadables.each do |cog_name|
+          require @workflow_path.realdirpath.dirname.join("cogs/#{cog_name}").to_s
+        end
+      end
+      loadables.each do |name|
+        class_name_string = name.camelize
+        raise InvalidLoadableReference, "#{name} class not found" unless Object.const_defined?(class_name_string)
 
-      Array.wrap(cogs).each do |cog_name|
-        path = @workflow_path.realdirpath.dirname.join("cogs/#{cog_name}")
-        require path.to_s if from.nil?
-
-        cog_class_name = cog_name.camelize
-        raise InvalidCogReference, "Expected #{cog_class_name} class, not found in #{path}" unless Object.const_defined?(cog_class_name)
-
-        cog_class = cog_class_name.constantize # rubocop:disable Sorbet/ConstantsFromStrings
-        @cog_registry.use(cog_class)
+        class_name = class_name_string.constantize # rubocop:disable Sorbet/ConstantsFromStrings
+        if class_name < Roast::Cog
+          @cog_registry.use(class_name)
+        elsif class_name < Roast::Cogs::Agent::Provider
+          @provider_registry.register(class_name)
+        else
+          raise InvalidLoadableReference, "#{class_name_string} is not a subclass of a usable Roast primitive (cog, provider)."
+        end
       end
     end
 
