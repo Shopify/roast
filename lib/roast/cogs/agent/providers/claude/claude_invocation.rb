@@ -166,6 +166,12 @@ module Roast
               else
                 ["claude"]
               end
+
+              # If claude is invoked through a wrapper, this can be specified in the environment.
+              # This avoids encoding environment specific wrappers in workflows.
+              prefix = ENV["ROAST_CLAUDE_PREFIX"]
+              command.unshift(prefix) unless prefix.blank?
+
               command.push("-p", "--verbose", "--output-format", "stream-json")
               command.push("--model", @model) if @model
               command.push("--system-prompt", @replace_system_prompt) if @replace_system_prompt

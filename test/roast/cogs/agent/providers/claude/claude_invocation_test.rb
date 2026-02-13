@@ -319,6 +319,70 @@ module Roast
               internal_result = @invocation.instance_variable_get(:@result)
               assert_equal "new_session", internal_result.session
             end
+
+            test "command_line includes ROAST_CLAUDE_PREFIX when set" do
+              with_env("ROAST_CLAUDE_PREFIX", "env") do
+                invocation = ClaudeInvocation.new(@config, @input)
+                command = invocation.send(:command_line)
+
+                assert_equal "env", command.first
+                assert_equal "claude", command[1]
+              end
+            end
+
+            test "command_line does not include prefix when ROAST_CLAUDE_PREFIX is not set" do
+              with_env("ROAST_CLAUDE_PREFIX", nil) do
+                invocation = ClaudeInvocation.new(@config, @input)
+                command = invocation.send(:command_line)
+
+                assert_equal "claude", command.first
+              end
+            end
+
+            test "command_line does not include prefix when ROAST_CLAUDE_PREFIX is empty string" do
+              with_env("ROAST_CLAUDE_PREFIX", "") do
+                invocation = ClaudeInvocation.new(@config, @input)
+                command = invocation.send(:command_line)
+
+                assert_equal "claude", command.first
+              end
+            end
+
+            test "command_line prefix works with custom base_command as string" do
+              @config.command("/usr/local/bin/claude")
+              with_env("ROAST_CLAUDE_PREFIX", "wrapper") do
+                invocation = ClaudeInvocation.new(@config, @input)
+                command = invocation.send(:command_line)
+
+                assert_equal "wrapper", command.first
+                assert_equal "/usr/local/bin/claude", command[1]
+              end
+            end
+
+            test "command_line prefix works with custom base_command as array" do
+              @config.command(["custom", "claude"])
+              with_env("ROAST_CLAUDE_PREFIX", "wrapper") do
+                invocation = ClaudeInvocation.new(@config, @input)
+                command = invocation.send(:command_line)
+
+                assert_equal "wrapper", command.first
+                assert_equal "custom", command[1]
+                assert_equal "claude", command[2]
+              end
+            end
+
+            test "command_line prefix is added before other command options" do
+              @config.model("sonnet")
+              with_env("ROAST_CLAUDE_PREFIX", "time") do
+                invocation = ClaudeInvocation.new(@config, @input)
+                command = invocation.send(:command_line)
+
+                assert_equal "time", command.first
+                assert_equal "claude", command[1]
+                assert_includes command, "--model"
+                assert_includes command, "sonnet"
+              end
+            end
           end
         end
       end
