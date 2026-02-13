@@ -3,3 +3,4 @@
 
 require "simple"
 require "other"
+require "cool_agent"

@@ -218,5 +218,50 @@ that can run concurrently.
 
 ---
 
+### Chapter 10: Custom Cogs
+
+Learn how to create custom cogs to extend Roast with domain-specific operations and integrations.
+
+**You'll learn:**
+
+- When to create custom cogs vs using built-in cogs
+- Anatomy of a cog (Config, Input, Output, execute)
+- Creating simple and complex custom cogs
+- Loading cogs from gems vs local files
+- Cog naming conventions and file structure
+- Packaging custom cogs as reusable gems
+
+**Examples referenced:**
+
+- `examples/demo/simple_external_cog.rb` - Using custom cogs from gems and local files
+- `examples/plugin-gem-example/lib/simple.rb` - Simple custom cog
+- `examples/plugin-gem-example/lib/other.rb` - Namespaced custom cog
+- `examples/demo/cogs/local.rb` - Project-specific local cog
+- `examples/plugin-gem-example/` - Complete gem structure
+
+---
+
+### Chapter 11: Custom Agent Providers
+
+Learn how to create custom agent providers to integrate alternative agent backends with the `agent` cog.
+
+**You'll learn:**
+
+- How the agent provider system works
+- When to create custom providers
+- Anatomy of a provider (Output class, invoke method)
+- Creating providers for different agent backends
+- Mock providers for testing workflows
+- Loading providers from gems vs local files
+- Packaging custom providers as reusable gems
+
+**Examples referenced:**
+
+- `examples/demo/simple_external_agent.rb` - Using a custom agent provider
+- `examples/plugin-gem-example/lib/cool_agent.rb` - Simple custom provider
+- `examples/plugin-gem-example/` - Complete gem structure
+
+---
+
 Let's get started with
 [Chapter 1](https://github.com/Shopify/roast/blob/edge/tutorial/01_your_first_workflow/README.md)!

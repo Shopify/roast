@@ -148,9 +148,6 @@ module Roast
 
               @result.session = message.session_id if message.session_id.present?
 
-              formatted_message = message.format(@context)
-              puts formatted_message if formatted_message.present? && @show_progress
-
               unless message.unparsed.blank?
                 # TODO: do something better with unhandled data so we can improve the parser
                 Roast::Log.warn("Unhandled data in Claude #{message.type} message:")
