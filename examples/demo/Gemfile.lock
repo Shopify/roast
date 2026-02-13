@@ -1,8 +1,8 @@
 PATH
   remote: ../..
   specs:
-    roast-ai (0.5.2)
-      activesupport (>= 7.0)
+    roast-ai (1.0.0.pre.rc1)
+      activesupport (~> 8.0)
       async (>= 2.34)
       benchmark (>= 0.4.1)
       cli-kit (>= 5.2)
@@ -25,6 +25,7 @@ PATH
       roast-ai
 
 GEM
+  remote: https://rubygems.org/
   specs:
     activesupport (8.0.3)
       base64
