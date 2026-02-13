@@ -321,6 +321,22 @@ module Examples
         $LOAD_PATH.delete(File.expand_path("examples/plugin-gem-example/lib", Dir.pwd))
       end
 
+      test "multiloading.rb workflow runs successfully" do
+        $LOAD_PATH.unshift(File.expand_path("examples/plugin-gem-example/lib", Dir.pwd))
+        stdout, stderr = in_sandbox :multiloading do
+          Roast::Workflow.from_file("examples/demo/multiloading.rb", EMPTY_PARAMS)
+        end
+        assert_empty stderr
+        expected_stdout = <<~EOF
+          I'm a cog!
+          I'm a different cog!
+          I'm a workflow-specific cog!
+        EOF
+        assert_equal expected_stdout, stdout
+      ensure
+        $LOAD_PATH.delete(File.expand_path("examples/plugin-gem-example/lib", Dir.pwd))
+      end
+
       test "simple_external_agent.rb workflow runs successfully" do
         $LOAD_PATH.unshift(File.expand_path("examples/plugin-gem-example/lib", Dir.pwd))
         stdout, stderr = in_sandbox :simple_external_agent do
