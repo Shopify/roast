@@ -8,7 +8,7 @@ GIT
 PATH
   remote: .
   specs:
-    roast-ai (0.5.2)
+    roast-ai (1.0.0.pre.rc1)
       activesupport (~> 8.0)
       async (>= 2.34)
       benchmark (>= 0.4.1)

@@ -2,5 +2,5 @@
 # frozen_string_literal: true
 
 module Roast
-  VERSION = "0.5.2"
+  VERSION = "1.0.0.pre.rc1"
 end
