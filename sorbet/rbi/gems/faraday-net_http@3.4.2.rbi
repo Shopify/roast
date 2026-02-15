@@ -8,81 +8,81 @@
 # source://faraday-net_http//lib/faraday/adapter/net_http.rb#12
 module Faraday
   class << self
-    # source://faraday/2.13.1/lib/faraday.rb#55
+    # source://faraday/2.14.1/lib/faraday.rb#56
     def default_adapter; end
 
-    # source://faraday/2.13.1/lib/faraday.rb#102
+    # source://faraday/2.14.1/lib/faraday.rb#103
     def default_adapter=(adapter); end
 
-    # source://faraday/2.13.1/lib/faraday.rb#59
+    # source://faraday/2.14.1/lib/faraday.rb#60
     def default_adapter_options; end
 
-    # source://faraday/2.13.1/lib/faraday.rb#59
+    # source://faraday/2.14.1/lib/faraday.rb#60
     def default_adapter_options=(_arg0); end
 
-    # source://faraday/2.13.1/lib/faraday.rb#120
+    # source://faraday/2.14.1/lib/faraday.rb#121
     def default_connection; end
 
-    # source://faraday/2.13.1/lib/faraday.rb#62
+    # source://faraday/2.14.1/lib/faraday.rb#63
     def default_connection=(_arg0); end
 
-    # source://faraday/2.13.1/lib/faraday.rb#127
+    # source://faraday/2.14.1/lib/faraday.rb#128
     def default_connection_options; end
 
-    # source://faraday/2.13.1/lib/faraday.rb#134
+    # source://faraday/2.14.1/lib/faraday.rb#135
     def default_connection_options=(options); end
 
-    # source://faraday/2.13.1/lib/faraday.rb#67
+    # source://faraday/2.14.1/lib/faraday.rb#68
     def ignore_env_proxy; end
 
-    # source://faraday/2.13.1/lib/faraday.rb#67
+    # source://faraday/2.14.1/lib/faraday.rb#68
     def ignore_env_proxy=(_arg0); end
 
-    # source://faraday/2.13.1/lib/faraday.rb#46
+    # source://faraday/2.14.1/lib/faraday.rb#47
     def lib_path; end
 
-    # source://faraday/2.13.1/lib/faraday.rb#46
+    # source://faraday/2.14.1/lib/faraday.rb#47
     def lib_path=(_arg0); end
 
-    # source://faraday/2.13.1/lib/faraday.rb#96
+    # source://faraday/2.14.1/lib/faraday.rb#97
     def new(url = T.unsafe(nil), options = T.unsafe(nil), &block); end
 
-    # source://faraday/2.13.1/lib/faraday.rb#107
+    # source://faraday/2.14.1/lib/faraday.rb#108
     def respond_to_missing?(symbol, include_private = T.unsafe(nil)); end
 
-    # source://faraday/2.13.1/lib/faraday.rb#42
+    # source://faraday/2.14.1/lib/faraday.rb#43
     def root_path; end
 
-    # source://faraday/2.13.1/lib/faraday.rb#42
+    # source://faraday/2.14.1/lib/faraday.rb#43
     def root_path=(_arg0); end
 
     private
 
-    # source://faraday/2.13.1/lib/faraday.rb#143
+    # source://faraday/2.14.1/lib/faraday.rb#144
     def method_missing(name, *args, &block); end
   end
 end
 
 # source://faraday-net_http//lib/faraday/adapter/net_http.rb#13
 class Faraday::Adapter
-  # source://faraday/2.13.1/lib/faraday/adapter.rb#28
+  # source://faraday/2.14.1/lib/faraday/adapter.rb#28
   def initialize(_app = T.unsafe(nil), opts = T.unsafe(nil), &block); end
 
-  # source://faraday/2.13.1/lib/faraday/adapter.rb#55
+  # source://faraday/2.14.1/lib/faraday/adapter.rb#55
   def call(env); end
 
-  # source://faraday/2.13.1/lib/faraday/adapter.rb#50
+  # source://faraday/2.14.1/lib/faraday/adapter.rb#50
   def close; end
 
-  # source://faraday/2.13.1/lib/faraday/adapter.rb#41
+  # source://faraday/2.14.1/lib/faraday/adapter.rb#41
   def connection(env); end
 
   private
 
-  # source://faraday/2.13.1/lib/faraday/adapter.rb#85
+  # source://faraday/2.14.1/lib/faraday/adapter.rb#85
   def request_timeout(type, options); end
 
-  # source://faraday/2.13.1/lib/faraday/adapter.rb#62
+  # source://faraday/2.14.1/lib/faraday/adapter.rb#62
   def save_response(env, status, body, headers = T.unsafe(nil), reason_phrase = T.unsafe(nil), finished: T.unsafe(nil)); end
 end
 
