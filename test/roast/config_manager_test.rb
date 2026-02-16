@@ -19,10 +19,16 @@ module Roast
     def setup
       @registry = Cog::Registry.new
       @registry.use(TestCog)
+
+      @workflow_context = WorkflowContext.new(
+        params: WorkflowParams.new([], [], {}),
+        tmpdir: Dir.tmpdir,
+        workflow_dir: Pathname.new(Dir.tmpdir),
+      )
     end
 
     test "prepare! transitions to prepared state" do
-      manager = ConfigManager.new(@registry, [])
+      manager = ConfigManager.new(@registry, [], @workflow_context)
 
       refute manager.prepared?
       manager.prepare!
@@ -30,7 +36,7 @@ module Roast
     end
 
     test "prepare! raises when called twice" do
-      manager = ConfigManager.new(@registry, [])
+      manager = ConfigManager.new(@registry, [], @workflow_context)
       manager.prepare!
 
       assert_raises(ConfigManager::ConfigManagerAlreadyPreparedError) do
@@ -44,14 +50,14 @@ module Roast
         test_cog { timeout 60 }
         timeout_set = true
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], @workflow_context)
       manager.prepare!
 
       assert timeout_set
     end
 
     test "config_for raises when not prepared" do
-      manager = ConfigManager.new(@registry, [])
+      manager = ConfigManager.new(@registry, [], @workflow_context)
 
       assert_raises(ConfigManager::ConfigManagerNotPreparedError) do
         manager.config_for(TestCog)
@@ -59,7 +65,7 @@ module Roast
     end
 
     test "config_for returns default config when no config procs are provided" do
-      manager = ConfigManager.new(@registry, [])
+      manager = ConfigManager.new(@registry, [], @workflow_context)
       manager.prepare!
 
       config = manager.config_for(TestCog)
@@ -71,7 +77,7 @@ module Roast
       config_proc = proc do
         test_cog { timeout 60 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], @workflow_context)
       manager.prepare!
 
       config = manager.config_for(TestCog)
@@ -83,7 +89,7 @@ module Roast
       config_proc = proc do
         test_cog(:my_step) { timeout 90 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], @workflow_context)
       manager.prepare!
 
       scoped_config = manager.config_for(TestCog, :my_step)
@@ -97,7 +103,7 @@ module Roast
       config_proc = proc do
         test_cog(/^api_/) { timeout 120 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], @workflow_context)
       manager.prepare!
 
       matching_config = manager.config_for(TestCog, :api_call)
@@ -112,7 +118,7 @@ module Roast
         test_cog { async! }
         test_cog(:my_step) { timeout 90 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], @workflow_context)
       manager.prepare!
 
       config = manager.config_for(TestCog, :my_step)
@@ -125,7 +131,7 @@ module Roast
       config_proc = proc do
         global { abort_on_failure! }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = ConfigManager.new(@registry, [config_proc], @workflow_context)
       manager.prepare!
 
       config = manager.config_for(TestCog)
@@ -144,11 +150,35 @@ module Roast
       end
       @registry.use(conflicting_cog)
 
-      manager = ConfigManager.new(@registry, [])
+      manager = ConfigManager.new(@registry, [], @workflow_context)
 
       assert_raises(ConfigManager::IllegalCogNameError) do
         manager.prepare!
       end
+    end
+
+    test "config context can check if agent provider exists" do
+      provider_exists = nil
+      config_proc = proc do
+        provider_exists = agent_provider_exists?(:claude)
+      end
+      manager = ConfigManager.new(@registry, [config_proc], @workflow_context)
+      @workflow_context.prepare!
+      manager.prepare!
+
+      assert provider_exists
+    end
+
+    test "config context returns false for non-existent agent provider" do
+      provider_exists = nil
+      config_proc = proc do
+        provider_exists = agent_provider_exists?(:nonexistent)
+      end
+      manager = ConfigManager.new(@registry, [config_proc], @workflow_context)
+      @workflow_context.prepare!
+      manager.prepare!
+
+      refute provider_exists
     end
   end
 end
