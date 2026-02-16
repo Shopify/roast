@@ -8,7 +8,7 @@ use "MyCogNamespace::Other", from: "plugin_gem_example"
 use "local"
 
 # Use multiple cogs
-# use ["simple", "other"], from: "plugin_gem_example"
+# use "simple", "other", from: "plugin_gem_example"
 
 execute do
   simple
