@@ -10,6 +10,7 @@ SimpleCov.start
 require "roast"
 
 # Standard library requires
+require "benchmark"
 require "tmpdir"
 
 # Third-party gem requires

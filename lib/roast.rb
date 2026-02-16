@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 # Standard library requires
-require "benchmark"
 require "digest"
 require "English"
 require "erb"
@@ -12,7 +11,6 @@ require "logger"
 require "net/http"
 require "open3"
 require "pathname"
-require "pp"
 require "securerandom"
 require "shellwords"
 require "tempfile"
@@ -24,7 +22,8 @@ require "yaml"
 require "active_support"
 require "active_support/cache"
 require "active_support/core_ext/array"
-require "active_support/core_ext/hash/indifferent_access"
+require "active_support/core_ext/hash"
+require "active_support/core_ext/object/deep_dup"
 require "active_support/core_ext/module/delegation"
 require "active_support/core_ext/string"
 require "active_support/core_ext/string/inflections"
@@ -32,24 +31,8 @@ require "active_support/isolated_execution_state"
 require "active_support/notifications"
 require "async"
 require "async/semaphore"
-require "cli/kit"
-require "cli/ui"
-require "diff/lcs"
-require "json-schema"
-require "raix"
-require "raix/chat_completion"
-require "raix/function_dispatch"
-require "ruby-graphviz"
 require "ruby_llm"
 require "thor"
-require "timeout"
-
-unless defined?(T)
-  # NOTE: stubs for sorbet-runtime were being imported from cli-kit. They were removed in cli-kit v5.2
-  # Ideally we will not need them at all in the future, but for now I have brought them into the project
-  # because a large quantity of legacy code is using sorbet runtime assertions.
-  require("roast/sorbet_runtime_stub")
-end
 
 # Require project components that will not get automatically loaded
 require "roast/nil_assertions"

@@ -1780,6 +1780,8 @@ class SQLite3::Statement
   # source://sqlite3//lib/sqlite3/statement.rb#142
   def must_be_open!; end
 
+  def named_params; end
+
   # This is any text that followed the first valid SQL statement in the text
   # with which the statement was initialized. If there was no trailing text,
   # this will be the empty string.
