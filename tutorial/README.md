@@ -2,8 +2,6 @@
 
 # Roast Tutorial
 
-🔥 _version 1.0 feature preview_ 🔥
-
 Welcome to the Roast tutorial! This guide will teach you how to build AI workflows using the Roast DSL.
 
 ## What is Roast?

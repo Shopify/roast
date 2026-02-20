@@ -2,13 +2,7 @@
 
 # Roast
 
-### 🔥 _version 1.0 feature preview_ 🔥  
 A Ruby-based domain-specific language for creating structured AI workflows. Build complex AI-powered automation with simple, declarative Ruby syntax.
-
-> #### ⚠️ Deprecation announcement ⚠️
-> The YAML-based workflow syntax of Roast `v0.x` will be removed in `v1.0`.
-> All `v0.x` functionality is still supported during the feature preview.
-> For the existing documentation for Roast `v0.x` , see [README_LEGACY.md](README_LEGACY.md)  
 
 ## Overview
 
@@ -102,41 +96,37 @@ The tutorial covers:
 
 ## Documentation & References
 
-> ⚠️ Roast stills supports the legacy version `0.x`.
-> Examples of workflows using the new version `1.0-preview` system 
-> are namespaced within the `dsl` hierarchy.
+* __Source code root__: https://github.com/Shopify/roast/tree/main/lib/roast
 
-* __v1.0 source code root__: https://github.com/Shopify/roast/tree/main/lib/roast/dsl
-
-The public interfaces of the new Roast are extensively documented in
+The public interfaces of Roast are extensively documented in
 class and method comments on the relevant classes.
 
 * __Tutorial and Examples__
     * [Tutorial -- Table of Contents](https://github.com/Shopify/roast/tree/main/tutorial) (contains step-by-step guides and runnable examples showing real-world usage)
-    * [Additional Example Workflows]([https://github.com/Shopify/roast/tree/main/dsl](https://github.com/Shopify/roast/tree/main/examples)) (these comprise the Roast end-to-end test suite)
+    * [Additional Example Workflows]([https://github.com/Shopify/roast/tree/main/examples](https://github.com/Shopify/roast/tree/main/examples)) (these comprise the Roast end-to-end test suite)
 * __Configuation__
-    * [General configuration block: `config-context.rbi`](https://github.com/Shopify/roast/blob/main/sorbet/rbi/shims/lib/roast/dsl/config_context.rbi)
-    * [Global cog configuration: `cog/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cog/config.rb)
-    * [Agent cog configuration: `agent/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/agent/config.rb)
-    * [Chat cog configuration: `chat/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/chat/config.rb)
-    * [Cmd cog configuration: `cmd/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/cmd.rb)
-    * [Map cog configuration: `map.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/system_cogs/map.rb)
+    * [General configuration block: `config-context.rbi`](https://github.com/Shopify/roast/blob/main/sorbet/rbi/shims/lib/roast/config_context.rbi)
+    * [Global cog configuration: `cog/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cog/config.rb)
+    * [Agent cog configuration: `agent/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/agent/config.rb)
+    * [Chat cog configuration: `chat/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/chat/config.rb)
+    * [Cmd cog configuration: `cmd/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/cmd.rb)
+    * [Map cog configuration: `map.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/system_cogs/map.rb)
 * __Execution__
-    * [General Execution block: `execution-context.rbi`](https://github.com/Shopify/roast/blob/main/sorbet/rbi/shims/lib/roast/dsl/execution_context.rbi)
+    * [General Execution block: `execution-context.rbi`](https://github.com/Shopify/roast/blob/main/sorbet/rbi/shims/lib/roast/execution_context.rbi)
 * __Input and Output__
-    * [General cog input block: `cog-input-context.rbi`](https://github.com/Shopify/roast/blob/main/sorbet/rbi/shims/lib/roast/dsl/cog_input_context.rbi)
-    * [Global cog output: `cog/output.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cog/output.rb)
-    * [Agent cog input `agent/input.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/agent/input.rb)
-    * [Agent cog output `agent/output.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/agent/output.rb)
-    * [Call cog input: `call.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/system_cogs/call.rb)
-    * [Chat cog input: `chat.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/chat/input.rb)
-    * [Chat cog output: `chat.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/chat/output.rb)
-    * [Cmd cog input: `cmd.rb:159`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/cmd.rb#L159) (scroll down)
-    * [Cmd cog output: `cmd.rb:214`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/cmd.rb#L214) (scroll down)
-    * [Map cog input: `map.rb:116`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/system_cogs/map.rb#L116) (scroll down)
-    * [Repeat cog input: `repeat.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/system_cogs/repeat.rb)
-    * [Ruby cog input: `ruby.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/ruby.rb)
-    * [Ruby cog output: `ruby.rb:63`](https://github.com/Shopify/roast/blob/main/lib/roast/dsl/cogs/ruby.rb#L63) (scroll down)
+    * [General cog input block: `cog-input-context.rbi`](https://github.com/Shopify/roast/blob/main/sorbet/rbi/shims/lib/roast/cog_input_context.rbi)
+    * [Global cog output: `cog/output.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cog/output.rb)
+    * [Agent cog input `agent/input.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/agent/input.rb)
+    * [Agent cog output `agent/output.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/agent/output.rb)
+    * [Call cog input: `call.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/system_cogs/call.rb)
+    * [Chat cog input: `chat.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/chat/input.rb)
+    * [Chat cog output: `chat.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/chat/output.rb)
+    * [Cmd cog input: `cmd.rb:159`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/cmd.rb#L159) (scroll down)
+    * [Cmd cog output: `cmd.rb:214`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/cmd.rb#L214) (scroll down)
+    * [Map cog input: `map.rb:116`](https://github.com/Shopify/roast/blob/main/lib/roast/system_cogs/map.rb#L116) (scroll down)
+    * [Repeat cog input: `repeat.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/system_cogs/repeat.rb)
+    * [Ruby cog input: `ruby.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/ruby.rb)
+    * [Ruby cog output: `ruby.rb:63`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/ruby.rb#L63) (scroll down)
 
 ## Contributing
 

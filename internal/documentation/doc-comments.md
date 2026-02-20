@@ -1,6 +1,6 @@
 # Documentation Comment Guidelines
 
-This document establishes standards for writing documentation comments in the Roast DSL codebase. Well-documented interfaces are critical for both internal development and community contributions.
+This document establishes standards for writing documentation comments in the Roast codebase. Well-documented interfaces are critical for both internal development and community contributions.
 
 ## Purpose and Audience
 

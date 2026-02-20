@@ -80,8 +80,8 @@ Start with a clear, action-oriented description in imperative mood. The first li
 ```ruby
 # Configure the cog to write STDOUT to the console
 #: () -> void
-def print_stdout!
-  @values[:print_stdout] = true
+def show_stdout!
+  @values[:show_stdout] = true
 end
 ```
 
@@ -125,8 +125,8 @@ Use double underscores for bold emphasis to highlight critical negating words in
 ```ruby
 # Configure the cog __not__ to write STDOUT to the console
 #: () -> void
-def no_print_stdout!
-  @values[:print_stdout] = false
+def no_show_stdout!
+  @values[:show_stdout] = false
 end
 ```
 
@@ -356,12 +356,12 @@ Config methods have specific patterns that should be followed consistently.
 
 The bang (`!`) suffix is used in two distinct contexts:
 
-1. **No-argument state setters** - Methods that set a configuration value to a specific state without taking arguments (e.g., `print_stdout!`, `no_display!`)
+1. **No-argument state setters** - Methods that set a configuration value to a specific state without taking arguments (e.g., `show_stdout!`, `no_display!`)
 2. **Validation getters** - Methods that retrieve and validate configuration values and may raise errors (e.g., `valid_provider!`, `valid_working_directory_path!`)
 
 Do **not** use bang for:
 - Setter methods that accept a value parameter (e.g., `provider(value)`, `model(value)`)
-- Simple predicate methods that check state (e.g., `print_stdout?`, `apply_permissions?`)
+- Simple predicate methods that check state (e.g., `show_stdout?`, `apply_permissions?`)
 
 ### Configuration Setters
 
@@ -375,8 +375,8 @@ Configuration setter methods come in two forms:
 # Disabled by default
 #
 #: () -> void
-def print_stdout!
-  @values[:print_stdout] = true
+def show_stdout!
+  @values[:show_stdout] = true
 end
 ```
 
@@ -615,22 +615,22 @@ end
 # Disabled by default.
 #
 #: () -> void
-def print_stdout!
-  @values[:print_stdout] = true
+def show_stdout!
+  @values[:show_stdout] = true
 end
 
 # Configure the cog __not__ to write STDOUT to the console
 #
 #: () -> void
-def no_print_stdout!
-  @values[:print_stdout] = false
+def no_show_stdout!
+  @values[:show_stdout] = false
 end
 
 # Check if the cog is configured to write STDOUT to the console
 #
 #: () -> bool
-def print_stdout?
-  !!@values[:print_stdout]
+def show_stdout?
+  !!@values[:show_stdout]
 end
 ```
 
@@ -645,10 +645,10 @@ Avoid documenting:
 **Bad example:**
 
 ```ruby
-# Sets the print_stdout value in the @values hash to true
+# Sets the show_stdout value in the @values hash to true
 #: () -> void
-def print_stdout!
-  @values[:print_stdout] = true # Sets the value
+def show_stdout!
+  @values[:show_stdout] = true # Sets the value
 end
 ```
 
@@ -660,8 +660,8 @@ end
 # Disabled by default
 #
 #: () -> void
-def print_stdout!
-  @values[:print_stdout] = true
+def show_stdout!
+  @values[:show_stdout] = true
 end
 ```
 
