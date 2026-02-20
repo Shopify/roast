@@ -2171,30 +2171,6 @@ class ActiveSupport::Cache::Strategy::LocalCache::LocalStore
   def write_entry(key, entry); end
 end
 
-# --
-# This class wraps up local storage for middlewares. Only the middleware method should
-# construct them.
-#
-# source://activesupport//lib/active_support/cache/strategy/local_cache_middleware.rb#13
-class ActiveSupport::Cache::Strategy::LocalCache::Middleware
-  # @return [Middleware] a new instance of Middleware
-  #
-  # source://activesupport//lib/active_support/cache/strategy/local_cache_middleware.rb#16
-  def initialize(name, local_cache_key); end
-
-  # source://activesupport//lib/active_support/cache/strategy/local_cache_middleware.rb#27
-  def call(env); end
-
-  # source://activesupport//lib/active_support/cache/strategy/local_cache_middleware.rb#14
-  def local_cache_key; end
-
-  # source://activesupport//lib/active_support/cache/strategy/local_cache_middleware.rb#14
-  def name; end
-
-  # source://activesupport//lib/active_support/cache/strategy/local_cache_middleware.rb#22
-  def new(app); end
-end
-
 # These options mean something to all cache implementations. Individual cache
 # implementations may support additional options.
 #
@@ -11545,6 +11521,8 @@ end
 #
 # source://activesupport//lib/active_support/tagged_logging.rb#29
 module ActiveSupport::TaggedLogging
+  extend ::Lumberjack::TaggedLogging::ClassMethods
+
   # source://activesupport//lib/active_support/tagged_logging.rb#139
   def clear_tags!(*_arg0, **_arg1, &_arg2); end
 
@@ -11566,7 +11544,7 @@ module ActiveSupport::TaggedLogging
     # source://activesupport//lib/active_support/tagged_logging.rb#117
     def logger(*args, **kwargs); end
 
-    # source://activesupport//lib/active_support/tagged_logging.rb#121
+    # source://lumberjack/1.2.10/lib/lumberjack/tagged_logging.rb#15
     def new(logger); end
   end
 end
@@ -14014,6 +13992,78 @@ ActiveSupport::VERSION::STRING = T.let(T.unsafe(nil), String)
 # source://activesupport//lib/active_support/gem_version.rb#12
 ActiveSupport::VERSION::TINY = T.let(T.unsafe(nil), Integer)
 
+# source://activesupport//lib/active_support/core_ext/hash/conversions.rb#140
+class ActiveSupport::XMLConverter
+  # @return [XMLConverter] a new instance of XMLConverter
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#151
+  def initialize(xml, disallowed_types = T.unsafe(nil)); end
+
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#156
+  def to_h; end
+
+  private
+
+  # @return [Boolean]
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#222
+  def become_array?(value); end
+
+  # @return [Boolean]
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#218
+  def become_content?(value); end
+
+  # @return [Boolean]
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#226
+  def become_empty_string?(value); end
+
+  # @return [Boolean]
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#232
+  def become_hash?(value); end
+
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#172
+  def deep_to_h(value); end
+
+  # @return [Boolean]
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#241
+  def garbage?(value); end
+
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#161
+  def normalize_keys(params); end
+
+  # @return [Boolean]
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#236
+  def nothing?(value); end
+
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#257
+  def process_array(value); end
+
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#248
+  def process_content(value); end
+
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#185
+  def process_hash(value); end
+end
+
+# source://activesupport//lib/active_support/core_ext/hash/conversions.rb#149
+ActiveSupport::XMLConverter::DISALLOWED_TYPES = T.let(T.unsafe(nil), Array)
+
+# Raised if the XML contains attributes with type="yaml" or
+# type="symbol". Read Hash#from_xml for more details.
+#
+# source://activesupport//lib/active_support/core_ext/hash/conversions.rb#143
+class ActiveSupport::XMLConverter::DisallowedType < ::StandardError
+  # @return [DisallowedType] a new instance of DisallowedType
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#144
+  def initialize(type); end
+end
+
 # = \XmlMini
 #
 # To use the much faster libxml parser:
@@ -14225,6 +14275,27 @@ class Array
   # source://activesupport//lib/active_support/core_ext/object/deep_dup.rb#29
   def deep_dup; end
 
+  # Returns a copy of the Array excluding the specified elements.
+  #
+  #   ["David", "Rafael", "Aaron", "Todd"].excluding("Aaron", "Todd") # => ["David", "Rafael"]
+  #   [ [ 0, 1 ], [ 1, 0 ] ].excluding([ [ 1, 0 ] ]) # => [ [ 0, 1 ] ]
+  #
+  # Note: This is an optimization of <tt>Enumerable#excluding</tt> that uses <tt>Array#-</tt>
+  # instead of <tt>Array#reject</tt> for performance reasons.
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#47
+  def excluding(*elements); end
+
+  # Removes and returns the elements for which the block returns a true value.
+  # If no block is given, an Enumerator is returned instead.
+  #
+  #   numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  #   odd_numbers = numbers.extract! { |number| number.odd? } # => [1, 3, 5, 7, 9]
+  #   numbers # => [0, 2, 4, 6, 8]
+  #
+  # source://activesupport//lib/active_support/core_ext/array/extract.rb#10
+  def extract!; end
+
   # Extracts options from a set of arguments. Removes and returns the last
   # element in the array if it's a hash, otherwise returns a blank hash.
   #
@@ -14238,10 +14309,157 @@ class Array
   # source://activesupport//lib/active_support/core_ext/array/extract_options.rb#24
   def extract_options!; end
 
+  # Equal to <tt>self[4]</tt>.
+  #
+  #   %w( a b c d e ).fifth # => "e"
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#76
+  def fifth; end
+
+  # Equal to <tt>self[41]</tt>. Also known as accessing "the reddit".
+  #
+  #   (1..42).to_a.forty_two # => 42
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#83
+  def forty_two; end
+
+  # Equal to <tt>self[3]</tt>.
+  #
+  #   %w( a b c d e ).fourth # => "d"
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#69
+  def fourth; end
+
+  # Returns the tail of the array from +position+.
+  #
+  #   %w( a b c d ).from(0)  # => ["a", "b", "c", "d"]
+  #   %w( a b c d ).from(2)  # => ["c", "d"]
+  #   %w( a b c d ).from(10) # => []
+  #   %w().from(0)           # => []
+  #   %w( a b c d ).from(-2) # => ["c", "d"]
+  #   %w( a b c ).from(-10)  # => []
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#12
+  def from(position); end
+
+  # Splits or iterates over the array in +number+ of groups, padding any
+  # remaining slots with +fill_with+ unless it is +false+.
+  #
+  #   %w(1 2 3 4 5 6 7 8 9 10).in_groups(3) {|group| p group}
+  #   ["1", "2", "3", "4"]
+  #   ["5", "6", "7", nil]
+  #   ["8", "9", "10", nil]
+  #
+  #   %w(1 2 3 4 5 6 7 8 9 10).in_groups(3, '&nbsp;') {|group| p group}
+  #   ["1", "2", "3", "4"]
+  #   ["5", "6", "7", "&nbsp;"]
+  #   ["8", "9", "10", "&nbsp;"]
+  #
+  #   %w(1 2 3 4 5 6 7).in_groups(3, false) {|group| p group}
+  #   ["1", "2", "3"]
+  #   ["4", "5"]
+  #   ["6", "7"]
+  #
+  # source://activesupport//lib/active_support/core_ext/array/grouping.rb#62
+  def in_groups(number, fill_with = T.unsafe(nil), &block); end
+
+  # Splits or iterates over the array in groups of size +number+,
+  # padding any remaining slots with +fill_with+ unless it is +false+.
+  #
+  #   %w(1 2 3 4 5 6 7 8 9 10).in_groups_of(3) {|group| p group}
+  #   ["1", "2", "3"]
+  #   ["4", "5", "6"]
+  #   ["7", "8", "9"]
+  #   ["10", nil, nil]
+  #
+  #   %w(1 2 3 4 5).in_groups_of(2, '&nbsp;') {|group| p group}
+  #   ["1", "2"]
+  #   ["3", "4"]
+  #   ["5", "&nbsp;"]
+  #
+  #   %w(1 2 3 4 5).in_groups_of(2, false) {|group| p group}
+  #   ["1", "2"]
+  #   ["3", "4"]
+  #   ["5"]
+  #
+  # source://activesupport//lib/active_support/core_ext/array/grouping.rb#22
+  def in_groups_of(number, fill_with = T.unsafe(nil), &block); end
+
+  # Returns a new array that includes the passed elements.
+  #
+  #   [ 1, 2, 3 ].including(4, 5) # => [ 1, 2, 3, 4, 5 ]
+  #   [ [ 0, 1 ] ].including([ [ 1, 0 ] ]) # => [ [ 0, 1 ], [ 1, 0 ] ]
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#36
+  def including(*elements); end
+
+  # Wraps the array in an ActiveSupport::ArrayInquirer object, which gives a
+  # friendlier way to check its string-like contents.
+  #
+  #   pets = [:cat, :dog].inquiry
+  #
+  #   pets.cat?     # => true
+  #   pets.ferret?  # => false
+  #
+  #   pets.any?(:cat, :ferret)  # => true
+  #   pets.any?(:ferret, :alligator)  # => false
+  #
+  # source://activesupport//lib/active_support/core_ext/array/inquiry.rb#16
+  def inquiry; end
+
   # @return [Boolean]
   #
   # source://activesupport//lib/active_support/core_ext/object/blank.rb#104
   def present?; end
+
+  # Equal to <tt>self[1]</tt>.
+  #
+  #   %w( a b c d e ).second # => "b"
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#55
+  def second; end
+
+  # Equal to <tt>self[-2]</tt>.
+  #
+  #   %w( a b c d e ).second_to_last # => "d"
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#97
+  def second_to_last; end
+
+  # Divides the array into one or more subarrays based on a delimiting +value+
+  # or the result of an optional block.
+  #
+  #   [1, 2, 3, 4, 5].split(3)              # => [[1, 2], [4, 5]]
+  #   (1..10).to_a.split { |i| i % 3 == 0 } # => [[1, 2], [4, 5], [7, 8], [10]]
+  #
+  # source://activesupport//lib/active_support/core_ext/array/grouping.rb#93
+  def split(value = T.unsafe(nil), &block); end
+
+  # Equal to <tt>self[2]</tt>.
+  #
+  #   %w( a b c d e ).third # => "c"
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#62
+  def third; end
+
+  # Equal to <tt>self[-3]</tt>.
+  #
+  #   %w( a b c d e ).third_to_last # => "c"
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#90
+  def third_to_last; end
+
+  # Returns the beginning of the array up to +position+.
+  #
+  #   %w( a b c d ).to(0)  # => ["a"]
+  #   %w( a b c d ).to(2)  # => ["a", "b", "c"]
+  #   %w( a b c d ).to(10) # => ["a", "b", "c", "d"]
+  #   %w().to(0)           # => []
+  #   %w( a b c d ).to(-2) # => ["a", "b", "c"]
+  #   %w( a b c ).to(-10)  # => []
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#24
+  def to(position); end
 
   # Extends <tt>Array#to_s</tt> to convert a collection of elements into a
   # comma separated id list if <tt>:db</tt> argument is given as the format.
@@ -14413,6 +14631,58 @@ class Array
   #
   # source://activesupport//lib/active_support/core_ext/array/conversions.rb#183
   def to_xml(options = T.unsafe(nil)); end
+
+  # Returns a copy of the Array excluding the specified elements.
+  #
+  #   ["David", "Rafael", "Aaron", "Todd"].excluding("Aaron", "Todd") # => ["David", "Rafael"]
+  #   [ [ 0, 1 ], [ 1, 0 ] ].excluding([ [ 1, 0 ] ]) # => [ [ 0, 1 ] ]
+  #
+  # Note: This is an optimization of <tt>Enumerable#excluding</tt> that uses <tt>Array#-</tt>
+  # instead of <tt>Array#reject</tt> for performance reasons.
+  #
+  # source://activesupport//lib/active_support/core_ext/array/access.rb#47
+  def without(*elements); end
+
+  class << self
+    # Wraps its argument in an array unless it is already an array (or array-like).
+    #
+    # Specifically:
+    #
+    # * If the argument is +nil+ an empty array is returned.
+    # * Otherwise, if the argument responds to +to_ary+ it is invoked, and its result returned.
+    # * Otherwise, returns an array with the argument as its single element.
+    #
+    #     Array.wrap(nil)       # => []
+    #     Array.wrap([1, 2, 3]) # => [1, 2, 3]
+    #     Array.wrap(0)         # => [0]
+    #
+    # This method is similar in purpose to <tt>Kernel#Array</tt>, but there are some differences:
+    #
+    # * If the argument responds to +to_ary+ the method is invoked. <tt>Kernel#Array</tt>
+    #   moves on to try +to_a+ if the returned value is +nil+, but <tt>Array.wrap</tt> returns
+    #   an array with the argument as its single element right away.
+    # * If the returned value from +to_ary+ is neither +nil+ nor an +Array+ object, <tt>Kernel#Array</tt>
+    #   raises an exception, while <tt>Array.wrap</tt> does not, it just returns the value.
+    # * It does not call +to_a+ on the argument, if the argument does not respond to +to_ary+
+    #   it returns an array with the argument as its single element.
+    #
+    # The last point is easily explained with some enumerables:
+    #
+    #   Array(foo: :bar)      # => [[:foo, :bar]]
+    #   Array.wrap(foo: :bar) # => [{:foo=>:bar}]
+    #
+    # There's also a related idiom that uses the splat operator:
+    #
+    #   [*object]
+    #
+    # which returns <tt>[]</tt> for +nil+, but calls to <tt>Array(object)</tt> otherwise.
+    #
+    # The differences with <tt>Kernel#Array</tt> explained above
+    # apply to the rest of <tt>object</tt>s.
+    #
+    # source://activesupport//lib/active_support/core_ext/array/wrap.rb#39
+    def wrap(object); end
+  end
 end
 
 # source://activesupport//lib/active_support/core_ext/object/json.rb#124
@@ -16285,6 +16555,25 @@ class Hash
   # source://activesupport//lib/active_support/core_ext/hash/keys.rb#72
   def deep_transform_keys!(&block); end
 
+  # Returns a new hash with all values converted by the block operation.
+  # This includes the values from the root hash and from all
+  # nested hashes and arrays.
+  #
+  #   hash = { person: { name: 'Rob', age: '28' } }
+  #
+  #   hash.deep_transform_values{ |value| value.to_s.upcase }
+  #   # => {person: {name: "ROB", age: "28"}}
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/deep_transform_values.rb#12
+  def deep_transform_values(&block); end
+
+  # Destructively converts all values by using the block operation.
+  # This includes the values from the root hash and from all
+  # nested hashes and arrays.
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/deep_transform_values.rb#19
+  def deep_transform_values!(&block); end
+
   # Removes the given keys from hash and returns it.
   #   hash = { a: true, b: false, c: nil }
   #   hash.except!(:c) # => { a: true, b: false }
@@ -16385,6 +16674,17 @@ class Hash
   # source://activesupport//lib/active_support/core_ext/hash/keys.rb#16
   def stringify_keys!; end
 
+  # Returns a new hash with all keys converted to symbols, as long as
+  # they respond to +to_sym+.
+  #
+  #   hash = { 'name' => 'Rob', 'age' => '28' }
+  #
+  #   hash.symbolize_keys
+  #   # => {:name=>"Rob", :age=>"28"}
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/keys.rb#27
+  def symbolize_keys; end
+
   # Destructively converts all keys to symbols, as long as they respond
   # to +to_sym+. Same as +symbolize_keys+, but modifies +self+.
   #
@@ -16442,6 +16742,72 @@ class Hash
   # source://activesupport//lib/active_support/core_ext/object/to_query.rb#75
   def to_query(namespace = T.unsafe(nil)); end
 
+  # Returns a string containing an XML representation of its receiver:
+  #
+  #   { foo: 1, bar: 2 }.to_xml
+  #   # =>
+  #   # <?xml version="1.0" encoding="UTF-8"?>
+  #   # <hash>
+  #   #   <foo type="integer">1</foo>
+  #   #   <bar type="integer">2</bar>
+  #   # </hash>
+  #
+  # To do so, the method loops over the pairs and builds nodes that depend on
+  # the _values_. Given a pair +key+, +value+:
+  #
+  # * If +value+ is a hash there's a recursive call with +key+ as <tt>:root</tt>.
+  #
+  # * If +value+ is an array there's a recursive call with +key+ as <tt>:root</tt>,
+  #   and +key+ singularized as <tt>:children</tt>.
+  #
+  # * If +value+ is a callable object it must expect one or two arguments. Depending
+  #   on the arity, the callable is invoked with the +options+ hash as first argument
+  #   with +key+ as <tt>:root</tt>, and +key+ singularized as second argument. The
+  #   callable can add nodes by using <tt>options[:builder]</tt>.
+  #
+  #     {foo: lambda { |options, key| options[:builder].b(key) }}.to_xml
+  #     # => "<b>foo</b>"
+  #
+  # * If +value+ responds to +to_xml+ the method is invoked with +key+ as <tt>:root</tt>.
+  #
+  #     class Foo
+  #       def to_xml(options)
+  #         options[:builder].bar 'fooing!'
+  #       end
+  #     end
+  #
+  #     { foo: Foo.new }.to_xml(skip_instruct: true)
+  #     # =>
+  #     # <hash>
+  #     #   <bar>fooing!</bar>
+  #     # </hash>
+  #
+  # * Otherwise, a node with +key+ as tag is created with a string representation of
+  #   +value+ as text node. If +value+ is +nil+ an attribute "nil" set to "true" is added.
+  #   Unless the option <tt>:skip_types</tt> exists and is true, an attribute "type" is
+  #   added as well according to the following mapping:
+  #
+  #     XML_TYPE_NAMES = {
+  #       "Symbol"     => "symbol",
+  #       "Integer"    => "integer",
+  #       "BigDecimal" => "decimal",
+  #       "Float"      => "float",
+  #       "TrueClass"  => "boolean",
+  #       "FalseClass" => "boolean",
+  #       "Date"       => "date",
+  #       "DateTime"   => "dateTime",
+  #       "Time"       => "dateTime"
+  #     }
+  #
+  # By default the root node is "hash", but that's configurable via the <tt>:root</tt> option.
+  #
+  # The default XML builder is a fresh instance of +Builder::XmlMarkup+. You can
+  # configure your own builder with the <tt>:builder</tt> option. The method also accepts
+  # options like <tt>:dasherize</tt> and friends, they are forwarded to the builder.
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#74
+  def to_xml(options = T.unsafe(nil)); end
+
   # Merges the caller into +other_hash+. For example,
   #
   #   options = options.reverse_merge(size: 25, velocity: 10)
@@ -16477,6 +16843,59 @@ class Hash
 
   # source://activesupport//lib/active_support/core_ext/hash/keys.rb#129
   def _deep_transform_keys_in_object!(object, &block); end
+
+  # Support methods for deep transforming nested hashes and arrays.
+  #
+  # source://activesupport//lib/active_support/core_ext/hash/deep_transform_values.rb#25
+  def _deep_transform_values_in_object(object, &block); end
+
+  # source://activesupport//lib/active_support/core_ext/hash/deep_transform_values.rb#36
+  def _deep_transform_values_in_object!(object, &block); end
+
+  class << self
+    # Builds a Hash from XML just like <tt>Hash.from_xml</tt>, but also allows Symbol and YAML.
+    #
+    # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#133
+    def from_trusted_xml(xml); end
+
+    # Returns a Hash containing a collection of pairs when the key is the node name and the value is
+    # its content
+    #
+    #   xml = <<-XML
+    #     <?xml version="1.0" encoding="UTF-8"?>
+    #       <hash>
+    #         <foo type="integer">1</foo>
+    #         <bar type="integer">2</bar>
+    #       </hash>
+    #   XML
+    #
+    #   hash = Hash.from_xml(xml)
+    #   # => {"hash"=>{"foo"=>1, "bar"=>2}}
+    #
+    # +DisallowedType+ is raised if the XML contains attributes with <tt>type="yaml"</tt> or
+    # <tt>type="symbol"</tt>. Use <tt>Hash.from_trusted_xml</tt> to
+    # parse this XML.
+    #
+    # Custom +disallowed_types+ can also be passed in the form of an
+    # array.
+    #
+    #   xml = <<-XML
+    #     <?xml version="1.0" encoding="UTF-8"?>
+    #       <hash>
+    #         <foo type="integer">1</foo>
+    #         <bar type="string">"David"</bar>
+    #       </hash>
+    #   XML
+    #
+    #   hash = Hash.from_xml(xml, ['integer'])
+    #   # => ActiveSupport::XMLConverter::DisallowedType: Disallowed type attribute: "integer"
+    #
+    # Note that passing custom disallowed types will override the default types,
+    # which are Symbol and YAML.
+    #
+    # source://activesupport//lib/active_support/core_ext/hash/conversions.rb#128
+    def from_xml(xml, disallowed_types = T.unsafe(nil)); end
+  end
 end
 
 # :stopdoc:
@@ -18574,7 +18993,7 @@ class Thread
   def active_support_execution_state=(_arg0); end
 end
 
-# source://activesupport//lib/active_support/core_ext/time/conversions.rb#7
+# source://activesupport//lib/active_support/core_ext/object/blank.rb#186
 class Time
   include ::Comparable
   include ::DateAndTime::Zones

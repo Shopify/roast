@@ -83,6 +83,9 @@ module Minitest
     # source://minitest-rg//lib/minitest/rg_plugin.rb#6
     def plugin_rg_options(opts, _options); end
 
+    # source://simplecov/0.22.0/lib/minitest/simplecov_plugin.rb#6
+    def plugin_simplecov_init(_options); end
+
     # source://minitest/5.25.5/lib/minitest.rb#143
     def process_args(args = T.unsafe(nil)); end
 
