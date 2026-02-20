@@ -61,12 +61,19 @@ module Roast
         args.compact!
         raise NoCommandProvidedError if args.blank?
 
-        stdin, stdout, stderr, wait_thread = Open3 #: as untyped
-          .popen3(
-            { "PWD" => working_directory&.to_s }.compact,
-            *args.map(&:to_s),
-            { chdir: working_directory }.compact,
-          )
+        env_overrides = ENV.each_with_object({}) do |item, obj|
+          key, value = item
+          obj[key.sub(/^ROAST_CMD_ENV_OVERRIDE__/, "")] = value if key.start_with?("ROAST_CMD_ENV_OVERRIDE__")
+        end.compact
+
+        stdin, stdout, stderr, wait_thread = Bundler.with_unbundled_env do
+          Open3 #: as untyped
+            .popen3(
+              env_overrides.merge({ "PWD" => working_directory&.to_s }).compact,
+              *args.map(&:to_s),
+              { chdir: working_directory }.compact,
+            )
+        end
         stdin.puts stdin_content if stdin_content.present?
         stdin.close
         pid = wait_thread.pid
