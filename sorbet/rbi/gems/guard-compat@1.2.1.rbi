@@ -8,7 +8,7 @@
 # Provided empty definition so requiring the plugin without Guard won't crash
 # (e.g. when added to a Gemfile without `require: false`)
 #
-# source://guard-compat//lib/guard/compat/plugin.rb#23
+# source://guard-compat//lib/guard/compat/plugin.rb#5
 module Guard
   extend ::Guard::Internals::Helpers
 
@@ -98,5 +98,81 @@ module Guard::Compat::UI
 
     # source://guard-compat//lib/guard/compat/plugin.rb#79
     def warning(message, options = T.unsafe(nil)); end
+  end
+end
+
+# Monkey patch Plugin to just keep the interface
+#
+# source://guard-compat//lib/guard/compat/plugin.rb#13
+class Guard::Plugin
+  # @return [Plugin] a new instance of Plugin
+  #
+  # source://guard/2.19.1/lib/guard/plugin.rb#285
+  def initialize(options = T.unsafe(nil)); end
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#129
+  def callbacks; end
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#129
+  def callbacks=(_arg0); end
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#129
+  def group; end
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#129
+  def group=(_arg0); end
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#116
+  def hook(event, *args); end
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#240
+  def name; end
+
+  # Returns the value of attribute options.
+  #
+  # source://guard/2.19.1/lib/guard/plugin.rb#129
+  def options; end
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#129
+  def options=(_arg0); end
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#252
+  def title; end
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#267
+  def to_s; end
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#129
+  def watchers; end
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#129
+  def watchers=(_arg0); end
+
+  private
+
+  # source://guard/2.19.1/lib/guard/plugin.rb#297
+  def _register_callbacks; end
+
+  class << self
+    # source://guard/2.19.1/lib/guard/plugin.rb#62
+    def add_callback(listener, guard_plugin, events); end
+
+    # source://guard/2.19.1/lib/guard/plugin.rb#52
+    def callbacks; end
+
+    # source://guard/2.19.1/lib/guard/plugin.rb#140
+    def non_namespaced_classname; end
+
+    # source://guard/2.19.1/lib/guard/plugin.rb#153
+    def non_namespaced_name; end
+
+    # source://guard/2.19.1/lib/guard/plugin.rb#74
+    def notify(guard_plugin, event, *args); end
+
+    # source://guard/2.19.1/lib/guard/plugin.rb#83
+    def reset_callbacks!; end
+
+    # source://guard/2.19.1/lib/guard/plugin.rb#162
+    def template(plugin_location); end
   end
 end
