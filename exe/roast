@@ -11,6 +11,6 @@ unshift_path = ->(path) {
 unshift_path.call("lib")
 
 require "bundler/setup"
-require "roast"
+require "roast-ai"
 
 Roast::CLI.start(ARGV)
