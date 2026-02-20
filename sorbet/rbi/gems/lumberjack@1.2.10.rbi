@@ -5,6 +5,11 @@
 # Please instead update this file by running `bin/tapioca gem lumberjack`.
 
 
+module ActiveSupport::TaggedLogging
+  include ::Lumberjack::TaggedLogging
+  extend ::Lumberjack::TaggedLogging::ClassMethods
+end
+
 # source://lumberjack//lib/lumberjack.rb#9
 module Lumberjack
   class << self
