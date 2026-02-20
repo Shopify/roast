@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    roast-ai (1.0.0.pre.rc2)
+    roast-ai (1.0.0.pre.rc3)
       activesupport (~> 8.0)
       async (>= 2.34)
       ruby_llm (>= 1.8)
