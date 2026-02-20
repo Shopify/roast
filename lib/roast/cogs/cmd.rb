@@ -6,7 +6,7 @@ module Roast
     class Cmd < Cog
       # Configure the `cmd` cog
       #
-      # See sorbet/rbi/shims/lib/roast/dsl/config_context.rbi for full class documentation.
+      # See sorbet/rbi/shims/lib/roast/config_context.rbi for full class documentation.
       class Config < Cog::Config
         # Configure the cog to consider itself failed if the command returns a non-zero exit status
         #
@@ -63,8 +63,6 @@ module Roast
         #
         #: () -> void
         def show_stdout!
-          raise "⚠️ DEPRECATION: use #{__callee__.to_s.sub("print_", "show_")} instead of #{__callee__}" if __callee__.to_s.include?("print_")
-
           @values[:show_stdout] = true
         end
 
@@ -77,8 +75,6 @@ module Roast
         #
         #: () -> void
         def no_show_stdout!
-          raise "⚠️ DEPRECATION: use #{__callee__.to_s.sub("print_", "show_")} instead of #{__callee__}" if __callee__.to_s.include?("print_")
-
           @values[:show_stdout] = false
         end
 
@@ -104,8 +100,6 @@ module Roast
         #
         #: () -> void
         def show_stderr!
-          raise "⚠️ DEPRECATION: use #{__callee__.to_s.sub("print_", "show_")} instead of #{__callee__}" if __callee__.to_s.include?("print_")
-
           @values[:show_stderr] = true
         end
 
@@ -118,8 +112,6 @@ module Roast
         #
         #: () -> void
         def no_show_stderr!
-          raise "⚠️ DEPRECATION: use #{__callee__.to_s.sub("print_", "show_")} instead of #{__callee__}" if __callee__.to_s.include?("print_")
-
           @values[:show_stderr] = false
         end
 
@@ -136,10 +128,6 @@ module Roast
 
         # Configure the cog to write both STDOUT and STDERR to the console
         #
-        # #### Alias Methods
-        # - `display!`
-        # - `print_all!`
-        #
         # #### See Also
         # - `no_display!`
         # - `show_stdout!`
@@ -147,8 +135,6 @@ module Roast
         #
         #: () -> void
         def display!
-          raise "⚠️ DEPRECATION: use display! instead of #{__callee__}" if __callee__.to_s.include?("print_")
-
           @values[:show_stdout] = true
           @values[:show_stderr] = true
         end
@@ -156,8 +142,6 @@ module Roast
         # Configure the cog to write __no output__ to the console, neither STDOUT nor STDERR
         #
         # #### Alias Methods
-        # - `no_display!`
-        # - `print_none!`
         # - `quiet!`
         #
         # #### See Also
@@ -167,8 +151,6 @@ module Roast
         #
         #: () -> void
         def no_display!
-          raise "⚠️ DEPRECATION: use no_display! instead of #{__callee__}" if __callee__.to_s.include?("print_")
-
           @values[:show_stdout] = false
           @values[:show_stderr] = false
         end
@@ -187,12 +169,6 @@ module Roast
         end
 
         alias_method(:quiet!, :no_display!)
-        alias_method(:print_all!, :display!)
-        alias_method(:print_none!, :no_display!)
-        alias_method(:print_stdout!, :show_stdout!)
-        alias_method(:no_print_stdout!, :no_show_stdout!)
-        alias_method(:print_stderr!, :show_stderr!)
-        alias_method(:no_print_stderr!, :no_show_stderr!)
       end
 
       # Input specification for the cmd cog

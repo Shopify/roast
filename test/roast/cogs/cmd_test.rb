@@ -106,54 +106,6 @@ module Roast
           refute @config.show_stdout?
           refute @config.show_stderr?
         end
-
-        test "print_all! is alias for display! with deprecation" do
-          error = assert_raises(RuntimeError) do
-            @config.print_all!
-          end
-
-          assert_match(/DEPRECATION.*display!.*print_all/, error.message)
-        end
-
-        test "print_none! is alias for no_display! with deprecation" do
-          error = assert_raises(RuntimeError) do
-            @config.print_none!
-          end
-
-          assert_match(/DEPRECATION.*no_display!.*print_none/, error.message)
-        end
-
-        test "print_stdout! raises deprecation error" do
-          error = assert_raises(RuntimeError) do
-            @config.print_stdout!
-          end
-
-          assert_match(/DEPRECATION.*show_stdout!.*print_stdout/, error.message)
-        end
-
-        test "no_print_stdout! raises deprecation error" do
-          error = assert_raises(RuntimeError) do
-            @config.no_print_stdout!
-          end
-
-          assert_match(/DEPRECATION.*no_show_stdout!.*no_print_stdout/, error.message)
-        end
-
-        test "print_stderr! raises deprecation error" do
-          error = assert_raises(RuntimeError) do
-            @config.print_stderr!
-          end
-
-          assert_match(/DEPRECATION.*show_stderr!.*print_stderr/, error.message)
-        end
-
-        test "no_print_stderr! raises deprecation error" do
-          error = assert_raises(RuntimeError) do
-            @config.no_print_stderr!
-          end
-
-          assert_match(/DEPRECATION.*no_show_stderr!.*no_print_stderr/, error.message)
-        end
       end
 
       class InputTest < ActiveSupport::TestCase

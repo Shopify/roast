@@ -3,7 +3,7 @@ Write documentation comments for public methods in the specified file or class.
 ## Arguments
 
 Accepts either:
-- A file path, like `lib/roast/dsl/cogs/chat/config.rb`
+- A file path, like `lib/roast/cogs/chat/config.rb`
 - A class name, like `Roast::Cogs::Chat::Config`
 
 ## Task
@@ -26,7 +26,7 @@ Developer-facing documentation should be concise without cross-references.
 
 ## Important Constraints
 
-- Only examine and modify files in the `lib/roast/dsl/` directory
+- Only examine and modify files in the `lib/roast/` directory
 - Only write/edit comments in the specific file or class requested
 - Ignore `field` definitions in Config classes
 - Do not modify any other files

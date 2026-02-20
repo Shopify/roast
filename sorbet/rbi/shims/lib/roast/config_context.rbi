@@ -274,8 +274,8 @@ module Roast
     # - `no_show_stdout!` - Don't write STDOUT to the console (default)
     # - `show_stderr!` - Write STDERR to the console
     # - `no_show_stderr!` - Don't write STDERR to the console (default)
-    # - `display!` (alias `print_all!`) - Write both STDOUT and STDERR to the console
-    # - `no_display!` (alias `print_none!`, `quiet!`) - Write __no output__ to the console
+    # - `display!` - Write both STDOUT and STDERR to the console
+    # - `no_display!` (alias `quiet!`) - Write __no output__ to the console
     #
     # #### Configure the working directory
     # - `working_directory(path)` - Set the working directory for command execution
