@@ -9,14 +9,14 @@ module Roast
         @registry = Cog::Registry.new
         @registry.use(TestCogSupport::TestCog)
 
-        @config_manager = ConfigManager.new(@registry, [])
-        @config_manager.prepare!
-
         @workflow_context = WorkflowContext.new(
           params: WorkflowParams.new([], [], {}),
           tmpdir: Dir.tmpdir,
           workflow_dir: Pathname.new(Dir.tmpdir),
         )
+
+        @config_manager = ConfigManager.new(@registry, [], @workflow_context)
+        @config_manager.prepare!
       end
 
       def build_manager(execution_procs, scope: nil, scope_value: nil, scope_index: 0)

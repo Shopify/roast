@@ -8,11 +8,13 @@ module Roast
     class ConfigManagerAlreadyPreparedError < ConfigManagerError; end
     class IllegalCogNameError < ConfigManagerError; end
 
-    #: (Cog::Registry, Array[^() -> void]) -> void
-    def initialize(cog_registry, config_procs)
+    #: (Cog::Registry, Array[^() -> void], WorkflowContext) -> void
+    def initialize(cog_registry, config_procs, workflow_context)
       @cog_registry = cog_registry
       @config_procs = config_procs
-      @config_context = ConfigContext.new #: ConfigContext
+      @workflow_context = workflow_context #: WorkflowContext
+      agent_provider_exists_proc = ->(name) { workflow_context.agent_provider_exists?(name) }
+      @config_context = ConfigContext.new(agent_provider_exists_proc) #: ConfigContext
       @global_config = Cog::Config.new #: Cog::Config
       @general_configs = {} #: Hash[singleton(Cog), Cog::Config]
       @regexp_scoped_configs = {} #: Hash[singleton(Cog), Hash[Regexp, Cog::Config]]
