@@ -4,20 +4,28 @@
 module Roast
   class Workflow
     class WorkflowError < Roast::Error; end
+
     class WorkflowNotPreparedError < WorkflowError; end
+
     class WorkflowAlreadyPreparedError < WorkflowError; end
+
     class WorkflowAlreadyStartedError < WorkflowError; end
+
     class InvalidLoadableReference < WorkflowError; end
 
     class << self
       #: (String | Pathname, WorkflowParams) -> void
       def from_file(workflow_path, params)
-        Dir.mktmpdir("roast-") do |tmpdir|
-          workflow_dir = Pathname.new(workflow_path).dirname
-          workflow_context = WorkflowContext.new(params: params, tmpdir: tmpdir, workflow_dir: workflow_dir)
-          workflow = new(workflow_path, workflow_context)
-          workflow.prepare!
-          workflow.start!
+        Sync do
+          Dir.mktmpdir("roast-") do |tmpdir|
+            EventMonitor.start!
+            workflow_dir = Pathname.new(workflow_path).dirname
+            workflow_context = WorkflowContext.new(params: params, tmpdir: tmpdir, workflow_dir: workflow_dir)
+            workflow = new(workflow_path, workflow_context)
+            workflow.prepare!
+            workflow.start!
+            EventMonitor.stop!
+          end
         end
       end
     end

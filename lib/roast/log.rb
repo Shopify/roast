@@ -4,8 +4,9 @@
 module Roast
   # Central logging interface for Roast.
   #
-  # Provides a simple, testable logging API that wraps the standard library Logger.
-  # Outputs to $stderr by default.
+  # Provides a simple, testable logging API that wraps the standard library Logger
+  # and leverages Roast's Event framework for clean async task integration with proper task hierarchy attribution.
+  # Outputs to STDERR by default.
   #
   # @example Basic usage
   #   Roast::Log.info("Processing file...")
@@ -17,61 +18,74 @@ module Roast
   #   Roast::Log.logger = Rails.logger
   #
   module Log
+    extend self
+    include Kernel
+
     LOG_LEVELS = {
-      "DEBUG" => ::Logger::DEBUG,
-      "INFO" => ::Logger::INFO,
-      "WARN" => ::Logger::WARN,
-      "ERROR" => ::Logger::ERROR,
-      "FATAL" => ::Logger::FATAL,
-    }.freeze
+      DEBUG: ::Logger::DEBUG,
+      INFO: ::Logger::INFO,
+      WARN: ::Logger::WARN,
+      ERROR: ::Logger::ERROR,
+      FATAL: ::Logger::FATAL,
+    }.freeze #: Hash[Symbol, Integer]
 
-    class << self
-      attr_writer :logger
+    attr_writer :logger
 
-      def debug(message)
-        logger.debug(message)
+    #: (String) -> void
+    def debug(message)
+      Roast::Event << { debug: message }
+    end
+
+    #: (String) -> void
+    def info(message)
+      Roast::Event << { info: message }
+    end
+
+    #: (String) -> void
+    def warn(message)
+      Roast::Event << { warn: message }
+    end
+
+    #: (String) -> void
+    def error(message)
+      Roast::Event << { error: message }
+    end
+
+    #: (String) -> void
+    def fatal(message)
+      Roast::Event << { fatal: message }
+    end
+
+    #: (String) -> void
+    def unknown(message)
+      Roast::Event << { unknown: message }
+    end
+
+    #: () -> Logger
+    def logger
+      @logger ||= create_logger
+    end
+
+    #: () -> void
+    def reset!
+      @logger = nil
+    end
+
+    private
+
+    #: () -> Logger
+    def create_logger
+      ::Logger.new($stderr, progname: "Roast").tap do |l|
+        l.level = LOG_LEVELS.fetch(log_level)
       end
+    end
 
-      def info(message)
-        logger.info(message)
-      end
+    #: () -> Symbol
+    def log_level
+      level = (ENV["ROAST_LOG_LEVEL"] || "INFO").upcase.to_sym
+      raise ArgumentError, "Invalid log level: #{level}. Valid levels are: #{LOG_LEVELS.keys.join(", ")}" unless LOG_LEVELS.key?(level)
 
-      def warn(message)
-        logger.warn(message)
-      end
-
-      def error(message)
-        logger.error(message)
-      end
-
-      def fatal(message)
-        logger.fatal(message)
-      end
-
-      def logger
-        @logger ||= create_logger
-      end
-
-      def reset!
-        @logger = nil
-      end
-
-      private
-
-      def create_logger
-        ::Logger.new($stderr, progname: "roast").tap do |l|
-          l.level = LOG_LEVELS.fetch(log_level)
-        end
-      end
-
-      def log_level
-        level_str = (ENV["ROAST_LOG_LEVEL"] || "INFO").upcase
-        unless LOG_LEVELS.key?(level_str)
-          raise ArgumentError, "Invalid log level: #{level_str}. Valid levels are: #{LOG_LEVELS.keys.join(", ")}"
-        end
-
-        level_str
-      end
+      level
     end
   end
 end
