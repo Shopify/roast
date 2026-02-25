@@ -301,6 +301,18 @@ module Examples
         assert_equal expected_stdout, stdout
       end
 
+      test "shell_sanitization.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :shell_sanitization do
+          Roast::Workflow.from_file("examples/shell_sanitization.rb", EMPTY_PARAMS)
+        end
+        assert_empty stderr
+        lines = stdout.lines.map(&:strip)
+        assert_equal "hello world", lines.shift
+        assert_equal "bad", lines.shift
+        3.times { assert_equal "hello world ; echo bad", lines.shift }
+        assert_empty lines
+      end
+
       test "step_communication.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :step_communication do
           Roast::Workflow.from_file("examples/step_communication.rb", EMPTY_PARAMS)
