@@ -30,6 +30,29 @@ if ENV["CI"]
   Minitest::RG.rg!(color: true)
 end
 
+# @requires_ancestor: ActiveSupport::TestCase
+module CaptureLogOutput
+  extend ActiveSupport::Concern
+
+  included do
+    setup do
+      @logger_output = StringIO.new
+      Roast::Log.logger = Logger.new(@logger_output)
+    end
+
+    teardown do
+      if !passed? && @logger_output.string.present?
+        $stderr.puts("\n--- Captured log output (#{name}) ---")
+        $stderr.puts(@logger_output.string)
+        $stderr.puts("--- End captured log output ---")
+      end
+      Roast::Log.reset!
+    end
+  end
+end
+
+ActiveSupport::TestCase.include(CaptureLogOutput)
+
 def slow_test!
   skip "slow test" unless ["1", "true"].include?(ENV["ROAST_RUN_SLOW_TESTS"])
 end
