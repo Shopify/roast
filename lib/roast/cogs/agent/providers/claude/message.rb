@@ -49,6 +49,9 @@ module Roast
             #: Symbol
             attr_reader :type
 
+            #: String?
+            attr_reader :error
+
             #: Hash[Symbol, untyped]
             attr_reader :unparsed
 
@@ -56,6 +59,7 @@ module Roast
             def initialize(type:, hash:)
               @session_id = hash.delete(:session_id)
               @type = type
+              @error = hash.delete(:error)
               hash.except!(*IGNORED_FIELDS)
               @unparsed = hash
             end

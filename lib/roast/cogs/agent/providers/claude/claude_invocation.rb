@@ -158,6 +158,8 @@ module Roast
                 Roast::Log.debug("[FULL MESSAGE: #{message.type}]")
                 Roast::Log.debug(message.inspect)
               end
+
+              raise ClaudeFailedError, message.error if message.error.present?
             end
 
             #: () -> Array[String]
