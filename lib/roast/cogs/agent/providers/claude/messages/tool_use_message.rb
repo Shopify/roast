@@ -9,6 +9,7 @@ module Roast
           module Messages
             class ToolUseMessage < Message
               IGNORED_FIELDS = [
+                :caller,
                 :role,
               ].freeze
 

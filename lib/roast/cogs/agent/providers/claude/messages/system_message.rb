@@ -9,23 +9,27 @@ module Roast
           module Messages
             class SystemMessage < Message
               IGNORED_FIELDS = [
-                :subtype,
-                :cwd,
-                :tools,
-                :mcp_servers,
-                :permissionMode,
-                :slash_commands,
-                :apiKeySource,
-                :claude_code_version,
-                :output_style,
                 :agents,
-                :skills,
-                :plugins,
-                :hook_name,
-                :hook_event,
-                :stdout,
-                :stderr,
+                :apiKeySource,
+                :compact_metadata,
+                :claude_code_version,
+                :cwd,
                 :exit_code,
+                :fast_mode_state,
+                :hook_event,
+                :hook_name,
+                :mcp_servers,
+                :output_style,
+                :permissionMode,
+                :plugins,
+                :skills,
+                :slash_commands,
+                # TODO: "status": "compacting" indicates compaction in progress. We might want to handle that someday
+                :status,
+                :stderr,
+                :stdout,
+                :subtype,
+                :tools,
               ].freeze
 
               #: String?
