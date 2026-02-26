@@ -44,6 +44,13 @@ module Roast
               assert_kind_of Messages::TextMessage, message
             end
 
+            test "from_json with thinking type creates ThinkingMessage" do
+              json = '{"type": "thinking", "thinking": "Let me consider..."}'
+              message = Message.from_json(json)
+
+              assert_kind_of Messages::ThinkingMessage, message
+            end
+
             test "from_json with tool_result type creates ToolResultMessage" do
               json = '{"type": "tool_result", "tool_use_id": "123"}'
               message = Message.from_json(json)
@@ -98,6 +105,13 @@ module Roast
               message = Message.from_hash(hash)
 
               assert_kind_of Messages::TextMessage, message
+            end
+
+            test "from_hash with thinking type creates ThinkingMessage" do
+              hash = { type: :thinking, thinking: "Let me consider..." }
+              message = Message.from_hash(hash)
+
+              assert_kind_of Messages::ThinkingMessage, message
             end
 
             test "from_hash with tool_result type creates ToolResultMessage" do
