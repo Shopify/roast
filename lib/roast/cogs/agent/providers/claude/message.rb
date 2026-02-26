@@ -31,6 +31,8 @@ module Roast
                   Messages::SystemMessage.new(type:, hash:)
                 when :text
                   Messages::TextMessage.new(type:, hash:)
+                when :thinking
+                  Messages::ThinkingMessage.new(type:, hash:)
                 when :tool_result
                   Messages::ToolResultMessage.new(type:, hash:)
                 when :tool_use
