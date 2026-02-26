@@ -4,6 +4,7 @@ PATH
     roast-ai (1.0.0)
       activesupport (~> 8.0)
       async (>= 2.34)
+      pastel (>= 0.8.0)
       ruby_llm (>= 1.8)
       zeitwerk (>= 2.6)
 
@@ -114,6 +115,8 @@ GEM
     parser (3.3.8.0)
       ast (~> 2.4.1)
       racc
+    pastel (0.8.0)
+      tty-color (~> 0.5)
     prism (1.4.0)
     pry (0.15.2)
       coderay (~> 1.1)
@@ -199,6 +202,7 @@ GEM
       yard-sorbet
     thor (1.4.0)
     traces (0.18.2)
+    tty-color (0.6.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.1.4)
