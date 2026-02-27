@@ -6,12 +6,10 @@ module Roast
   class EventMonitorTest < ActiveSupport::TestCase
     setup do
       EventMonitor.reset!
-      Roast::Log.reset!
     end
 
     teardown do
       EventMonitor.reset!
-      Roast::Log.reset!
     end
 
     # --- Error classes ---
@@ -113,44 +111,39 @@ module Roast
     # --- accept ---
 
     test "accept handles event directly when not running" do
-      output = StringIO.new
-      Roast::Log.logger = Logger.new(output)
-
       event = Event.new([], { info: "direct message" })
       EventMonitor.accept(event)
 
-      assert_includes output.string, "direct message"
+      assert_includes @logger_output.string, "direct message"
     end
 
     test "accept queues event for async handling when running" do
       handler_fiber = nil
       caller_fiber = nil
 
-      _, stderr = capture_io do
-        Sync do
-          EventMonitor.start!
+      Sync do
+        EventMonitor.start!
 
-          # Temporarily intercept handle_log_event to record which fiber processes it
-          original_method = EventMonitor.method(:handle_log_event)
-          EventMonitor.singleton_class.silence_redefinition_of_method(:handle_log_event)
-          EventMonitor.define_singleton_method(:handle_log_event) do |event|
-            handler_fiber = Fiber.current
-            original_method.call(event)
-          end
-
-          caller_fiber = Fiber.current
-          event = Event.new([], { info: "queued message" })
-          EventMonitor.accept(event)
-
-          EventMonitor.stop!
-        ensure
-          # Restore original
-          EventMonitor.singleton_class.silence_redefinition_of_method(:handle_log_event)
-          EventMonitor.define_singleton_method(:handle_log_event, original_method) if original_method.present?
+        # Temporarily intercept handle_log_event to record which fiber processes it
+        original_method = EventMonitor.method(:handle_log_event)
+        EventMonitor.singleton_class.silence_redefinition_of_method(:handle_log_event)
+        EventMonitor.define_singleton_method(:handle_log_event) do |event|
+          handler_fiber = Fiber.current
+          original_method.call(event)
         end
+
+        caller_fiber = Fiber.current
+        event = Event.new([], { info: "queued message" })
+        EventMonitor.accept(event)
+
+        EventMonitor.stop!
+      ensure
+        # Restore original
+        EventMonitor.singleton_class.silence_redefinition_of_method(:handle_log_event)
+        EventMonitor.define_singleton_method(:handle_log_event, original_method) if original_method.present?
       end
 
-      assert_includes stderr, "queued message"
+      assert_includes @logger_output.string, "queued message"
       assert_not_nil handler_fiber, "Expected event to be handled"
       assert_not_equal caller_fiber, handler_fiber, "Expected event to be handled on a different fiber (the consumer), not the caller"
     end
@@ -158,33 +151,177 @@ module Roast
     # --- Event handler routing ---
 
     test "handle_log_event routes log events to the logger" do
-      output = StringIO.new
-      Roast::Log.logger = Logger.new(output, level: Logger::DEBUG)
-
       event = Event.new([], { debug: "debug message" })
       EventMonitor.accept(event)
 
-      assert_includes output.string, "debug message"
+      assert_includes @logger_output.string, "debug message"
     end
 
-    test "handle_begin_event logs begin events at debug level" do
-      output = StringIO.new
-      Roast::Log.logger = Logger.new(output, level: Logger::DEBUG)
+    test "handle_begin_event logs cog begin events" do
+      cog = TestCogSupport::TestCog.new(:step1, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
 
-      event = Event.new([:workflow], { begin: :step1 })
+      event = Event.new([em_el, cog_el], { begin: cog_el })
       EventMonitor.accept(event)
 
-      assert_includes output.string, "begin"
+      assert_includes @logger_output.string, "test_cog(:step1) Starting"
     end
 
-    test "handle_end_event logs end events at debug level" do
-      output = StringIO.new
-      Roast::Log.logger = Logger.new(output, level: Logger::DEBUG)
+    test "handle_end_event logs cog end events" do
+      cog = TestCogSupport::TestCog.new(:step1, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
 
-      event = Event.new([:workflow], { end: :step1 })
+      event = Event.new([em_el, cog_el], { end: cog_el })
       EventMonitor.accept(event)
 
-      assert_includes output.string, "end"
+      assert_includes @logger_output.string, "test_cog(:step1) Complete"
+    end
+
+    test "handle_begin_event does not log cog message for execution manager begin" do
+      em_el = mock_execution_manager_path_element
+      event = Event.new([em_el], { begin: em_el })
+      EventMonitor.accept(event)
+
+      refute_match(/test_cog/, @logger_output.string)
+    end
+
+    test "handle_end_event does not log cog message for execution manager end" do
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el], { end: em_el })
+      EventMonitor.accept(event)
+
+      refute_match(/test_cog/, @logger_output.string)
+    end
+
+    # --- handle_begin_workflow_event ---
+
+    test "handle_begin_workflow_event logs workflow starting when path length is 1" do
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el], { begin: em_el })
+      EventMonitor.accept(event)
+
+      assert_includes @logger_output.string, "Workflow Starting"
+    end
+
+    test "handle_begin_workflow_event logs workflow context at debug level" do
+      em_el = mock_execution_manager_path_element(
+        workflow_context: create_workflow_context(
+          targets: ["file.rb"],
+          args: [:verbose],
+          kwargs: { dry_run: "true" },
+          tmpdir: "/tmp/roast123",
+          workflow_dir: "/home/workflows/my_workflow",
+        ),
+      )
+      event = Event.new([em_el], { begin: em_el })
+
+      with_log_level("DEBUG") { EventMonitor.accept(event) }
+
+      assert_includes @logger_output.string, "Workflow Context"
+      assert_includes @logger_output.string, "file.rb"
+      assert_includes @logger_output.string, "verbose"
+      assert_includes @logger_output.string, "dry_run"
+      assert_includes @logger_output.string, "/tmp/roast123"
+      assert_includes @logger_output.string, "/home/workflows/my_workflow"
+    end
+
+    test "handle_begin_workflow_event is not triggered when path length is greater than 1" do
+      cog = TestCogSupport::TestCog.new(:step1, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el, cog_el], { begin: cog_el })
+      EventMonitor.accept(event)
+
+      refute_includes @logger_output.string, "Workflow Starting"
+    end
+
+    # --- handle_end_event workflow ---
+
+    test "handle_end_event logs workflow complete when path length is 1" do
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el], { end: em_el })
+      EventMonitor.accept(event)
+
+      assert_includes @logger_output.string, "Workflow Complete"
+    end
+
+    test "handle_end_event does not log workflow complete when path length is greater than 1" do
+      cog = TestCogSupport::TestCog.new(:step1, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el, cog_el], { end: cog_el })
+      EventMonitor.accept(event)
+
+      refute_includes @logger_output.string, "Workflow Complete"
+    end
+
+    # --- format_path ---
+
+    test "format_path formats named cog as type(:name)" do
+      cog = TestCogSupport::TestCog.new(:my_step, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+
+      event = Event.new([cog_el], { begin: cog_el })
+      result = EventMonitor.send(:format_path, event)
+
+      assert_equal "test_cog(:my_step)", result
+    end
+
+    test "format_path formats anonymous cog as type only" do
+      cog = TestCogSupport::TestCog.new(nil, nil, anonymous: true)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+
+      event = Event.new([cog_el], { begin: cog_el })
+      result = EventMonitor.send(:format_path, event)
+
+      assert_match(/\Atest_cog\z/, result)
+    end
+
+    test "format_path formats execution manager with scope" do
+      em_el = mock_execution_manager_path_element(scope: :items, scope_index: 3)
+
+      event = Event.new([em_el], { begin: em_el })
+      result = EventMonitor.send(:format_path, event)
+
+      assert_equal "{:items}[3]", result
+    end
+
+    test "format_path omits execution manager without scope" do
+      em_el = mock_execution_manager_path_element(scope: nil, scope_index: 0)
+
+      event = Event.new([em_el], { begin: em_el })
+      result = EventMonitor.send(:format_path, event)
+
+      assert_equal "", result
+    end
+
+    test "format_path joins multiple path elements with arrow" do
+      em_el = mock_execution_manager_path_element(scope: :files, scope_index: 0)
+      cog = TestCogSupport::TestCog.new(:analyze, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+
+      event = Event.new([em_el, cog_el], { begin: cog_el })
+      result = EventMonitor.send(:format_path, event)
+
+      assert_equal "{:files}[0] -> test_cog(:analyze)", result
+    end
+
+    test "format_path skips unscopeed execution manager in mixed path" do
+      em_el = mock_execution_manager_path_element(scope: nil, scope_index: 0)
+      cog = TestCogSupport::TestCog.new(:step, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+
+      event = Event.new([em_el, cog_el], { begin: cog_el })
+      result = EventMonitor.send(:format_path, event)
+
+      assert_equal "test_cog(:step)", result
     end
 
     test "handle_stdout_event outputs to puts" do
@@ -204,13 +341,10 @@ module Roast
     end
 
     test "handle_unknown_event logs unrecognized events at unknown level" do
-      output = StringIO.new
-      Roast::Log.logger = Logger.new(output)
-
       event = Event.new([], { custom_type: "data" })
       EventMonitor.accept(event)
 
-      assert_includes output.string, "custom_type"
+      assert_includes @logger_output.string, "custom_type"
     end
 
     # --- Time stubbing ---
@@ -221,13 +355,10 @@ module Roast
       event.instance_variable_set(:@time, frozen_time)
 
       logged_time = nil
-      output = StringIO.new
-      logger = Logger.new(output)
-      logger.formatter = proc { |_severity, time, _progname, _msg|
+      Roast::Log.logger.formatter = proc { |_severity, time, _progname, _msg|
         logged_time = time
         ""
       }
-      Roast::Log.logger = logger
 
       EventMonitor.accept(event)
 
@@ -256,6 +387,13 @@ module Roast
       end
 
       assert_instance_of Time, Time.now
+    end
+
+    private
+
+    #: (?scope: Symbol?, ?scope_index: Integer, ?workflow_context: WorkflowContext?)
+    def mock_execution_manager_path_element(scope: nil, scope_index: 0, workflow_context: nil)
+      TaskContext::PathElement.new(execution_manager: mock_execution_manager(scope:, scope_index:, workflow_context:))
     end
   end
 end

@@ -89,7 +89,7 @@ module Roast
 
         #: (Params, ^(Cog::Input) -> untyped) -> SystemCogs::Call
         def create_call_system_cog(params, input_proc)
-          SystemCogs::Call.new(params.name, input_proc) do |input|
+          SystemCogs::Call.new(params.name, input_proc, anonymous: params.anonymous?) do |input|
             input = input #: as Input
             raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 

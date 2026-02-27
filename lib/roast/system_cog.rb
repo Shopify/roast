@@ -18,9 +18,9 @@ module Roast
       end
     end
 
-    #: (Symbol, ^(Cog::Input) -> untyped) { (Cog::Input, Cog::Config) -> Cog::Output } -> void
-    def initialize(name, cog_input_proc, &on_execute)
-      super(name, cog_input_proc)
+    #: (Symbol, ^(Cog::Input) -> untyped, anonymous: bool) { (Cog::Input, Cog::Config) -> Cog::Output } -> void
+    def initialize(name, cog_input_proc, anonymous:, &on_execute)
+      super(name, cog_input_proc, anonymous:)
       @on_execute = on_execute
     end
 

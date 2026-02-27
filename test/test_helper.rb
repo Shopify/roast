@@ -57,19 +57,52 @@ def slow_test!
   skip "slow test" unless ["1", "true"].include?(ENV["ROAST_RUN_SLOW_TESTS"])
 end
 
+# Run a block with the Roast logger configured to log at a specific level
+#
+#: [T] (Integer) { () -> T } -> T
 def with_log_level(level, &block)
-  Roast::Log.reset!
-  with_env("ROAST_LOG_LEVEL", level, &block)
+  original_level = Roast::Log.logger.level
+  Roast::Log.logger.level = level
+  yield
 ensure
-  Roast::Log.reset!
+  Roast::Log.logger.level = original_level
 end
 
+# Run a block with a specific environment variable set
+#
+#: [T] (String, String) { () -> T } -> T
 def with_env(key, value)
   original = ENV[key]
   ENV[key] = value
   yield
 ensure
   ENV[key] = original
+end
+
+# Create a mock ExecutionManager for wrapping manual cog invocations in tests
+#
+#: (?scope: Symbol?, ?scope_index: Integer, ?workflow_context: Roast::WorkflowContext?)
+def mock_execution_manager(scope: nil, scope_index: 0, workflow_context: nil)
+  execution_manager = mock("execution_manager")
+  execution_manager.stubs(scope:, scope_index:, workflow_context: workflow_context || create_workflow_context)
+  execution_manager
+end
+
+# Create a simple WorkflowContext instance with handy default values for use in tests
+#
+#: (
+#|  ?targets: Array[String],
+#|  ?args: Array[Symbol],
+#|  ?kwargs: Hash[Symbol, String],
+#|  ?tmpdir: String,
+#|  ?workflow_dir: String,
+#| ) -> Roast::WorkflowContext
+def create_workflow_context(targets: [], args: [], kwargs: {}, tmpdir: "/tmp", workflow_dir: "/workflow")
+  Roast::WorkflowContext.new(
+    params: Roast::WorkflowParams.new(targets, args, kwargs),
+    tmpdir:,
+    workflow_dir:,
+  )
 end
 
 # Run a cog through the full async execution path for integration testing.
@@ -85,6 +118,7 @@ def run_cog(cog, config: nil, scope_value: nil, scope_index: 0)
   Sync do
     barrier = Async::Barrier.new
     input_context = Roast::CogInputContext.new
+    Fiber[:path] = [Roast::TaskContext::PathElement.new(execution_manager: mock_execution_manager)]
 
     cog.run!(barrier, config, input_context, scope_value, scope_index)
     barrier.wait

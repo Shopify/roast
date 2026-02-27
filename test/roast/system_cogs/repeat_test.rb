@@ -63,6 +63,18 @@ module Roast
         assert_equal :loop_body, params.run
       end
 
+      test "Params anonymous? returns false when name is provided" do
+        params = Repeat::Params.new(:my_repeat, run: :loop_body)
+
+        refute params.anonymous?
+      end
+
+      test "Params anonymous? returns true when name is not provided" do
+        params = Repeat::Params.new(run: :loop_body)
+
+        assert params.anonymous?
+      end
+
       test "Input validate! passes when value is set" do
         input = Repeat::Input.new
         input.value = "hello"

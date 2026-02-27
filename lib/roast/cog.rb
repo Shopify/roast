@@ -44,9 +44,10 @@ module Roast
     #: Cog::Output?
     attr_reader :output
 
-    #: (Symbol, ^(Cog::Input) -> untyped) -> void
-    def initialize(name, cog_input_proc)
+    #: (Symbol, ^(Cog::Input) -> untyped, ?anonymous: bool) -> void
+    def initialize(name, cog_input_proc, anonymous: false)
       @name = name
+      @anonymous = anonymous
       @cog_input_proc = cog_input_proc #: ^(Cog::Input) -> untyped
       @output = nil #: Cog::Output?
       @skipped = false #: bool
@@ -56,13 +57,23 @@ module Roast
       @config = self.class.config_class.new #: untyped
     end
 
+    #: () -> bool
+    def anonymous?
+      @anonymous
+    end
+
+    #: () -> String
+    def type
+      self.class.name.not_nil!.demodulize.underscore
+    end
+
     #: (Async::Barrier, Cog::Config, CogInputContext, untyped, Integer) -> Async::Task
     def run!(barrier, config, input_context, executor_scope_value, executor_scope_index)
       raise CogAlreadyStartedError if @task
 
       @task = barrier.async(finished: false) do |task|
-        task.annotate("#{self.class.name.not_nil!.demodulize.camelcase} Cog: #{@name}")
-        TaskContext.begin(@name)
+        task.annotate("Cog #{type}(:#{@name})")
+        TaskContext.begin_cog(self)
         @config = config
         input_instance = self.class.input_class.new
         input_return = input_context.instance_exec(

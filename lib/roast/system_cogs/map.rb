@@ -257,7 +257,7 @@ module Roast
 
         #: (Params, ^(Cog::Input) -> untyped) -> SystemCogs::Map
         def create_map_system_cog(params, input_proc)
-          SystemCogs::Map.new(params.name, input_proc) do |input, config|
+          SystemCogs::Map.new(params.name, input_proc, anonymous: params.anonymous?) do |input, config|
             raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 
             input = input #: as Input

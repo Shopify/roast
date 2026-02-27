@@ -45,6 +45,18 @@ module Roast
         assert_equal :my_scope, params.run
       end
 
+      test "Params anonymous? returns false when name is provided" do
+        params = Call::Params.new(:my_call, run: :my_scope)
+
+        refute params.anonymous?
+      end
+
+      test "Params anonymous? returns true when name is not provided" do
+        params = Call::Params.new(run: :my_scope)
+
+        assert params.anonymous?
+      end
+
       test "Input validate! passes when value is set" do
         input = Call::Input.new
         input.value = "hello"

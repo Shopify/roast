@@ -23,7 +23,15 @@ module Roast
       #
       #: (Symbol?) -> void
       def initialize(name)
+        @anonymous = name.nil? #: bool
         @name = name || Cog.generate_fallback_name
+      end
+
+      # Whether the cog is using a fallback name, or was given one explicitly.
+      #
+      #: () -> bool
+      def anonymous?
+        @anonymous
       end
     end
   end

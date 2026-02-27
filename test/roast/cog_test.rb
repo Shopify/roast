@@ -40,6 +40,22 @@ module Roast
       assert_equal :test_cog, @cog.name
     end
 
+    test "anonymous? defaults to false" do
+      refute @cog.anonymous?
+    end
+
+    test "anonymous? returns true when anonymous: true is passed" do
+      cog = TestCog.new(:fallback_name, ->(_input, _scope, _index) { "hello" }, anonymous: true)
+
+      assert cog.anonymous?
+    end
+
+    test "anonymous? returns false when anonymous: false is passed" do
+      cog = TestCog.new(:named_cog, ->(_input, _scope, _index) { "hello" }, anonymous: false)
+
+      refute cog.anonymous?
+    end
+
     test "output is nil before execution" do
       assert_nil @cog.output
     end
@@ -92,6 +108,7 @@ module Roast
         barrier = Async::Barrier.new
         input_context = Roast::CogInputContext.new
         config = cog.class.config_class.new
+        Fiber[:path] = [Roast::TaskContext::PathElement.new(execution_manager: mock_execution_manager)]
 
         cog.run!(barrier, config, input_context, nil, 0)
         barrier.stop
