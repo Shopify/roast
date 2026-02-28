@@ -126,6 +126,7 @@ module Roast
 
     private
 
+    #: (Array[String], Hash[String, String]) -> String, String, Process::Status]
     def run_roast(*args, env: {})
       full_env = { "BUNDLE_GEMFILE" => File.expand_path("../../Gemfile", __dir__) }.merge(env)
       stdout, stderr, status = Open3.capture3(full_env, "bundle", "exec", ROAST_EXE, *args)

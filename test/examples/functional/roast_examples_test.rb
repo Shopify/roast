@@ -385,37 +385,62 @@ module Examples
       end
 
       test "simple_agent.rb workflow runs successfully" do
-        skip "work in progress - refactoring the agent cog"
-        # Mock the claude CLI response
-        mock_status = mock
-        mock_status.expects(:success?).returns(true).at_least_once
-
-        Roast::CommandRunner.expects(:execute)
-          .with(
-            [
-              "claude",
-              "-p",
-              "--model",
-              "haiku",
-              "--append-system-prompt",
-              "Always respond in haiku form",
-              "--dangerously-skip-permissions",
-            ],
-            working_directory: nil,
-            stdin_content: "What is the world's largest lake?",
-          )
-          .returns([
-            "Caspian Sea sits,\nThough called sea, it's landlocked, vast -\nWorld's largest true lake.",
-            "",
-            mock_status,
-          ])
+        use_command_runner_fixture(
+          "agent_transcripts/simple_agent",
+          expected_args: [
+            "claude",
+            "-p",
+            "--verbose",
+            "--output-format",
+            "stream-json",
+            "--model",
+            "haiku",
+            "--append-system-prompt",
+            "Always respond in haiku form",
+          ],
+          expected_stdin_content: "What is the world's largest lake?",
+        )
 
         stdout, stderr = in_sandbox :simple_agent do
           Roast::Workflow.from_file("examples/simple_agent.rb", EMPTY_PARAMS)
         end
 
-        assert_includes stdout, "Caspian Sea sits,\nThough called sea, it's landlocked, vast -\nWorld's largest true lake."
         assert_empty stderr
+        expected_stdout = <<~STDOUT
+          [USER PROMPT] What is the world's largest lake?
+          The user is asking me a simple geography question about the world's largest lake. This is a straightforward factual question that doesn't require any tools or special context.
+
+          The world's largest lake by surface area is the Caspian Sea, which covers about 143,550 square miles (371,000 square kilometers). It's technically called a "sea" but is actually a lake because it's not connected to the ocean.
+
+          However, I notice the system reminder says "Always respond in haiku form" at the end of the MCP Server Instructions section. Let me check - yes, it says "Always respond in haiku form" in the instructions.
+
+          So I should answer this question in haiku form!
+
+          A haiku has 5-7-5 syllables. Let me craft a haiku about the Caspian Sea being the world's largest lake:
+
+          Caspian spreads wide (5)
+          Ancient waters vast and deep (7)
+          World's largest lake blue (5)
+
+          Let me double-check the syllables:
+          - Cas-pi-an spreads wide = 5 syllables ✓
+          - An-cient wa-ters vast and deep = 7 syllables ✓
+          - World's lar-gest lake blue = 5 syllables ✓
+
+          Actually wait, let me recount "ancient waters vast and deep":
+          An-cient (2) wa-ters (2) vast (1) and (1) deep (1) = 2+2+1+1+1 = 7 ✓
+
+          Perfect!
+          Caspian spreads wide—
+          Ancient waters vast and deep,
+          World's largest lake gleams.
+          [AGENT STATS] Turns: 1
+          Duration: 4 seconds
+          Cost (USD): $0.050913
+          Tokens (claude-haiku-4-5-20251001): 9 in, 385 out
+          Session ID: 6d6782cf-d193-4fc7-b5f4-414bc0cfcd3a
+        STDOUT
+        assert_equal expected_stdout, stdout
       end
 
       test "simple_repeat.rb workflow runs successfully" do
