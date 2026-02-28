@@ -206,6 +206,10 @@ module Roast
       assert_includes stderr, "default output test"
     end
 
+    test "default logger level is INFO" do
+      assert_equal Logger::INFO, Roast::Log.logger.level
+    end
+
     test "logger uses ROAST_LOG_LEVEL env var" do
       with_env("ROAST_LOG_LEVEL", "ERROR") do
         Roast::Log.reset!
@@ -218,6 +222,30 @@ module Roast
     test "LOG_LEVELS contains all standard levels" do
       expected = Logger::Severity.const_get(:LEVELS).except("unknown").transform_keys { |k| k.upcase.to_sym } # rubocop:disable Sorbet/ConstantsFromStrings
       assert_equal expected, Roast::Log::LOG_LEVELS
+    end
+
+    # --- tty? ---
+
+    test "tty? returns false when no logger is set" do
+      Roast::Log.instance_variable_set(:@logger, nil)
+
+      refute_predicate Roast::Log, :tty?
+    end
+
+    test "tty? returns false when logger writes to a StringIO" do
+      Roast::Log.logger = Logger.new(StringIO.new)
+
+      refute_predicate Roast::Log, :tty?
+    end
+
+    # --- LogFormatter integration ---
+
+    test "default logger uses LogFormatter" do
+      Roast::Log.reset!
+
+      _stdout, _stderr = capture_io do
+        assert_instance_of Roast::LogFormatter, Roast::Log.logger.formatter
+      end
     end
   end
 end
