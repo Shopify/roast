@@ -6,10 +6,8 @@ module Roast
   class CLIE2ETest < ActiveSupport::TestCase
     ROAST_EXE = File.expand_path("../../exe/roast", __dir__)
 
-    private def run_roast(*args, env: {})
-      full_env = { "BUNDLE_GEMFILE" => File.expand_path("../../Gemfile", __dir__) }.merge(env)
-      stdout, stderr, status = Open3.capture3(full_env, "bundle", "exec", ROAST_EXE, *args)
-      [stdout, stderr, status]
+    setup do
+      slow_test!
     end
 
     # ── version ──
@@ -124,6 +122,14 @@ module Roast
       assert_match(/workflow targets: \["Gemfile", "Rakefile"\]/, stdout)
       assert_match(/workflow args: \[:debug\]/, stdout)
       assert_match(/workflow kwargs: \{foo: "bar"\}/, stdout)
+    end
+
+    private
+
+    def run_roast(*args, env: {})
+      full_env = { "BUNDLE_GEMFILE" => File.expand_path("../../Gemfile", __dir__) }.merge(env)
+      stdout, stderr, status = Open3.capture3(full_env, "bundle", "exec", ROAST_EXE, *args)
+      [stdout, stderr, status]
     end
   end
 end
