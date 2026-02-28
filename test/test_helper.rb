@@ -127,6 +127,51 @@ def run_cog(cog, config: nil, scope_value: nil, scope_index: 0)
   cog
 end
 
+# Sets up a mock for the CommandRunner's execute method that does not actually run a command,
+# but instead provides the standard output and standard error lines from fixture files to the
+# stdout and stderr handlers provided when execute is invoked. It will also return a Process::Status with the
+# provided exit_code (defaulting to 0).
+#
+# This method can optionally validate that args, working_directory, timeout, and stdin_content values match provided
+# expectations.
+#
+#: (
+#|  String,
+#|  ?exit_code: Integer,
+#|  ?expected_args: Array[String]?,
+#|  ?expected_working_directory: (Pathname | String)?,
+#|  ?expected_timeout: (Integer | Float)?,
+#|  ?expected_stdin_content: String?,
+#| ) -> void
+def use_command_runner_fixture(
+  fixture_name,
+  exit_code: 0,
+  expected_args: nil,
+  expected_working_directory: nil,
+  expected_timeout: nil,
+  expected_stdin_content: nil
+)
+  stdout_fixture_file = "test/fixtures/#{fixture_name}.stdout.txt"
+  stderr_fixture_file = "test/fixtures/#{fixture_name}.stderr.txt"
+  stdout_fixture = File.exist?(stdout_fixture_file) ? File.read(stdout_fixture_file) : ""
+  stderr_fixture = File.exist?(stderr_fixture_file) ? File.read(stderr_fixture_file) : ""
+
+  mock_status = mock("process_status")
+  mock_status.stubs(exitstatus: exit_code, success?: exit_code == 0, signaled?: false)
+
+  Roast::CommandRunner.stubs(:execute).with do |args, **kwargs|
+    assert_equal(expected_args, args, "CommandRunner args mismatch") if expected_args
+    assert_equal(expected_working_directory, kwargs[:working_directory], "CommandRunner working_directory mismatch") if expected_working_directory
+    assert_equal(expected_timeout, kwargs[:timeout], "CommandRunner timeout mismatch") if expected_timeout
+    assert_equal(expected_stdin_content, kwargs[:stdin_content], "CommandRunner stdin_content mismatch") if expected_stdin_content
+
+    stdout_fixture.each_line { |line| kwargs[:stdout_handler]&.call(line) }
+    stderr_fixture.each_line { |line| kwargs[:stderr_handler]&.call(line) }
+
+    true
+  end.returns([stdout_fixture, stderr_fixture, mock_status])
+end
+
 VCR.configure do |config|
   config.cassette_library_dir = "test/fixtures/vcr_cassettes"
   config.hook_into :webmock
