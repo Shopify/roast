@@ -83,6 +83,33 @@ module Examples
         assert_equal expected_stdout, stdout
       end
 
+      test "custom_logging.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :custom_logging do
+          Roast::Workflow.from_file("examples/custom_logging.rb", EMPTY_PARAMS)
+        end
+        assert_empty stderr
+
+        date_pattern = /\(at \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]?\d{4}\)/
+        directory_pattern = %r{Directory: /\S+}
+        # NOTE: the custom logger in this example logs to STDOUT
+        expected_stdout = <<~LOG
+          I, 🔥🔥🔥 Workflow Starting (at TIMESTAMP)
+          D, Workflow Context:
+            Targets: []
+            Args: []
+            Kwargs: {}
+            Temporary Directory: DIRECTORY
+            Workflow Directory: examples
+            Working Directory: DIRECTORY (at TIMESTAMP)
+          I, cmd(:echo) Starting (at TIMESTAMP)
+          hello world
+          I, cmd(:echo) Complete (at TIMESTAMP)
+          I, 🔥🔥🔥 Workflow Complete (at TIMESTAMP)
+        LOG
+        cleaned_stdout = stdout.gsub(date_pattern, "(at TIMESTAMP)").gsub(directory_pattern, "Directory: DIRECTORY")
+        assert_equal expected_stdout, cleaned_stdout
+      end
+
       test "json_output.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :json_output do
           Roast::Workflow.from_file("examples/json_output.rb", EMPTY_PARAMS)
