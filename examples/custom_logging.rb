@@ -14,7 +14,7 @@ Roast::Log.logger = Logger.new($stdout).tap { |logger| logger.level = ::Logger::
 
 # Format log lines in a particular way
 Roast::Log.logger.formatter = proc do |severity, time, progname, msg|
-  "#{severity[0..0]}, #{msg} (at #{time})\n"
+  "#{severity[0..0]}, #{msg.strip} (at #{time})\n"
 end
 
 

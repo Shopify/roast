@@ -71,18 +71,27 @@ module Roast
       @logger = nil
     end
 
+    #: () -> bool
+    def tty?
+      return false unless @logger
+
+      logdev = @logger.instance_variable_get(:@logdev)&.dev
+      logdev&.respond_to?(:isatty) && logdev&.isatty
+    end
+
     private
 
     #: () -> Logger
     def create_logger
       ::Logger.new($stderr, progname: "Roast").tap do |l|
-        l.level = LOG_LEVELS.fetch(log_level)
+        l.level = LOG_LEVELS.fetch(log_level("INFO"))
+        l.formatter = Roast::LogFormatter.new(tty: $stderr.tty?)
       end
     end
 
-    #: () -> Symbol
-    def log_level
-      level = (ENV["ROAST_LOG_LEVEL"] || "INFO").upcase.to_sym
+    #: (String) -> Symbol
+    def log_level(default_level)
+      level = (ENV["ROAST_LOG_LEVEL"] || default_level).upcase.to_sym
       raise ArgumentError, "Invalid log level: #{level}. Valid levels are: #{LOG_LEVELS.keys.join(", ")}" unless LOG_LEVELS.key?(level)
 
       level
