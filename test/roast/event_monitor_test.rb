@@ -324,12 +324,12 @@ module Roast
       assert_equal "test_cog(:step)", result
     end
 
-    test "handle_stdout_event outputs to puts" do
+    test "handle_stdout_event does not output to console" do
       event = Event.new([], { stdout: "hello stdout" })
 
       output = capture_io { EventMonitor.accept(event) }.first
 
-      assert_includes output, "hello stdout"
+      assert_empty output
     end
 
     test "handle_stdout_event logs message at info level" do
@@ -340,12 +340,12 @@ module Roast
       assert_includes @logger_output.string, "hello stdout"
     end
 
-    test "handle_stderr_event outputs to puts" do
+    test "handle_stderr_event does not output to console" do
       event = Event.new([], { stderr: "hello stderr" })
 
       output = capture_io { EventMonitor.accept(event) }.first
 
-      assert_includes output, "hello stderr"
+      assert_empty output
     end
 
     test "handle_stderr_event logs message at warn level" do

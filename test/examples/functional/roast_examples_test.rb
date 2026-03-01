@@ -20,7 +20,10 @@ module Examples
         stdout, stderr = in_sandbox :async_cogs do
           Roast::Workflow.from_file("examples/async_cogs.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           first
           second
@@ -30,14 +33,18 @@ module Examples
           fifth
           slow background task 2
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "async_cogs_complex.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :async_cogs_complex do
           Roast::Workflow.from_file("examples/async_cogs_complex.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           first
           third
@@ -46,15 +53,19 @@ module Examples
           second
           fifth (second said: 'second')
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "call.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :call do
           Roast::Workflow.from_file("examples/call.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
-        lines = stdout.lines.map(&:strip)
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
+        lines = logged_stdout.lines.map(&:strip)
         assert_equal "--> before", lines.shift
         3.times do
           word = lines.shift
@@ -67,20 +78,25 @@ module Examples
         assert_equal "SCOPE VALUE: OTHER", lines.shift
         assert_equal "--> after", lines.shift
         assert_empty lines
+        assert_empty logged_stderr
       end
 
       test "collect_from.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :collect_from do
           Roast::Workflow.from_file("examples/collect_from.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           Could not access :to_upper directly
           Hello --> HELLO --> hello
           World --> WORLD --> world
           Goodnight,Moon --> GOODNIGHT,MOON --> goodnight,moon
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "custom_logging.rb workflow runs successfully" do
@@ -103,7 +119,6 @@ module Examples
             Working Directory: DIRECTORY (at TIMESTAMP)
           I, cmd(:echo) Starting (at TIMESTAMP)
           I, cmd(:echo) ❯ hello world (at TIMESTAMP)
-          hello world
           I, cmd(:echo) Complete (at TIMESTAMP)
           I, 🔥🔥🔥 Workflow Complete (at TIMESTAMP)
         LOG
@@ -115,7 +130,10 @@ module Examples
         stdout, stderr = in_sandbox :json_output do
           Roast::Workflow.from_file("examples/json_output.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           {
             "hello": "world",
@@ -134,19 +152,24 @@ module Examples
           }
           SOME VALUE FROM PARSED OUTPUT: aaa
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "outputs.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :outputs do
           Roast::Workflow.from_file("examples/outputs.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           From Outputs: "Upper: HELLO - Original: Hello"
           Explicit Value Access: "HELLO"
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "outputs_bang.rb workflow runs successfully" do
@@ -155,19 +178,26 @@ module Examples
             Roast::Workflow.from_file("examples/outputs_bang.rb", EMPTY_PARAMS)
           end
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           Using the `outputs` block should return `nil`: nil
           ❗️ This block is expected to raise an exception ❗️
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "map.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
           Roast::Workflow.from_file("examples/map.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           HELLO
           WORLD
@@ -186,22 +216,30 @@ module Examples
 
           goodnight -> GOODNIGHT
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "map_reduce.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :map_reduce do
           Roast::Workflow.from_file("examples/map_reduce.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
-        assert_equal "lower case words: hello world", stdout.strip
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
+        assert_equal "lower case words: hello world", logged_stdout.strip
+        assert_empty logged_stderr
       end
 
       test "map_with_index.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :map_with_index do
           Roast::Workflow.from_file("examples/map_with_index.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           [0] HELLO
           [1] WORLD
@@ -214,14 +252,18 @@ module Examples
           [8] WORLD
           [9] GOODNIGHT
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "next_break.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :next_break do
           Roast::Workflow.from_file("examples/next_break.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           [0] middle
           [0] end
@@ -231,14 +273,18 @@ module Examples
           Iteration 2: did not run at all
           [1] beginning
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "next_break_parallel.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :next_break_parallel do
           Roast::Workflow.from_file("examples/next_break_parallel.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           [2] beginning
           [2] middle
@@ -249,14 +295,18 @@ module Examples
           Iteration 1: [true, false, false]
           Iteration 2: [true, true, false]
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "parallel_map.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :parallel_map do
           Roast::Workflow.from_file("examples/parallel_map.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         # first four lines may appear in a non-deterministic order
         expected_stdout_first_four_lines = [
           "TWO",
@@ -264,35 +314,43 @@ module Examples
           "FIVE",
           "SIX",
         ].to_set
-        assert_equal expected_stdout_first_four_lines, stdout.lines[...4].map(&:strip).to_set
+        assert_equal expected_stdout_first_four_lines, logged_stdout.lines[...4].map(&:strip).to_set
         # last three lines will always appear in the same order
         expected_stdout_last_three_lines = <<~EOF
           THREE
           ONE
           ONE, TWO, THREE, FOUR, FIVE, SIX
         EOF
-        assert_equal expected_stdout_last_three_lines, stdout.lines[4..].join("")
+        assert_equal expected_stdout_last_three_lines, logged_stdout.lines[4..].join("")
+        assert_empty logged_stderr
       end
 
       test "prototype.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :prototype do
           Roast::Workflow.from_file("examples/prototype.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
-        lines = stdout.lines.map(&:strip)
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
+        lines = logged_stdout.lines.map(&:strip)
         assert_equal "Hello World!", lines.shift
         2.times do
           # match default `date` format
           assert_match(/^\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}$/, lines.shift, "missing date line")
         end
         assert_empty lines
+        assert_empty logged_stderr
       end
 
       test "repeat_loop_results.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :repeat_loop_results do
           Roast::Workflow.from_file("examples/repeat_loop_results.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           iteration 0: 7 + 0 -> 7
           iteration 1: 7 + 1 -> 8
@@ -307,14 +365,18 @@ module Examples
           All :add cog outputs: [7, 8, 10, 13]
           Sum of :add cog output: 38
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "ruby_cog.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :ruby_cog do
           Roast::Workflow.from_file("examples/ruby_cog.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           Roast
           Hello, ROAST
@@ -326,31 +388,40 @@ module Examples
           The long string has 3 lines
           And it has 75 characters
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "shell_sanitization.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :shell_sanitization do
           Roast::Workflow.from_file("examples/shell_sanitization.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
-        lines = stdout.lines.map(&:strip)
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
+        lines = logged_stdout.lines.map(&:strip)
         assert_equal "hello world", lines.shift
         assert_equal "bad", lines.shift
         3.times { assert_equal "hello world ; echo bad", lines.shift }
         assert_empty lines
+        assert_empty logged_stderr
       end
 
       test "step_communication.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :step_communication do
           Roast::Workflow.from_file("examples/step_communication.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
-        lines = stdout.lines.map(&:strip)
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
+        lines = logged_stdout.lines.map(&:strip)
         assert_match(/^d([r-][w-][x-]){3}[@+]?\s+\d+.*\.$/, lines.shift)
         assert_equal "---", lines.shift
         assert_match(/^d([r-][w-][x-]){3}[@+]?\s+\d+.*\w+$/, lines.shift)
         assert_empty lines
+        assert_empty logged_stderr
       end
 
       test "simple_external_cog.rb workflow runs successfully" do
@@ -358,13 +429,17 @@ module Examples
         stdout, stderr = in_sandbox :simple_external_cog do
           Roast::Workflow.from_file("examples/demo/simple_external_cog.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           I'm a cog!
           I'm a different cog!
           I'm a workflow-specific cog!
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       ensure
         $LOAD_PATH.delete(File.expand_path("examples/plugin-gem-example/lib", Dir.pwd))
       end
@@ -374,13 +449,17 @@ module Examples
         stdout, stderr = in_sandbox :multiloading do
           Roast::Workflow.from_file("examples/demo/multiloading.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           I'm a cog!
           I'm a different cog!
           I'm a workflow-specific cog!
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       ensure
         $LOAD_PATH.delete(File.expand_path("examples/plugin-gem-example/lib", Dir.pwd))
       end
@@ -406,7 +485,10 @@ module Examples
           Roast::Workflow.from_file("examples/simple_agent.rb", EMPTY_PARAMS)
         end
 
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~STDOUT
           [USER PROMPT] What is the world's largest lake?
           The user is asking me a simple geography question about the world's largest lake. This is a straightforward factual question that doesn't require any tools or special context.
@@ -441,21 +523,26 @@ module Examples
           Tokens (claude-haiku-4-5-20251001): 9 in, 385 out
           Session ID: 6d6782cf-d193-4fc7-b5f4-414bc0cfcd3a
         STDOUT
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "simple_repeat.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :simple_repeat do
           Roast::Workflow.from_file("examples/simple_repeat.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           iteration 0
           iteration 1
           iteration 2
           iteration 3
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "targets_and_params.rb workflow runs successfully" do
@@ -467,7 +554,10 @@ module Examples
         stdout, stderr = in_sandbox :targets_and_params do
           Roast::Workflow.from_file("examples/targets_and_params.rb", params)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           workflow targets: ["one", "two", "three"]
           workflow args: [:a, :b, :c]
@@ -479,7 +569,8 @@ module Examples
           Keyword argument 'name': ''
           Keyword argument 'name' provided: no
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
 
       test "chat base_url configuration is respected" do
@@ -540,24 +631,32 @@ module Examples
         stdout, stderr = in_sandbox :temporary_directory do
           Roast::Workflow.from_file("examples/temporary_directory.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
-        assert_predicate stdout.length, :>, 0
-        path = Pathname.new(stdout.strip)
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
+        assert_predicate logged_stdout.length, :>, 0
+        path = Pathname.new(logged_stdout.strip)
         assert_predicate path, :absolute?
         refute_predicate path, :exist?
+        assert_empty logged_stderr
       end
 
       test "working_directory.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :working_directory do
           Roast::Workflow.from_file("examples/working_directory.rb", EMPTY_PARAMS)
         end
+        assert_empty stdout
         assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~EOF
           Current working directory: #{Dir.pwd}
           Alternate working directory: /tmp
           Back to original working directory: #{Dir.pwd}
         EOF
-        assert_equal expected_stdout, stdout
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
       end
     end
   end
