@@ -37,7 +37,9 @@ module CaptureLogOutput
   included do
     setup do
       @logger_output = StringIO.new
-      Roast::Log.logger = Logger.new(@logger_output)
+      Roast::Log.logger = Logger.new(@logger_output).tap do |l|
+        l.formatter = Roast::LogFormatter.new(tty: false)
+      end
     end
 
     teardown do
@@ -125,6 +127,36 @@ def run_cog(cog, config: nil, scope_value: nil, scope_index: 0)
   end
 
   cog
+end
+
+# Extract original stdout/stderr content from log output by parsing ❯ and ❯❯ markers.
+# Handles multiline log entries by treating non-log-prefix lines as continuations.
+#
+#: (?logger_output: String) -> [String, String]
+def original_streams_from_logger_output(logger_output: @logger_output.string)
+  log_prefix_pattern = /^[DIWEFA], \[/
+  all_lines = logger_output.lines
+  stdout_lines = []
+  stderr_lines = []
+  current_stream = nil
+
+  all_lines.each do |line|
+    if line.match?(log_prefix_pattern)
+      if line.include?(" ❯❯")
+        current_stream = :stderr
+        stderr_lines << line.sub(/^.*❯❯ ?/, "")
+      elsif line.include?(" ❯")
+        current_stream = :stdout
+        stdout_lines << line.sub(/^.*❯ ?/, "")
+      else
+        current_stream = nil
+      end
+    elsif current_stream
+      (current_stream == :stdout ? stdout_lines : stderr_lines) << line
+    end
+  end
+
+  [stdout_lines.join, stderr_lines.join]
 end
 
 # Sets up a mock for the CommandRunner's execute method that does not actually run a command,
