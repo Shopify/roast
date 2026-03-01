@@ -4,6 +4,7 @@ PATH
     roast-ai (1.0.0)
       activesupport (~> 8.0)
       async (>= 2.34)
+      rainbow (>= 3.0.0)
       ruby_llm (>= 1.8)
       zeitwerk (>= 2.6)
 
