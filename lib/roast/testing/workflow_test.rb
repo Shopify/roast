@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "tmpdir"
@@ -77,9 +78,8 @@ module Roast
         end
 
         # Replace random temp directory path with a standardized value
-        path_regex = Regexp.new(tmpdir)
-        out.gsub!(path_regex, "/fake-testing-dir")
-        err.gsub!(path_regex, "/fake-testing-dir")
+        out.gsub!(tmpdir, "/fake-testing-dir")
+        err.gsub!(tmpdir, "/fake-testing-dir")
 
         if ENV["CI"]
           puts "========= STDOUT ========="
@@ -160,24 +160,27 @@ module Roast
       end
 
       def configure_vcr_once
-        return if @vcr_configured
+        return if self.class.instance_variable_get(:@vcr_configured)
 
         # Skip auto-configuration if VCR is already configured (e.g., by the host test_helper.rb)
         if VCR.configuration.cassette_library_dir
-          @vcr_configured = true
+          self.class.instance_variable_set(:@vcr_configured, true)
           return
         end
 
+        api_key_replacement = fake_api_key
+        api_base_replacement = fake_api_base
         cassette_dir = cassette_library_dir || File.join(Dir.pwd, "test/fixtures/vcr_cassettes")
+
         VCR.configure do |config|
           config.cassette_library_dir = cassette_dir
           config.hook_into(:webmock) if defined?(WebMock)
 
-          config.filter_sensitive_data("http://mytestingproxy.local/v1/chat/completions") do |interaction|
+          config.filter_sensitive_data("#{api_base_replacement}/chat/completions") do |interaction|
             interaction.request.uri
           end
 
-          config.filter_sensitive_data("my-token") do |interaction|
+          config.filter_sensitive_data(api_key_replacement) do |interaction|
             interaction.request.headers["Authorization"]&.first
           end
 
@@ -190,7 +193,7 @@ module Roast
           end
         end
 
-        @vcr_configured = true
+        self.class.instance_variable_set(:@vcr_configured, true)
       end
 
       def with_env(key, value)
