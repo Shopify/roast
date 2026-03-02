@@ -341,6 +341,35 @@ module Roast
               internal_result = @invocation.instance_variable_get(:@result)
               assert_equal "new_session", internal_result.session
             end
+
+            test "handle_message emits info event when session_id is set for the first time" do
+              message = Messages::TextMessage.new(
+                type: :text,
+                hash: { text: "Hello", session_id: "first_session" },
+              )
+
+              Event.expects(:<<).with { |payload| payload[:debug] == "New Claude Session ID: first_session" }
+
+              @invocation.send(:handle_message, message)
+            end
+
+            test "handle_message emits info event when session_id changes" do
+              first = Messages::TextMessage.new(type: :text, hash: { text: "Hello", session_id: "session_1" })
+              second = Messages::TextMessage.new(type: :text, hash: { text: "Hello", session_id: "session_2" })
+
+              @invocation.send(:handle_message, first)
+              Event.expects(:<<).with { |payload| payload[:debug] == "New Claude Session ID: session_2" }
+              @invocation.send(:handle_message, second)
+            end
+
+            test "handle_message does not emit event when session_id is unchanged" do
+              first = Messages::TextMessage.new(type: :text, hash: { text: "Hello", session_id: "same_session" })
+              second = Messages::TextMessage.new(type: :text, hash: { text: "Hello", session_id: "same_session" })
+
+              @invocation.send(:handle_message, first)
+              Event.expects(:<<).never
+              @invocation.send(:handle_message, second)
+            end
           end
         end
       end

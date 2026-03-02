@@ -146,7 +146,10 @@ module Roast
                 message.messages.each { |msg| handle_message(msg) }
               end
 
-              @result.session = message.session_id if message.session_id.present?
+              if message.session_id.present?
+                (Event << { debug: "New Claude Session ID: #{message.session_id}" }) if @result.session != message.session_id
+                @result.session = message.session_id
+              end
 
               formatted_message = message.format(@context)
               puts formatted_message if formatted_message.present? && @show_progress
