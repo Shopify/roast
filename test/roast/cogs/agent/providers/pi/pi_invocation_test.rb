@@ -231,7 +231,10 @@ module Roast
             # Message handling tests
 
             test "handle_message extracts session id from session message" do
-              message = { type: "session", id: "abc-123", version: 3 }
+              message = Messages::SessionMessage.new(
+                type: "session",
+                hash: { id: "abc-123", version: 3 },
+              )
 
               @invocation.send(:handle_message, message)
 
@@ -240,13 +243,15 @@ module Roast
             end
 
             test "handle_message extracts response from agent_end message" do
-              message = {
+              message = Messages::AgentEndMessage.new(
                 type: "agent_end",
-                messages: [
-                  { role: "user", content: [{ type: "text", text: "Hello" }] },
-                  { role: "assistant", content: [{ type: "text", text: "Hi there!" }] },
-                ],
-              }
+                hash: {
+                  messages: [
+                    { role: "user", content: [{ type: "text", text: "Hello" }] },
+                    { role: "assistant", content: [{ type: "text", text: "Hi there!" }] },
+                  ],
+                },
+              )
 
               @invocation.send(:handle_message, message)
 
@@ -256,14 +261,16 @@ module Roast
             end
 
             test "handle_message extracts response from last assistant message in agent_end" do
-              message = {
+              message = Messages::AgentEndMessage.new(
                 type: "agent_end",
-                messages: [
-                  { role: "user", content: [{ type: "text", text: "Hello" }] },
-                  { role: "assistant", content: [{ type: "toolCall", name: "read", arguments: {} }] },
-                  { role: "assistant", content: [{ type: "text", text: "Final response" }] },
-                ],
-              }
+                hash: {
+                  messages: [
+                    { role: "user", content: [{ type: "text", text: "Hello" }] },
+                    { role: "assistant", content: [{ type: "toolCall", name: "read", arguments: {} }] },
+                    { role: "assistant", content: [{ type: "text", text: "Final response" }] },
+                  ],
+                },
+              )
 
               @invocation.send(:handle_message, message)
 
@@ -272,18 +279,20 @@ module Roast
             end
 
             test "handle_message accumulates turn stats" do
-              message = {
+              message = Messages::TurnEndMessage.new(
                 type: "turn_end",
-                message: {
-                  role: "assistant",
-                  model: "claude-sonnet-4-20250514",
-                  usage: {
-                    input: 100,
-                    output: 50,
-                    cost: { total: 0.001 },
+                hash: {
+                  message: {
+                    role: "assistant",
+                    model: "claude-sonnet-4-20250514",
+                    usage: {
+                      input: 100,
+                      output: 50,
+                      cost: { total: 0.001 },
+                    },
                   },
                 },
-              }
+              )
 
               @invocation.send(:handle_message, message)
 
@@ -297,22 +306,26 @@ module Roast
             end
 
             test "handle_message accumulates stats across multiple turns" do
-              turn1 = {
+              turn1 = Messages::TurnEndMessage.new(
                 type: "turn_end",
-                message: {
-                  role: "assistant",
-                  model: "claude-sonnet-4-20250514",
-                  usage: { input: 100, output: 50, cost: { total: 0.001 } },
+                hash: {
+                  message: {
+                    role: "assistant",
+                    model: "claude-sonnet-4-20250514",
+                    usage: { input: 100, output: 50, cost: { total: 0.001 } },
+                  },
                 },
-              }
-              turn2 = {
+              )
+              turn2 = Messages::TurnEndMessage.new(
                 type: "turn_end",
-                message: {
-                  role: "assistant",
-                  model: "claude-sonnet-4-20250514",
-                  usage: { input: 200, output: 75, cost: { total: 0.002 } },
+                hash: {
+                  message: {
+                    role: "assistant",
+                    model: "claude-sonnet-4-20250514",
+                    usage: { input: 200, output: 75, cost: { total: 0.002 } },
+                  },
                 },
-              }
+              )
 
               @invocation.send(:handle_message, turn1)
               @invocation.send(:handle_message, turn2)

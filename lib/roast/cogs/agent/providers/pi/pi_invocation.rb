@@ -105,65 +105,47 @@ module Roast
 
             #: (String) -> void
             def handle_stdout(line)
-              # TODO: implement message parsing in PR 2/3
               line = line.strip
               return if line.empty?
 
-              if @raw_dump_file
-                @raw_dump_file.dirname.mkpath
-                File.write(@raw_dump_file.to_s, "#{line}\n", mode: "a")
-              end
+              message = Message.from_json(line, raw_dump_file: @raw_dump_file)
+              return unless message
 
-              begin
-                parsed = JSON.parse(line, symbolize_names: true)
-                handle_message(parsed)
-              rescue JSON::ParserError
-                Roast::Log.warn("Failed to parse Pi output line: #{line}")
-              end
+              handle_message(message)
             end
 
-            #: (Hash[Symbol, untyped]) -> void
+            #: (Message) -> void
             def handle_message(message)
-              type = message[:type]&.to_s
-
-              case type
-              when "session"
-                @result.session = message[:id]
-              when "agent_end"
-                extract_result_from_agent_end(message)
-              when "turn_end"
+              case message
+              when Messages::SessionMessage
+                @result.session = message.session_id
+              when Messages::AgentEndMessage
+                @result.response = message.final_response
+                @result.success = true
+              when Messages::TurnEndMessage
                 accumulate_turn_stats(message)
-              when "message_update"
-                handle_message_update(message)
+              when Messages::MessageUpdateMessage
+                # Show progress for text deltas
+                formatted = message.format
+                puts formatted if formatted.present? && @show_progress
+              end
+
+              unless message.unparsed.blank?
+                Roast::Log.debug("Unhandled data in Pi #{message.type} message:")
+                Roast::Log.debug(JSON.pretty_generate(message.unparsed))
               end
             end
 
-            #: (Hash[Symbol, untyped]) -> void
-            def extract_result_from_agent_end(message)
-              messages = message[:messages] || []
-              last_assistant = messages.reverse.find { |m| m[:role] == "assistant" }
-              if last_assistant
-                text_parts = (last_assistant[:content] || [])
-                  .select { |c| c[:type] == "text" }
-                  .map { |c| c[:text] }
-                @result.response = text_parts.join
-              end
-              @result.success = true
-            end
-
-            #: (Hash[Symbol, untyped]) -> void
+            #: (Messages::TurnEndMessage) -> void
             def accumulate_turn_stats(message)
               @result.stats ||= Stats.new
               stats = @result.stats.not_nil!
               stats.num_turns = (stats.num_turns || 0) + 1
 
-              assistant_message = message[:message]
-              return unless assistant_message
-
-              usage = assistant_message[:usage]
+              usage = message.usage
               return unless usage
 
-              model = assistant_message[:model] || "unknown"
+              model = message.model || "unknown"
               model_usage = stats.model_usage[model] ||= Usage.new
               model_usage.input_tokens = (model_usage.input_tokens || 0) + (usage[:input] || 0)
               model_usage.output_tokens = (model_usage.output_tokens || 0) + (usage[:output] || 0)
@@ -176,18 +158,6 @@ module Roast
 
               stats.usage.input_tokens = (stats.usage.input_tokens || 0) + (usage[:input] || 0)
               stats.usage.output_tokens = (stats.usage.output_tokens || 0) + (usage[:output] || 0)
-            end
-
-            #: (Hash[Symbol, untyped]) -> void
-            def handle_message_update(message)
-              event = message[:assistantMessageEvent]
-              return unless event
-
-              case event[:type]
-              when "text_delta"
-                delta = event[:delta]
-                puts delta if delta && @show_progress
-              end
             end
 
             #: () -> Array[String]
