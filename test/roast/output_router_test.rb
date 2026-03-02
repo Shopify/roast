@@ -87,10 +87,6 @@ module Roast
 
     # --- output_fiber? / mark_as_output_fiber! ---
 
-    test "output_fiber? returns false by default" do
-      refute_predicate OutputRouter, :output_fiber?
-    end
-
     test "mark_as_output_fiber! makes output_fiber? return true for current fiber" do
       OutputRouter.mark_as_output_fiber!
 

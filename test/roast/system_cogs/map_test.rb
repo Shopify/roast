@@ -75,6 +75,18 @@ module Roast
         end
       end
 
+      test "Params anonymous? returns false when name is provided" do
+        params = Map::Params.new(:my_map, run: :my_scope)
+
+        refute params.anonymous?
+      end
+
+      test "Params anonymous? returns true when name is not provided" do
+        params = Map::Params.new(run: :my_scope)
+
+        assert params.anonymous?
+      end
+
       test "Input validate! passes when items are set" do
         input = Map::Input.new
         input.items = ["a", "b"]

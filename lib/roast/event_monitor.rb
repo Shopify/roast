@@ -80,12 +80,38 @@ module Roast
 
     #: (Event) -> void
     def handle_begin_event(event)
-      Roast::Log.logger.debug(event.inspect)
+      # The first path element is always the top-level ExecutionManager
+      handle_begin_workflow_event(event) if event.path.length == 1
+      return unless event[:begin].cog.present?
+
+      Roast::Log.logger.info { "#{format_path(event)} Starting" }
+    end
+
+    def handle_begin_workflow_event(event)
+      execution_manager = event[:begin].execution_manager.not_nil!
+      workflow_context = execution_manager.workflow_context
+      Roast::Log.logger.info("🔥🔥🔥 Workflow Starting")
+      Roast::Log.logger.debug do
+        message = <<~MESSAGE
+          Workflow Context:
+            Targets: #{workflow_context.params.targets}
+            Args: #{workflow_context.params.args}
+            Kwargs: #{workflow_context.params.kwargs}
+            Temporary Directory: #{workflow_context.tmpdir}
+            Workflow Directory: #{workflow_context.workflow_dir}
+            Working Directory: #{Dir.pwd}
+        MESSAGE
+        message.strip
+      end
     end
 
     #: (Event) -> void
     def handle_end_event(event)
-      Roast::Log.logger.debug(event.inspect)
+      # The first path element is always the top-level ExecutionManager
+      Roast::Log.logger.info("🔥🔥🔥 Workflow Complete") if event.path.length == 1
+      return unless event[:end].cog.present?
+
+      Roast::Log.logger.info { "#{format_path(event)} Complete" }
     end
 
     #: (Event) -> void
@@ -106,6 +132,19 @@ module Roast
     #: (Event) -> void
     def handle_unknown_event(event)
       Roast::Log.logger.unknown(event.inspect)
+    end
+
+    #: (Event) -> String
+    def format_path(event)
+      event.path.map do |element|
+        cog = element.cog
+        execution_manager = element.execution_manager
+        if cog.present?
+          "#{cog.type}#{cog.anonymous? ? "" : "(:#{cog.name})"}"
+        elsif execution_manager&.scope
+          "{:#{execution_manager.scope}}[#{execution_manager.scope_index}]"
+        end
+      end.compact.join(" -> ")
     end
 
     #: [T] (Class, Symbol, untyped) { () -> T } -> T

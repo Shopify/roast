@@ -31,8 +31,38 @@ module Roast
       assert_equal CustomParamsSystemCog::Params, CustomParamsSystemCog.params_class
     end
 
+    test "Params anonymous? returns false when name is provided" do
+      params = SystemCog::Params.new(:my_cog)
+
+      refute params.anonymous?
+      assert_equal :my_cog, params.name
+    end
+
+    test "Params anonymous? returns true when name is nil" do
+      params = SystemCog::Params.new(nil)
+
+      assert params.anonymous?
+      assert_kind_of Symbol, params.name
+    end
+
+    test "anonymous? is forwarded from initialize to Cog" do
+      cog = TestSystemCog.new(:named_cog, ->(_input, _scope, _index) { "value" }, anonymous: false) do |_input, _config|
+        TestCogSupport::TestOutput.new("done")
+      end
+
+      refute cog.anonymous?
+    end
+
+    test "anonymous? returns true when anonymous: true is passed" do
+      cog = TestSystemCog.new(:fallback, ->(_input, _scope, _index) { "value" }, anonymous: true) do |_input, _config|
+        TestCogSupport::TestOutput.new("done")
+      end
+
+      assert cog.anonymous?
+    end
+
     test "execute calls the on_execute block with input and config" do
-      cog = TestSystemCog.new(:test_cog, ->(_input, _scope, _index) { "value" }) do |_input, _config|
+      cog = TestSystemCog.new(:test_cog, ->(_input, _scope, _index) { "value" }, anonymous: false) do |_input, _config|
         TestCogSupport::TestOutput.new("executed")
       end
 
@@ -46,7 +76,7 @@ module Roast
       captured_config = nil
       custom_config = Cog::Config.new
 
-      cog = TestSystemCog.new(:config_cog, ->(_input, _scope, _index) { "value" }) do |_input, config|
+      cog = TestSystemCog.new(:config_cog, ->(_input, _scope, _index) { "value" }, anonymous: false) do |_input, config|
         captured_config = config
         TestCogSupport::TestOutput.new("done")
       end

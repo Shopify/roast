@@ -26,7 +26,7 @@ module Roast
       :stderr,
     ].freeze #: Array[Symbol]
 
-    #: Array[Symbol | Integer]
+    #: Array[TaskContext::PathElement]
     attr_reader :path
 
     #: Hash[Symbol, untyped] :payload
@@ -37,7 +37,7 @@ module Roast
 
     delegate :[], :key?, :keys, to: :payload
 
-    #: (Array[Symbol | Integer] path, Hash[Symbol, untyped]) -> void
+    #: (Array[TaskContext::PathElement] path, Hash[Symbol, untyped]) -> void
     def initialize(path, payload)
       @path = path
       @payload = payload

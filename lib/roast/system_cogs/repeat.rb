@@ -206,7 +206,7 @@ module Roast
 
         #: (Params, ^(Cog::Input) -> untyped) -> SystemCogs::Repeat
         def create_repeat_system_cog(params, input_proc)
-          SystemCogs::Repeat.new(params.name, input_proc) do |input|
+          SystemCogs::Repeat.new(params.name, input_proc, anonymous: params.anonymous?) do |input|
             input = input #: as Input
             raise ExecutionManager::ExecutionScopeNotSpecifiedError unless params.run.present?
 

@@ -207,9 +207,7 @@ module Roast
     end
 
     test "logger uses ROAST_LOG_LEVEL env var" do
-      with_log_level("ERROR") do
-        StringIO.new
-        Roast::Log.logger = nil # force re-creation won't work, need to use logger directly
+      with_env("ROAST_LOG_LEVEL", "ERROR") do
         Roast::Log.reset!
         logger = Roast::Log.logger
 

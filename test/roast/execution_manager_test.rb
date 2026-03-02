@@ -88,6 +88,32 @@ module Roast
       end
     end
 
+    test "cog created without a name is anonymous" do
+      exec_proc = proc do
+        test_cog { "hello" }
+      end
+      manager = build_manager({ nil => [exec_proc] })
+      manager.prepare!
+      manager.run!
+
+      stack = manager.instance_variable_get(:@cog_stack)
+      assert_equal 1, stack.size
+      assert stack.last.anonymous?
+    end
+
+    test "cog created with explicit name is not anonymous" do
+      exec_proc = proc do
+        test_cog(:my_step) { "hello" }
+      end
+      manager = build_manager({ nil => [exec_proc] })
+      manager.prepare!
+      manager.run!
+
+      stack = manager.instance_variable_get(:@cog_stack)
+      assert_equal 1, stack.size
+      refute stack.last.anonymous?
+    end
+
     test "run! executes cogs in order and sets final_output to last cog output" do
       exec_proc = proc do
         test_cog(:step1) { "first" }

@@ -24,6 +24,18 @@ module Roast
 
     class OutputsAlreadyDefinedError < ExecutionManagerError; end
 
+    #: WorkflowContext
+    attr_reader :workflow_context
+
+    #: Symbol?
+    attr_reader :scope
+
+    #: untyped
+    attr_reader :scope_value
+
+    #: Integer
+    attr_reader :scope_index
+
     #: untyped
     attr_reader :final_output
 
@@ -79,6 +91,7 @@ module Roast
       @running = true
       Sync do |sync_task|
         sync_task.annotate("ExecutionManager #{@scope}")
+        TaskContext.begin_execution_manager(self)
         @cog_stack.each do |cog|
           cog_config = @config_manager.config_for(cog.class, cog.name)
           cog_task = cog.run!(
@@ -97,6 +110,7 @@ module Roast
       ensure
         @barrier.stop
         compute_final_output
+        TaskContext.end
         @running = false
       end
     end
@@ -199,8 +213,14 @@ module Roast
           raise NotImplementedError, "No system cog manager defined for #{cog_class}"
         end
       else
-        cog_name = Array.wrap(cog_args).shift || Cog.generate_fallback_name
-        cog_instance = cog_class.new(cog_name, cog_input_proc)
+        cog_name = Array.wrap(cog_args).shift
+        if cog_name
+          anonymous = false
+        else
+          anonymous = true
+          cog_name = Cog.generate_fallback_name
+        end
+        cog_instance = cog_class.new(cog_name, cog_input_proc, anonymous:)
       end
       add_cog_instance(cog_instance)
     end
