@@ -14,6 +14,10 @@ module Roast
             # Example:
             #   {"type":"tool_execution_end"}
             class ToolExecutionEndMessage < Message
+              #: () -> String
+              def format
+                "⚙ tool execution complete"
+              end
             end
           end
         end

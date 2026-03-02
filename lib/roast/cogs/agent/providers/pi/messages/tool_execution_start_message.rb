@@ -14,6 +14,10 @@ module Roast
             # Example:
             #   {"type":"tool_execution_start"}
             class ToolExecutionStartMessage < Message
+              #: () -> String
+              def format
+                "⚙ executing tool..."
+              end
             end
           end
         end

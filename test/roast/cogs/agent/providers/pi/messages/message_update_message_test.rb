@@ -115,8 +115,19 @@ module Roast
                 message = MessageUpdateMessage.new(type: "message_update", hash:)
 
                 result = message.format
-                assert_includes result, "TOOL: bash"
-                assert_includes result, "command"
+                assert_equal "BASH: ls", result
+              end
+
+              test "format returns ToolUse formatted output for read tool" do
+                hash = {
+                  assistantMessageEvent: {
+                    type: "toolcall_end",
+                    toolCall: { name: "read", arguments: { path: "/tmp/test.txt" } },
+                  },
+                }
+                message = MessageUpdateMessage.new(type: "message_update", hash:)
+
+                assert_equal "READ: /tmp/test.txt", message.format
               end
 
               test "format returns nil for text_start events" do

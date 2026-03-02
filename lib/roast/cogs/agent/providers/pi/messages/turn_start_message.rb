@@ -12,6 +12,10 @@ module Roast
             # Example:
             #   {"type":"turn_start"}
             class TurnStartMessage < Message
+              #: () -> String
+              def format
+                "--- turn start ---"
+              end
             end
           end
         end

@@ -108,6 +108,50 @@ module Roast
 
                 assert_nil message.stop_reason
               end
+
+              # format tests
+
+              test "format returns summary with model and usage" do
+                hash = {
+                  message: {
+                    model: "claude-opus-4-6",
+                    usage: { input: 100, output: 50, cost: { total: 0.025 } },
+                  },
+                }
+                message = TurnEndMessage.new(type: "turn_end", hash:)
+
+                result = message.format
+
+                assert_includes result, "turn end"
+                assert_includes result, "claude-opus-4-6"
+                assert_includes result, "100 in"
+                assert_includes result, "50 out"
+                assert_includes result, "$0.025000"
+              end
+
+              test "format returns nil when no usage" do
+                hash = { message: { model: "test" } }
+                message = TurnEndMessage.new(type: "turn_end", hash:)
+
+                assert_nil message.format
+              end
+
+              test "format returns nil when message is nil" do
+                message = TurnEndMessage.new(type: "turn_end", hash: {})
+
+                assert_nil message.format
+              end
+
+              test "format shows unknown model when model is nil" do
+                hash = {
+                  message: {
+                    usage: { input: 10, output: 5, cost: { total: 0.001 } },
+                  },
+                }
+                message = TurnEndMessage.new(type: "turn_end", hash:)
+
+                assert_includes message.format, "unknown"
+              end
             end
           end
         end

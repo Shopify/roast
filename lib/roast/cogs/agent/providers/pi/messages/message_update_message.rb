@@ -84,8 +84,11 @@ module Roast
                   return nil unless tc
 
                   name = tc[:name]
-                  args = tc[:arguments]
-                  "TOOL: #{name} #{args.inspect}" if name
+                  return nil unless name
+
+                  args = tc[:arguments] || {}
+                  tool_use = ToolUse.new(name:, arguments: args)
+                  tool_use.format
                 end
               end
             end
