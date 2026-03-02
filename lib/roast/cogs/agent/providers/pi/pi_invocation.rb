@@ -55,6 +55,8 @@ module Roast
               raise PiAlreadyStartedError if started?
 
               @started = true
+              start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
               _stdout, stderr, status = CommandRunner.execute(
                 command_line,
                 working_directory: @working_directory,
@@ -62,8 +64,12 @@ module Roast
                 stdout_handler: lambda { |line| handle_stdout(line) },
               )
 
+              duration_ms = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time) * 1000).round
+
               if status.success?
                 @completed = true
+                @result.stats ||= Stats.new
+                @result.stats.duration_ms = duration_ms
               else
                 @failed = true
                 @result.success = false
