@@ -28,6 +28,12 @@ module Roast
               assert_kind_of Messages::AgentStartMessage, message
             end
 
+            test "from_hash dispatches agent_end type" do
+              message = Message.from_hash({ type: "agent_end", messages: [] })
+
+              assert_kind_of Messages::AgentEndMessage, message
+            end
+
             test "from_hash dispatches turn_start type" do
               message = Message.from_hash({ type: "turn_start" })
 
