@@ -77,13 +77,19 @@ module Roast
     test "roast execute runs a workflow file" do
       stdout, stderr, status = run_roast("execute", "examples/outputs.rb")
       assert status.success?, "Expected success but got exit #{status.exitstatus}.\nstderr: #{stderr}"
-      assert_match(/Upper:.*HELLO.*Original:.*Hello/, stdout)
+      assert_empty stdout
+      logged_stdout, logged_stderr = original_streams_from_logger_output(logger_output: stderr)
+      assert_match(/Upper:.*HELLO.*Original:.*Hello/, logged_stdout)
+      assert_empty logged_stderr
     end
 
     test "roast runs a workflow file without the execute keyword" do
       stdout, stderr, status = run_roast("examples/outputs.rb")
       assert status.success?, "Expected success but got exit #{status.exitstatus}.\nstderr: #{stderr}"
-      assert_match(/Upper:.*HELLO.*Original:.*Hello/, stdout)
+      assert_empty stdout
+      logged_stdout, logged_stderr = original_streams_from_logger_output(logger_output: stderr)
+      assert_match(/Upper:.*HELLO.*Original:.*Hello/, logged_stdout)
+      assert_empty logged_stderr
     end
 
     # ── separator and custom args ──
@@ -96,8 +102,11 @@ module Roast
         "name=test",
       )
       assert status.success?, "Expected success but got exit #{status.exitstatus}.\nstderr: #{stderr}"
-      assert_match(/workflow args: \[:verbose\]/, stdout)
-      assert_match(/workflow kwargs: \{name: "test"\}/, stdout)
+      assert_empty stdout
+      logged_stdout, logged_stderr = original_streams_from_logger_output(logger_output: stderr)
+      assert_match(/workflow args: \[:verbose\]/, logged_stdout)
+      assert_match(/workflow kwargs: \{name: "test"\}/, logged_stdout)
+      assert_empty logged_stderr
     end
 
     test "roast passes targets to the workflow" do
@@ -106,7 +115,10 @@ module Roast
         "Gemfile",
       )
       assert status.success?, "Expected success but got exit #{status.exitstatus}.\nstderr: #{stderr}"
-      assert_match(/workflow targets: \["Gemfile"\]/, stdout)
+      assert_empty stdout
+      logged_stdout, logged_stderr = original_streams_from_logger_output(logger_output: stderr)
+      assert_match(/workflow targets: \["Gemfile"\]/, logged_stdout)
+      assert_empty logged_stderr
     end
 
     test "roast passes targets and custom args together" do
@@ -119,9 +131,12 @@ module Roast
         "debug",
       )
       assert status.success?, "Expected success but got exit #{status.exitstatus}.\nstderr: #{stderr}"
-      assert_match(/workflow targets: \["Gemfile", "Rakefile"\]/, stdout)
-      assert_match(/workflow args: \[:debug\]/, stdout)
-      assert_match(/workflow kwargs: \{foo: "bar"\}/, stdout)
+      assert_empty stdout
+      logged_stdout, logged_stderr = original_streams_from_logger_output(logger_output: stderr)
+      assert_match(/workflow targets: \["Gemfile", "Rakefile"\]/, logged_stdout)
+      assert_match(/workflow args: \[:debug\]/, logged_stdout)
+      assert_match(/workflow kwargs: \{foo: "bar"\}/, logged_stdout)
+      assert_empty logged_stderr
     end
 
     private
