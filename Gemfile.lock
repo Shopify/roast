@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    roast-ai (1.0.1)
+    roast-ai (1.0.2)
       activesupport (~> 8.0)
       async (>= 2.34)
       rainbow (>= 3.0.0)
