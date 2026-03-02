@@ -336,6 +336,165 @@ module Roast
               assert_equal 125, internal_result.stats.usage.output_tokens
               assert_in_delta 0.003, internal_result.stats.usage.cost_usd
             end
+
+            # Duration tracking tests
+
+            test "run! records duration_ms on successful completion" do
+              CommandRunner.stub(:execute, ["", "", success_status]) do
+                @invocation.run!
+              end
+
+              result = @invocation.result
+              assert_not_nil result.stats
+              assert_not_nil result.stats.duration_ms
+              assert_operator result.stats.duration_ms, :>=, 0
+            end
+
+            test "run! does not record duration on failure" do
+              CommandRunner.stub(:execute, ["", "Error", failure_status]) do
+                @invocation.run!
+              end
+
+              internal_result = @invocation.instance_variable_get(:@result)
+              assert_nil internal_result.stats
+            end
+
+            # Fixture-based integration tests
+
+            test "simple response fixture: extracts response, session, and stats" do
+              use_command_runner_fixture(
+                "agent_transcripts/pi_simple_response",
+                expected_args: ["pi", "-p", "--mode", "json"],
+                expected_stdin_content: "Test prompt",
+              )
+
+              @invocation.run!
+              result = @invocation.result
+
+              assert_equal "The capital of France is Paris.", result.response
+              assert result.success
+              assert_equal "test-session-abc-123", result.session
+            end
+
+            test "simple response fixture: records turn count" do
+              use_command_runner_fixture("agent_transcripts/pi_simple_response")
+
+              @invocation.run!
+              result = @invocation.result
+
+              assert_equal 1, result.stats.num_turns
+            end
+
+            test "simple response fixture: records token usage per model" do
+              use_command_runner_fixture("agent_transcripts/pi_simple_response")
+
+              @invocation.run!
+              result = @invocation.result
+
+              model_usage = result.stats.model_usage["claude-sonnet-4-20250514"]
+              assert_not_nil model_usage
+              assert_equal 5, model_usage.input_tokens
+              assert_equal 10, model_usage.output_tokens
+              assert_in_delta 0.006525, model_usage.cost_usd
+            end
+
+            test "simple response fixture: records aggregate token usage" do
+              use_command_runner_fixture("agent_transcripts/pi_simple_response")
+
+              @invocation.run!
+              result = @invocation.result
+
+              assert_equal 5, result.stats.usage.input_tokens
+              assert_equal 10, result.stats.usage.output_tokens
+              assert_in_delta 0.006525, result.stats.usage.cost_usd
+            end
+
+            test "simple response fixture: records duration" do
+              use_command_runner_fixture("agent_transcripts/pi_simple_response")
+
+              @invocation.run!
+              result = @invocation.result
+
+              assert_not_nil result.stats.duration_ms
+              assert_operator result.stats.duration_ms, :>=, 0
+            end
+
+            test "tool use fixture: extracts final text response after tool use" do
+              use_command_runner_fixture("agent_transcripts/pi_tool_use_response")
+
+              @invocation.run!
+              result = @invocation.result
+
+              assert_equal "The file contains: Hello, World!", result.response
+              assert result.success
+              assert_equal "test-session-tool-456", result.session
+            end
+
+            test "tool use fixture: records two turns" do
+              use_command_runner_fixture("agent_transcripts/pi_tool_use_response")
+
+              @invocation.run!
+              result = @invocation.result
+
+              assert_equal 2, result.stats.num_turns
+            end
+
+            test "tool use fixture: accumulates token usage across turns" do
+              use_command_runner_fixture("agent_transcripts/pi_tool_use_response")
+
+              @invocation.run!
+              result = @invocation.result
+
+              # Turn 1: input=5, output=20; Turn 2: input=25, output=12
+              assert_equal 30, result.stats.usage.input_tokens
+              assert_equal 32, result.stats.usage.output_tokens
+            end
+
+            test "tool use fixture: accumulates cost across turns" do
+              use_command_runner_fixture("agent_transcripts/pi_tool_use_response")
+
+              @invocation.run!
+              result = @invocation.result
+
+              # Turn 1: 0.013025; Turn 2: 0.00605
+              assert_in_delta 0.019075, result.stats.usage.cost_usd
+            end
+
+            test "tool use fixture: accumulates per-model usage across turns" do
+              use_command_runner_fixture("agent_transcripts/pi_tool_use_response")
+
+              @invocation.run!
+              result = @invocation.result
+
+              model_usage = result.stats.model_usage["claude-sonnet-4-20250514"]
+              assert_not_nil model_usage
+              assert_equal 30, model_usage.input_tokens
+              assert_equal 32, model_usage.output_tokens
+              assert_in_delta 0.019075, model_usage.cost_usd
+            end
+
+            test "failure appends stderr to response" do
+              CommandRunner.stub(:execute, ["", "pi: command failed\ndetails here", failure_status]) do
+                @invocation.run!
+              end
+
+              internal_result = @invocation.instance_variable_get(:@result)
+              assert_includes internal_result.response, "pi: command failed"
+              assert_includes internal_result.response, "details here"
+            end
+
+            test "stats to_s produces readable output" do
+              use_command_runner_fixture("agent_transcripts/pi_simple_response")
+
+              @invocation.run!
+              result = @invocation.result
+              stats_string = result.stats.to_s
+
+              assert_includes stats_string, "Turns:"
+              assert_includes stats_string, "Duration:"
+              assert_includes stats_string, "Cost (USD):"
+              assert_includes stats_string, "Tokens (claude-sonnet-4-20250514):"
+            end
           end
         end
       end

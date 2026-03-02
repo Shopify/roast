@@ -642,6 +642,38 @@ module Examples
         assert_empty logged_stderr
       end
 
+      test "simple_pi_agent.rb workflow runs successfully" do
+        use_command_runner_fixture(
+          "agent_transcripts/pi_simple_response",
+          expected_args: [
+            "pi",
+            "-p",
+            "--mode",
+            "json",
+            "--model",
+            "sonnet",
+            "--append-system-prompt",
+            "Always respond concisely in one sentence",
+          ],
+          expected_stdin_content: "What is the capital of France?",
+        )
+
+        stdout, stderr = in_sandbox :simple_pi_agent do
+          Roast::Workflow.from_file("examples/simple_pi_agent.rb", EMPTY_PARAMS)
+        end
+
+        assert_empty stdout
+        assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
+
+        assert_includes logged_stdout, "[USER PROMPT] What is the capital of France?"
+        assert_includes logged_stdout, "[AGENT STATS] Turns:"
+        assert_includes logged_stdout, "Tokens (claude-sonnet-4-20250514):"
+        assert_includes logged_stdout, "Session ID: test-session-abc-123"
+        assert_empty logged_stderr
+      end
+
       test "working_directory.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :working_directory do
           Roast::Workflow.from_file("examples/working_directory.rb", EMPTY_PARAMS)
