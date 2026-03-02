@@ -46,13 +46,13 @@ config do
 
   agent do
     model "claude-3-5-haiku-20241022"
-    provider :claude
+    provider :claude  # or :pi for the Pi coding agent
   end
 end
 ```
 
 Now all `chat` cogs use "gpt-4o-mini" and all `agent` cogs use Claude Code with the "haiku" model (unless you override
-them individually).
+them individually). You can also use `provider :pi` to use the Pi coding agent instead.
 
 ## Per-Step Configuration
 
