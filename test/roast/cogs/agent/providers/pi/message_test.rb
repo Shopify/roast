@@ -118,6 +118,85 @@ module Roast
               assert_equal "Full thought", message.content
             end
 
+            test "from_hash dispatches message_update toolcall_start" do
+              message = Message.from_hash({
+                type: "message_update",
+                assistantMessageEvent: {
+                  type: "toolcall_start",
+                  contentIndex: 1,
+                  partial: {
+                    content: [
+                      { type: "toolCall", id: "tool_1", name: "bash", arguments: {} },
+                    ],
+                  },
+                },
+              })
+
+              assert_kind_of Messages::ToolCallStartMessage, message
+              assert_equal "tool_1", message.tool_call_id
+              assert_equal :bash, message.name
+            end
+
+            test "from_hash dispatches message_update toolcall_delta" do
+              message = Message.from_hash({
+                type: "message_update",
+                assistantMessageEvent: { type: "toolcall_delta", delta: '{"command": "ls' },
+              })
+
+              assert_kind_of Messages::ToolCallDeltaMessage, message
+              assert_equal '{"command": "ls', message.delta
+            end
+
+            test "from_hash dispatches message_update toolcall_end" do
+              message = Message.from_hash({
+                type: "message_update",
+                assistantMessageEvent: {
+                  type: "toolcall_end",
+                  toolCall: { id: "tool_1", name: "bash", arguments: { command: "ls -la" } },
+                },
+              })
+
+              assert_kind_of Messages::ToolCallEndMessage, message
+              assert_equal "tool_1", message.tool_call_id
+              assert_equal :bash, message.name
+              assert_equal({ command: "ls -la" }, message.arguments)
+            end
+
+            test "from_hash dispatches tool_execution_start type" do
+              message = Message.from_hash({
+                type: "tool_execution_start",
+                toolCallId: "123",
+                toolName: "bash",
+                args: {},
+              })
+
+              assert_kind_of Messages::ToolExecutionStartMessage, message
+            end
+
+            test "from_hash dispatches tool_execution_update type" do
+              message = Message.from_hash({
+                type: "tool_execution_update",
+                toolCallId: "123",
+                toolName: "bash",
+                args: {},
+                partialResult: {},
+              })
+
+              assert_kind_of Messages::ToolExecutionUpdateMessage, message
+            end
+
+            test "from_hash dispatches tool_execution_end type" do
+              message = Message.from_hash({
+                type: "tool_execution_end",
+                toolCallId: "123",
+                toolName: "bash",
+                result: { content: [{ type: "text", text: "output" }] },
+                isError: false,
+              })
+
+              assert_kind_of Messages::ToolExecutionEndMessage, message
+            end
+
             test "from_hash dispatches unknown message_update sub-type" do
               message = Message.from_hash({
                 type: "message_update",
