@@ -64,6 +64,8 @@ module Roast
         @provider ||= case config.valid_provider!
         when :claude
           Providers::Claude.new(config)
+        when :pi
+          Providers::Pi.new(config)
         else
           raise UnknownProviderError, "Unknown provider: #{config.valid_provider!}"
         end
