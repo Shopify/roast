@@ -153,10 +153,12 @@ module Roast
 
               unless message.unparsed.blank?
                 # TODO: do something better with unhandled data so we can improve the parser
-                Roast::Log.warn("Unhandled data in Claude #{message.type} message:")
-                Roast::Log.warn(JSON.pretty_generate(message.unparsed))
-                Roast::Log.debug("[FULL MESSAGE: #{message.type}]")
-                Roast::Log.debug(message.inspect)
+                Event << {
+                  debug: <<~DEBUG,
+                    Unhandled data in Claude #{message.type} message:
+                      #{JSON.pretty_generate(message.unparsed)}
+                  DEBUG
+                }
               end
 
               raise ClaudeFailedError, message.error if message.error.present?
