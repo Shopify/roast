@@ -1,6 +1,6 @@
 # Agent Steps in Roast
 
-Agent steps provide a way to send prompts directly to a coding agent (like Claude Code) without going through the standard LLM translation layer. This document explains when and how to use agent steps effectively.
+Agent steps provide a way to send prompts directly to a coding agent (like Claude Code or Pi) without going through the standard LLM translation layer. This document explains when and how to use agent steps effectively.
 
 ## What are Agent Steps?
 

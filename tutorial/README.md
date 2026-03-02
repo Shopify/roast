@@ -15,7 +15,7 @@ run coding agents, process data, and so much more.
 - Ruby installed (3.4.2+)
 - Roast gem installed
 - API keys for your AI providers of choice (to use LLM chat)
-- Claude Code CLI installed and configured (to use coding agents)
+- A coding agent CLI installed and configured (to use coding agents): Claude Code and/or Pi
 
 ## How to Use This Tutorial
 

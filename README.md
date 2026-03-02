@@ -48,12 +48,41 @@ bin/roast execute analyze_codebase.rb
 ## Core Cogs
 
 - **`chat`** - Send prompts to cloud-based LLMs (OpenAI, Anthropic, Gemini, etc.)
-- **`agent`** - Run local coding agents with filesystem access (Claude Code CLI, etc.)
+- **`agent`** - Run local coding agents with filesystem access (Claude Code, Pi, etc.)
 - **`ruby`** - Execute custom Ruby code within workflows
 - **`cmd`** - Run shell commands and capture output
 - **`map`** - Process collections in serial or parallel
 - **`repeat`** - Iterate until conditions are met
 - **`call`** - Invoke reusable workflow scopes
+
+## Agent Providers
+
+The `agent` cog supports multiple coding agent backends. Configure the provider in your workflow's `config` block:
+
+```ruby
+# Use Claude Code (default)
+config do
+  agent do
+    provider :claude
+    model "haiku"
+  end
+end
+
+# Use Pi
+config do
+  agent do
+    provider :pi
+    model "sonnet"
+  end
+end
+```
+
+| Provider | CLI | Install |
+|---|---|---|
+| `:claude` (default) | `claude` | [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview) |
+| `:pi` | `pi` | [Pi](https://github.com/Shopify/pi) |
+
+Both providers support: `model`, `command`, `append_system_prompt`, `replace_system_prompt`, `working_directory`, session management, and all display options (`show_prompt!`, `show_progress!`, `show_response!`, `show_stats!`).
 
 ## Installation
 
@@ -70,7 +99,7 @@ gem 'roast-ai'
 
 - Ruby 3.0+
 - API keys for your AI provider (OpenAI/Anthropic)
-- Claude Code CLI installed (for agent cog)
+- A coding agent CLI installed (for agent cog): [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview) and/or [Pi](https://github.com/Shopify/pi)
 
 ## Getting Started
 
