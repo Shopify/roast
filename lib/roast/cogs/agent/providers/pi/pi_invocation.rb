@@ -130,10 +130,11 @@ module Roast
                 @result.success = true
               when Messages::TurnEndMessage
                 accumulate_turn_stats(message)
-              when Messages::MessageUpdateMessage
-                # Show progress for text deltas
+              end
+
+              if @show_progress
                 formatted = message.format
-                puts formatted if formatted.present? && @show_progress
+                puts formatted if formatted.present?
               end
 
               unless message.unparsed.blank?

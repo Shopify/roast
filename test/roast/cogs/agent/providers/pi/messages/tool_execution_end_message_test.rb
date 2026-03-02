@@ -14,6 +14,12 @@ module Roast
 
                 assert_equal "tool_execution_end", message.type
               end
+
+              test "format returns completion marker" do
+                message = ToolExecutionEndMessage.new(type: "tool_execution_end", hash: {})
+
+                assert_equal "⚙ tool execution complete", message.format
+              end
             end
           end
         end

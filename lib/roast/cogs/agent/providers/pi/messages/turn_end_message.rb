@@ -56,6 +56,17 @@ module Roast
               def stop_reason
                 @message&.dig(:stopReason)
               end
+
+              # Format for progress display
+              #
+              #: () -> String?
+              def format
+                u = usage
+                return nil unless u
+
+                cost_str = u.dig(:cost, :total) ? sprintf("$%.6f", u.dig(:cost, :total)) : "n/a"
+                "--- turn end (#{model || "unknown"}: #{u[:input] || 0} in, #{u[:output] || 0} out, #{cost_str}) ---"
+              end
             end
           end
         end
