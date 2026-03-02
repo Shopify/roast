@@ -43,7 +43,7 @@ module Roast
               def extract_content
                 return unless result_data
 
-                content_items = result_data[:content]
+                content_items = result_data&.dig(:content)
                 return result_data.to_s unless content_items.is_a?(Array)
 
                 content_items
