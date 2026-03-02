@@ -157,6 +157,30 @@ module Roast
       assert_includes @logger_output.string, "debug message"
     end
 
+    test "handle_log_event includes display path in log output" do
+      cog = TestCogSupport::TestCog.new(:my_step, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el, cog_el], { info: "step info message" })
+      EventMonitor.accept(event)
+
+      assert_includes @logger_output.string, "test_cog(:my_step)"
+      assert_includes @logger_output.string, "step info message"
+    end
+
+    test "handle_log_event includes scoped execution manager path in log output" do
+      em_el = mock_execution_manager_path_element(scope: :files, scope_index: 2)
+      cog = TestCogSupport::TestCog.new(:analyze, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+
+      event = Event.new([em_el, cog_el], { warn: "something went wrong" })
+      EventMonitor.accept(event)
+
+      assert_includes @logger_output.string, "{:files}[2] -> test_cog(:analyze)"
+      assert_includes @logger_output.string, "something went wrong"
+    end
+
     test "handle_begin_event logs cog begin events" do
       cog = TestCogSupport::TestCog.new(:step1, nil)
       cog_el = TaskContext::PathElement.new(cog: cog)

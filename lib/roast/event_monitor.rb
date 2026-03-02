@@ -116,7 +116,7 @@ module Roast
 
     #: (Event) -> void
     def handle_log_event(event)
-      Roast::Log.logger.add(event.log_severity, event.log_message)
+      Roast::Log.logger.add(event.log_severity, "#{format_path(event)} #{event.log_message}")
     end
 
     #: (Event) -> void
