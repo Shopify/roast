@@ -44,6 +44,7 @@ require "zeitwerk"
 # Set up Zeitwerk autoloader
 loader = Zeitwerk::Loader.for_gem
 loader.ignore("#{__dir__}/roast-ai.rb")
+loader.ignore("#{__dir__}/roast/testing")
 loader.inflector.inflect("cli" => "CLI")
 loader.setup
 
