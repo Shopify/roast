@@ -308,6 +308,28 @@ module Roast
               end
             end
 
+            test "handle_message emits debug event for unparsed message data" do
+              message = Messages::TextMessage.new(
+                type: :text,
+                hash: { text: "Hello", extra_field: "unexpected" },
+              )
+
+              Event.expects(:<<).with { |payload| payload[:debug].include?("Unhandled data") }
+
+              @invocation.send(:handle_message, message)
+            end
+
+            test "handle_message does not emit event when unparsed data is blank" do
+              message = Messages::ResultMessage.new(
+                type: :result,
+                hash: { result: "Test response", subtype: "success" },
+              )
+
+              Event.expects(:<<).never
+
+              @invocation.send(:handle_message, message)
+            end
+
             test "handle_message captures session_id when present" do
               message = Messages::TextMessage.new(
                 type: :text,

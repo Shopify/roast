@@ -98,7 +98,7 @@ module Roast
               begin
                 stdout_handler&.call(line)
               rescue => e
-                Roast::Log.warn("stdout_handler raised: #{e.class} - #{e.message}")
+                Event << { warn: "stdout_handler raised: #{e.class} - #{e.message}" }
               end
             end
             buffer
@@ -114,7 +114,7 @@ module Roast
               begin
                 stderr_handler&.call(line)
               rescue => e
-                Roast::Log.warn("stderr_handler raised: #{e.class} - #{e.message}")
+                Event << { warn: "stderr_handler raised: #{e.class} - #{e.message}" }
               end
             end
             buffer
@@ -181,7 +181,7 @@ module Roast
       rescue Errno::ESRCH
         # Process already terminated
       rescue Errno::EPERM
-        Roast::Log.error("Could not kill process #{pid}: Permission denied")
+        Event << { error: "Could not kill process #{pid}: Permission denied" }
       end
 
       #: (Integer) -> bool

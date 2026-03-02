@@ -192,11 +192,18 @@ module Roast
       end
     end
 
-    test "handler exceptions are logged as warnings" do
+    test "stdout handler exceptions emit warning event" do
+      Event.expects(:<<).with { |payload| payload[:warn]&.include?("stdout_handler raised: StandardError - Test error") }
+
       stdout_handler = ->(_line) { raise StandardError, "Test error" }
       CommandRunner.execute(["echo", "test"], stdout_handler:)
+    end
 
-      assert_match(/stdout_handler raised: StandardError - Test error/, @logger_output.string)
+    test "stderr handler exceptions emit warning event" do
+      Event.expects(:<<).with { |payload| payload[:warn]&.include?("stderr_handler raised: StandardError - Test error") }
+
+      stderr_handler = ->(_line) { raise StandardError, "Test error" }
+      CommandRunner.execute(["bash", "-c", "echo 'err' >&2"], stderr_handler:)
     end
 
     test "runs command in current working directory if no working directory specified" do
