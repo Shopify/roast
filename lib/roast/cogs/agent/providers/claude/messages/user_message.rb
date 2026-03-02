@@ -9,6 +9,7 @@ module Roast
           module Messages
             class UserMessage < Message
               IGNORED_FIELDS = [
+                :isSynthetic,
                 :parent_tool_use_id,
                 :tool_use_result,
               ].freeze
