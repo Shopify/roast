@@ -57,6 +57,75 @@ module Roast
 
               assert_kind_of Messages::UnknownMessage, message
             end
+
+            # message_update sub-dispatch tests
+
+            test "from_hash dispatches message_update text_delta" do
+              message = Message.from_hash({
+                type: "message_update",
+                assistantMessageEvent: { type: "text_delta", delta: "Hello", contentIndex: 0 },
+              })
+
+              assert_kind_of Messages::TextDeltaMessage, message
+              assert_equal "Hello", message.delta
+            end
+
+            test "from_hash dispatches message_update text_start" do
+              message = Message.from_hash({
+                type: "message_update",
+                assistantMessageEvent: { type: "text_start", contentIndex: 0, partial: {} },
+              })
+
+              assert_kind_of Messages::TextStartMessage, message
+            end
+
+            test "from_hash dispatches message_update text_end" do
+              message = Message.from_hash({
+                type: "message_update",
+                assistantMessageEvent: { type: "text_end", content: "Final text", contentIndex: 0, partial: {} },
+              })
+
+              assert_kind_of Messages::TextEndMessage, message
+              assert_equal "Final text", message.content
+            end
+
+            test "from_hash dispatches message_update thinking_delta" do
+              message = Message.from_hash({
+                type: "message_update",
+                assistantMessageEvent: { type: "thinking_delta", delta: "Thinking...", contentIndex: 0 },
+              })
+
+              assert_kind_of Messages::ThinkingDeltaMessage, message
+              assert_equal "Thinking...", message.delta
+            end
+
+            test "from_hash dispatches message_update thinking_start" do
+              message = Message.from_hash({
+                type: "message_update",
+                assistantMessageEvent: { type: "thinking_start", contentIndex: 0, partial: {} },
+              })
+
+              assert_kind_of Messages::ThinkingStartMessage, message
+            end
+
+            test "from_hash dispatches message_update thinking_end" do
+              message = Message.from_hash({
+                type: "message_update",
+                assistantMessageEvent: { type: "thinking_end", content: "Full thought", contentIndex: 0, partial: {} },
+              })
+
+              assert_kind_of Messages::ThinkingEndMessage, message
+              assert_equal "Full thought", message.content
+            end
+
+            test "from_hash dispatches unknown message_update sub-type" do
+              message = Message.from_hash({
+                type: "message_update",
+                assistantMessageEvent: { type: "new_event_type" },
+              })
+
+              assert_kind_of Messages::UnknownMessage, message
+            end
           end
         end
       end
