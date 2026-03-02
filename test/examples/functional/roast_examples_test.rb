@@ -102,6 +102,7 @@ module Examples
             Workflow Directory: examples
             Working Directory: DIRECTORY (at TIMESTAMP)
           I, cmd(:echo) Starting (at TIMESTAMP)
+          I, cmd(:echo) ❯ hello world (at TIMESTAMP)
           hello world
           I, cmd(:echo) Complete (at TIMESTAMP)
           I, 🔥🔥🔥 Workflow Complete (at TIMESTAMP)

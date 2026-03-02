@@ -332,12 +332,28 @@ module Roast
       assert_includes output, "hello stdout"
     end
 
+    test "handle_stdout_event logs message at info level" do
+      event = Event.new([], { stdout: "hello stdout" })
+
+      capture_io { EventMonitor.accept(event) }
+
+      assert_includes @logger_output.string, "hello stdout"
+    end
+
     test "handle_stderr_event outputs to puts" do
       event = Event.new([], { stderr: "hello stderr" })
 
       output = capture_io { EventMonitor.accept(event) }.first
 
       assert_includes output, "hello stderr"
+    end
+
+    test "handle_stderr_event logs message at warn level" do
+      event = Event.new([], { stderr: "hello stderr" })
+
+      capture_io { EventMonitor.accept(event) }
+
+      assert_includes @logger_output.string, "hello stderr"
     end
 
     test "handle_unknown_event logs unrecognized events at unknown level" do

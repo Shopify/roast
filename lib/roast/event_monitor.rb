@@ -121,11 +121,13 @@ module Roast
 
     #: (Event) -> void
     def handle_stderr_event(event)
+      Roast::Log.logger.warn { "#{format_path(event)} ❯❯ #{event[:stderr]}" }
       puts event[:stderr]
     end
 
     #: (Event) -> void
     def handle_stdout_event(event)
+      Roast::Log.logger.info { "#{format_path(event)} ❯ #{event[:stdout]}" }
       puts event[:stdout]
     end
 
