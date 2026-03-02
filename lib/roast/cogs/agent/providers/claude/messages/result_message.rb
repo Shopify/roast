@@ -11,6 +11,7 @@ module Roast
               IGNORED_FIELDS = [
                 :duration_api_ms,
                 :permission_denials,
+                :stop_reason,
                 :usage,
                 :uuid,
               ].freeze
