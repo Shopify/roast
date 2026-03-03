@@ -13,16 +13,16 @@
 
 ### Decisions Made
 
-1. **Naming**: `Roast::Testing::WorkflowTest` — follows Rails convention (`ActiveJob::TestHelper`, etc.)
+1. **Naming**: `Roast::Testing::TestCase` — follows Rails convention (`ActiveJob::TestHelper`, etc.)
 2. **VCR**: Optional dependency — `defined?(VCR)` guard with graceful fallback to live execution
 3. **Generator**: Deferred — not needed for initial release, docs and examples are sufficient
-4. **Test Location**: User's choice — no prescribed location, just `require "roast/testing/workflow_test"`
+4. **Test Location**: User's choice — no prescribed location, just `require "roast/testing/test_case"`
 5. **Autoloading**: `lib/roast/testing/` is ignored by Zeitwerk — explicit `require` is intentional API design
 
 ### Completed Steps
 
-- [x] **Extract Test Helper to Public API** — `lib/roast/testing/workflow_test.rb`
-  - `Roast::Testing::WorkflowTest` with configurable `workflow_dir`, `cassette_library_dir`, `sandbox_root`, `fixture_dir`
+- [x] **Extract Test Helper to Public API** — `lib/roast/testing/test_case.rb`
+  - `Roast::Testing::TestCase` with configurable `workflow_dir`, `cassette_library_dir`, `sandbox_root`, `fixture_dir`
   - `in_sandbox` for isolated workflow execution
   - `use_command_runner_fixture` for agent transcript testing
   - `EMPTY_PARAMS` convenience constant
@@ -40,7 +40,7 @@
 
 | File | Purpose |
 |------|---------|
-| `lib/roast/testing/workflow_test.rb` | Public API — the base test class |
+| `lib/roast/testing/test_case.rb` | Public API — the base test class |
 | `docs/TESTING.md` | User-facing documentation |
 | `examples/test/example_workflow_test.rb` | Annotated example tests |
 | `examples/test/test_helper.rb` | Example test helper |

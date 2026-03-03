@@ -15,4 +15,4 @@ require "minitest/autorun"
 # require "vcr"
 # require "webmock"
 
-require "roast/testing/workflow_test"
+require "roast/testing/test_case"

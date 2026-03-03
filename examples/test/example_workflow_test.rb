@@ -2,7 +2,7 @@
 
 # Example test file for Roast workflows.
 #
-# This demonstrates how to use Roast::Testing::WorkflowTest to write tests
+# This demonstrates how to use Roast::Testing::TestCase to write tests
 # for your own workflows. Copy and adapt this to your project.
 #
 # Run with:
@@ -10,7 +10,7 @@
 
 require_relative "test_helper"
 
-class ExampleWorkflowTest < Roast::Testing::WorkflowTest
+class ExampleWorkflowTest < Roast::Testing::TestCase
   # Point to the directory containing your workflow files.
   # Everything in this directory gets copied into an isolated sandbox for each test.
   self.workflow_dir = File.expand_path("..", __dir__)

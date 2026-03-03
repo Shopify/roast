@@ -22,10 +22,10 @@ Create a test file:
 ```ruby
 # test/workflows/my_workflow_test.rb
 require "roast"
-require "roast/testing/workflow_test"
+require "roast/testing/test_case"
 require "minitest/autorun"
 
-class MyWorkflowTest < Roast::Testing::WorkflowTest
+class MyWorkflowTest < Roast::Testing::TestCase
   # Point to the directory containing your workflow files
   self.workflow_dir = File.expand_path("../../workflows", __dir__)
 
@@ -66,7 +66,7 @@ assert_includes stdout, "Hello from /fake-testing-dir"
 
 ### EMPTY_PARAMS
 
-`Roast::Testing::WorkflowTest` provides the `EMPTY_PARAMS` constant — an empty `WorkflowParams` instance. Use it when your workflow doesn't need targets or arguments:
+`Roast::Testing::TestCase` provides the `EMPTY_PARAMS` constant — an empty `WorkflowParams` instance. Use it when your workflow doesn't need targets or arguments:
 
 ```ruby
 Roast::Workflow.from_file("my_workflow.rb", EMPTY_PARAMS)
@@ -89,15 +89,15 @@ If your workflows make API calls (chat, agents, etc.), you can use VCR to record
 
 ### Setup
 
-Add `vcr` and `webmock` to your Gemfile, then require them before `roast/testing/workflow_test`:
+Add `vcr` and `webmock` to your Gemfile, then require them before `roast/testing/test_case`:
 
 ```ruby
 require "vcr"
 require "webmock"
-require "roast/testing/workflow_test"
+require "roast/testing/test_case"
 ```
 
-`WorkflowTest` automatically detects VCR and configures it with sensible defaults:
+`TestCase` automatically detects VCR and configures it with sensible defaults:
 - Cassettes stored in `test/fixtures/vcr_cassettes/`
 - API keys and cookies filtered from recordings
 - WebMock integration enabled
@@ -160,7 +160,7 @@ use_command_runner_fixture(
 All settings are configurable via class attributes:
 
 ```ruby
-class MyWorkflowTest < Roast::Testing::WorkflowTest
+class MyWorkflowTest < Roast::Testing::TestCase
   # Directory containing your workflow files (copied into sandbox)
   # Defaults to ./examples/ if not set
   self.workflow_dir = "/path/to/workflows"
@@ -222,14 +222,14 @@ end
 ### Multiple test classes with different configs
 
 ```ruby
-class ChatWorkflowTest < Roast::Testing::WorkflowTest
+class ChatWorkflowTest < Roast::Testing::TestCase
   self.workflow_dir = File.expand_path("../workflows/chat", __dir__)
   self.cassette_library_dir = "test/fixtures/chat_cassettes"
 
   # chat workflow tests...
 end
 
-class AgentWorkflowTest < Roast::Testing::WorkflowTest
+class AgentWorkflowTest < Roast::Testing::TestCase
   self.workflow_dir = File.expand_path("../workflows/agents", __dir__)
   self.fixture_dir = "test/fixtures/agent_transcripts"
 
