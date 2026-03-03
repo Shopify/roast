@@ -15,6 +15,9 @@ gem "activesupport"
 # Optional: for recording/replaying HTTP requests
 gem "vcr"
 gem "webmock"
+
+# Optional: for use_command_runner_fixture (agent testing)
+gem "mocha"
 ```
 
 Create a test file:
