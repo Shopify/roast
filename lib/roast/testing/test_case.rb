@@ -13,9 +13,9 @@ module Roast
     # and helpers for testing agent transcript fixtures.
     #
     # Usage:
-    #   require "roast/testing/workflow_test"
+    #   require "roast/testing/test_case"
     #
-    #   class MyWorkflowTest < Roast::Testing::WorkflowTest
+    #   class MyWorkflowTest < Roast::Testing::TestCase
     #     # Point to your workflow directory
     #     self.workflow_dir = "path/to/my/workflows"
     #
@@ -26,7 +26,7 @@ module Roast
     #       assert_empty stderr
     #     end
     #   end
-    class WorkflowTest < ActiveSupport::TestCase
+    class TestCase < ActiveSupport::TestCase
       EMPTY_PARAMS = Roast::WorkflowParams.new([], [], {})
 
       class_attribute :workflow_dir, default: nil
@@ -78,8 +78,10 @@ module Roast
         end
 
         # Replace random temp directory path with a standardized value
-        out.gsub!(tmpdir, "/fake-testing-dir")
-        err.gsub!(tmpdir, "/fake-testing-dir")
+        if tmpdir
+          out.gsub!(tmpdir, "/fake-testing-dir")
+          err.gsub!(tmpdir, "/fake-testing-dir")
+        end
 
         if ENV["CI"]
           puts "========= STDOUT ========="
