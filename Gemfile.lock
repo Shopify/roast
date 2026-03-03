@@ -6,6 +6,7 @@ PATH
       async (>= 2.34)
       rainbow (>= 3.0.0)
       ruby_llm (>= 1.8)
+      type_toolkit (>= 0.0.5)
       zeitwerk (>= 2.6)
 
 GEM
@@ -206,6 +207,9 @@ GEM
     thor (1.4.0)
     traces (0.18.2)
     tsort (0.2.0)
+    type_toolkit (0.0.5)
+      lint_roller
+      rubocop (>= 1.72.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.1.4)

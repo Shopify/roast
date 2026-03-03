@@ -34,9 +34,7 @@ require "async"
 require "async/semaphore"
 require "rainbow"
 require "ruby_llm"
-
-# Require project components that will not get automatically loaded
-require "roast/nil_assertions"
+require "type_toolkit"
 
 # Autoloading setup
 require "zeitwerk"
