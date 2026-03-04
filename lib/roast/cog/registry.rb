@@ -51,13 +51,13 @@ module Roast
       #
       #: (singleton(Roast::Cog)) -> void
       def use(cog_class)
-        reg = create_registration(cog_class)
-        cogs[reg.first] = reg.second
+        name, klass = create_registration(cog_class)
+        cogs[name] = klass
       end
 
       private
 
-      #: (singleton(Roast::Cog)) -> Array(Symbol, singleton(Cog))
+      #: (singleton(Roast::Cog)) -> [Symbol, singleton(Cog)]
       def create_registration(cog_class)
         cog_class_name = cog_class.name
         raise CouldNotDeriveCogNameError if cog_class_name.nil?
