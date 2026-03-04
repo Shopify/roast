@@ -344,8 +344,8 @@ class Notiffany::Notifier::Emacs < ::Notiffany::Notifier::Base
   # @option options
   # @option options
   # @option options
-  # @param type [String] the notification type
   # @param options [Hash] aditional notification options
+  # @param type [String] the notification type
   # @return [String] the name of the emacs color
   #
   # source://notiffany//lib/notiffany/notifier/emacs.rb#86
@@ -365,12 +365,12 @@ class Notiffany::Notifier::Emacs < ::Notiffany::Notifier::Base
   # @option opts
   # @option opts
   # @option opts
+  # @param image [String] the path to the notification image
+  # @param message [String] the notification message body
+  # @param opts [Hash] additional notification library options
+  # @param title [String] the notification title
   # @param type [String] the notification type. Either 'success',
   #   'pending', 'failed' or 'notify'
-  # @param title [String] the notification title
-  # @param message [String] the notification message body
-  # @param image [String] the path to the notification image
-  # @param opts [Hash] additional notification library options
   #
   # source://notiffany//lib/notiffany/notifier/emacs.rb#58
   def _perform_notify(message, opts = T.unsafe(nil)); end
@@ -439,21 +439,21 @@ Notiffany::Notifier::Emacs::DEFAULTS = T.let(T.unsafe(nil), Hash)
 # source://notiffany//lib/notiffany/notifier/emacs.rb#20
 Notiffany::Notifier::Emacs::DEFAULT_ELISP_ERB = T.let(T.unsafe(nil), String)
 
-# source://notiffany//lib/notiffany/notifier.rb#0
+# source://notiffany//lib/notiffany/notifier.rb#69
 class Notiffany::Notifier::Env < ::Nenv::Environment
-  # source://nenv/0.3.0/lib/nenv/environment.rb#69
+  # source://notiffany//lib/notiffany/notifier.rb#70
   def notify?; end
 
-  # source://nenv/0.3.0/lib/nenv/environment.rb#59
+  # source://notiffany//lib/notiffany/notifier.rb#74
   def notify_active=(raw_value); end
 
-  # source://nenv/0.3.0/lib/nenv/environment.rb#69
+  # source://notiffany//lib/notiffany/notifier.rb#73
   def notify_active?; end
 
-  # source://nenv/0.3.0/lib/nenv/environment.rb#69
+  # source://notiffany//lib/notiffany/notifier.rb#71
   def notify_pid; end
 
-  # source://nenv/0.3.0/lib/nenv/environment.rb#59
+  # source://notiffany//lib/notiffany/notifier.rb#72
   def notify_pid=(raw_value); end
 end
 
@@ -561,15 +561,15 @@ Notiffany::Notifier::GNTP::DEFAULTS = T.let(T.unsafe(nil), Hash)
 # your `Guardfile` notification :growl, sticky: true, host: '192.168.1.5',
 # password: 'secret'
 #
-# @example Install `growlnotify` with Homebrew
-#   brew install growlnotify
+# @example Add the `:growl_notify` notifier with configuration options to
+# @example Add the `:growl` notifier to your `Guardfile`
+#   notification :growl
 # @example Add the `growl` gem to your `Gemfile`
 #   group :development
 #   gem 'growl'
 #   end
-# @example Add the `:growl` notifier to your `Guardfile`
-#   notification :growl
-# @example Add the `:growl_notify` notifier with configuration options to
+# @example Install `growlnotify` with Homebrew
+#   brew install growlnotify
 #
 # source://notiffany//lib/notiffany/notifier/growl.rb#34
 class Notiffany::Notifier::Growl < ::Notiffany::Notifier::Base
@@ -755,8 +755,8 @@ class Notiffany::Notifier::NotifySend < ::Notiffany::Notifier::Base
   # shell command.
   #
   # @param command [String] the command execute
-  # @param supported [Array] list of supported option flags
   # @param opts [Hash] additional command options
+  # @param supported [Array] list of supported option flags
   # @return [Array<String>] the command and its options converted to a
   #
   # source://notiffany//lib/notiffany/notifier/notifysend.rb#84
@@ -1069,11 +1069,11 @@ Notiffany::Notifier::USING_NOTIFIER = T.let(T.unsafe(nil), String)
 # TODO: use a socket instead of passing env variables to child processes
 # (currently probably only used by guard-cucumber anyway)
 #
-# source://notiffany//lib/notiffany/notifier/detected.rb#0
+# source://notiffany//lib/notiffany/notifier/detected.rb#21
 class Notiffany::Notifier::YamlEnvStorage < ::Nenv::Environment
-  # source://nenv/0.3.0/lib/nenv/environment.rb#69
+  # source://notiffany//lib/notiffany/notifier/detected.rb#23
   def notifiers; end
 
-  # source://nenv/0.3.0/lib/nenv/environment.rb#59
+  # source://notiffany//lib/notiffany/notifier/detected.rb#22
   def notifiers=(raw_value); end
 end

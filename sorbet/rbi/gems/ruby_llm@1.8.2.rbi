@@ -65,7 +65,7 @@ module RubyLLM::ActiveRecord::ActsAs
   end
 end
 
-# source://ruby_llm//lib/ruby_llm/active_record/acts_as.rb#0
+# source://ruby_llm//lib/ruby_llm/active_record/acts_as.rb#33
 module RubyLLM::ActiveRecord::ActsAs::ClassMethods
   # source://ruby_llm//lib/ruby_llm/active_record/acts_as.rb#34
   def acts_as_chat(messages: T.unsafe(nil), message_class: T.unsafe(nil), model: T.unsafe(nil), model_class: T.unsafe(nil)); end
@@ -89,7 +89,7 @@ module RubyLLM::ActiveRecord::ActsAsLegacy
   mixes_in_class_methods ::RubyLLM::ActiveRecord::ActsAsLegacy::ClassMethods
 end
 
-# source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#0
+# source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#9
 module RubyLLM::ActiveRecord::ActsAsLegacy::ClassMethods
   # source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#10
   def acts_as_chat(message_class: T.unsafe(nil), tool_call_class: T.unsafe(nil)); end
@@ -130,7 +130,7 @@ module RubyLLM::ActiveRecord::ChatLegacyMethods
   # source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#183
   def on_tool_result(*_arg0, **_arg1, &_arg2); end
 
-  # source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#194
+  # source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#199
   def say(message, with: T.unsafe(nil), &_arg2); end
 
   # source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#89
@@ -196,7 +196,7 @@ module RubyLLM::ActiveRecord::ChatLegacyMethods
   def setup_persistence_callbacks; end
 end
 
-# source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#0
+# source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#85
 module RubyLLM::ActiveRecord::ChatLegacyMethods::ClassMethods
   # source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#86
   def tool_call_class; end
@@ -268,7 +268,7 @@ module RubyLLM::ActiveRecord::ChatMethods
   # source://ruby_llm//lib/ruby_llm/active_record/chat_methods.rb#34
   def provider=(value); end
 
-  # source://ruby_llm//lib/ruby_llm/active_record/chat_methods.rb#182
+  # source://ruby_llm//lib/ruby_llm/active_record/chat_methods.rb#187
   def say(message, with: T.unsafe(nil), &_arg2); end
 
   # source://ruby_llm//lib/ruby_llm/active_record/chat_methods.rb#78
@@ -360,7 +360,7 @@ module RubyLLM::ActiveRecord::MessageLegacyMethods
   def extract_tool_calls; end
 end
 
-# source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#0
+# source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#335
 module RubyLLM::ActiveRecord::MessageLegacyMethods::ClassMethods
   # source://ruby_llm//lib/ruby_llm/active_record/acts_as_legacy.rb#336
   def chat_class; end
@@ -401,7 +401,7 @@ module RubyLLM::ActiveRecord::MessageMethods
   def extract_tool_calls; end
 end
 
-# source://ruby_llm//lib/ruby_llm/active_record/message_methods.rb#0
+# source://ruby_llm//lib/ruby_llm/active_record/message_methods.rb#9
 module RubyLLM::ActiveRecord::MessageMethods::ClassMethods
   # source://ruby_llm//lib/ruby_llm/active_record/message_methods.rb#10
   def chat_class; end
@@ -464,7 +464,7 @@ module RubyLLM::ActiveRecord::ModelMethods
   def type(*_arg0, **_arg1, &_arg2); end
 end
 
-# source://ruby_llm//lib/ruby_llm/active_record/model_methods.rb#0
+# source://ruby_llm//lib/ruby_llm/active_record/model_methods.rb#9
 module RubyLLM::ActiveRecord::ModelMethods::ClassMethods
   # source://ruby_llm//lib/ruby_llm/active_record/model_methods.rb#36
   def from_llm(model_info); end
@@ -680,7 +680,7 @@ class RubyLLM::Chat
   # source://ruby_llm//lib/ruby_llm/chat.rb#162
   def reset_messages!; end
 
-  # source://ruby_llm//lib/ruby_llm/chat.rb#33
+  # source://ruby_llm//lib/ruby_llm/chat.rb#38
   def say(message = T.unsafe(nil), with: T.unsafe(nil), &_arg2); end
 
   # Returns the value of attribute schema.
@@ -1884,17 +1884,11 @@ class RubyLLM::Models
   # source://ruby_llm//lib/ruby_llm/models.rb#204
   def image_models; end
 
-  # source://ruby_llm//lib/ruby_llm/active_record/acts_as.rb#21
-  def load_from_database!; end
-
   # source://ruby_llm//lib/ruby_llm/models.rb#161
   def load_from_json!; end
 
-  # source://ruby_llm//lib/ruby_llm/active_record/acts_as.rb#14
+  # source://ruby_llm//lib/ruby_llm/models.rb#157
   def load_models; end
-
-  # source://ruby_llm//lib/ruby_llm/active_record/acts_as.rb#25
-  def read_from_database; end
 
   # source://ruby_llm//lib/ruby_llm/models.rb#165
   def read_from_json; end
@@ -2209,7 +2203,7 @@ class RubyLLM::Provider
   end
 end
 
-# source://ruby_llm//lib/ruby_llm.rb#0
+# source://ruby_llm//lib/ruby_llm.rb#85
 module RubyLLM::Providers; end
 
 # Anthropic Claude API integration.
@@ -2438,13 +2432,13 @@ module RubyLLM::Providers::Anthropic::Embeddings
   # source://ruby_llm//lib/ruby_llm/providers/anthropic/embeddings.rb#10
   def embed; end
 
-  # source://ruby_llm//lib/ruby_llm/providers/anthropic/embeddings.rb#10
+  # source://ruby_llm//lib/ruby_llm/providers/anthropic/embeddings.rb#15
   def embedding_url; end
 
-  # source://ruby_llm//lib/ruby_llm/providers/anthropic/embeddings.rb#10
+  # source://ruby_llm//lib/ruby_llm/providers/anthropic/embeddings.rb#16
   def parse_embedding_response; end
 
-  # source://ruby_llm//lib/ruby_llm/providers/anthropic/embeddings.rb#10
+  # source://ruby_llm//lib/ruby_llm/providers/anthropic/embeddings.rb#14
   def render_embedding_payload; end
 end
 
@@ -3163,9 +3157,9 @@ class RubyLLM::Providers::Bedrock::Signing::HeaderBuilder
 
   # Build authorization headers for a signature
   #
-  # @param sigv4_headers [Hash] Headers for the signature
-  # @param signature [Hash] The computed signature
   # @param components [Hash] Request components
+  # @param signature [Hash] The computed signature
+  # @param sigv4_headers [Hash] Headers for the signature
   # @return [Hash] Headers with authorization
   #
   # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#453
@@ -3197,41 +3191,62 @@ class RubyLLM::Providers::Bedrock::Signing::ParamComponent < ::Struct
   # Returns the value of attribute name
   #
   # @return [Object] the current value of name
+  #
+  # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#189
   def name; end
 
   # Sets the attribute name
   #
   # @param value [Object] the value to set the attribute name to.
   # @return [Object] the newly set value
+  #
+  # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#189
   def name=(_); end
 
   # Returns the value of attribute offset
   #
   # @return [Object] the current value of offset
+  #
+  # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#189
   def offset; end
 
   # Sets the attribute offset
   #
   # @param value [Object] the value to set the attribute offset to.
   # @return [Object] the newly set value
+  #
+  # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#189
   def offset=(_); end
 
   # Returns the value of attribute value
   #
   # @return [Object] the current value of value
+  #
+  # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#189
   def value; end
 
   # Sets the attribute value
   #
   # @param value [Object] the value to set the attribute value to.
   # @return [Object] the newly set value
+  #
+  # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#189
   def value=(_); end
 
   class << self
+    # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#189
     def [](*_arg0); end
+
+    # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#189
     def inspect; end
+
+    # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#189
     def keyword_init?; end
+
+    # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#189
     def members; end
+
+    # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#189
     def new(*_arg0); end
   end
 end
@@ -3252,8 +3267,8 @@ class RubyLLM::Providers::Bedrock::Signing::RequestExtractor
 
     # Extract and process request components
     #
-    # @param request [Hash] The request to process
     # @param options [Hash] Options for extraction
+    # @param request [Hash] The request to process
     # @return [Hash] Processed request components
     #
     # source://ruby_llm//lib/ruby_llm/providers/bedrock/signing.rb#364

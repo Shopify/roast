@@ -305,7 +305,7 @@ class Async::List
   # source://async//lib/async/list.rb#189
   def include?(needle); end
 
-  # source://async//lib/async/list.rb#18
+  # source://async//lib/async/list.rb#23
   def inspect; end
 
   # source://async//lib/async/list.rb#215
@@ -419,7 +419,7 @@ class Async::List::Node
   # source://async//lib/async/list.rb#240
   def head=(_arg0); end
 
-  # source://async//lib/async/list.rb#244
+  # source://async//lib/async/list.rb#249
   def inspect; end
 
   # Returns the value of attribute tail.
@@ -504,7 +504,7 @@ class Async::Node
   # source://async//lib/async/node.rb#97
   def head=(_arg0); end
 
-  # source://async//lib/async/node.rb#180
+  # source://async//lib/async/node.rb#185
   def inspect; end
 
   # Returns the value of attribute parent.
@@ -627,12 +627,16 @@ class Async::Notification::Signal < ::Struct
   # Returns the value of attribute ready
   #
   # @return [Object] the current value of ready
+  #
+  # source://async//lib/async/notification.rb#23
   def ready; end
 
   # Sets the attribute ready
   #
   # @param value [Object] the value to set the attribute ready to.
   # @return [Object] the newly set value
+  #
+  # source://async//lib/async/notification.rb#23
   def ready=(_); end
 
   # source://async//lib/async/notification.rb#28
@@ -641,19 +645,32 @@ class Async::Notification::Signal < ::Struct
   # Returns the value of attribute value
   #
   # @return [Object] the current value of value
+  #
+  # source://async//lib/async/notification.rb#23
   def value; end
 
   # Sets the attribute value
   #
   # @param value [Object] the value to set the attribute value to.
   # @return [Object] the newly set value
+  #
+  # source://async//lib/async/notification.rb#23
   def value=(_); end
 
   class << self
+    # source://async//lib/async/notification.rb#23
     def [](*_arg0); end
+
+    # source://async//lib/async/notification.rb#23
     def inspect; end
+
+    # source://async//lib/async/notification.rb#23
     def keyword_init?; end
+
+    # source://async//lib/async/notification.rb#23
     def members; end
+
+    # source://async//lib/async/notification.rb#23
     def new(*_arg0); end
   end
 end
@@ -873,6 +890,7 @@ class Async::Reactor < ::Async::Scheduler
   # source://async//lib/async/reactor.rb#28
   def scheduler_close; end
 
+  # source://async//lib/async/reactor.rb#32
   def sleep(*_arg0); end
 
   class << self

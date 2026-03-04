@@ -52,7 +52,7 @@ module SecureRandom
     # source://securerandom//lib/securerandom.rb#50
     def bytes(n); end
 
-    # source://securerandom//lib/securerandom.rb#70
+    # source://securerandom//lib/securerandom.rb#84
     def gen_random(n); end
 
     private

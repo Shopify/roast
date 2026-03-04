@@ -13,22 +13,46 @@ class GetText::PoParser < ::Racc::Parser
   # source://i18n//lib/i18n/gettext/po_parser.rb#19
   def _(x); end
 
+  # source://i18n//lib/i18n/gettext/po_parser.rb#282
   def _reduce_10(val, _values, result); end
+
+  # source://i18n//lib/i18n/gettext/po_parser.rb#295
   def _reduce_12(val, _values, result); end
+
+  # source://i18n//lib/i18n/gettext/po_parser.rb#302
   def _reduce_13(val, _values, result); end
+
+  # source://i18n//lib/i18n/gettext/po_parser.rb#309
   def _reduce_14(val, _values, result); end
+
+  # source://i18n//lib/i18n/gettext/po_parser.rb#316
   def _reduce_15(val, _values, result); end
+
+  # source://i18n//lib/i18n/gettext/po_parser.rb#235
   def _reduce_5(val, _values, result); end
+
+  # source://i18n//lib/i18n/gettext/po_parser.rb#246
   def _reduce_8(val, _values, result); end
+
+  # source://i18n//lib/i18n/gettext/po_parser.rb#264
   def _reduce_9(val, _values, result); end
 
   # source://i18n//lib/i18n/gettext/po_parser.rb#323
   def _reduce_none(val, _values, result); end
 
+  # source://i18n//lib/i18n/gettext/po_parser.rb#23
   def next_token; end
+
+  # source://i18n//lib/i18n/gettext/po_parser.rb#23
   def on_comment(comment); end
+
+  # source://i18n//lib/i18n/gettext/po_parser.rb#23
   def on_message(msgid, msgstr); end
+
+  # source://i18n//lib/i18n/gettext/po_parser.rb#23
   def parse(str, data, ignore_fuzzy = T.unsafe(nil)); end
+
+  # source://i18n//lib/i18n/gettext/po_parser.rb#23
   def unescape(orig); end
 end
 
@@ -230,7 +254,7 @@ module I18n::Backend::Base
   # Loads a YAML translations file. The data must have locales as
   # toplevel keys.
   #
-  # source://i18n//lib/i18n/backend/base.rb#261
+  # source://i18n//lib/i18n/backend/base.rb#272
   def load_yaml(filename); end
 
   # Loads a YAML translations file. The data must have locales as
@@ -276,7 +300,7 @@ module I18n::Backend::Base
   # given options. If it is a Proc then it will be evaluated. All other
   # subjects will be returned directly.
   #
-  # source://i18n//lib/i18n/backend/base.rb#150
+  # source://i18n//lib/i18n/backend/base.rb#172
   def resolve_entry(locale, object, subject, options = T.unsafe(nil)); end
 
   # @return [Boolean]
@@ -811,7 +835,7 @@ class I18n::Backend::KeyValue::SubtreeProxy
 
   # @return [Boolean]
   #
-  # source://i18n//lib/i18n/backend/key_value.rb#183
+  # source://i18n//lib/i18n/backend/key_value.rb#186
   def kind_of?(klass); end
 
   # @return [Boolean]
@@ -1195,10 +1219,10 @@ end
 
 # source://i18n//lib/i18n.rb#55
 module I18n::Base
-  # source://i18n//lib/i18n.rb#70
+  # source://i18n//lib/i18n.rb#69
   def available_locales; end
 
-  # source://i18n//lib/i18n.rb#74
+  # source://i18n//lib/i18n.rb#69
   def available_locales=(value); end
 
   # @return [Boolean]
@@ -1206,10 +1230,10 @@ module I18n::Base
   # source://i18n//lib/i18n.rb#386
   def available_locales_initialized?; end
 
-  # source://i18n//lib/i18n.rb#70
+  # source://i18n//lib/i18n.rb#69
   def backend; end
 
-  # source://i18n//lib/i18n.rb#74
+  # source://i18n//lib/i18n.rb#69
   def backend=(value); end
 
   # Gets I18n configuration object.
@@ -1222,16 +1246,16 @@ module I18n::Base
   # source://i18n//lib/i18n.rb#62
   def config=(value); end
 
-  # source://i18n//lib/i18n.rb#70
+  # source://i18n//lib/i18n.rb#69
   def default_locale; end
 
-  # source://i18n//lib/i18n.rb#74
+  # source://i18n//lib/i18n.rb#69
   def default_locale=(value); end
 
-  # source://i18n//lib/i18n.rb#70
+  # source://i18n//lib/i18n.rb#69
   def default_separator; end
 
-  # source://i18n//lib/i18n.rb#74
+  # source://i18n//lib/i18n.rb#69
   def default_separator=(value); end
 
   # Tells the backend to load translations now. Used in situations like the
@@ -1241,7 +1265,7 @@ module I18n::Base
   # source://i18n//lib/i18n.rb#91
   def eager_load!; end
 
-  # source://i18n//lib/i18n.rb#70
+  # source://i18n//lib/i18n.rb#69
   def enforce_available_locales; end
 
   # Raises an InvalidLocale exception when the passed locale is not available.
@@ -1249,13 +1273,13 @@ module I18n::Base
   # source://i18n//lib/i18n.rb#380
   def enforce_available_locales!(locale); end
 
-  # source://i18n//lib/i18n.rb#74
+  # source://i18n//lib/i18n.rb#69
   def enforce_available_locales=(value); end
 
-  # source://i18n//lib/i18n.rb#70
+  # source://i18n//lib/i18n.rb#69
   def exception_handler; end
 
-  # source://i18n//lib/i18n.rb#74
+  # source://i18n//lib/i18n.rb#69
   def exception_handler=(value); end
 
   # Returns true if a translation exists for a given key, otherwise returns false.
@@ -1295,19 +1319,19 @@ module I18n::Base
   #
   # @raise [Disabled]
   #
-  # source://i18n//lib/i18n.rb#335
+  # source://i18n//lib/i18n.rb#343
   def l(object, locale: T.unsafe(nil), format: T.unsafe(nil), **options); end
 
-  # source://i18n//lib/i18n.rb#70
+  # source://i18n//lib/i18n.rb#69
   def load_path; end
 
-  # source://i18n//lib/i18n.rb#74
+  # source://i18n//lib/i18n.rb#69
   def load_path=(value); end
 
-  # source://i18n//lib/i18n.rb#70
+  # source://i18n//lib/i18n.rb#69
   def locale; end
 
-  # source://i18n//lib/i18n.rb#74
+  # source://i18n//lib/i18n.rb#69
   def locale=(value); end
 
   # Returns true when the passed locale, which can be either a String or a
@@ -1457,13 +1481,13 @@ module I18n::Base
   #
   # @raise [Disabled]
   #
-  # source://i18n//lib/i18n.rb#211
+  # source://i18n//lib/i18n.rb#226
   def t(key = T.unsafe(nil), throw: T.unsafe(nil), raise: T.unsafe(nil), locale: T.unsafe(nil), **options); end
 
   # Wrapper for <tt>translate</tt> that adds <tt>:raise => true</tt>. With
   # this option, if no translation is found, it will raise <tt>I18n::MissingTranslationData</tt>
   #
-  # source://i18n//lib/i18n.rb#230
+  # source://i18n//lib/i18n.rb#233
   def t!(key, **options); end
 
   # Translates, pluralizes and interpolates a given key using a given locale,
@@ -1889,13 +1913,13 @@ module I18n::Gettext::Helpers
   # source://i18n//lib/i18n/gettext/helpers.rb#17
   def N_(msgsid); end
 
-  # source://i18n//lib/i18n/gettext/helpers.rb#21
+  # source://i18n//lib/i18n/gettext/helpers.rb#24
   def _(msgid, options = T.unsafe(nil)); end
 
   # source://i18n//lib/i18n/gettext/helpers.rb#21
   def gettext(msgid, options = T.unsafe(nil)); end
 
-  # source://i18n//lib/i18n/gettext/helpers.rb#38
+  # source://i18n//lib/i18n/gettext/helpers.rb#41
   def n_(msgid, msgid_plural, n = T.unsafe(nil)); end
 
   # source://i18n//lib/i18n/gettext/helpers.rb#38
@@ -1905,7 +1929,7 @@ module I18n::Gettext::Helpers
   #   npgettext('Fruits', 'apple', 'apples', 2)
   #   npgettext('Fruits', ['apple', 'apples'], 2)
   #
-  # source://i18n//lib/i18n/gettext/helpers.rb#61
+  # source://i18n//lib/i18n/gettext/helpers.rb#72
   def np_(msgctxt, msgid, msgid_plural, n = T.unsafe(nil)); end
 
   # Method signatures:
@@ -1919,7 +1943,7 @@ module I18n::Gettext::Helpers
   #   nsgettext('Fruits|apple', 'apples', 2)
   #   nsgettext(['Fruits|apple', 'apples'], 2)
   #
-  # source://i18n//lib/i18n/gettext/helpers.rb#46
+  # source://i18n//lib/i18n/gettext/helpers.rb#56
   def ns_(msgid, msgid_plural, n = T.unsafe(nil), separator = T.unsafe(nil)); end
 
   # Method signatures:
@@ -1929,13 +1953,13 @@ module I18n::Gettext::Helpers
   # source://i18n//lib/i18n/gettext/helpers.rb#46
   def nsgettext(msgid, msgid_plural, n = T.unsafe(nil), separator = T.unsafe(nil)); end
 
-  # source://i18n//lib/i18n/gettext/helpers.rb#32
+  # source://i18n//lib/i18n/gettext/helpers.rb#36
   def p_(msgctxt, msgid); end
 
   # source://i18n//lib/i18n/gettext/helpers.rb#32
   def pgettext(msgctxt, msgid); end
 
-  # source://i18n//lib/i18n/gettext/helpers.rb#26
+  # source://i18n//lib/i18n/gettext/helpers.rb#30
   def s_(msgid, separator = T.unsafe(nil)); end
 
   # source://i18n//lib/i18n/gettext/helpers.rb#26
@@ -2246,7 +2270,7 @@ module I18n::MissingTranslation::Base
   # source://i18n//lib/i18n/exceptions.rb#80
   def to_exception; end
 
-  # source://i18n//lib/i18n/exceptions.rb#65
+  # source://i18n//lib/i18n/exceptions.rb#78
   def to_s; end
 end
 

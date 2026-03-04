@@ -78,8 +78,8 @@ module Hashdiff
     # decode property path into an array
     # e.g. "a.b[3].c" => ['a', 'b', 3, 'c']
     #
-    # @param path [String] Property-string
     # @param delimiter [String] Property-string delimiter
+    # @param path [String] Property-string
     # @private
     #
     # source://hashdiff//lib/hashdiff/util.rb#58
@@ -139,8 +139,8 @@ module Hashdiff
 
     # Apply patch to object
     #
-    # @param obj [Hash, Array] the object to be patched, can be an Array or a Hash
     # @param changes [Array] e.g. [[ '+', 'a.b', '45' ], [ '-', 'a.c', '5' ], [ '~', 'a.x', '45', '63']]
+    # @param obj [Hash, Array] the object to be patched, can be an Array or a Hash
     # @param options [Hash] supports following keys:
     #   * :delimiter (String) ['.'] delimiter string for representing nested keys in changes array
     # @return the object after patch
@@ -165,8 +165,8 @@ module Hashdiff
 
     # Unpatch an object
     #
-    # @param obj [Hash, Array] the object to be unpatched, can be an Array or a Hash
     # @param changes [Array] e.g. [[ '+', 'a.b', '45' ], [ '-', 'a.c', '5' ], [ '~', 'a.x', '45', '63']]
+    # @param obj [Hash, Array] the object to be unpatched, can be an Array or a Hash
     # @param options [Hash] supports following keys:
     #   * :delimiter (String) ['.'] delimiter string for representing nested keys in changes array
     # @return the object after unpatch

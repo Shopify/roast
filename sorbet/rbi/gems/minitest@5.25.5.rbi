@@ -78,26 +78,11 @@ module Minitest
     # source://minitest//lib/minitest.rb#20
     def parallel_executor=(_arg0); end
 
-    # source://guard-minitest/2.4.6/lib/minitest/guard_minitest_plugin.rb#8
-    def plugin_guard_minitest_init(options); end
-
-    # source://guard-minitest/2.4.6/lib/minitest/guard_minitest_plugin.rb#2
-    def plugin_guard_minitest_options(opts, options); end
-
     # source://minitest//lib/minitest/pride_plugin.rb#10
     def plugin_pride_init(options); end
 
     # source://minitest//lib/minitest/pride_plugin.rb#4
     def plugin_pride_options(opts, _options); end
-
-    # source://minitest-rg/5.3.0/lib/minitest/rg_plugin.rb#12
-    def plugin_rg_init(options); end
-
-    # source://minitest-rg/5.3.0/lib/minitest/rg_plugin.rb#6
-    def plugin_rg_options(opts, _options); end
-
-    # source://simplecov/0.22.0/lib/minitest/simplecov_plugin.rb#6
-    def plugin_simplecov_init(_options); end
 
     # source://minitest//lib/minitest.rb#143
     def process_args(args = T.unsafe(nil)); end
@@ -991,7 +976,7 @@ end
 # source://minitest//lib/minitest.rb#592
 Minitest::Reportable::BASE_DIR = T.let(T.unsafe(nil), String)
 
-# source://minitest//lib/minitest.rb#733
+# source://minitest//lib/minitest.rb#735
 class Minitest::Reporter < ::Minitest::AbstractReporter
   # @return [Reporter] a new instance of Reporter
   #

@@ -194,8 +194,8 @@ module VCR
   # @return [void]
   # @see #turn_off!
   # @see #turned_off
-  # @see #turned_on?
   # @see #turned_on
+  # @see #turned_on?
   #
   # source://vcr//lib/vcr.rb#327
   def turn_on!; end
@@ -206,9 +206,9 @@ module VCR
   # @raise [VCR::Errors::CassetteInUseError] if there is currently a cassette in use
   # @raise [ArgumentError] if you pass an invalid option
   # @return [void]
-  # @see #turned_on
   # @see #turn_off!
   # @see #turn_on!
+  # @see #turned_on
   # @see #turned_on?
   #
   # source://vcr//lib/vcr.rb#270
@@ -228,8 +228,8 @@ module VCR
   # @note Normally VCR is _always_ turned on; it will only be off if you have
   #   explicitly turned it off.
   # @return [Boolean] whether or not VCR is turned on
-  # @see #turn_on!
   # @see #turn_off!
+  # @see #turn_on!
   # @see #turned_off
   #
   # source://vcr//lib/vcr.rb#337
@@ -272,8 +272,8 @@ module VCR
   # @raise [VCR::Errors::MissingERBVariableError] when the `:erb` option
   #   is used and the ERB template requires variables that you did not provide.
   # @return [void]
-  # @see #insert_cassette
   # @see #eject_cassette
+  # @see #insert_cassette
   # @yield Block to run while this cassette is in use.
   # @yieldparam cassette [(optional) VCR::Cassette] the cassette that has
   #   been inserted.
@@ -764,8 +764,8 @@ module VCR::Cassette::Persisters::FileSystem
 
   # Sets the cassette for the given storage key (file name).
   #
-  # @param file_name [String] the file name
   # @param content [String] the content to store
+  # @param file_name [String] the file name
   #
   # source://vcr//lib/vcr/cassette/persisters/file_system.rb#33
   def []=(file_name, content); end
@@ -1107,8 +1107,8 @@ class VCR::Configuration
   # @param filters [optional splat of #to_proc] one or more filters to apply.
   #   The objects provided will be converted to procs using `#to_proc`. If provided,
   #   the callback will only be invoked if these procs all return `true`.
-  # @see #before_http_request
   # @see #around_http_request
+  # @see #before_http_request
   # @yield the callback
   # @yieldparam request [VCR::Request::Typed] the request that is being made
   # @yieldparam response [VCR::Response] the response from the request
@@ -1123,8 +1123,8 @@ class VCR::Configuration
   # will be raised for any HTTP request made when there is no
   # cassette in use.
   #
-  # @overload allow_http_connections_when_no_cassette?
   # @overload allow_http_connections_when_no_cassette=
+  # @overload allow_http_connections_when_no_cassette?
   #
   # source://vcr//lib/vcr/configuration.rb#129
   def allow_http_connections_when_no_cassette=(_arg0); end
@@ -1155,8 +1155,8 @@ class VCR::Configuration
   #   The objects provided will be converted to procs using `#to_proc`. If provided,
   #   the callback will only be invoked if these procs all return `true`.
   # @raise [VCR::Errors::NotSupportedError] if the fiber library cannot be loaded.
-  # @see #before_http_request
   # @see #after_http_request
+  # @see #before_http_request
   # @yield the callback
   # @yieldparam request [VCR::Request::FiberAware] the request that is being made
   #
@@ -1182,9 +1182,9 @@ class VCR::Configuration
   #   the given tag.
   # @see #before_record
   # @yield the callback
+  # @yieldparam cassette [(optional) VCR::Cassette] The current cassette.
   # @yieldparam interaction [VCR::HTTPInteraction::HookAware] The interaction that is being
   #   loaded.
-  # @yieldparam cassette [(optional) VCR::Cassette] The current cassette.
   #
   # source://vcr//lib/vcr/configuration.rb#325
   def before_playback(tag = T.unsafe(nil), &block); end
@@ -1208,9 +1208,9 @@ class VCR::Configuration
   #   the given tag.
   # @see #before_playback
   # @yield the callback
+  # @yieldparam cassette [(optional) VCR::Cassette] The current cassette.
   # @yieldparam interaction [VCR::HTTPInteraction::HookAware] The interaction that will be
   #   serialized and written to disk.
-  # @yieldparam cassette [(optional) VCR::Cassette] The current cassette.
   #
   # source://vcr//lib/vcr/configuration.rb#297
   def before_record(tag = T.unsafe(nil), &block); end
@@ -1361,7 +1361,7 @@ class VCR::Configuration
   # @yieldparam interaction [(optional) VCR::HTTPInteraction::HookAware] the HTTP interaction
   # @yieldreturn the string to replace
   #
-  # source://vcr//lib/vcr/configuration.rb#225
+  # source://vcr//lib/vcr/configuration.rb#238
   def filter_sensitive_data(placeholder, tag = T.unsafe(nil), &block); end
 
   # Configures which libraries VCR will hook into to intercept HTTP requests.
@@ -1385,7 +1385,7 @@ class VCR::Configuration
   # @see #ignore_localhost=
   # @see #ignore_request
   #
-  # source://vcr//lib/vcr/configuration.rb#75
+  # source://vcr//lib/vcr/configuration.rb#78
   def ignore_host(*hosts); end
 
   # Specifies host(s) that VCR should ignore.
@@ -1507,7 +1507,7 @@ class VCR::Configuration
   # @param hosts [Array<String>] List of hosts to unignore
   # @see #ignore_hosts
   #
-  # source://vcr//lib/vcr/configuration.rb#84
+  # source://vcr//lib/vcr/configuration.rb#87
   def unignore_host(*hosts); end
 
   # Specifies host(s) that VCR should stop ignoring.
@@ -1597,24 +1597,24 @@ class VCR::Configuration
   def tag_filter_from(tag); end
 end
 
-# source://vcr//lib/vcr/configuration.rb#0
+# source://vcr//lib/vcr/configuration.rb#8
 module VCR::Configuration::DefinedHooks
-  # source://vcr//lib/vcr/util/hooks.rb#55
+  # source://vcr//lib/vcr/configuration.rb#347
   def after_http_request(*filters, &hook); end
 
-  # source://vcr//lib/vcr/util/hooks.rb#55
+  # source://vcr//lib/vcr/configuration.rb#587
   def after_library_hooks_loaded(*filters, &hook); end
 
-  # source://vcr//lib/vcr/util/hooks.rb#55
+  # source://vcr//lib/vcr/configuration.rb#345
   def before_http_request(*filters, &hook); end
 
-  # source://vcr//lib/vcr/util/hooks.rb#55
+  # source://vcr//lib/vcr/configuration.rb#301
   def before_playback(*filters, &hook); end
 
-  # source://vcr//lib/vcr/util/hooks.rb#55
+  # source://vcr//lib/vcr/configuration.rb#273
   def before_record(*filters, &hook); end
 
-  # source://vcr//lib/vcr/util/hooks.rb#55
+  # source://vcr//lib/vcr/configuration.rb#478
   def preserve_exact_body_bytes(*filters, &hook); end
 end
 
@@ -1636,7 +1636,7 @@ class VCR::CucumberTags
   #   - `:use_scenario_name => true` to automatically name the
   #   cassette according to the scenario name.
   #
-  # source://vcr//lib/vcr/test_frameworks/cucumber.rb#30
+  # source://vcr//lib/vcr/test_frameworks/cucumber.rb#80
   def tag(*tag_names); end
 
   # Adds `Before` and `After` cucumber hooks for the named tags that
@@ -1677,7 +1677,7 @@ class VCR::CucumberTags::ScenarioNameBuilder
   # source://vcr//lib/vcr/test_frameworks/cucumber.rb#90
   def cassette_name; end
 
-  # source://vcr//lib/vcr/test_frameworks/cucumber.rb#100
+  # source://vcr//lib/vcr/test_frameworks/cucumber.rb#101
   def examples_table(*_arg0); end
 
   # source://vcr//lib/vcr/test_frameworks/cucumber.rb#103
@@ -1689,7 +1689,7 @@ class VCR::CucumberTags::ScenarioNameBuilder
   # source://vcr//lib/vcr/test_frameworks/cucumber.rb#100
   def scenario(*_arg0); end
 
-  # source://vcr//lib/vcr/test_frameworks/cucumber.rb#94
+  # source://vcr//lib/vcr/test_frameworks/cucumber.rb#98
   def scenario_outline(feature); end
 end
 
@@ -1898,9 +1898,9 @@ class VCR::Errors::UnusedHTTPInteractionError < ::VCR::Errors::Error; end
 
 # Represents a single interaction over HTTP, containing a request and a response.
 #
+# @attr recorded_at [Time] when this HTTP interaction was recorded
 # @attr request [Request] the request
 # @attr response [Response] the response
-# @attr recorded_at [Time] when this HTTP interaction was recorded
 #
 # source://vcr//lib/vcr/structs.rb#504
 class VCR::HTTPInteraction < ::Struct
@@ -1948,8 +1948,8 @@ class VCR::HTTPInteraction::HookAware
   # Replaces a string in any part of the HTTP interaction (headers, request body,
   # response body, etc) with the given replacement text.
   #
-  # @param text [#to_s] the text to replace
   # @param replacement_text [#to_s] the text to put in its place
+  # @param text [#to_s] the text to replace
   #
   # source://vcr//lib/vcr/structs.rb#566
   def filter!(text, replacement_text); end
@@ -2028,30 +2028,47 @@ class VCR::Hooks::FilteredHook < ::Struct
   # Returns the value of attribute filters
   #
   # @return [Object] the current value of filters
+  #
+  # source://vcr//lib/vcr/util/hooks.rb#9
   def filters; end
 
   # Sets the attribute filters
   #
   # @param value [Object] the value to set the attribute filters to.
   # @return [Object] the newly set value
+  #
+  # source://vcr//lib/vcr/util/hooks.rb#9
   def filters=(_); end
 
   # Returns the value of attribute hook
   #
   # @return [Object] the current value of hook
+  #
+  # source://vcr//lib/vcr/util/hooks.rb#9
   def hook; end
 
   # Sets the attribute hook
   #
   # @param value [Object] the value to set the attribute hook to.
   # @return [Object] the newly set value
+  #
+  # source://vcr//lib/vcr/util/hooks.rb#9
   def hook=(_); end
 
   class << self
+    # source://vcr//lib/vcr/util/hooks.rb#9
     def [](*_arg0); end
+
+    # source://vcr//lib/vcr/util/hooks.rb#9
     def inspect; end
+
+    # source://vcr//lib/vcr/util/hooks.rb#9
     def keyword_init?; end
+
+    # source://vcr//lib/vcr/util/hooks.rb#9
     def members; end
+
+    # source://vcr//lib/vcr/util/hooks.rb#9
     def new(*_arg0); end
   end
 end
@@ -2482,7 +2499,7 @@ module VCR::Ping
   def pingecho(host, timeout = T.unsafe(nil), service = T.unsafe(nil)); end
 
   class << self
-    # source://vcr//lib/vcr/util/internet_connection.rb#9
+    # source://vcr//lib/vcr/util/internet_connection.rb#22
     def pingecho(host, timeout = T.unsafe(nil), service = T.unsafe(nil)); end
   end
 end
@@ -2507,10 +2524,10 @@ end
 
 # The request of an {HTTPInteraction}.
 #
-# @attr method [Symbol] the HTTP method (i.e. :head, :options, :get, :post, :put, :patch or :delete)
-# @attr uri [String] the request URI
 # @attr body [String, nil] the request body
 # @attr headers [Hash{String => Array<String>}] the request headers
+# @attr method [Symbol] the HTTP method (i.e. :head, :options, :get, :post, :put, :patch or :delete)
+# @attr uri [String] the request URI
 #
 # source://vcr//lib/vcr/structs.rb#179
 class VCR::Request < ::Struct
@@ -2596,8 +2613,8 @@ class VCR::Request::Typed
 
   # @return [Boolean] whether or not this request is being stubbed by an
   #   external library (such as WebMock).
-  # @see #stubbed_by_vcr?
   # @see #stubbed?
+  # @see #stubbed_by_vcr?
   #
   # source://vcr//lib/vcr/structs.rb#264
   def externally_stubbed?; end
@@ -2620,8 +2637,8 @@ class VCR::Request::Typed
 
   # @return [Boolean] whether or not this request will be stubbed.
   #   It may be stubbed by an external library or by VCR.
-  # @see #stubbed_by_vcr?
   # @see #externally_stubbed?
+  # @see #stubbed_by_vcr?
   #
   # source://vcr//lib/vcr/structs.rb#288
   def stubbed?; end
@@ -2758,9 +2775,9 @@ class VCR::RequestIgnorer
   def ignored_hosts; end
 end
 
-# source://vcr//lib/vcr/request_ignorer.rb#0
+# source://vcr//lib/vcr/request_ignorer.rb#7
 module VCR::RequestIgnorer::DefinedHooks
-  # source://vcr//lib/vcr/util/hooks.rb#55
+  # source://vcr//lib/vcr/request_ignorer.rb#9
   def ignore_request(*filters, &hook); end
 end
 
@@ -2806,7 +2823,7 @@ class VCR::RequestMatcherRegistry
   # @param ignores [Array<#to_s>] The names of the query parameters to ignore
   # @return [#call] the request matcher
   #
-  # source://vcr//lib/vcr/request_matcher_registry.rb#91
+  # source://vcr//lib/vcr/request_matcher_registry.rb#94
   def uri_without_param(*ignores); end
 
   # Builds a dynamic request matcher that matches on a URI while ignoring the
@@ -2878,11 +2895,11 @@ end
 
 # The response of an {HTTPInteraction}.
 #
-# @attr status [ResponseStatus] the status of the response
-# @attr headers [Hash{String => Array<String>}] the response headers
-# @attr body [String] the response body
-# @attr http_version [nil, String] the HTTP version
 # @attr adapter_metadata [Hash] Additional metadata used by a specific VCR adapter.
+# @attr body [String] the response body
+# @attr headers [Hash{String => Array<String>}] the response headers
+# @attr http_version [nil, String] the HTTP version
+# @attr status [ResponseStatus] the status of the response
 #
 # source://vcr//lib/vcr/structs.rb#334
 class VCR::Response < ::Struct

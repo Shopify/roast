@@ -464,7 +464,7 @@ module Console::Interface
   def warn(*_arg0, **_arg1, &_arg2); end
 
   class << self
-    # source://fiber-local/1.1.0/lib/fiber/local.rb#16
+    # source://console//lib/console/interface.rb#12
     def fiber_local_attribute_name; end
 
     # Create a new (thread local) logger instance.
@@ -742,7 +742,7 @@ class Console::Output::Terminal::Buffer < ::StringIO
   # Write lines using the given prefix.
   # Write a line to the buffer.
   #
-  # source://console//lib/console/output/terminal.rb#37
+  # source://console//lib/console/output/terminal.rb#45
   def <<(*lines, prefix: T.unsafe(nil)); end
 
   # Returns the value of attribute prefix.
