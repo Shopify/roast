@@ -5,17 +5,7 @@ require "test_helper"
 # This test suite validates the example workflows in `examples/`.
 module Examples
   module Functional
-    EMPTY_PARAMS = Roast::WorkflowParams.new([], [], {})
-
     class RoastExamplesTest < FunctionalTest
-      setup do
-        Roast::EventMonitor.reset!
-      end
-
-      teardown do
-        Roast::EventMonitor.reset!
-      end
-
       test "async_cogs.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :async_cogs do
           Roast::Workflow.from_file("examples/async_cogs.rb", EMPTY_PARAMS)
