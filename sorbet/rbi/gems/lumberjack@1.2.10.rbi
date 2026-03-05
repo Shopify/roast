@@ -200,8 +200,8 @@ class Lumberjack::Device::DateRollingLogFile < ::Lumberjack::Device::RollingLogF
   # with the :roll option which may contain a value of :daily, :weekly,
   # or :monthly.
   #
-  # @param path [String, Pathname] The path to the log file.
   # @param options [Hash] The options for the device.
+  # @param path [String, Pathname] The path to the log file.
   # @return [DateRollingLogFile] a new instance of DateRollingLogFile
   #
   # source://lumberjack//lib/lumberjack/device/date_rolling_log_file.rb#19
@@ -233,8 +233,8 @@ end
 class Lumberjack::Device::LogFile < ::Lumberjack::Device::Writer
   # Create a logger to the file at +path+. Options are passed through to the Writer constructor.
   #
-  # @param path [String, Pathname] The path to the log file.
   # @param options [Hash] The options for the device.
+  # @param path [String, Pathname] The path to the log file.
   # @return [LogFile] a new instance of LogFile
   #
   # source://lumberjack//lib/lumberjack/device/log_file.rb#18
@@ -440,8 +440,8 @@ class Lumberjack::Device::Writer < ::Lumberjack::Device
   #
   # The size of the internal buffer in bytes can be set by providing :buffer_size (defaults to 32K).
   #
-  # @param stream [IO] The stream to write log entries to.
   # @param options [Hash] The options for the device.
+  # @param stream [IO] The stream to write log entries to.
   # @return [Writer] a new instance of Writer
   #
   # source://lumberjack//lib/lumberjack/device/writer.rb#66
@@ -602,12 +602,12 @@ class Lumberjack::Formatter
   #
   #   # Add statements can be chained together
   #   formatter.add(MyClass, :pretty_print).add(YourClass){|obj| obj.humanize}
-  # @param klass [Class, Module, String, Array<Class, Module, String>] The class or module to add a formatter for.
+  # @param args [Array] Arguments to pass to the formatter when it is initialized.
   # @param formatter [Symbol, Class, String, #call] The formatter to use for the class.
   #   If a symbol is passed in, it will be used to load one of the predefined formatters.
   #   If a class is passed in, it will be initialized with the args passed in.
   #   Otherwise, the object will be used as the formatter and must respond to call method.
-  # @param args [Array] Arguments to pass to the formatter when it is initialized.
+  # @param klass [Class, Module, String, Array<Class, Module, String>] The class or module to add a formatter for.
   # @return [self] Returns itself so that add statements can be chained together.
   # @yield [obj] A block that will be used as the formatter for the class.
   # @yieldparam obj [Object] The object to format.
@@ -619,10 +619,10 @@ class Lumberjack::Formatter
   # Compatibility with the Logger::Formatter signature. This method will just convert the message
   # object to a string and ignores the other parameters.
   #
+  # @param msg [Object] The message object to format.
+  # @param progname [String] The name of the program logging the message.
   # @param severity [Integer, String, Symbol] The severity of the message.
   # @param timestamp [Time] The time the message was logged.
-  # @param progname [String] The name of the program logging the message.
-  # @param msg [Object] The message object to format.
   #
   # source://lumberjack//lib/lumberjack/formatter.rb#175
   def call(severity, timestamp, progname, msg); end
@@ -863,12 +863,12 @@ Lumberjack::LINE_SEPARATOR = T.let(T.unsafe(nil), String)
 class Lumberjack::LogEntry
   # Create a new log entry.
   #
-  # @param time [Time] The time the log entry was created.
-  # @param severity [Integer, String] The severity of the log entry.
   # @param message [String] The message to log.
-  # @param progname [String] The name of the program that created the log entry.
   # @param pid [Integer] The process id of the program that created the log entry.
+  # @param progname [String] The name of the program that created the log entry.
+  # @param severity [Integer, String] The severity of the log entry.
   # @param tags [Hash] A hash of tags to associate with the log entry.
+  # @param time [Time] The time the log entry was created.
   # @return [LogEntry] a new instance of LogEntry
   #
   # source://lumberjack//lib/lumberjack/log_entry.rb#21
@@ -1049,9 +1049,9 @@ class Lumberjack::Logger
 
   # ::Logger compatible method to add a log entry.
   #
-  # @param severity [Integer, Symbol, String] The severity of the message.
   # @param message [Object] The message to log.
   # @param progname [String] The name of the program that is logging the message.
+  # @param severity [Integer, Symbol, String] The severity of the message.
   # @return [void]
   #
   # source://lumberjack//lib/lumberjack/logger.rb#229
@@ -1071,9 +1071,9 @@ class Lumberjack::Logger
   #   logger.add_entry(Logger::INFO, "Request completed")
   #   logger.add_entry(:warn, "Request took a long time")
   #   logger.add_entry(Logger::DEBUG){"Start processing with options #{options.inspect}"}
-  # @param severity [Integer, Symbol, String] The severity of the message.
   # @param message [Object] The message to log.
   # @param progname [String] The name of the program that is logging the message.
+  # @param severity [Integer, Symbol, String] The severity of the message.
   # @param tags [Hash] The tags to add to the log entry.
   # @return [void]
   #
@@ -1265,12 +1265,12 @@ class Lumberjack::Logger
 
   # ::Logger compatible method to add a log entry.
   #
-  # @param severity [Integer, Symbol, String] The severity of the message.
   # @param message [Object] The message to log.
   # @param progname [String] The name of the program that is logging the message.
+  # @param severity [Integer, Symbol, String] The severity of the message.
   # @return [void]
   #
-  # source://lumberjack//lib/lumberjack/logger.rb#229
+  # source://lumberjack//lib/lumberjack/logger.rb#241
   def log(severity, message = T.unsafe(nil), progname = T.unsafe(nil), &block); end
 
   # Get the program name associated with log messages.
@@ -1316,7 +1316,7 @@ class Lumberjack::Logger
   #
   # @return [Integer] The severity level.
   #
-  # source://lumberjack//lib/lumberjack/logger.rb#109
+  # source://lumberjack//lib/lumberjack/logger.rb#113
   def sev_threshold; end
 
   # Set the log level using either an integer level like Logger::INFO or a label like
@@ -1325,7 +1325,7 @@ class Lumberjack::Logger
   # @param value [Integer, Symbol, String] The severity level.
   # @return [void]
   #
-  # source://lumberjack//lib/lumberjack/logger.rb#120
+  # source://lumberjack//lib/lumberjack/logger.rb#124
   def sev_threshold=(value); end
 
   # Silence the logger by setting a new log level inside a block. By default, only +ERROR+ or +FATAL+
@@ -1604,9 +1604,9 @@ class Lumberjack::TagFormatter
   # or an object that responds to `call` or a block. The default formatter will not be
   # applied.
   #
-  # @param names [String, Array<String>] The tag names to apply the formatter to.
   # @param formatter [Lumberjack::Formatter, #call, nil] The formatter to use.
   #   If this is nil, then the block will be used as the formatter.
+  # @param names [String, Array<String>] The tag names to apply the formatter to.
   # @return [Lumberjack::TagFormatter] self
   #
   # source://lumberjack//lib/lumberjack/tag_formatter.rb#46
@@ -1691,19 +1691,19 @@ class Lumberjack::TaggedLoggerSupport::Formatter
   # source://lumberjack//lib/lumberjack/tagged_logger_support.rb#35
   def __formatter; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://lumberjack//lib/lumberjack/tagged_logger_support.rb#11
   def clear_tags!(*args, **_arg1, &block); end
 
   # source://lumberjack//lib/lumberjack/tagged_logger_support.rb#19
   def current_tags; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://lumberjack//lib/lumberjack/tagged_logger_support.rb#11
   def pop_tags(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://lumberjack//lib/lumberjack/tagged_logger_support.rb#11
   def push_tags(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://lumberjack//lib/lumberjack/tagged_logger_support.rb#11
   def tagged(*args, **_arg1, &block); end
 
   # source://lumberjack//lib/lumberjack/tagged_logger_support.rb#28

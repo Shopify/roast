@@ -11,107 +11,8 @@
 # source://simplecov//lib/minitest/simplecov_plugin.rb#5
 module Minitest
   class << self
-    # source://minitest/5.25.5/lib/minitest.rb#323
-    def __run(reporter, options); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#97
-    def after_run(&block); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def allow_fork; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def allow_fork=(_arg0); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#70
-    def autorun; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def backtrace_filter; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def backtrace_filter=(_arg0); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#19
-    def cattr_accessor(name); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#1216
-    def clock_time; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#303
-    def empty_run!(options); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def extensions; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def extensions=(_arg0); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#336
-    def filter_backtrace(bt); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def info_signal; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def info_signal=(_arg0); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#125
-    def init_plugins(options); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#109
-    def load_plugins; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def parallel_executor; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def parallel_executor=(_arg0); end
-
-    # source://guard-minitest/2.4.6/lib/minitest/guard_minitest_plugin.rb#8
-    def plugin_guard_minitest_init(options); end
-
-    # source://guard-minitest/2.4.6/lib/minitest/guard_minitest_plugin.rb#2
-    def plugin_guard_minitest_options(opts, options); end
-
-    # source://minitest/5.25.5/lib/minitest/pride_plugin.rb#10
-    def plugin_pride_init(options); end
-
-    # source://minitest/5.25.5/lib/minitest/pride_plugin.rb#4
-    def plugin_pride_options(opts, _options); end
-
-    # source://minitest-rg/5.3.0/lib/minitest/rg_plugin.rb#12
-    def plugin_rg_init(options); end
-
-    # source://minitest-rg/5.3.0/lib/minitest/rg_plugin.rb#6
-    def plugin_rg_options(opts, _options); end
-
     # source://simplecov//lib/minitest/simplecov_plugin.rb#6
     def plugin_simplecov_init(_options); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#143
-    def process_args(args = T.unsafe(nil)); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#104
-    def register_plugin(name_or_mod); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def reporter; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def reporter=(_arg0); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#269
-    def run(args = T.unsafe(nil)); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#1207
-    def run_one_method(klass, method_name); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def seed; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def seed=(_arg0); end
   end
 end
 
@@ -185,7 +86,7 @@ module SimpleCov
     # Basically, should we take care of at_exit behavior or something else?
     # Used by the minitest plugin. See lib/minitest/simplecov_plugin.rb
     #
-    # source://simplecov//lib/simplecov.rb#28
+    # source://simplecov//lib/simplecov.rb#29
     def external_at_exit?; end
 
     # Applies the configured filters to the given array of SimpleCov::SourceFile items
@@ -1001,7 +902,7 @@ module SimpleCov::Configuration
   #
   # Configure with SimpleCov.nocov_token('skip') or it's alias SimpleCov.skip_token('skip')
   #
-  # source://simplecov//lib/simplecov/configuration.rb#140
+  # source://simplecov//lib/simplecov/configuration.rb#145
   def skip_token(nocov_token = T.unsafe(nil)); end
 
   # Coverage results will always include files matched by this glob, whether
@@ -1281,7 +1182,7 @@ class SimpleCov::FileList
   # source://simplecov//lib/simplecov/file_list.rb#101
   def branch_covered_percent; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/file_list.rb#10
   def count(*args, **_arg1, &block); end
 
   # source://simplecov//lib/simplecov/file_list.rb#26
@@ -1320,10 +1221,10 @@ class SimpleCov::FileList
   # source://simplecov//lib/simplecov/file_list.rb#82
   def covered_strength; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/file_list.rb#10
   def each(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/file_list.rb#10
   def empty?(*args, **_arg1, &block); end
 
   # Finds the least covered file and returns that file's name
@@ -1331,7 +1232,7 @@ class SimpleCov::FileList
   # source://simplecov//lib/simplecov/file_list.rb#65
   def least_covered_file; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/file_list.rb#10
   def length(*args, **_arg1, &block); end
 
   # Returns the overall amount of relevant lines of code across all files in this list
@@ -1339,7 +1240,7 @@ class SimpleCov::FileList
   # source://simplecov//lib/simplecov/file_list.rb#70
   def lines_of_code; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/file_list.rb#10
   def map(*args, **_arg1, &block); end
 
   # Return total count of covered branches
@@ -1357,7 +1258,7 @@ class SimpleCov::FileList
   # source://simplecov//lib/simplecov/file_list.rb#45
   def never_lines; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/file_list.rb#10
   def size(*args, **_arg1, &block); end
 
   # Returns the count of skipped lines
@@ -1365,10 +1266,10 @@ class SimpleCov::FileList
   # source://simplecov//lib/simplecov/file_list.rb#52
   def skipped_lines; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/file_list.rb#10
   def to_a(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/file_list.rb#10
   def to_ary(*args, **_arg1, &block); end
 
   # Return total count of branches in all files
@@ -1575,25 +1476,25 @@ class SimpleCov::Result
   # source://simplecov//lib/simplecov/result.rb#21
   def command_name=(_arg0); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#23
   def coverage_statistics(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#23
   def coverage_statistics_by_file(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#23
   def covered_branches(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#23
   def covered_lines(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#23
   def covered_percent(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#23
   def covered_percentages(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#23
   def covered_strength(*args, **_arg1, &block); end
 
   # Defines when this result has been created. Defaults to Time.now
@@ -1626,13 +1527,13 @@ class SimpleCov::Result
   # source://simplecov//lib/simplecov/result.rb#45
   def groups; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#23
   def least_covered_file(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#23
   def missed_branches(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#23
   def missed_lines(*args, **_arg1, &block); end
 
   # Returns the original Coverage.result used for this instance of SimpleCov::Result
@@ -1642,7 +1543,7 @@ class SimpleCov::Result
 
   # Returns all files that are applicable to this result (sans filters!) as instances of SimpleCov::SourceFile. Aliased as :source_files
   #
-  # source://simplecov//lib/simplecov/result.rb#16
+  # source://simplecov//lib/simplecov/result.rb#17
   def source_files; end
 
   # Returns a hash representation of this Result that can be used for marshalling it into JSON
@@ -1650,10 +1551,10 @@ class SimpleCov::Result
   # source://simplecov//lib/simplecov/result.rb#66
   def to_hash; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#23
   def total_branches(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://simplecov//lib/simplecov/result.rb#24
   def total_lines(*args, **_arg1, &block); end
 
   private
@@ -1946,13 +1847,13 @@ class SimpleCov::SourceFile
 
   # The source code for this file. Aliased as :source
   #
-  # source://simplecov//lib/simplecov/source_file.rb#25
+  # source://simplecov//lib/simplecov/source_file.rb#30
   def source; end
 
   # Returns all source lines for this file as instances of SimpleCov::SourceFile::Line,
   # and thus including coverage data. Aliased as :source_lines
   #
-  # source://simplecov//lib/simplecov/source_file.rb#42
+  # source://simplecov//lib/simplecov/source_file.rb#45
   def source_lines; end
 
   # The source code for this file. Aliased as :source
@@ -2162,7 +2063,7 @@ class SimpleCov::SourceFile::Line
 
   # The line number in the source file. Aliased as :line, :number
   #
-  # source://simplecov//lib/simplecov/source_file/line.rb#14
+  # source://simplecov//lib/simplecov/source_file/line.rb#22
   def line; end
 
   # The line number in the source file. Aliased as :line, :number
@@ -2186,7 +2087,7 @@ class SimpleCov::SourceFile::Line
 
   # The line number in the source file. Aliased as :line, :number
   #
-  # source://simplecov//lib/simplecov/source_file/line.rb#14
+  # source://simplecov//lib/simplecov/source_file/line.rb#23
   def number; end
 
   # Whether this line was skipped
@@ -2210,7 +2111,7 @@ class SimpleCov::SourceFile::Line
   # The source code for this line. Aliased as :source
   # Lets grab some fancy aliases, shall we?
   #
-  # source://simplecov//lib/simplecov/source_file/line.rb#12
+  # source://simplecov//lib/simplecov/source_file/line.rb#21
   def source; end
 
   # The source code for this line. Aliased as :source

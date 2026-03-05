@@ -8,62 +8,7 @@
 # Faraday namespace.
 #
 # source://faraday-retry//lib/faraday/retriable_response.rb#4
-module Faraday
-  class << self
-    # source://faraday/2.14.1/lib/faraday.rb#56
-    def default_adapter; end
-
-    # source://faraday/2.14.1/lib/faraday.rb#103
-    def default_adapter=(adapter); end
-
-    # source://faraday/2.14.1/lib/faraday.rb#60
-    def default_adapter_options; end
-
-    # source://faraday/2.14.1/lib/faraday.rb#60
-    def default_adapter_options=(_arg0); end
-
-    # source://faraday/2.14.1/lib/faraday.rb#121
-    def default_connection; end
-
-    # source://faraday/2.14.1/lib/faraday.rb#63
-    def default_connection=(_arg0); end
-
-    # source://faraday/2.14.1/lib/faraday.rb#128
-    def default_connection_options; end
-
-    # source://faraday/2.14.1/lib/faraday.rb#135
-    def default_connection_options=(options); end
-
-    # source://faraday/2.14.1/lib/faraday.rb#68
-    def ignore_env_proxy; end
-
-    # source://faraday/2.14.1/lib/faraday.rb#68
-    def ignore_env_proxy=(_arg0); end
-
-    # source://faraday/2.14.1/lib/faraday.rb#47
-    def lib_path; end
-
-    # source://faraday/2.14.1/lib/faraday.rb#47
-    def lib_path=(_arg0); end
-
-    # source://faraday/2.14.1/lib/faraday.rb#97
-    def new(url = T.unsafe(nil), options = T.unsafe(nil), &block); end
-
-    # source://faraday/2.14.1/lib/faraday.rb#108
-    def respond_to_missing?(symbol, include_private = T.unsafe(nil)); end
-
-    # source://faraday/2.14.1/lib/faraday.rb#43
-    def root_path; end
-
-    # source://faraday/2.14.1/lib/faraday.rb#43
-    def root_path=(_arg0); end
-
-    private
-
-    # source://faraday/2.14.1/lib/faraday.rb#144
-    def method_missing(name, *args, &block); end
-  end
-end
+module Faraday; end
 
 # Exception used to control the Retry middleware.
 #
@@ -166,7 +111,7 @@ Faraday::Retry::Middleware::IDEMPOTENT_METHODS = T.let(T.unsafe(nil), Array)
 
 # Options contains the configurable parameters for the Retry middleware.
 #
-# source://faraday-retry//lib/faraday/retry/middleware.rb#29
+# source://faraday-retry//lib/faraday/retry/middleware.rb#35
 class Faraday::Retry::Middleware::Options < ::Faraday::Options
   # source://faraday-retry//lib/faraday/retry/middleware.rb#63
   def backoff_factor; end

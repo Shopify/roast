@@ -46,8 +46,8 @@ module Listen
     #
     # @return [Listen::Listener] the listener
     # @yield [modified, added, removed] the changed files
-    # @yieldparam modified [Array<String>] the list of modified files
     # @yieldparam added [Array<String>] the list of added files
+    # @yieldparam modified [Array<String>] the list of modified files
     # @yieldparam removed [Array<String>] the list of removed files
     #
     # source://listen//lib/listen.rb#29
@@ -377,10 +377,10 @@ class Listen::Backend
   # source://listen//lib/listen/backend.rb#34
   def min_delay_between_events; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://listen//lib/listen/backend.rb#31
   def start(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://listen//lib/listen/backend.rb#32
   def stop(*args, **_arg1, &block); end
 
   private
@@ -628,13 +628,13 @@ class Listen::Event::Queue
   # source://listen//lib/listen/event/queue.rb#27
   def <<(args); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://listen//lib/listen/event/queue.rb#43
   def close(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://listen//lib/listen/event/queue.rb#41
   def empty?(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://listen//lib/listen/event/queue.rb#42
   def pop(*args, **_arg1, &block); end
 
   private
@@ -776,8 +776,8 @@ class Listen::Listener
   # @param options [Hash] the listen options (see Listen::Listener::Options)
   # @return [Listener] a new instance of Listener
   # @yield [modified, added, removed] the changed files
-  # @yieldparam modified [Array<String>] the list of modified files
   # @yieldparam added [Array<String>] the list of added files
+  # @yieldparam modified [Array<String>] the list of modified files
   # @yieldparam removed [Array<String>] the list of removed files
   #
   # source://listen//lib/listen/listener.rb#37

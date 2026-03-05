@@ -26,9 +26,9 @@ module PublicSuffix
     #
     # This method doesn't raise. Instead, it returns nil if the domain is not valid for whatever reason.
     #
-    # @param name [#to_s] The domain name or fully qualified domain name to parse.
-    # @param list [PublicSuffix::List] The rule list to search, defaults to the default {PublicSuffix::List}
     # @param ignore_private [Boolean]
+    # @param list [PublicSuffix::List] The rule list to search, defaults to the default {PublicSuffix::List}
+    # @param name [#to_s] The domain name or fully qualified domain name to parse.
     # @return [String]
     #
     # source://public_suffix//lib/public_suffix.rb#140
@@ -41,30 +41,30 @@ module PublicSuffix
 
     # Parses +name+ and returns the {PublicSuffix::Domain} instance.
     #
-    # @example Parse a valid domain
-    #   PublicSuffix.parse("google.com")
-    #   # => #<PublicSuffix::Domain:0x007fec2e51e588 @sld="google", @tld="com", @trd=nil>
-    # @example Parse a valid subdomain
-    #   PublicSuffix.parse("www.google.com")
-    #   # => #<PublicSuffix::Domain:0x007fec276d4cf8 @sld="google", @tld="com", @trd="www">
     # @example Parse a fully qualified domain
     #   PublicSuffix.parse("google.com.")
     #   # => #<PublicSuffix::Domain:0x007fec257caf38 @sld="google", @tld="com", @trd=nil>
     # @example Parse a fully qualified domain (subdomain)
     #   PublicSuffix.parse("www.google.com.")
     #   # => #<PublicSuffix::Domain:0x007fec27b6bca8 @sld="google", @tld="com", @trd="www">
+    # @example Parse a valid domain
+    #   PublicSuffix.parse("google.com")
+    #   # => #<PublicSuffix::Domain:0x007fec2e51e588 @sld="google", @tld="com", @trd=nil>
+    # @example Parse a valid subdomain
+    #   PublicSuffix.parse("www.google.com")
+    #   # => #<PublicSuffix::Domain:0x007fec276d4cf8 @sld="google", @tld="com", @trd="www">
+    # @example Parse an URL (not supported, only domains)
+    #   PublicSuffix.parse("http://www.google.com")
+    #   # => PublicSuffix::DomainInvalid: http://www.google.com is not expected to contain a scheme
     # @example Parse an invalid (unlisted) domain
     #   PublicSuffix.parse("x.yz")
     #   # => #<PublicSuffix::Domain:0x007fec2f49bec0 @sld="x", @tld="yz", @trd=nil>
     # @example Parse an invalid (unlisted) domain with strict checking (without applying the default * rule)
     #   PublicSuffix.parse("x.yz", default_rule: nil)
     #   # => PublicSuffix::DomainInvalid: `x.yz` is not a valid domain
-    # @example Parse an URL (not supported, only domains)
-    #   PublicSuffix.parse("http://www.google.com")
-    #   # => PublicSuffix::DomainInvalid: http://www.google.com is not expected to contain a scheme
-    # @param name [#to_s] The domain name or fully qualified domain name to parse.
-    # @param list [PublicSuffix::List] The rule list to search, defaults to the default {PublicSuffix::List}
     # @param ignore_private [Boolean]
+    # @param list [PublicSuffix::List] The rule list to search, defaults to the default {PublicSuffix::List}
+    # @param name [#to_s] The domain name or fully qualified domain name to parse.
     # @raise [PublicSuffix::DomainInvalid] If domain is not a valid domain.
     # @raise [PublicSuffix::DomainNotAllowed] If a rule for +domain+ is found, but the rule doesn't allow +domain+.
     # @return [PublicSuffix::Domain]
@@ -77,11 +77,13 @@ module PublicSuffix
     # This method doesn't care whether domain is a domain or subdomain.
     # The validation is performed using the default {PublicSuffix::List}.
     #
-    # @example Validate a valid domain
-    #   PublicSuffix.valid?("example.com")
+    # @example Check an URL (which is not a valid domain)
+    #   PublicSuffix.valid?("http://www.example.com")
+    #   # => false
+    # @example Validate a fully qualified domain
+    #   PublicSuffix.valid?("google.com.")
     #   # => true
-    # @example Validate a valid subdomain
-    #   PublicSuffix.valid?("www.example.com")
+    #   PublicSuffix.valid?("www.google.com.")
     #   # => true
     # @example Validate a not-listed domain
     #   PublicSuffix.valid?("example.tldnotlisted")
@@ -91,16 +93,14 @@ module PublicSuffix
     #   # => true
     #   PublicSuffix.valid?("example.tldnotlisted", default_rule: nil)
     #   # => false
-    # @example Validate a fully qualified domain
-    #   PublicSuffix.valid?("google.com.")
+    # @example Validate a valid domain
+    #   PublicSuffix.valid?("example.com")
     #   # => true
-    #   PublicSuffix.valid?("www.google.com.")
+    # @example Validate a valid subdomain
+    #   PublicSuffix.valid?("www.example.com")
     #   # => true
-    # @example Check an URL (which is not a valid domain)
-    #   PublicSuffix.valid?("http://www.example.com")
-    #   # => false
-    # @param name [#to_s] The domain name or fully qualified domain name to validate.
     # @param ignore_private [Boolean]
+    # @param name [#to_s] The domain name or fully qualified domain name to validate.
     # @return [Boolean]
     #
     # source://public_suffix//lib/public_suffix.rb#123
@@ -120,12 +120,12 @@ PublicSuffix::DOT = T.let(T.unsafe(nil), String)
 class PublicSuffix::Domain
   # Creates and returns a new {PublicSuffix::Domain} instance.
   #
-  # @example Initialize with a TLD and SLD
-  #   PublicSuffix::Domain.new("com", "example")
-  #   # => #<PublicSuffix::Domain @tld="com", @trd=nil>
   # @example Initialize with a TLD
   #   PublicSuffix::Domain.new("com")
   #   # => #<PublicSuffix::Domain @tld="com">
+  # @example Initialize with a TLD and SLD
+  #   PublicSuffix::Domain.new("com", "example")
+  #   # => #<PublicSuffix::Domain @tld="com", @trd=nil>
   # @example Initialize with a TLD, SLD and TRD
   #   PublicSuffix::Domain.new("com", "example", "wwww")
   #   # => #<PublicSuffix::Domain @tld="com", @trd=nil, @sld="example">
@@ -240,8 +240,8 @@ class PublicSuffix::Domain
   #   # => "www"
   #
   # @return [String]
-  # @see #subdomain?
   # @see #domain
+  # @see #subdomain?
   #
   # source://public_suffix//lib/public_suffix/domain.rb#169
   def subdomain; end
@@ -401,7 +401,7 @@ class PublicSuffix::List
   # @param rule [PublicSuffix::Rule::*] the rule to add to the list
   # @return [self]
   #
-  # source://public_suffix//lib/public_suffix/list.rb#141
+  # source://public_suffix//lib/public_suffix/list.rb#145
   def <<(rule); end
 
   # Checks whether two lists are equal.
@@ -460,13 +460,13 @@ class PublicSuffix::List
   # @param other [PublicSuffix::List] the List to compare
   # @return [Boolean]
   #
-  # source://public_suffix//lib/public_suffix/list.rb#120
+  # source://public_suffix//lib/public_suffix/list.rb#125
   def eql?(other); end
 
   # Finds and returns the rule corresponding to the longest public suffix for the hostname.
   #
-  # @param name [#to_s] the hostname
   # @param default [PublicSuffix::Rule::*] the default rule to return in case no rule matches
+  # @param name [#to_s] the hostname
   # @return [PublicSuffix::Rule::*]
   #
   # source://public_suffix//lib/public_suffix/list.rb#174
@@ -507,8 +507,8 @@ class PublicSuffix::List
   # matching rules, but different data structures may not be able to do it, and instead would
   # return only the match. For this reason, you should rely on {#find}.
   #
-  # @param name [#to_s] the hostname
   # @param ignore_private [Boolean]
+  # @param name [#to_s] the hostname
   # @return [Array<PublicSuffix::Rule::*>]
   #
   # source://public_suffix//lib/public_suffix/list.rb#199
@@ -674,8 +674,8 @@ end
 class PublicSuffix::Rule::Base
   # Initializes a new rule.
   #
-  # @param value [String]
   # @param private [Boolean]
+  # @param value [String]
   # @return [Base] a new instance of Base
   #
   # source://public_suffix//lib/public_suffix/rule.rb#126
@@ -704,7 +704,7 @@ class PublicSuffix::Rule::Base
   # @return [Boolean] true if this rule and other are instances of the same class
   #   and has the same value, false otherwise.
   #
-  # source://public_suffix//lib/public_suffix/rule.rb#137
+  # source://public_suffix//lib/public_suffix/rule.rb#140
   def eql?(other); end
 
   # @return [String] the length of the rule
@@ -769,41 +769,62 @@ class PublicSuffix::Rule::Entry < ::Struct
   # Returns the value of attribute length
   #
   # @return [Object] the current value of length
+  #
+  # source://public_suffix//lib/public_suffix/rule.rb#25
   def length; end
 
   # Sets the attribute length
   #
   # @param value [Object] the value to set the attribute length to.
   # @return [Object] the newly set value
+  #
+  # source://public_suffix//lib/public_suffix/rule.rb#25
   def length=(_); end
 
   # Returns the value of attribute private
   #
   # @return [Object] the current value of private
+  #
+  # source://public_suffix//lib/public_suffix/rule.rb#25
   def private; end
 
   # Sets the attribute private
   #
   # @param value [Object] the value to set the attribute private to.
   # @return [Object] the newly set value
+  #
+  # source://public_suffix//lib/public_suffix/rule.rb#25
   def private=(_); end
 
   # Returns the value of attribute type
   #
   # @return [Object] the current value of type
+  #
+  # source://public_suffix//lib/public_suffix/rule.rb#25
   def type; end
 
   # Sets the attribute type
   #
   # @param value [Object] the value to set the attribute type to.
   # @return [Object] the newly set value
+  #
+  # source://public_suffix//lib/public_suffix/rule.rb#25
   def type=(_); end
 
   class << self
+    # source://public_suffix//lib/public_suffix/rule.rb#25
     def [](*_arg0); end
+
+    # source://public_suffix//lib/public_suffix/rule.rb#25
     def inspect; end
+
+    # source://public_suffix//lib/public_suffix/rule.rb#25
     def keyword_init?; end
+
+    # source://public_suffix//lib/public_suffix/rule.rb#25
     def members; end
+
+    # source://public_suffix//lib/public_suffix/rule.rb#25
     def new(*_arg0); end
   end
 end
@@ -885,9 +906,9 @@ end
 class PublicSuffix::Rule::Wildcard < ::PublicSuffix::Rule::Base
   # Initializes a new rule.
   #
-  # @param value [String]
   # @param length [Integer]
   # @param private [Boolean]
+  # @param value [String]
   # @return [Wildcard] a new instance of Wildcard
   #
   # source://public_suffix//lib/public_suffix/rule.rb#232

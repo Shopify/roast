@@ -41,7 +41,7 @@ module Kernel
     #
     # You must require 'uri' to use this method.
     #
-    # source://uri//lib/uri/common.rb#911
+    # source://uri//lib/uri/common.rb#921
     def URI(uri); end
   end
 end
@@ -774,7 +774,7 @@ class URI::Generic
   #   # => "http://my.example.com/main.rbx?page=1"
   # merge
   #
-  # source://uri//lib/uri/generic.rb#1124
+  # source://uri//lib/uri/generic.rb#1164
   def +(oth); end
 
   # == Args
@@ -794,7 +794,7 @@ class URI::Generic
   #   uri.route_from('http://my.example.com')
   #   #=> #<URI::Generic /main.rbx?page=1>
   #
-  # source://uri//lib/uri/generic.rb#1274
+  # source://uri//lib/uri/generic.rb#1294
   def -(oth); end
 
   # Compares two URIs.
@@ -806,7 +806,7 @@ class URI::Generic
   #
   # @return [Boolean]
   #
-  # source://uri//lib/uri/generic.rb#987
+  # source://uri//lib/uri/generic.rb#994
   def absolute; end
 
   # Returns true if URI has a scheme (e.g. http:// or https://) specified.
@@ -1350,7 +1350,7 @@ class URI::Generic
 
   # Constructs String from URI.
   #
-  # source://uri//lib/uri/generic.rb#1355
+  # source://uri//lib/uri/generic.rb#1394
   def to_str; end
 
   # Returns the user component (without URI decoding).
@@ -1944,7 +1944,7 @@ class URI::MailTo < ::URI::Generic
   #   uri.to_mailtext
   #   # => "To: ruby-list@ruby-lang.org\nSubject: subscribe\nCc: myaddr\n\n\n"
   #
-  # source://uri//lib/uri/mailto.rb#268
+  # source://uri//lib/uri/mailto.rb#289
   def to_rfc822text; end
 
   # Constructs String from URI.
@@ -2336,7 +2336,7 @@ module URI::Util
   def make_components_hash(klass, array_hash); end
 
   class << self
-    # source://uri//lib/uri/common.rb#66
+    # source://uri//lib/uri/common.rb#94
     def make_components_hash(klass, array_hash); end
   end
 end

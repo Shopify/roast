@@ -8,49 +8,6 @@
 # source://guard-minitest//lib/guard/minitest.rb#3
 module Guard
   extend ::Guard::Internals::Helpers
-
-  class << self
-    # source://guard/2.19.1/lib/guard.rb#87
-    def async_queue_add(changes); end
-
-    # source://guard/2.19.1/lib/guard.rb#73
-    def init(cmdline_options); end
-
-    # source://guard/2.19.1/lib/guard.rb#24
-    def interactor; end
-
-    # source://guard/2.19.1/lib/guard.rb#23
-    def listener; end
-
-    # source://guard/2.19.1/lib/guard.rb#22
-    def queue; end
-
-    # source://guard/2.19.1/lib/guard.rb#44
-    def setup(cmdline_options = T.unsafe(nil)); end
-
-    # source://guard/2.19.1/lib/guard.rb#21
-    def state; end
-
-    private
-
-    # source://guard/2.19.1/lib/guard.rb#132
-    def _evaluate(options); end
-
-    # source://guard/2.19.1/lib/guard.rb#152
-    def _guardfile_deprecated_check(modified); end
-
-    # source://guard/2.19.1/lib/guard.rb#113
-    def _listener_callback; end
-
-    # source://guard/2.19.1/lib/guard.rb#128
-    def _pluginless_guardfile?; end
-
-    # source://guard/2.19.1/lib/guard.rb#109
-    def _relative_pathnames(paths); end
-
-    # source://guard/2.19.1/lib/guard.rb#99
-    def _relevant_changes?(changes); end
-  end
 end
 
 # source://guard-minitest//lib/guard/minitest.rb#4
@@ -300,106 +257,10 @@ Guard::MinitestVersion::VERSION = T.let(T.unsafe(nil), String)
 # source://guard-minitest//lib/minitest/guard_minitest_plugin.rb#1
 module Minitest
   class << self
-    # source://minitest/5.25.5/lib/minitest.rb#323
-    def __run(reporter, options); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#97
-    def after_run(&block); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def allow_fork; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def allow_fork=(_arg0); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#70
-    def autorun; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def backtrace_filter; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def backtrace_filter=(_arg0); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#19
-    def cattr_accessor(name); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#1216
-    def clock_time; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#303
-    def empty_run!(options); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def extensions; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def extensions=(_arg0); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#336
-    def filter_backtrace(bt); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def info_signal; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def info_signal=(_arg0); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#125
-    def init_plugins(options); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#109
-    def load_plugins; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def parallel_executor; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def parallel_executor=(_arg0); end
-
     # source://guard-minitest//lib/minitest/guard_minitest_plugin.rb#8
     def plugin_guard_minitest_init(options); end
 
     # source://guard-minitest//lib/minitest/guard_minitest_plugin.rb#2
     def plugin_guard_minitest_options(opts, options); end
-
-    # source://minitest/5.25.5/lib/minitest/pride_plugin.rb#10
-    def plugin_pride_init(options); end
-
-    # source://minitest/5.25.5/lib/minitest/pride_plugin.rb#4
-    def plugin_pride_options(opts, _options); end
-
-    # source://minitest-rg/5.3.0/lib/minitest/rg_plugin.rb#12
-    def plugin_rg_init(options); end
-
-    # source://minitest-rg/5.3.0/lib/minitest/rg_plugin.rb#6
-    def plugin_rg_options(opts, _options); end
-
-    # source://simplecov/0.22.0/lib/minitest/simplecov_plugin.rb#6
-    def plugin_simplecov_init(_options); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#143
-    def process_args(args = T.unsafe(nil)); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#104
-    def register_plugin(name_or_mod); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def reporter; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def reporter=(_arg0); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#269
-    def run(args = T.unsafe(nil)); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#1207
-    def run_one_method(klass, method_name); end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def seed; end
-
-    # source://minitest/5.25.5/lib/minitest.rb#20
-    def seed=(_arg0); end
   end
 end

@@ -90,16 +90,7 @@ IO::Buffer::PAGE_SIZE = T.let(T.unsafe(nil), Integer)
 IO::Buffer::PRIVATE = T.let(T.unsafe(nil), Integer)
 IO::Buffer::READONLY = T.let(T.unsafe(nil), Integer)
 IO::Buffer::SHARED = T.let(T.unsafe(nil), Integer)
-
-class IO::ConsoleMode
-  def echo=(_arg0); end
-  def raw(*_arg0); end
-  def raw!(*_arg0); end
-
-  private
-
-  def initialize_copy(_arg0); end
-end
+class IO::ConsoleMode; end
 
 class IO::EAGAINWaitReadable < ::Errno::EAGAIN
   include ::IO::WaitReadable
@@ -361,27 +352,59 @@ module IO::Event::Selector
     def new(loop, env = T.unsafe(nil)); end
 
     # Execute the given block in non-blocking mode.
+    #
+    # source://io-event//lib/io/event/native.rb#7
     def nonblock(_arg0); end
   end
 end
 
 class IO::Event::Selector::KQueue
+  # source://io-event//lib/io/event/native.rb#7
   def initialize(_arg0); end
 
+  # source://io-event//lib/io/event/native.rb#7
   def close; end
+
+  # source://io-event//lib/io/event/native.rb#7
   def idle_duration; end
+
+  # source://io-event//lib/io/event/native.rb#7
   def io_read(*_arg0); end
+
+  # source://io-event//lib/io/event/native.rb#7
   def io_wait(_arg0, _arg1, _arg2); end
+
+  # source://io-event//lib/io/event/native.rb#7
   def io_write(*_arg0); end
+
+  # source://io-event//lib/io/event/native.rb#7
   def loop; end
+
+  # source://io-event//lib/io/event/native.rb#7
   def process_wait(_arg0, _arg1, _arg2); end
+
+  # source://io-event//lib/io/event/native.rb#7
   def push(_arg0); end
+
+  # source://io-event//lib/io/event/native.rb#7
   def raise(*_arg0); end
+
+  # source://io-event//lib/io/event/native.rb#7
   def ready?; end
+
+  # source://io-event//lib/io/event/native.rb#7
   def resume(*_arg0); end
+
+  # source://io-event//lib/io/event/native.rb#7
   def select(_arg0); end
+
+  # source://io-event//lib/io/event/native.rb#7
   def transfer; end
+
+  # source://io-event//lib/io/event/native.rb#7
   def wakeup; end
+
+  # source://io-event//lib/io/event/native.rb#7
   def yield; end
 end
 
@@ -507,12 +530,16 @@ class IO::Event::Selector::Select::Optional < ::Struct
   # Returns the value of attribute fiber
   #
   # @return [Object] the current value of fiber
+  #
+  # source://io-event//lib/io/event/selector/select.rb#56
   def fiber; end
 
   # Sets the attribute fiber
   #
   # @param value [Object] the value to set the attribute fiber to.
   # @return [Object] the newly set value
+  #
+  # source://io-event//lib/io/event/selector/select.rb#56
   def fiber=(_); end
 
   # source://io-event//lib/io/event/selector/select.rb#65
@@ -522,10 +549,19 @@ class IO::Event::Selector::Select::Optional < ::Struct
   def transfer(*arguments); end
 
   class << self
+    # source://io-event//lib/io/event/selector/select.rb#56
     def [](*_arg0); end
+
+    # source://io-event//lib/io/event/selector/select.rb#56
     def inspect; end
+
+    # source://io-event//lib/io/event/selector/select.rb#56
     def keyword_init?; end
+
+    # source://io-event//lib/io/event/selector/select.rb#56
     def members; end
+
+    # source://io-event//lib/io/event/selector/select.rb#56
     def new(*_arg0); end
   end
 end
@@ -548,23 +584,31 @@ class IO::Event::Selector::Select::Waiter < ::Struct
   # Returns the value of attribute events
   #
   # @return [Object] the current value of events
+  #
+  # source://io-event//lib/io/event/selector/select.rb#115
   def events; end
 
   # Sets the attribute events
   #
   # @param value [Object] the value to set the attribute events to.
   # @return [Object] the newly set value
+  #
+  # source://io-event//lib/io/event/selector/select.rb#115
   def events=(_); end
 
   # Returns the value of attribute fiber
   #
   # @return [Object] the current value of fiber
+  #
+  # source://io-event//lib/io/event/selector/select.rb#115
   def fiber; end
 
   # Sets the attribute fiber
   #
   # @param value [Object] the value to set the attribute fiber to.
   # @return [Object] the newly set value
+  #
+  # source://io-event//lib/io/event/selector/select.rb#115
   def fiber=(_); end
 
   # source://io-event//lib/io/event/selector/select.rb#142
@@ -573,19 +617,32 @@ class IO::Event::Selector::Select::Waiter < ::Struct
   # Returns the value of attribute tail
   #
   # @return [Object] the current value of tail
+  #
+  # source://io-event//lib/io/event/selector/select.rb#115
   def tail; end
 
   # Sets the attribute tail
   #
   # @param value [Object] the value to set the attribute tail to.
   # @return [Object] the newly set value
+  #
+  # source://io-event//lib/io/event/selector/select.rb#115
   def tail=(_); end
 
   class << self
+    # source://io-event//lib/io/event/selector/select.rb#115
     def [](*_arg0); end
+
+    # source://io-event//lib/io/event/selector/select.rb#115
     def inspect; end
+
+    # source://io-event//lib/io/event/selector/select.rb#115
     def keyword_init?; end
+
+    # source://io-event//lib/io/event/selector/select.rb#115
     def members; end
+
+    # source://io-event//lib/io/event/selector/select.rb#115
     def new(*_arg0); end
   end
 end

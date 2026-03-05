@@ -11,49 +11,6 @@
 # source://guard-compat//lib/guard/compat/plugin.rb#5
 module Guard
   extend ::Guard::Internals::Helpers
-
-  class << self
-    # source://guard/2.19.1/lib/guard.rb#87
-    def async_queue_add(changes); end
-
-    # source://guard/2.19.1/lib/guard.rb#73
-    def init(cmdline_options); end
-
-    # source://guard/2.19.1/lib/guard.rb#24
-    def interactor; end
-
-    # source://guard/2.19.1/lib/guard.rb#23
-    def listener; end
-
-    # source://guard/2.19.1/lib/guard.rb#22
-    def queue; end
-
-    # source://guard/2.19.1/lib/guard.rb#44
-    def setup(cmdline_options = T.unsafe(nil)); end
-
-    # source://guard/2.19.1/lib/guard.rb#21
-    def state; end
-
-    private
-
-    # source://guard/2.19.1/lib/guard.rb#132
-    def _evaluate(options); end
-
-    # source://guard/2.19.1/lib/guard.rb#152
-    def _guardfile_deprecated_check(modified); end
-
-    # source://guard/2.19.1/lib/guard.rb#113
-    def _listener_callback; end
-
-    # source://guard/2.19.1/lib/guard.rb#128
-    def _pluginless_guardfile?; end
-
-    # source://guard/2.19.1/lib/guard.rb#109
-    def _relative_pathnames(paths); end
-
-    # source://guard/2.19.1/lib/guard.rb#99
-    def _relevant_changes?(changes); end
-  end
 end
 
 # source://guard-compat//lib/guard/compat/plugin.rb#24
@@ -107,72 +64,6 @@ end
 class Guard::Plugin
   # @return [Plugin] a new instance of Plugin
   #
-  # source://guard/2.19.1/lib/guard/plugin.rb#285
+  # source://guard-compat//lib/guard/compat/plugin.rb#14
   def initialize(options = T.unsafe(nil)); end
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#129
-  def callbacks; end
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#129
-  def callbacks=(_arg0); end
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#129
-  def group; end
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#129
-  def group=(_arg0); end
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#116
-  def hook(event, *args); end
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#240
-  def name; end
-
-  # Returns the value of attribute options.
-  #
-  # source://guard/2.19.1/lib/guard/plugin.rb#129
-  def options; end
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#129
-  def options=(_arg0); end
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#252
-  def title; end
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#267
-  def to_s; end
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#129
-  def watchers; end
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#129
-  def watchers=(_arg0); end
-
-  private
-
-  # source://guard/2.19.1/lib/guard/plugin.rb#297
-  def _register_callbacks; end
-
-  class << self
-    # source://guard/2.19.1/lib/guard/plugin.rb#62
-    def add_callback(listener, guard_plugin, events); end
-
-    # source://guard/2.19.1/lib/guard/plugin.rb#52
-    def callbacks; end
-
-    # source://guard/2.19.1/lib/guard/plugin.rb#140
-    def non_namespaced_classname; end
-
-    # source://guard/2.19.1/lib/guard/plugin.rb#153
-    def non_namespaced_name; end
-
-    # source://guard/2.19.1/lib/guard/plugin.rb#74
-    def notify(guard_plugin, event, *args); end
-
-    # source://guard/2.19.1/lib/guard/plugin.rb#83
-    def reset_callbacks!; end
-
-    # source://guard/2.19.1/lib/guard/plugin.rb#162
-    def template(plugin_location); end
-  end
 end

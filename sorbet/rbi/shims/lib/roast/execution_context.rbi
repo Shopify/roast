@@ -320,7 +320,7 @@ module Roast
     # ### See Also
     # - `chat` - Pure LLM interaction without local system access
     #
-    #: (?Symbol?) {(Roast::Cogs::Agent::Input, untyped, Integer) [self: Roast::CogInputContext] -> (String | void)} -> void
+    #: (?Symbol?) {(Roast::Cogs::Agent::Input, untyped, Integer) [self: Roast::CogInputContext] -> top} -> void
     def agent(name = nil, &block); end
 
     # Perform pure LLM interaction
@@ -376,7 +376,7 @@ module Roast
     # ### See Also
     # - `agent` - Run a coding agent with local filesystem access
     #
-    #: (?Symbol?) {(Roast::Cogs::Chat::Input, untyped, Integer) [self: Roast::CogInputContext] -> (String | void)} -> void
+    #: (?Symbol?) {(Roast::Cogs::Chat::Input, untyped, Integer) [self: Roast::CogInputContext] -> top} -> void
     def chat(name = nil, &block); end
 
     # Execute a shell command
@@ -438,7 +438,7 @@ module Roast
     # ### See Also
     # - `ruby` - Evaluate Ruby code within the workflow context
     #
-    #: (?Symbol?) {(Roast::Cogs::Cmd::Input, untyped, Integer) [self: Roast::CogInputContext] -> (String | Array[String] | void)} -> void
+    #: (?Symbol?) {(Roast::Cogs::Cmd::Input, untyped, Integer) [self: Roast::CogInputContext] -> top} -> void
     def cmd(name = nil, &block); end
 
     # Evaluate Ruby code within the workflow context

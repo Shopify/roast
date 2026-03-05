@@ -443,7 +443,7 @@ class Guard::Dsl
   #   ignore %r{^ignored/path/}, /man/
   # @param regexps [Regexp] a pattern (or list of patterns) for ignoring paths
   #
-  # source://guard//lib/guard/dsl.rb#267
+  # source://guard//lib/guard/dsl.rb#273
   def filter(*regexps); end
 
   # Replaces ignored paths globally
@@ -453,7 +453,7 @@ class Guard::Dsl
   #   ignore! %r{^ignored/path/}, /man/
   # @param regexps [Regexp] a pattern (or list of patterns) for ignoring paths
   #
-  # source://guard//lib/guard/dsl.rb#282
+  # source://guard//lib/guard/dsl.rb#290
   def filter!(*regexps); end
 
   # Declares a group of Guard plugins to be run with `guard start --group
@@ -472,9 +472,9 @@ class Guard::Dsl
   # @param name [Symbol, String, Array<Symbol, String>] the group name called
   #   from the CLI
   # @param options [Hash] the options accepted by the group
+  # @see #guard
   # @see Group
   # @see Guard.add_group
-  # @see #guard
   # @yield a block where you can declare several Guard plugins
   #
   # source://guard//lib/guard/dsl.rb#124
@@ -487,18 +487,18 @@ class Guard::Dsl
   #
   # The available options are different for each Guard implementation.
   #
-  # @example Declare a Guard without `watch` patterns
-  #   guard :rspec
   # @example Declare a Guard with a `watch` pattern
   #   guard :rspec do
   #   watch %r{.*_spec.rb}
   #   end
+  # @example Declare a Guard without `watch` patterns
+  #   guard :rspec
   # @param name [String] the Guard plugin name
   # @param options [Hash] the options accepted by the Guard plugin
-  # @see Plugin
-  # @see Guard.add_plugin
-  # @see #watch
   # @see #group
+  # @see #watch
+  # @see Guard.add_plugin
+  # @see Plugin
   # @yield a block where you can declare several watch patterns and actions
   #
   # source://guard//lib/guard/dsl.rb#176
@@ -543,16 +543,16 @@ class Guard::Dsl
   #   `:milliseconds`.
   # * The `:only` and `:except` options must be a `RegExp`.
   #
-  # @example Set the log level
-  #   logger level: :warn
-  # @example Set a custom log template
-  #   logger template: '[Guard - :severity - :progname - :time] :message'
-  # @example Set a custom time format
-  #   logger time_format: '%h'
   # @example Limit logging to a Guard plugin
   #   logger only: :jasmine
   # @example Log all but not the messages from a specific Guard plugin
   #   logger except: :jasmine
+  # @example Set a custom log template
+  #   logger template: '[Guard - :severity - :progname - :time] :message'
+  # @example Set a custom time format
+  #   logger time_format: '%h'
+  # @example Set the log level
+  #   logger level: :warn
   # @option options
   # @option options
   # @option options
@@ -582,10 +582,10 @@ class Guard::Dsl
   #
   # @example Scope Guard to a single group
   #   scope group: :frontend
-  # @example Scope Guard to multiple groups
-  #   scope groups: [:specs, :docs]
   # @example Scope Guard to a single plugin
   #   scope plugin: :test
+  # @example Scope Guard to multiple groups
+  #   scope groups: [:specs, :docs]
   # @example Scope Guard to multiple plugins
   #   scope plugins: [:jasmine, :rspec]
   # @param scope [Hash] the scope for the groups and plugins
@@ -938,13 +938,13 @@ class Guard::Interactor
   # source://guard//lib/guard/interactor.rb#9
   def initialize(no_interaction = T.unsafe(nil)); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://guard//lib/guard/interactor.rb#25
   def background(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://guard//lib/guard/interactor.rb#25
   def foreground(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://guard//lib/guard/interactor.rb#25
   def handle_interrupt(*args, **_arg1, &block); end
 
   # @return [Boolean]
@@ -964,7 +964,7 @@ class Guard::Interactor
     #
     # @return [Boolean]
     #
-    # source://guard//lib/guard/interactor.rb#39
+    # source://guard//lib/guard/interactor.rb#43
     def enabled; end
 
     # TODO: handle switching interactors during runtime?
@@ -1165,7 +1165,7 @@ class Guard::Internals::Session
 
   # @return [Boolean]
   #
-  # source://guard//lib/guard/internals/session.rb#102
+  # source://guard//lib/guard/internals/session.rb#106
   def clear?; end
 
   # source://guard//lib/guard/internals/session.rb#98
@@ -1343,8 +1343,8 @@ class Guard::Options < ::Thor::CoreExt::HashWithIndifferentAccess
   # Initializes an Guard::Options object. `default_opts` is merged into
   # `opts`.
   #
-  # @param opts [Hash] the options
   # @param default_opts [Hash] the default options
+  # @param opts [Hash] the options
   # @return [Options] a new instance of Options
   #
   # source://guard//lib/guard/options.rb#13
@@ -1446,19 +1446,19 @@ class Guard::Plugin
   # When {Guard::Plugin::run_all} is called, {#hook} will notify
   # callbacks registered for the "foo_bar" event.
   #
-  # @example Add a hook with a Symbol
-  #
-  #   def run_all
-  #   hook :foo
-  #   end
   # @example Add a hook with a String
   #
   #   def run_all
   #   hook "foo_bar"
   #   end
-  # @param event [Symbol, String] the name of the Guard event
+  # @example Add a hook with a Symbol
+  #
+  #   def run_all
+  #   hook :foo
+  #   end
   # @param args [Array] the parameters are passed as is to the callbacks
   #   registered for the given event.
+  # @param event [Symbol, String] the name of the Guard event
   #
   # source://guard//lib/guard/plugin.rb#116
   def hook(event, *args); end
@@ -1531,9 +1531,9 @@ class Guard::Plugin
   class << self
     # Add a callback.
     #
-    # @param listener [Block] the listener to notify
-    # @param guard_plugin [Guard::Plugin] the Guard plugin to add the callback
     # @param events [Array<Symbol>] the events to register
+    # @param guard_plugin [Guard::Plugin] the Guard plugin to add the callback
+    # @param listener [Block] the listener to notify
     #
     # source://guard//lib/guard/plugin.rb#62
     def add_callback(listener, guard_plugin, events); end
@@ -1566,9 +1566,9 @@ class Guard::Plugin
 
     # Notify a callback.
     #
-    # @param guard_plugin [Guard::Plugin] the Guard plugin to add the callback
-    # @param event [Symbol] the event to trigger
     # @param args [Array] the arguments for the listener
+    # @param event [Symbol] the event to trigger
+    # @param guard_plugin [Guard::Plugin] the Guard plugin to add the callback
     #
     # source://guard//lib/guard/plugin.rb#74
     def notify(guard_plugin, event, *args); end
@@ -1727,9 +1727,9 @@ class Guard::Runner
   # When the Group has `:halt_on_fail` disabled, we've to catch
   # `:task_has_failed` here in order to avoid an uncaught throw error.
   #
+  # @param args [Array] the arguments for the task
   # @param plugin [Guard::Plugin] guard the Guard to execute
   # @param task [Symbol] the task to run
-  # @param args [Array] the arguments for the task
   # @raise [:task_has_failed] when task has failed
   #
   # source://guard//lib/guard/runner.rb#78
@@ -1739,8 +1739,8 @@ class Guard::Runner
   #
   # on
   #
-  # @param task [Symbol] the task to run
   # @param scope_hash [Hash] either the Guard plugin or the group to run the task
+  # @param task [Symbol] the task to run
   #
   # source://guard//lib/guard/runner.rb#17
   def run(task, scope_hash = T.unsafe(nil)); end
@@ -1748,8 +1748,8 @@ class Guard::Runner
   # Runs the appropriate tasks on all registered plugins
   # based on the passed changes.
   #
-  # @param modified [Array<String>] the modified paths.
   # @param added [Array<String>] the added paths.
+  # @param modified [Array<String>] the modified paths.
   # @param removed [Array<String>] the removed paths.
   #
   # source://guard//lib/guard/runner.rb#44
@@ -1957,8 +1957,8 @@ module Guard::UI
     # @example
     #
     #   color('Hello World', :red, :bright)
-    # @param text [String] the text to colorize
     # @param color_options [Array] the color options
+    # @param text [String] the text to colorize
     #
     # source://guard//lib/guard/ui.rb#247
     def color(text, *color_options); end
@@ -2122,10 +2122,10 @@ class Guard::Watcher
 
   # Initializes a file watcher.
   #
-  # @param pattern [String, Regexp] the pattern to be watched by the Guard
-  #   plugin
   # @param action [Block] the action to execute before passing the result to
   #   the Guard plugin
+  # @param pattern [String, Regexp] the pattern to be watched by the Guard
+  #   plugin
   # @return [Watcher] a new instance of Watcher
   #
   # source://guard//lib/guard/watcher.rb#24
@@ -2178,8 +2178,8 @@ class Guard::Watcher
   class << self
     # Finds the files that matches a Guard plugin.
     #
-    # @param guard [Guard::Plugin] the Guard plugin which watchers are used
     # @param files [Array<String>] the changed files
+    # @param guard [Guard::Plugin] the Guard plugin which watchers are used
     # @return [Array<Object>] the matched watcher response
     #
     # source://guard//lib/guard/watcher.rb#42
