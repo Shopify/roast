@@ -9,7 +9,7 @@ module Roast
         class ClaudeTest < ActiveSupport::TestCase
           def setup
             @config = Agent::Config.new
-            @config.no_show_progress!
+            @config.no_display!
             @provider = Claude.new(@config)
           end
 
