@@ -99,6 +99,102 @@ module Roast
           assert_match(/Tokens \(model2\):/, output)
         end
 
+        test "+ sums duration_ms" do
+          a = Stats.new
+          a.duration_ms = 3000
+          b = Stats.new
+          b.duration_ms = 2000
+
+          result = a + b
+
+          assert_equal 5000, result.duration_ms
+        end
+
+        test "+ sums num_turns" do
+          a = Stats.new
+          a.num_turns = 3
+          b = Stats.new
+          b.num_turns = 5
+
+          result = a + b
+
+          assert_equal 8, result.num_turns
+        end
+
+        test "+ sums usage" do
+          a = Stats.new
+          a.usage.input_tokens = 100
+          a.usage.cost_usd = 0.01
+          b = Stats.new
+          b.usage.input_tokens = 200
+          b.usage.cost_usd = 0.02
+
+          result = a + b
+
+          assert_equal 300, result.usage.input_tokens
+          assert_in_delta 0.03, result.usage.cost_usd
+        end
+
+        test "+ merges model_usage for different models" do
+          a = Stats.new
+          usage_a = Usage.new
+          usage_a.input_tokens = 100
+          a.model_usage["model-a"] = usage_a
+
+          b = Stats.new
+          usage_b = Usage.new
+          usage_b.input_tokens = 200
+          b.model_usage["model-b"] = usage_b
+
+          result = a + b
+
+          assert_equal 100, result.model_usage["model-a"].input_tokens
+          assert_equal 200, result.model_usage["model-b"].input_tokens
+        end
+
+        test "+ sums model_usage for the same model" do
+          a = Stats.new
+          usage_a = Usage.new
+          usage_a.input_tokens = 100
+          usage_a.output_tokens = 50
+          a.model_usage["claude"] = usage_a
+
+          b = Stats.new
+          usage_b = Usage.new
+          usage_b.input_tokens = 200
+          usage_b.output_tokens = 75
+          b.model_usage["claude"] = usage_b
+
+          result = a + b
+
+          assert_equal 300, result.model_usage["claude"].input_tokens
+          assert_equal 125, result.model_usage["claude"].output_tokens
+        end
+
+        test "+ returns nil for fields that are nil on both sides" do
+          a = Stats.new
+          b = Stats.new
+
+          result = a + b
+
+          assert_nil result.duration_ms
+          assert_nil result.num_turns
+        end
+
+        test "+ does not mutate operands" do
+          a = Stats.new
+          a.duration_ms = 1000
+          a.num_turns = 2
+          b = Stats.new
+          b.duration_ms = 2000
+          b.num_turns = 3
+
+          _ = a + b
+
+          assert_equal 1000, a.duration_ms
+          assert_equal 2, a.num_turns
+        end
+
         test "to_s formats complete stats" do
           @stats.duration_ms = 5000
           @stats.num_turns = 3

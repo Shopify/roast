@@ -185,6 +185,77 @@ module Roast
             assert_equal "final result", output.response
           end
 
+          test "invoke sums stats across multiple invocations" do
+            input = Agent::Input.new
+            input.prompts = ["First", "Second"]
+
+            call_count = 0
+            CommandRunner.stubs(:execute).with do |_args, **kwargs|
+              call_count += 1
+              # Simulate turn_start events: 3 turns for first invocation, 5 for second
+              num_turns = call_count == 1 ? 3 : 5
+              num_turns.times { kwargs[:stdout_handler]&.call({ type: "turn_start" }.to_json) }
+              usage_data = {
+                type: "message_end",
+                message: {
+                  role: "assistant",
+                  model: "claude-sonnet",
+                  content: [{ type: "text", text: call_count == 1 ? "intermediate" : "final" }],
+                  usage: {
+                    input: call_count == 1 ? 100 : 200,
+                    output: call_count == 1 ? 50 : 75,
+                    cacheRead: 0,
+                    cacheWrite: 0,
+                    cost: { total: call_count == 1 ? 0.01 : 0.02 },
+                  },
+                },
+              }.to_json
+              kwargs[:stdout_handler]&.call(usage_data)
+              session_json = { type: "session", id: "session_#{call_count}" }.to_json
+              kwargs[:stdout_handler]&.call(session_json)
+              true
+            end.returns(["", "", mock_status(success: true)])
+
+            output = @provider.invoke(input)
+
+            assert_equal 8, output.stats.num_turns
+            assert_in_delta 0.03, output.stats.usage.cost_usd
+            assert_equal 300, output.stats.model_usage["claude-sonnet"].input_tokens
+            assert_equal 125, output.stats.model_usage["claude-sonnet"].output_tokens
+          end
+
+          test "invoke does not sum stats for single invocation" do
+            input = Agent::Input.new
+            input.prompt = "Only prompt"
+
+            CommandRunner.stubs(:execute).with do |_args, **kwargs|
+              kwargs[:stdout_handler]&.call({ type: "turn_start" }.to_json)
+              kwargs[:stdout_handler]&.call({ type: "turn_start" }.to_json)
+              kwargs[:stdout_handler]&.call({ type: "turn_start" }.to_json)
+              usage_data = {
+                type: "message_end",
+                message: {
+                  role: "assistant",
+                  model: "claude-sonnet",
+                  content: [{ type: "text", text: "done" }],
+                  usage: {
+                    input: 100,
+                    output: 50,
+                    cacheRead: 0,
+                    cacheWrite: 0,
+                    cost: { total: 0.01 },
+                  },
+                },
+              }.to_json
+              kwargs[:stdout_handler]&.call(usage_data)
+              true
+            end.returns(["", "", mock_status(success: true)])
+
+            output = @provider.invoke(input)
+
+            assert_equal 3, output.stats.num_turns
+          end
+
           test "invoke uses input session when no previous invocation session exists" do
             input = Agent::Input.new
             input.prompts = ["Main task", "Finalize"]

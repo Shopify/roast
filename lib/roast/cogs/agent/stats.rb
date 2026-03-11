@@ -61,6 +61,21 @@ module Roast
           @model_usage = {}
         end
 
+        # Add two Stats objects together, summing their durations, turns, usage, and model usage
+        #
+        # Nil values are treated as zero when the other operand is non-nil.
+        # Model usage hashes are merged, summing usage for models that appear in both.
+        #
+        #: (Stats) -> Stats
+        def +(other)
+          result = Stats.new
+          result.duration_ms = sum_nils(duration_ms, other.duration_ms)&.to_int
+          result.num_turns = sum_nils(num_turns, other.num_turns)&.to_int
+          result.usage = usage + other.usage
+          result.model_usage = merge_model_usage(model_usage, other.model_usage)
+          result
+        end
+
         # Get a human-readable string representation of the statistics
         #
         # Formats the statistics into a multi-line string with the following information:
@@ -83,6 +98,20 @@ module Roast
             lines << "Tokens (#{m}): #{input_tokens} in, #{output_tokens} out"
           end
           lines.join("\n")
+        end
+
+        private
+
+        #: (Numeric?, Numeric?) -> Numeric?
+        def sum_nils(a, b)
+          return if a.nil? && b.nil?
+
+          (a || 0) + (b || 0)
+        end
+
+        #: (Hash[String, Usage], Hash[String, Usage]) -> Hash[String, Usage]
+        def merge_model_usage(a, b)
+          a.merge(b) { |_model, usage_a, usage_b| usage_a + usage_b }
         end
       end
     end
