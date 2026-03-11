@@ -11,9 +11,7 @@ module Roast
             def setup
               @config = Agent::Config.new
               @config.no_show_progress!
-              @input = Agent::Input.new
-              @input.prompt = "Test prompt"
-              @invocation = ClaudeInvocation.new(@config, @input)
+              @invocation = ClaudeInvocation.new(@config, "Test prompt", nil)
             end
 
             def success_status
@@ -184,7 +182,7 @@ module Roast
 
             test "command_line uses custom command when configured as string" do
               @config.command("custom-claude --flag")
-              invocation = ClaudeInvocation.new(@config, @input)
+              invocation = ClaudeInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
 
@@ -194,7 +192,7 @@ module Roast
 
             test "command_line uses custom command when configured as array" do
               @config.command(["my-claude", "--opt"])
-              invocation = ClaudeInvocation.new(@config, @input)
+              invocation = ClaudeInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
 
@@ -204,7 +202,7 @@ module Roast
 
             test "command_line includes model when configured" do
               @config.model("claude-opus-4-5-20251101")
-              invocation = ClaudeInvocation.new(@config, @input)
+              invocation = ClaudeInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
 
@@ -215,7 +213,7 @@ module Roast
 
             test "command_line includes replace_system_prompt when configured" do
               @config.replace_system_prompt("Custom system prompt")
-              invocation = ClaudeInvocation.new(@config, @input)
+              invocation = ClaudeInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
 
@@ -226,7 +224,7 @@ module Roast
 
             test "command_line includes append_system_prompt when configured" do
               @config.append_system_prompt("Additional instructions")
-              invocation = ClaudeInvocation.new(@config, @input)
+              invocation = ClaudeInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
 
@@ -236,8 +234,7 @@ module Roast
             end
 
             test "command_line includes session flags when session is set" do
-              @input.session = "session_123"
-              invocation = ClaudeInvocation.new(@config, @input)
+              invocation = ClaudeInvocation.new(@config, "Test prompt", "session_123")
 
               command = invocation.send(:command_line)
 
@@ -256,7 +253,7 @@ module Roast
 
             test "command_line omits dangerously-skip-permissions when permissions applied" do
               @config.apply_permissions!
-              invocation = ClaudeInvocation.new(@config, @input)
+              invocation = ClaudeInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
 
@@ -264,7 +261,7 @@ module Roast
             end
 
             test "command_line omits dangerously-skip-permissions by default" do
-              invocation = ClaudeInvocation.new(@config, @input)
+              invocation = ClaudeInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
 

@@ -53,20 +53,20 @@ module Roast
               end
             end
 
-            #: (Agent::Config, Agent::Input) -> void
-            def initialize(config, input)
+            #: (Agent::Config, String, String?) -> void
+            def initialize(config, prompt, session)
               @base_command = config.valid_command #: (String | Array[String])?
               @model = config.valid_model #: String?
               @append_system_prompt = config.valid_append_system_prompt #: String?
               @replace_system_prompt = config.valid_replace_system_prompt #: String?
               @apply_permissions = config.apply_permissions? #: bool
               @working_directory = config.valid_working_directory #: Pathname?
-              @prompt = input.valid_prompt! #: String
-              @session = input.session #: String?
               @context = Context.new #: Context
               @result = Result.new #: Result
               @raw_dump_file = config.valid_dump_raw_agent_messages_to_path #: Pathname?
               @show_progress = config.show_progress? #: bool
+              @prompt = prompt
+              @session = session
             end
 
             #: () -> void

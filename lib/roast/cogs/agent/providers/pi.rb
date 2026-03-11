@@ -18,9 +18,20 @@ module Roast
 
           #: (Agent::Input) -> Agent::Output
           def invoke(input)
-            invocation = PiInvocation.new(@config, input)
-            invocation.run!
-            Output.new(invocation.result)
+            invocations = [] #: Array[PiInvocation]
+            input.prompts.each do |prompt|
+              previous_session = invocations.last&.result&.session
+              invocation = PiInvocation.new(
+                @config,
+                prompt,
+                previous_session || input.session,
+              )
+              invocation.run!
+              invocations << invocation
+              break unless invocation.result.success
+            end
+            final_result = invocations.last.not_nil!.result
+            Output.new(final_result)
           end
         end
       end

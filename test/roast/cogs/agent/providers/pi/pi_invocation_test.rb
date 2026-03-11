@@ -11,10 +11,8 @@ module Roast
             def setup
               @config = Agent::Config.new
               @config.provider(:pi)
-              @config.no_show_progress!
-              @input = Agent::Input.new
-              @input.prompt = "Test prompt"
-              @invocation = PiInvocation.new(@config, @input)
+              @config.no_display!
+              @invocation = PiInvocation.new(@config, "Test prompt", nil)
             end
 
             def success_status
@@ -177,7 +175,7 @@ module Roast
 
             test "command_line uses custom command when configured as string" do
               @config.command("custom-pi --flag")
-              invocation = PiInvocation.new(@config, @input)
+              invocation = PiInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
               assert_equal "custom-pi", command.first
@@ -186,7 +184,7 @@ module Roast
 
             test "command_line uses custom command when configured as array" do
               @config.command(["my-pi", "--opt"])
-              invocation = PiInvocation.new(@config, @input)
+              invocation = PiInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
               assert_equal "my-pi", command.first
@@ -195,7 +193,7 @@ module Roast
 
             test "command_line includes model when configured" do
               @config.model("anthropic/claude-sonnet-4-20250514")
-              invocation = PiInvocation.new(@config, @input)
+              invocation = PiInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
               model_index = command.index("--model")
@@ -205,7 +203,7 @@ module Roast
 
             test "command_line includes replace_system_prompt when configured" do
               @config.replace_system_prompt("Custom system prompt")
-              invocation = PiInvocation.new(@config, @input)
+              invocation = PiInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
               prompt_index = command.index("--system-prompt")
@@ -215,7 +213,7 @@ module Roast
 
             test "command_line includes append_system_prompt when configured" do
               @config.append_system_prompt("Additional instructions")
-              invocation = PiInvocation.new(@config, @input)
+              invocation = PiInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
               prompt_index = command.index("--append-system-prompt")
@@ -224,8 +222,7 @@ module Roast
             end
 
             test "command_line includes fork flag when session is set" do
-              @input.session = "93b0c56b-b6a9-4b33-8dff-ce0fabceae6d"
-              invocation = PiInvocation.new(@config, @input)
+              invocation = PiInvocation.new(@config, "Test prompt", "93b0c56b-b6a9-4b33-8dff-ce0fabceae6d")
 
               command = invocation.send(:command_line)
               assert_includes command, "--fork"
@@ -235,7 +232,7 @@ module Roast
             end
 
             test "command_line includes --no-session when no session is set" do
-              invocation = PiInvocation.new(@config, @input)
+              invocation = PiInvocation.new(@config, "Test prompt", nil)
 
               command = invocation.send(:command_line)
               assert_includes command, "--no-session"

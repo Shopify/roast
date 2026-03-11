@@ -53,19 +53,21 @@ module Roast
               end
             end
 
-            #: (Agent::Config, Agent::Input) -> void
-            def initialize(config, input)
+            #: (Agent::Config, String, String?) -> void
+            def initialize(config, prompt, session)
               @base_command = config.valid_command #: (String | Array[String])?
               @model = config.valid_model #: String?
               @append_system_prompt = config.valid_append_system_prompt #: String?
               @replace_system_prompt = config.valid_replace_system_prompt #: String?
               @working_directory = config.valid_working_directory #: Pathname?
-              @prompt = input.valid_prompt! #: String
-              @session = input.session #: String?
+              @prompt = prompt #: String
+              @session = session #: String?
               @context = Context.new #: Context
               @result = Result.new #: Result
               @raw_dump_file = config.valid_dump_raw_agent_messages_to_path #: Pathname?
+              @show_prompt = config.show_prompt? #: bool
               @show_progress = config.show_progress? #: bool
+              @show_response = config.show_response? #: bool
               @num_turns = 0 #: Integer
               @total_cost = 0.0 #: Float
               @model_usage_accumulator = {} #: Hash[String, Hash[Symbol, Numeric]]
@@ -78,6 +80,7 @@ module Roast
               raise PiAlreadyStartedError if started?
 
               @started = true
+              puts "[USER PROMPT] #{@prompt}" if @show_prompt
               @start_time_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) * 1000).to_i
               _stdout, stderr, status = CommandRunner.execute(
                 command_line,
@@ -91,6 +94,7 @@ module Roast
                 @completed = true
                 @result.success = true
                 finalize_stats!
+                puts "[AGENT RESPONSE] #{@result.response}" if @show_response
               else
                 @failed = true
                 @result.success = false
