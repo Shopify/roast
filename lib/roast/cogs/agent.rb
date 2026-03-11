@@ -47,11 +47,7 @@ module Roast
       #
       #: (Input) -> Output
       def execute(input)
-        puts "[USER PROMPT] #{input.prompts.first}" if config.show_prompt?
         output = provider.invoke(input)
-        # NOTE: If progress is displayed, the agent's response will always be the last progress message,
-        # so showing it again is duplicative.
-        puts "[AGENT RESPONSE] #{output.response}" if config.show_response? && !config.show_progress?
         puts "[AGENT STATS] #{output.stats}" if config.show_stats?
         puts "Session ID: #{output.session}" if config.show_stats?
         output
