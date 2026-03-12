@@ -16,6 +16,97 @@ module Examples
         Roast::EventMonitor.reset!
       end
 
+      test "agent_with_multiple_prompts.rb workflow runs successfully" do
+        use_command_runner_fixtures(
+          {
+            fixture: "agent_transcripts/agent_with_multiple_prompts_0",
+            expected_args: [
+              "claude",
+              "-p",
+              "--verbose",
+              "--output-format",
+              "stream-json",
+              "--model",
+              "haiku",
+            ],
+            expected_stdin_content: "What is 2+2?",
+          },
+          {
+            fixture: "agent_transcripts/agent_with_multiple_prompts_1",
+            expected_args: [
+              "claude",
+              "-p",
+              "--verbose",
+              "--output-format",
+              "stream-json",
+              "--model",
+              "haiku",
+              "--resume",
+              "51c68f29-7210-4c12-852f-0c169f621488",
+            ],
+            expected_stdin_content: "Now multiply that by 3",
+          },
+          {
+            fixture: "agent_transcripts/agent_with_multiple_prompts_2",
+            expected_args: [
+              "claude",
+              "-p",
+              "--verbose",
+              "--output-format",
+              "stream-json",
+              "--model",
+              "haiku",
+              "--resume",
+              "51c68f29-7210-4c12-852f-0c169f621488",
+            ],
+            expected_stdin_content: "Now subtract 5",
+          },
+        )
+
+        stdout, stderr = in_sandbox :simple_agent do
+          Roast::Workflow.from_file("examples/agent_with_multiple_prompts.rb", EMPTY_PARAMS)
+        end
+
+        assert_empty stdout
+        assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
+        expected_stdout = <<~STDOUT
+          [USER PROMPT] What is 2+2?
+          The user is asking a simple math question: "What is 2+2?"
+
+          This is a straightforward arithmetic question. The answer is 4.
+
+          This doesn't require any tool usage - it's just a basic math question. I should answer directly and concisely.
+          2 + 2 = 4
+          [AGENT RESPONSE] 2 + 2 = 4
+          [USER PROMPT] Now multiply that by 3
+          The user is asking me to multiply the previous answer (4) by 3.
+
+          4 × 3 = 12
+
+          This is another straightforward arithmetic question. No tools needed.
+          4 × 3 = 12
+          [AGENT RESPONSE] 4 × 3 = 12
+          [USER PROMPT] Now subtract 5
+          The user is asking me to subtract 5 from the previous answer (12).
+
+          12 - 5 = 7
+
+          This is another straightforward arithmetic question. No tools needed.
+          12 - 5 = 7
+          [AGENT RESPONSE] 12 - 5 = 7
+          [AGENT STATS] Turns: 3
+          Duration: 6 seconds
+          Cost (USD): $0.0747
+          Tokens (claude-haiku-4-5-20251001): 27 in, 198 out
+          Session ID: 51c68f29-7210-4c12-852f-0c169f621488
+          ((2 + 2) * 3) - 5 = 7
+        STDOUT
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
+      end
+
       test "async_cogs.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :async_cogs do
           Roast::Workflow.from_file("examples/async_cogs.rb", EMPTY_PARAMS)
