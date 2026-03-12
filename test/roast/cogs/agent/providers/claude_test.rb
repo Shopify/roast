@@ -106,6 +106,43 @@ module Roast
             assert_equal ["session_from_first"], sessions_seen
           end
 
+          test "invoke does not fork session for subsequent invocations" do
+            input = Agent::Input.new
+            input.prompts = ["Main task", "Finalizer"]
+
+            fork_flags = []
+            call_count = 0
+            CommandRunner.stubs(:execute).with do |args, **kwargs|
+              call_count += 1
+              fork_flags << args.include?("--fork-session")
+              result_json = { type: "result", subtype: "success", result: "done", session_id: "session_1" }.to_json
+              kwargs[:stdout_handler]&.call(result_json)
+              true
+            end.returns(["", "", mock_status(success: true)])
+
+            @provider.invoke(input)
+
+            assert_equal [false, false], fork_flags
+          end
+
+          test "invoke forks session for first invocation when input has session" do
+            input = Agent::Input.new
+            input.prompts = ["Main task", "Finalizer"]
+            input.session = "external_session"
+
+            fork_flags = []
+            CommandRunner.stubs(:execute).with do |args, **kwargs|
+              fork_flags << args.include?("--fork-session")
+              result_json = { type: "result", subtype: "success", result: "done", session_id: "new_session" }.to_json
+              kwargs[:stdout_handler]&.call(result_json)
+              true
+            end.returns(["", "", mock_status(success: true)])
+
+            @provider.invoke(input)
+
+            assert_equal [true, false], fork_flags
+          end
+
           test "invoke stops on first failed invocation" do
             input = Agent::Input.new
             input.prompts = ["Main task", "Finalizer 1", "Finalizer 2"]
