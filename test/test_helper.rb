@@ -159,49 +159,71 @@ def original_streams_from_logger_output(logger_output: @logger_output.string)
   [stdout_lines.join, stderr_lines.join]
 end
 
-# Sets up a mock for the CommandRunner's execute method that does not actually run a command,
-# but instead provides the standard output and standard error lines from fixture files to the
-# stdout and stderr handlers provided when execute is invoked. It will also return a Process::Status with the
-# provided exit_code (defaulting to 0).
+# Sets up a mock for the CommandRunner's execute method that serves fixture files sequentially
+# across multiple invocations. Each hash specifies a fixture and optional expectations for one call.
 #
-# This method can optionally validate that args, working_directory, timeout, and stdin_content values match provided
-# expectations.
+# Each hash supports:
+#   fixture:                      (String, required) fixture name under test/fixtures/
+#   exit_code:                    (Integer, default 0)
+#   expected_args:                (Array[String]?)
+#   expected_working_directory:   (Pathname | String)?
+#   expected_timeout:             (Integer | Float)?
+#   expected_stdin_content:       (String?)
 #
-#: (
-#|  String,
-#|  ?exit_code: Integer,
-#|  ?expected_args: Array[String]?,
-#|  ?expected_working_directory: (Pathname | String)?,
-#|  ?expected_timeout: (Integer | Float)?,
-#|  ?expected_stdin_content: String?,
-#| ) -> void
-def use_command_runner_fixture(
-  fixture_name,
-  exit_code: 0,
-  expected_args: nil,
-  expected_working_directory: nil,
-  expected_timeout: nil,
-  expected_stdin_content: nil
-)
-  stdout_fixture_file = "test/fixtures/#{fixture_name}.stdout.txt"
-  stderr_fixture_file = "test/fixtures/#{fixture_name}.stderr.txt"
-  stdout_fixture = File.exist?(stdout_fixture_file) ? File.read(stdout_fixture_file) : ""
-  stderr_fixture = File.exist?(stderr_fixture_file) ? File.read(stderr_fixture_file) : ""
+#: (*Hash[Symbol, untyped]) -> void
+def use_command_runner_fixtures(*specs)
+  call_index = 0
 
-  mock_status = mock("process_status")
-  mock_status.stubs(exitstatus: exit_code, success?: exit_code == 0, signaled?: false)
+  # Pre-load all fixtures and mock statuses so they're ready at call time
+  loaded = specs.map do |spec|
+    fixture_name = spec.fetch(:fixture)
+    exit_code = spec.fetch(:exit_code, 0)
 
-  Roast::CommandRunner.stubs(:execute).with do |args, **kwargs|
-    assert_equal(expected_args, args, "CommandRunner args mismatch") if expected_args
-    assert_equal(expected_working_directory, kwargs[:working_directory], "CommandRunner working_directory mismatch") if expected_working_directory
-    assert_equal(expected_timeout, kwargs[:timeout], "CommandRunner timeout mismatch") if expected_timeout
-    assert_equal(expected_stdin_content, kwargs[:stdin_content], "CommandRunner stdin_content mismatch") if expected_stdin_content
+    stdout_fixture = load_command_runner_fixture_file(fixture_name, :stdout)
+    stderr_fixture = load_command_runner_fixture_file(fixture_name, :stderr)
 
-    stdout_fixture.each_line { |line| kwargs[:stdout_handler]&.call(line) }
-    stderr_fixture.each_line { |line| kwargs[:stderr_handler]&.call(line) }
+    mock_status = mock("process_status_#{call_index}")
+    mock_status.stubs(exitstatus: exit_code, success?: exit_code == 0, signaled?: false)
+
+    { spec:, stdout: stdout_fixture, stderr: stderr_fixture, status: mock_status }
+  end
+
+  expectation = Roast::CommandRunner.stubs(:execute).with do |args, **kwargs|
+    assert call_index < loaded.size,
+      "CommandRunner.execute called #{call_index + 1} times, but only #{loaded.size} fixture(s) were provided"
+
+    entry = loaded[call_index]
+    spec = entry[:spec]
+    call_index += 1
+
+    assert_equal(spec[:expected_args], args, "CommandRunner args mismatch (invocation #{call_index})") if spec[:expected_args]
+    assert_equal(spec[:expected_working_directory], kwargs[:working_directory], "CommandRunner working_directory mismatch (invocation #{call_index})") if spec[:expected_working_directory]
+    assert_equal(spec[:expected_timeout], kwargs[:timeout], "CommandRunner timeout mismatch (invocation #{call_index})") if spec[:expected_timeout]
+    assert_equal(spec[:expected_stdin_content], kwargs[:stdin_content], "CommandRunner stdin_content mismatch (invocation #{call_index})") if spec[:expected_stdin_content]
+
+    entry[:stdout].each_line { |line| kwargs[:stdout_handler]&.call(line) }
+    entry[:stderr].each_line { |line| kwargs[:stderr_handler]&.call(line) }
 
     true
-  end.returns([stdout_fixture, stderr_fixture, mock_status])
+  end
+
+  # Chain sequential return values: .returns(first).then.returns(second).then.returns(third)...
+  loaded.each_with_index do |entry, i|
+    ret = [entry[:stdout], entry[:stderr], entry[:status]]
+    expectation = i == 0 ? expectation.returns(ret) : expectation.then.returns(ret)
+  end
+end
+
+# Load a CommandRunner fixture file, trying .stdout.txt then .stdout.log (and likewise for stderr).
+#
+#: (String, Symbol) -> String
+def load_command_runner_fixture_file(fixture_name, stream)
+  extensions = stream == :stdout ? [".stdout.txt", ".stdout.log"] : [".stderr.txt", ".stderr.log"]
+  extensions.each do |ext|
+    path = "test/fixtures/#{fixture_name}#{ext}"
+    return File.read(path) if File.exist?(path)
+  end
+  ""
 end
 
 VCR.configure do |config|
