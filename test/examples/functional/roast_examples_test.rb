@@ -465,20 +465,22 @@ module Examples
       end
 
       test "simple_agent.rb workflow runs successfully" do
-        use_command_runner_fixture(
-          "agent_transcripts/simple_agent",
-          expected_args: [
-            "claude",
-            "-p",
-            "--verbose",
-            "--output-format",
-            "stream-json",
-            "--model",
-            "haiku",
-            "--append-system-prompt",
-            "Always respond in haiku form",
-          ],
-          expected_stdin_content: "What is the world's largest lake?",
+        use_command_runner_fixtures(
+          {
+            fixture: "agent_transcripts/simple_agent",
+            expected_args: [
+              "claude",
+              "-p",
+              "--verbose",
+              "--output-format",
+              "stream-json",
+              "--model",
+              "haiku",
+              "--append-system-prompt",
+              "Always respond in haiku form",
+            ],
+            expected_stdin_content: "What is the world's largest lake?",
+          },
         )
 
         stdout, stderr = in_sandbox :simple_agent do
@@ -531,8 +533,8 @@ module Examples
       end
 
       test "simple_pi_agent.rb workflow runs successfully" do
-        use_command_runner_fixture(
-          "agent_transcripts/simple_pi_agent",
+        use_command_runner_fixtures({
+          fixture: "agent_transcripts/simple_pi_agent",
           expected_args: [
             "pi",
             "--mode",
@@ -545,7 +547,7 @@ module Examples
             "--no-session",
           ],
           expected_stdin_content: "What is the world's largest lake?",
-        )
+        })
 
         stdout, stderr = in_sandbox :simple_pi_agent do
           Roast::Workflow.from_file("examples/simple_pi_agent.rb", EMPTY_PARAMS)
