@@ -53,8 +53,8 @@ module Roast
               end
             end
 
-            #: (Agent::Config, String, String?) -> void
-            def initialize(config, prompt, session)
+            #: (Agent::Config, String, String?, ?fork_session: bool) -> void
+            def initialize(config, prompt, session, fork_session: true)
               @base_command = config.valid_command #: (String | Array[String])?
               @model = config.valid_model #: String?
               @append_system_prompt = config.valid_append_system_prompt #: String?
@@ -69,6 +69,7 @@ module Roast
               @show_response = config.show_response? #: bool
               @prompt = prompt
               @session = session
+              @fork_session = fork_session #: bool
             end
 
             #: () -> void
@@ -184,7 +185,10 @@ module Roast
               command.push("--model", @model) if @model
               command.push("--system-prompt", @replace_system_prompt) if @replace_system_prompt
               command.push("--append-system-prompt", @append_system_prompt) if @append_system_prompt
-              command.push("--fork-session", "--resume", @session) if @session.present?
+              if @session.present?
+                command.push("--fork-session") if @fork_session
+                command.push("--resume", @session)
+              end
               command << "--dangerously-skip-permissions" unless @apply_permissions
               command
             end
