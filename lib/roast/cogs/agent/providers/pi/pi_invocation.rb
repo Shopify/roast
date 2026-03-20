@@ -69,6 +69,8 @@ module Roast
               @num_turns = 0 #: Integer
               @total_cost = 0.0 #: Float
               @model_usage_accumulator = {} #: Hash[String, Hash[Symbol, Numeric]]
+              @current_text_block = +"" #: String
+              @start_time_ms = nil #: Integer?
             end
 
             #: () -> void
@@ -76,12 +78,14 @@ module Roast
               raise PiAlreadyStartedError if started?
 
               @started = true
+              @start_time_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) * 1000).to_i
               _stdout, stderr, status = CommandRunner.execute(
                 command_line,
                 working_directory: @working_directory,
                 stdin_content: @prompt,
                 stdout_handler: lambda { |line| handle_stdout(line) },
               )
+              @end_time_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) * 1000).to_i #: Integer?
 
               if status.success?
                 @completed = true
@@ -190,14 +194,17 @@ module Roast
               case event_type
               when :text_delta
                 delta = event[:delta]
-                if delta.present? && @show_progress
-                  print(delta)
-                end
+                @current_text_block << delta if delta
               when :text_end
                 content = event[:content]
                 if content.present?
                   @result.response = content
+                elsif @current_text_block.present?
+                  @result.response = @current_text_block.dup
                 end
+                # Print the accumulated text block as a single unit (like Claude does)
+                puts @current_text_block if @current_text_block.present? && @show_progress
+                @current_text_block = +""
               when :toolcall_end
                 tool_call = event[:toolCall]
                 if tool_call
@@ -207,8 +214,6 @@ module Roast
                     arguments: tool_call[:arguments] || {},
                   )
                   @context.add_tool_call(tool_call_msg)
-                  formatted = tool_call_msg.format
-                  puts formatted if formatted.present? && @show_progress
                 end
               end
             end
@@ -242,31 +247,29 @@ module Roast
             def handle_tool_execution_start(data)
               tool_name = data[:toolName]
               args = data[:args]
-              if @show_progress && tool_name
-                formatted = Messages::ToolCallMessage.new(
-                  id: data[:toolCallId],
-                  name: tool_name,
-                  arguments: args || {},
-                ).format
-                puts formatted if formatted.present?
-              end
+              return unless @show_progress && tool_name
+
+              formatted = Messages::ToolCallMessage.new(
+                id: data[:toolCallId],
+                name: tool_name,
+                arguments: args || {},
+              ).format
+              puts formatted if formatted.present?
             end
 
             #: (Hash[Symbol, untyped]) -> void
             def handle_tool_execution_end(data)
-              is_error = data[:isError]
-              tool_name = data[:toolName]
-              if @show_progress
-                result_data = data[:result]
-                content = result_data&.dig(:content)&.first&.dig(:text) if result_data
-                formatted = Messages::ToolResultMessage.new(
-                  tool_call_id: data[:toolCallId],
-                  tool_name: tool_name,
-                  content: content,
-                  is_error: is_error || false,
-                ).format(@context)
-                puts formatted if formatted.present?
-              end
+              return unless @show_progress
+
+              result_data = data[:result]
+              content = result_data&.dig(:content)&.first&.dig(:text) if result_data
+              formatted = Messages::ToolResultMessage.new(
+                tool_call_id: data[:toolCallId],
+                tool_name: data[:toolName],
+                content: content,
+                is_error: data[:isError] || false,
+              ).format(@context)
+              puts formatted if formatted.present?
             end
 
             #: (Hash[Symbol, untyped]) -> void
@@ -288,12 +291,12 @@ module Roast
             #: (String, Hash[Symbol, untyped]) -> void
             def accumulate_usage(model, usage)
               acc = @model_usage_accumulator[model] ||= { input: 0, output: 0, cache_read: 0, cache_write: 0, cost: 0.0 }
-              acc[:input] = usage[:input] || 0
-              acc[:output] = usage[:output] || 0
-              acc[:cache_read] = usage[:cacheRead] || 0
-              acc[:cache_write] = usage[:cacheWrite] || 0
+              acc[:input] = (acc[:input] || 0) + (usage[:input] || 0)
+              acc[:output] = (acc[:output] || 0) + (usage[:output] || 0)
+              acc[:cache_read] = (acc[:cache_read] || 0) + (usage[:cacheRead] || 0)
+              acc[:cache_write] = (acc[:cache_write] || 0) + (usage[:cacheWrite] || 0)
               cost = usage.dig(:cost, :total) || 0.0
-              acc[:cost] = cost
+              acc[:cost] = (acc[:cost] || 0.0) + cost
               @total_cost = @model_usage_accumulator.values.sum(0.0) { |a| a[:cost].to_f }
             end
 
@@ -301,6 +304,7 @@ module Roast
             def finalize_stats!
               stats = Stats.new
               stats.num_turns = @num_turns
+              stats.duration_ms = @end_time_ms - @start_time_ms if @start_time_ms && @end_time_ms
 
               @model_usage_accumulator.each do |model, acc|
                 usage = Usage.new

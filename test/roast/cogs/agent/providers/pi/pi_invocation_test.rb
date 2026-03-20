@@ -316,6 +316,61 @@ module Roast
               assert_equal 50, acc["claude-sonnet-4-20250514"][:output]
             end
 
+            test "accumulate_usage sums across multiple message_end events for the same model" do
+              # Mirrors a real pi invocation with tool use: pi emits one message_end per
+              # LLM call (turn 1 → tool call → turn 2 → tool result → turn 3 → final answer),
+              # each carrying independent per-message usage — NOT cumulative totals.
+              model = "claude-haiku-4-5-20251001"
+              turns = [
+                { input: 10, output: 92,  cacheRead: 0, cacheWrite: 9018, cost: { total: 0.01174 } },
+                { input: 14, output: 148, cacheRead: 0, cacheWrite: 0,    cost: { total: 0.00182 } },
+                { input: 13, output: 32,  cacheRead: 0, cacheWrite: 0,    cost: { total: 0.00130 } },
+              ]
+
+              turns.each do |usage|
+                @invocation.send(:accumulate_usage, model, usage)
+              end
+
+              acc = @invocation.instance_variable_get(:@model_usage_accumulator)
+              assert_equal 37,    acc[model][:input]
+              assert_equal 272,   acc[model][:output]
+              assert_equal 9018,  acc[model][:cache_write]
+              assert_in_delta 0.01486, acc[model][:cost], 0.00001
+              assert_in_delta 0.01486, @invocation.instance_variable_get(:@total_cost), 0.00001
+            end
+
+            test "accumulate_usage sums across multiple message_end events for different models" do
+              haiku_usage  = { input: 10, output: 50, cacheRead: 0, cacheWrite: 0, cost: { total: 0.001 } }
+              sonnet_usage = { input: 20, output: 80, cacheRead: 0, cacheWrite: 0, cost: { total: 0.004 } }
+
+              @invocation.send(:accumulate_usage, "claude-haiku-4-5-20251001",  haiku_usage)
+              @invocation.send(:accumulate_usage, "claude-sonnet-4-20250514",   sonnet_usage)
+              # second call for haiku — should add, not overwrite
+              @invocation.send(:accumulate_usage, "claude-haiku-4-5-20251001",  haiku_usage)
+
+              acc = @invocation.instance_variable_get(:@model_usage_accumulator)
+              assert_equal 20,  acc["claude-haiku-4-5-20251001"][:input]
+              assert_equal 100, acc["claude-haiku-4-5-20251001"][:output]
+              assert_in_delta 0.002, acc["claude-haiku-4-5-20251001"][:cost], 0.00001
+
+              assert_equal 20,  acc["claude-sonnet-4-20250514"][:input]
+              assert_equal 80,  acc["claude-sonnet-4-20250514"][:output]
+              assert_in_delta 0.004, acc["claude-sonnet-4-20250514"][:cost], 0.00001
+
+              # total_cost must be the sum across all models
+              assert_in_delta 0.006, @invocation.instance_variable_get(:@total_cost), 0.00001
+            end
+
+            test "accumulate_usage does not corrupt stats when usage fields are nil/missing" do
+              @invocation.send(:accumulate_usage, "some-model", { cost: { total: 0.005 } })
+              @invocation.send(:accumulate_usage, "some-model", { input: 5, output: 10, cost: { total: 0.002 } })
+
+              acc = @invocation.instance_variable_get(:@model_usage_accumulator)
+              assert_equal 5,  acc["some-model"][:input]
+              assert_equal 10, acc["some-model"][:output]
+              assert_in_delta 0.007, acc["some-model"][:cost], 0.00001
+            end
+
             test "handle_message processes toolcall_end and stores in context" do
               data = {
                 type: "message_update",
