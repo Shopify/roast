@@ -527,6 +527,49 @@ module Examples
         assert_empty logged_stderr
       end
 
+      test "simple_pi_agent.rb workflow runs successfully" do
+        use_command_runner_fixture(
+          "agent_transcripts/simple_pi_agent",
+          expected_args: [
+            "pi",
+            "--mode",
+            "json",
+            "-p",
+            "--model",
+            "anthropic/claude-haiku-4-5-20251001",
+            "--append-system-prompt",
+            "Always respond in haiku form",
+            "--no-session",
+          ],
+          expected_stdin_content: "What is the world's largest lake?",
+        )
+
+        stdout, stderr = in_sandbox :simple_pi_agent do
+          Roast::Workflow.from_file("examples/simple_pi_agent.rb", EMPTY_PARAMS)
+        end
+
+        assert_empty stdout
+        assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
+        # When show_progress is enabled (the default), text deltas are streamed directly
+        # and [AGENT RESPONSE] is suppressed to avoid duplication
+        expected_stdout = <<~STDOUT
+          [USER PROMPT] What is the world's largest lake?
+          Caspian
+          spreads wide—
+          Ancient waters vast and deep,
+          World's largest lake gleams.
+          [AGENT STATS] Turns: 1
+          Duration: ---
+          Cost (USD): $0.024634
+          Tokens (claude-haiku-4-5-20251001): 9 in, 25 out
+          Session ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        STDOUT
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
+      end
+
       test "simple_repeat.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :simple_repeat do
           Roast::Workflow.from_file("examples/simple_repeat.rb", EMPTY_PARAMS)
