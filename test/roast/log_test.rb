@@ -5,6 +5,7 @@ require "test_helper"
 module Roast
   class LogTest < ActiveSupport::TestCase
     setup do
+      ENV.delete("ROAST_LOG_LEVEL")
       Roast::Log.reset!
       EventMonitor.reset!
     end
