@@ -9,10 +9,14 @@ module Roast
       # The agent cog requires a prompt that will be sent to the agent for processing.
       # Optionally, a session identifier can be provided to maintain context across multiple invocations.
       class Input < Cog::Input
-        # The prompt to send to the agent for processing
+        # The prompts to send to the agent for processing
         #
-        #: String?
-        attr_accessor :prompt
+        # When multiple prompts are specified, each subsequent prompt is passed to the agent as soon as it completes
+        # the previous one, in the same session throughout. This can be useful for helping to ensure the agent produces
+        # final outputs in the form you desire after performing a long and complex task.
+        #
+        #: Array[String]
+        attr_accessor :prompts
 
         # Optional session identifier for maintaining conversation context
         #
@@ -28,7 +32,7 @@ module Roast
         #: () -> void
         def initialize
           super
-          @prompt = nil #: String?
+          @prompts = [] #: Array[String]
         end
 
         # Validate that the input has all required parameters
@@ -37,41 +41,35 @@ module Roast
         #
         # #### See Also
         # - `coerce`
-        # - `valid_prompt!`
         #
         #: () -> void
         def validate!
-          valid_prompt!
+          raise Cog::Input::InvalidInputError, "At least one prompt is required" unless prompts.present?
+          raise Cog::Input::InvalidInputError, "Blank prompts are not allowed" if prompts.any?(&:blank?)
         end
 
         # Coerce the input from the return value of the input block
         #
         # If the input block returns a String, it will be used as the prompt value.
+        # If the input block returns an Array of Strings, the first will be used as the prompt and the
+        # rest will be used as finalizers.
         #
         # #### See Also
         # - `validate!`
         #
         #: (untyped) -> void
         def coerce(input_return_value)
-          if input_return_value.is_a?(String)
-            self.prompt ||= input_return_value
+          case input_return_value
+          when String
+            self.prompts = [input_return_value]
+          when Array
+            self.prompts = input_return_value.map(&:to_s)
           end
         end
 
-        # Get the validated prompt value
-        #
-        # Returns the prompt if it is present, otherwise raises an `InvalidInputError`.
-        #
-        # #### See Also
-        # - `prompt`
-        # - `validate!`
-        #
-        #: () -> String
-        def valid_prompt!
-          valid_prompt = @prompt
-          raise Cog::Input::InvalidInputError, "'prompt' is required" unless valid_prompt.present?
-
-          valid_prompt
+        #: (String) -> void
+        def prompt=(prompt)
+          @prompts = [prompt]
         end
       end
     end

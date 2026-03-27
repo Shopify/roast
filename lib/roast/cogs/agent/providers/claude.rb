@@ -18,9 +18,14 @@ module Roast
 
           #: (Agent::Input) -> Agent::Output
           def invoke(input)
-            invocation = ClaudeInvocation.new(@config, input)
-            invocation.run!
-            Output.new(invocation.result)
+            invocations = [] #: Array[ClaudeInvocation]
+            input.prompts.each do |prompt|
+              invocation = ClaudeInvocation.new(@config, prompt, invocations.last&.result&.session || input.session)
+              invocation.run!
+              invocations << invocation
+              break unless invocation.result.success
+            end
+            Output.new(invocations.last.not_nil!.result)
           end
         end
       end

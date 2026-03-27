@@ -47,7 +47,7 @@ module Roast
       #
       #: (Input) -> Output
       def execute(input)
-        puts "[USER PROMPT] #{input.valid_prompt!}" if config.show_prompt?
+        puts "[USER PROMPT] #{input.prompts.first}" if config.show_prompt?
         output = provider.invoke(input)
         # NOTE: If progress is displayed, the agent's response will always be the last progress message,
         # so showing it again is duplicative.

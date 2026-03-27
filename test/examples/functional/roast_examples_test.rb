@@ -556,7 +556,11 @@ module Examples
         # as a single unit, and [AGENT RESPONSE] is suppressed to avoid duplication
         expected_stdout = <<~STDOUT
           [USER PROMPT] What is the world's largest lake?
+          [USER PROMPT] What is the world's largest lake?
           Caspian spreads wide—
+          Ancient waters vast and deep,
+          World's largest lake gleams.
+          [AGENT RESPONSE] Caspian spreads wide—
           Ancient waters vast and deep,
           World's largest lake gleams.
           [AGENT STATS] Turns: 1
