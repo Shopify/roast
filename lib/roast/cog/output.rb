@@ -241,8 +241,9 @@ module Roast
           lines.reverse.each do |line|
             # Look for numbers with various separators, formats, and currency symbols (very permissive)
             # Matches: 123, 1,234, 1_234, 1 234, 1.23, -1.23, 1.23e10, 1.23e-10
+            # Reversed so that the last number on the line is tried first (matching the bottom-up line order)
             matches = line.scan(/-?[\d\s$¢£€¥.,_]+(?:[eE][+-]?\d+)?/) #: as Array[String]
-            candidates.concat(matches.map(&:strip))
+            candidates.concat(matches.map(&:strip).reverse)
           end
 
           candidates.compact.uniq
