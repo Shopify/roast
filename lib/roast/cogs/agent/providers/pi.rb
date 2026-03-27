@@ -31,6 +31,7 @@ module Roast
               break unless invocation.result.success
             end
             final_result = invocations.last.not_nil!.result
+            final_result.stats = invocations.filter_map { |i| i.result.stats }.reduce(:+) if invocations.size > 1
             Output.new(final_result)
           end
         end

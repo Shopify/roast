@@ -141,6 +141,63 @@ module Roast
             assert_equal "final result", output.response
           end
 
+          test "invoke sums stats across multiple invocations" do
+            input = Agent::Input.new
+            input.prompts = ["First", "Second"]
+
+            call_count = 0
+            CommandRunner.stubs(:execute).with do |_args, **kwargs|
+              call_count += 1
+              result_hash = {
+                type: "result",
+                subtype: "success",
+                result: call_count == 1 ? "intermediate" : "final",
+                duration_ms: call_count == 1 ? 1000 : 2000,
+                num_turns: call_count == 1 ? 3 : 5,
+                total_cost_usd: call_count == 1 ? 0.01 : 0.02,
+                modelUsage: {
+                  "claude-sonnet" => {
+                    inputTokens: call_count == 1 ? 100 : 200,
+                    outputTokens: call_count == 1 ? 50 : 75,
+                  },
+                },
+              }
+              kwargs[:stdout_handler]&.call(result_hash.to_json)
+              true
+            end.returns(["", "", mock_status(success: true)])
+
+            output = @provider.invoke(input)
+
+            assert_equal 3000, output.stats.duration_ms
+            assert_equal 8, output.stats.num_turns
+            assert_in_delta 0.03, output.stats.usage.cost_usd
+            assert_equal 300, output.stats.model_usage[:"claude-sonnet"].input_tokens
+            assert_equal 125, output.stats.model_usage[:"claude-sonnet"].output_tokens
+          end
+
+          test "invoke does not sum stats for single invocation" do
+            input = Agent::Input.new
+            input.prompt = "Only prompt"
+
+            result_hash = {
+              type: "result",
+              subtype: "success",
+              result: "done",
+              duration_ms: 1000,
+              num_turns: 3,
+              total_cost_usd: 0.01,
+            }
+            CommandRunner.stubs(:execute).with do |_args, **kwargs|
+              kwargs[:stdout_handler]&.call(result_hash.to_json)
+              true
+            end.returns(["", "", mock_status(success: true)])
+
+            output = @provider.invoke(input)
+
+            assert_equal 1000, output.stats.duration_ms
+            assert_equal 3, output.stats.num_turns
+          end
+
           test "invoke uses input session when no previous invocation session exists" do
             input = Agent::Input.new
             input.prompts = ["Main task", "Finalize"]

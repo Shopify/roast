@@ -54,6 +54,28 @@ module Roast
         #
         #: Float?
         attr_accessor :cost_usd
+
+        # Add two Usage objects together, summing their token counts and costs
+        #
+        # Nil values are treated as zero when the other operand is non-nil.
+        #
+        #: (Usage) -> Usage
+        def +(other)
+          result = Usage.new
+          result.input_tokens = sum_nils(input_tokens, other.input_tokens)&.to_int
+          result.output_tokens = sum_nils(output_tokens, other.output_tokens)&.to_int
+          result.cost_usd = sum_nils(cost_usd, other.cost_usd)&.to_f
+          result
+        end
+
+        private
+
+        #: (Numeric?, Numeric?) -> Numeric?
+        def sum_nils(a, b)
+          return if a.nil? && b.nil?
+
+          (a || 0) + (b || 0)
+        end
       end
     end
   end
