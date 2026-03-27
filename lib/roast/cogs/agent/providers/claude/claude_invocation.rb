@@ -64,7 +64,9 @@ module Roast
               @context = Context.new #: Context
               @result = Result.new #: Result
               @raw_dump_file = config.valid_dump_raw_agent_messages_to_path #: Pathname?
+              @show_prompt = config.show_prompt? #: bool
               @show_progress = config.show_progress? #: bool
+              @show_response = config.show_response? #: bool
               @prompt = prompt
               @session = session
             end
@@ -74,6 +76,7 @@ module Roast
               raise ClaudeAlreadyStartedError if started?
 
               @started = true
+              puts "[USER PROMPT] #{@prompt}" if @show_prompt
               _stdout, stderr, status = CommandRunner.execute(
                 command_line,
                 working_directory: @working_directory,
@@ -83,6 +86,7 @@ module Roast
 
               if status.success?
                 @completed = true
+                puts "[AGENT RESPONSE] #{@result.response}" if @show_response
               else
                 @failed = true
                 @result.success = false
