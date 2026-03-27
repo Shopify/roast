@@ -20,7 +20,13 @@ module Roast
           def invoke(input)
             invocations = [] #: Array[ClaudeInvocation]
             input.prompts.each do |prompt|
-              invocation = ClaudeInvocation.new(@config, prompt, invocations.last&.result&.session || input.session)
+              previous_session = invocations.last&.result&.session
+              invocation = ClaudeInvocation.new(
+                @config,
+                prompt,
+                previous_session || input.session,
+                fork_session: previous_session.nil?,
+              )
               invocation.run!
               invocations << invocation
               break unless invocation.result.success

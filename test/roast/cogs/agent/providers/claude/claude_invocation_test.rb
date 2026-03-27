@@ -233,7 +233,7 @@ module Roast
               assert_equal "Additional instructions", command[prompt_index + 1]
             end
 
-            test "command_line includes session flags when session is set" do
+            test "command_line includes fork-session and resume when session is set" do
               invocation = ClaudeInvocation.new(@config, "Test prompt", "session_123")
 
               command = invocation.send(:command_line)
@@ -242,6 +242,26 @@ module Roast
               assert_includes command, "--resume"
               resume_index = command.index("--resume")
               assert_equal "session_123", command[resume_index + 1]
+            end
+
+            test "command_line includes resume without fork-session when fork_session is false" do
+              invocation = ClaudeInvocation.new(@config, "Test prompt", "session_123", fork_session: false)
+
+              command = invocation.send(:command_line)
+
+              refute_includes command, "--fork-session"
+              assert_includes command, "--resume"
+              resume_index = command.index("--resume")
+              assert_equal "session_123", command[resume_index + 1]
+            end
+
+            test "command_line omits fork-session when no session is given even if fork_session is true" do
+              invocation = ClaudeInvocation.new(@config, "Test prompt", nil, fork_session: true)
+
+              command = invocation.send(:command_line)
+
+              refute_includes command, "--fork-session"
+              refute_includes command, "--resume"
             end
 
             test "command_line includes dangerously-skip-permissions when permissions skipped" do
