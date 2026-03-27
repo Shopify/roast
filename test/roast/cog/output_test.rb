@@ -209,6 +209,78 @@ module Roast
         assert_equal 42.50, number_output.float!
       end
 
+      test "output with number support extracts last number from a line with multiple numbers" do
+        number_output = Class.new(Output) do
+          include Output::WithNumber
+
+          def raw_text
+            "12 - 5 = 7"
+          end
+        end.new
+
+        assert_equal 7, number_output.integer!
+      end
+
+      test "output with number support extracts last number from arithmetic expression" do
+        number_output = Class.new(Output) do
+          include Output::WithNumber
+
+          def raw_text
+            "2 + 2 = 4"
+          end
+        end.new
+
+        assert_equal 4, number_output.integer!
+      end
+
+      test "output with number support extracts last number from multi-line response" do
+        number_output = Class.new(Output) do
+          include Output::WithNumber
+
+          def raw_text
+            "First I calculated 2 + 2 = 4\nThen I multiplied 4 * 3 = 12\nFinally 12 - 5 = 7"
+          end
+        end.new
+
+        assert_equal 7, number_output.integer!
+      end
+
+      test "output with number support extracts last number from sentence with embedded numbers" do
+        number_output = Class.new(Output) do
+          include Output::WithNumber
+
+          def raw_text
+            "The answer to 100 divided by 4 is 25"
+          end
+        end.new
+
+        assert_equal 25, number_output.integer!
+      end
+
+      test "output with number support extracts last float from a line with multiple numbers" do
+        number_output = Class.new(Output) do
+          include Output::WithNumber
+
+          def raw_text
+            "3.14 * 2 = 6.28"
+          end
+        end.new
+
+        assert_in_delta 6.28, number_output.float!
+      end
+
+      test "output with number support prefers last line last number over earlier lines" do
+        number_output = Class.new(Output) do
+          include Output::WithNumber
+
+          def raw_text
+            "Step 1: 100\nStep 2: 50\nResult: 42"
+          end
+        end.new
+
+        assert_equal 42, number_output.integer!
+      end
+
       # Test Output subclasses with text formatting capabilities
       test "output with text support returns stripped text" do
         text_output = Class.new(Output) do
