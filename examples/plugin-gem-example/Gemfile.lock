@@ -1,11 +1,12 @@
 PATH
   remote: ../..
   specs:
-    roast-ai (1.0.2)
+    roast-ai (1.1.0)
       activesupport (~> 8.0)
       async (>= 2.34)
       rainbow (>= 3.0.0)
       ruby_llm (>= 1.8)
+      type_toolkit (>= 0.0.5)
       zeitwerk (>= 2.6)
 
 PATH
@@ -133,6 +134,9 @@ GEM
     stringio (3.1.7)
     traces (0.18.2)
     tsort (0.2.0)
+    type_toolkit (0.0.5)
+      lint_roller
+      rubocop (>= 1.72.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.2.0)

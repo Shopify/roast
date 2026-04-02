@@ -1,11 +1,12 @@
 PATH
   remote: ../..
   specs:
-    roast-ai (1.0.2)
+    roast-ai (1.1.0)
       activesupport (~> 8.0)
       async (>= 2.34)
       rainbow (>= 3.0.0)
       ruby_llm (>= 1.8)
+      type_toolkit (>= 0.0.5)
       zeitwerk (>= 2.6)
 
 PATH
@@ -30,6 +31,7 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
+    ast (2.4.3)
     async (2.34.0)
       console (~> 1.29)
       fiber-annotation
@@ -65,6 +67,8 @@ GEM
       concurrent-ruby (~> 1.0)
     io-event (1.14.0)
     json (2.18.1)
+    language_server-protocol (3.17.0.5)
+    lint_roller (1.1.0)
     logger (1.7.0)
     marcel (1.1.0)
     metrics (0.15.0)
@@ -72,7 +76,29 @@ GEM
     multipart-post (2.4.1)
     net-http (0.9.1)
       uri (>= 0.11.1)
+    parallel (1.28.0)
+    parser (3.3.11.1)
+      ast (~> 2.4.1)
+      racc
+    prism (1.9.0)
+    racc (1.8.1)
     rainbow (3.1.1)
+    regexp_parser (2.11.3)
+    rubocop (1.86.0)
+      json (~> 2.3)
+      language_server-protocol (~> 3.17.0.2)
+      lint_roller (~> 1.1.0)
+      parallel (~> 1.10)
+      parser (>= 3.3.0.2)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 2.9.3, < 3.0)
+      rubocop-ast (>= 1.49.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 4.0)
+    rubocop-ast (1.49.1)
+      parser (>= 3.3.7.2)
+      prism (~> 1.7)
+    ruby-progressbar (1.13.0)
     ruby_llm (1.8.2)
       base64
       event_stream_parser (~> 1)
@@ -84,8 +110,14 @@ GEM
       zeitwerk (~> 2)
     securerandom (0.4.1)
     traces (0.18.2)
+    type_toolkit (0.0.5)
+      lint_roller
+      rubocop (>= 1.72.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    unicode-display_width (3.2.0)
+      unicode-emoji (~> 4.1)
+    unicode-emoji (4.2.0)
     uri (1.1.1)
     zeitwerk (2.7.3)
 
