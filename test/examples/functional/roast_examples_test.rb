@@ -5,17 +5,7 @@ require "test_helper"
 # This test suite validates the example workflows in `examples/`.
 module Examples
   module Functional
-    EMPTY_PARAMS = Roast::WorkflowParams.new([], [], {})
-
     class RoastExamplesTest < FunctionalTest
-      setup do
-        Roast::EventMonitor.reset!
-      end
-
-      teardown do
-        Roast::EventMonitor.reset!
-      end
-
       test "agent_with_multiple_prompts.rb workflow runs successfully" do
         use_command_runner_fixtures(
           {
