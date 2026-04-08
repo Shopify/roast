@@ -1,0 +1,2 @@
+fixture stdout line 1
+fixture stdout line 2
