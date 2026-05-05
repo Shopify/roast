@@ -230,7 +230,7 @@ module Roast
       #
       #: () -> bool
       def abort_on_failure?
-        !!@values[:abort_on_failure]
+        @values.fetch(:abort_on_failure, true)
       end
 
       # Configure the cog to run external commands in the specified working directory
