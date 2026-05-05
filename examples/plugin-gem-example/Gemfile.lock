@@ -49,7 +49,7 @@ GEM
       json
     date (3.4.1)
     drb (2.2.3)
-    erb (5.1.1)
+    erb (6.0.1.1)
     event_stream_parser (1.0.0)
     faraday (2.14.1)
       faraday-net_http (>= 2.0, < 3.5)
