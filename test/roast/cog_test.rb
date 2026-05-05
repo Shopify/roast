@@ -154,11 +154,12 @@ module Roast
     end
 
     test "run! marks cog as failed when FailCog is raised" do
+      config = Cog.config_class.new.tap(&:no_abort_on_failure!)
       cog = TestCog.new(:fail_cog, ->(_input, _scope, _index) {
         raise ControlFlow::FailCog
       })
 
-      run_cog(cog)
+      run_cog(cog, config:)
 
       assert cog.failed?
       refute cog.skipped?
@@ -272,11 +273,12 @@ module Roast
     end
 
     test "run! supports fail! from input context" do
+      config = Cog.config_class.new.tap(&:no_abort_on_failure!)
       cog = TestCog.new(:fail_context_cog, ->(_input, _scope, _index) {
         fail!
       })
 
-      run_cog(cog)
+      run_cog(cog, config:)
 
       assert cog.failed?
       refute cog.skipped?

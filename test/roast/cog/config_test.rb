@@ -103,8 +103,8 @@ module Roast
         refute @config.abort_on_failure?
       end
 
-      test "abort_on_failure? returns false by default" do
-        refute @config.abort_on_failure?
+      test "abort_on_failure? returns true by default" do
+        assert @config.abort_on_failure?
       end
 
       test "working_directory sets working directory" do
