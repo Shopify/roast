@@ -89,7 +89,7 @@ execute(:process_numbers) do
   ruby(:check) do |_, _, index|
     # Skip processing for multiples of 3
     if index % 3 == 0
-      puts "  Skipping every third 3 iteration"
+      puts "  Skipping every third iteration"
       next!
     end
     puts "Processing #{index}"

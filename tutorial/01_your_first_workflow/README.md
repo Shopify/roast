@@ -58,7 +58,7 @@ That's it! Everything happens inside the `execute do ... end` block.
 
 ## Your First Chat Cog
 
-The `chat` cog sends a prompt to a cloud-based LLM and gets a response back. Here's a simplest example:
+The `chat` cog sends a prompt to a cloud-based LLM and gets a response back. Here's a simple example:
 
 ```ruby
 execute do
