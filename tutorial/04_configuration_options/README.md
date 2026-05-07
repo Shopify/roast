@@ -125,7 +125,7 @@ the prompt, response, usage statistics, and (for the agent cog) incremental prog
 For the `cmd` cog, you can control the display of standard output and standard error.
 
 - `show_stdout!` / `no_show_stdout!` - Control stdout display
-- `show_stderr!` / `no_show_stderr!` - Control stdout display
+- `show_stderr!` / `no_show_stderr!` - Control stderr display
 
 And for all cog types, you can quickly apply some typical configurations
 
