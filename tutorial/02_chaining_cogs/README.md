@@ -42,11 +42,11 @@ end
 ```
 
 This returns the cog's output, or `nil` if the cog didn't run (we'll learn about conditionally skipping steps in a later
-lesson.
+lesson).
 
 ### Different Output Methods
 
-Different cog types provide different types of output. Here are few highlights:
+Different cog types provide different types of output. Here are a few highlights:
 
 - `chat(:name).response` - The text response from a chat cog
 - `agent(:name).response` - The text response from an agent cog
