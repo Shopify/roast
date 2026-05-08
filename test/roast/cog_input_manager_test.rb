@@ -67,6 +67,41 @@ module Roast
       assert_includes result, "This is a test template."
     end
 
+    test "template method expands user home directories" do
+      Tempfile.create(["temp_file", ".md.erb"], File.expand_path("tmp")) do |file|
+        File.write(file, <<~ERB)
+          Hello <%= name %>!
+          This is a test template.
+        ERB
+
+        manager = create_manager
+
+        tilde_path = "~/#{Pathname.new(File.expand_path(file)).relative_path_from(Dir.home)}"
+        result = manager.context.template(tilde_path, { name: "Full Path" })
+        assert_includes result, "Hello Full Path!"
+        assert_includes result, "This is a test template."
+      end
+    end
+
+    test "template method resolves file with literal tilde" do
+      Dir.mktmpdir do |temp_dir|
+        Dir.chdir(temp_dir) do
+          tilde_path = "~something/template.md.erb"
+          FileUtils.mkdir_p("~something")
+          File.write(tilde_path, <<~ERB)
+            Hello <%= name%>!
+            This is a test template.
+          ERB
+
+          manager = create_manager
+
+          result = manager.context.template(tilde_path, { name: "Full Path" })
+          assert_includes result, "Hello Full Path!"
+          assert_includes result, "This is a test template."
+        end
+      end
+    end
+
     private
 
     # Factory method to create a CogInputManager with realistic instances
