@@ -177,7 +177,7 @@ execute do
   agent(:process) do
     files = targets.join("\n")
     format = kwarg(:format) || "detailed"
-    "Process these files and provide a #{format} report:\n#{files}) "
+    "Process these files and provide a #{format} report:\n#{files} "
   end
 
   cmd(:grep_pattern) do

@@ -274,9 +274,10 @@ module Roast
         end
 
         test "run! marks cog as failed when command fails with fail_on_error" do
+          config = Cmd.config_class.new.tap(&:no_abort_on_failure!)
           cog = Cmd.new(:failing_cmd, ->(_input, _scope, _index) { "exit 1" })
 
-          run_cog(cog)
+          run_cog(cog, config:)
 
           assert cog.failed?
         end
