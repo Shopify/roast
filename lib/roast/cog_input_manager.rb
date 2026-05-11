@@ -159,7 +159,7 @@ module Roast
     # Supports both relative shorthand paths like "greeting" and full absolute paths.
     #
     # @param path [String, Pathname] The template path to resolve. Can be:
-    #   - Shorthand name: "greeting" -> searches for prompts/greeting.md.erb
+    #   - Shorthand name: "greeting" -> searches for prompts/greeting.md.erb or templates/greeting.md.erb
     #   - With extension: "template.erb" -> searches for template.erb
     #   - Absolute path: "/full/path/to/template.erb" -> uses as-is
     # @param args [Hash] Template variables for ERB interpolation
@@ -175,9 +175,11 @@ module Roast
     # 1. Absolute path as-is (if absolute)
     # 2-4. Workflow directory: path, path.erb, path.md.erb
     # 5-7. Workflow directory prompts/: prompts/path, prompts/path.erb, prompts/path.md.erb
-    # 8-10. Current directory: path, path.erb, path.md.erb
-    # 11-13. Current directory prompts/: prompts/path, prompts/path.erb, prompts/path.md.erb
-    # 14-16. Tilde-expanded path: path, path.erb, path.md.erb
+    # 8-10. Workflow directory templates/: templates/path, templates/path.erb, templates/path.md.erb
+    # 11-13. Current directory: path, path.erb, path.md.erb
+    # 14-16. Current directory prompts/: prompts/path, prompts/path.erb, prompts/path.md.erb
+    # 17-19. Current directory templates/: templates/path, templates/path.erb, templates/path.md.erb
+    # 20-22. Tilde-expanded path: path, path.erb, path.md.erb
     #
     #: (String | Pathname, ?Hash) -> String
     def template(path, args = {})
@@ -200,18 +202,28 @@ module Roast
       candidate_paths << workflow_dir / "prompts" / "#{path}.erb"
       candidate_paths << workflow_dir / "prompts" / "#{path}.md.erb"
 
-      # 8-10. Relative to current working directory
+      # 8-10. Relative to workflow directory templates folder
+      candidate_paths << workflow_dir / "templates" / path
+      candidate_paths << workflow_dir / "templates" / "#{path}.erb"
+      candidate_paths << workflow_dir / "templates" / "#{path}.md.erb"
+
+      # 11-13. Relative to current working directory
       pwd = Pathname.pwd
       candidate_paths << pwd / path
       candidate_paths << pwd / "#{path}.erb"
       candidate_paths << pwd / "#{path}.md.erb"
 
-      # 11-13. Relative to current working directory prompts folder
+      # 14-16. Relative to current working directory prompts folder
       candidate_paths << pwd / "prompts" / path
       candidate_paths << pwd / "prompts" / "#{path}.erb"
       candidate_paths << pwd / "prompts" / "#{path}.md.erb"
 
-      # 14-16. Tilde expanded path
+      # 17-19. Relative to current working directory templates folder
+      candidate_paths << pwd / "templates" / path
+      candidate_paths << pwd / "templates" / "#{path}.erb"
+      candidate_paths << pwd / "templates" / "#{path}.md.erb"
+
+      # 20-22. Tilde expanded path
       begin
         expanded_path = Pathname.new(File.expand_path(path))
         candidate_paths << expanded_path
