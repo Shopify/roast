@@ -9,9 +9,17 @@ module Roast
       @workflow_dir = File.join(@temp_dir, "workflow")
       @prompts_dir = File.join(@workflow_dir, "prompts")
       FileUtils.mkdir_p(@prompts_dir)
+      @templates_dir = File.join(@workflow_dir, "templates")
+      FileUtils.mkdir_p(@templates_dir)
 
-      @template_path = File.join(@prompts_dir, "test_template.md.erb")
-      File.write(@template_path, <<~ERB)
+      @template_in_prompts_dir = File.join(@prompts_dir, "test_template.md.erb")
+      File.write(@template_in_prompts_dir, <<~ERB)
+        Hello <%= name %>!
+        This is a test template.
+      ERB
+
+      @template_in_templates_dir = File.join(@templates_dir, "another_template.md.erb")
+      File.write(@template_in_templates_dir, <<~ERB)
         Hello <%= name %>!
         This is a test template.
       ERB
@@ -24,7 +32,7 @@ module Roast
       FileUtils.rm_rf(@temp_dir) if @temp_dir && File.exist?(@temp_dir)
     end
 
-    test "template method resolves shorthand paths relative to workflow directory" do
+    test "template method resolves shorthand paths in 'prompts' directory relative to workflow directory" do
       manager = create_manager(workflow_dir: Pathname.new(@workflow_dir))
 
       Dir.chdir(@temp_dir) do
@@ -34,7 +42,17 @@ module Roast
       end
     end
 
-    test "template method falls back to current working directory" do
+    test "template method resolves shorthand paths in 'templates' directory relative to workflow directory" do
+      manager = create_manager(workflow_dir: Pathname.new(@workflow_dir))
+
+      Dir.chdir(@temp_dir) do
+        result = manager.context.template("another_template", { name: "Templates Dir" })
+        assert_includes result, "Hello Templates Dir!"
+        assert_includes result, "This is a test template."
+      end
+    end
+
+    test "template method falls back to 'prompts' directory in current working directory" do
       other_workflow_dir = File.join(@temp_dir, "other_workflow")
       FileUtils.mkdir_p(other_workflow_dir)
 
@@ -43,6 +61,19 @@ module Roast
       Dir.chdir(@workflow_dir) do
         result = manager.context.template("test_template", { name: "Fallback" })
         assert_includes result, "Hello Fallback!"
+        assert_includes result, "This is a test template."
+      end
+    end
+
+    test "template method falls back to 'templates' directory in current working directory" do
+      other_workflow_dir = File.join(@temp_dir, "other_workflow")
+      FileUtils.mkdir_p(other_workflow_dir)
+
+      manager = create_manager(workflow_dir: Pathname.new(other_workflow_dir))
+
+      Dir.chdir(@workflow_dir) do
+        result = manager.context.template("another_template", { name: "Templates Dir" })
+        assert_includes result, "Hello Templates Dir!"
         assert_includes result, "This is a test template."
       end
     end
@@ -61,7 +92,7 @@ module Roast
     test "template method works with absolute path" do
       manager = create_manager
 
-      absolute_path = Pathname.new(@template_path).realpath
+      absolute_path = Pathname.new(@template_in_prompts_dir).realpath
       result = manager.context.template(absolute_path, { name: "Full Path" })
       assert_includes result, "Hello Full Path!"
       assert_includes result, "This is a test template."
