@@ -68,7 +68,7 @@ module Roast
     end
 
     test "template method expands user home directories" do
-      Tempfile.create(["temp_file", ".md.erb"], File.expand_path("tmp")) do |file|
+      Tempfile.create(["test_template_in_user_home", ".md.erb"], File.expand_path("tmp")) do |file|
         File.write(file, <<~ERB)
           Hello <%= name %>!
           This is a test template.
@@ -77,16 +77,16 @@ module Roast
         manager = create_manager
 
         tilde_path = "~/#{Pathname.new(File.expand_path(file)).relative_path_from(Dir.home)}"
-        result = manager.context.template(tilde_path, { name: "Full Path" })
-        assert_includes result, "Hello Full Path!"
+        result = manager.context.template(tilde_path, { name: "Relative Path From User Home" })
+        assert_includes result, "Hello Relative Path From User Home!"
         assert_includes result, "This is a test template."
       end
     end
 
-    test "template method resolves file with literal tilde" do
+    test "template method handles ~user reference to non-existent user gracefully" do
       Dir.mktmpdir do |temp_dir|
         Dir.chdir(temp_dir) do
-          tilde_path = "~something/template.md.erb"
+          tilde_path = "~something/test_template.md.erb"
           FileUtils.mkdir_p("~something")
           File.write(tilde_path, <<~ERB)
             Hello <%= name%>!
@@ -95,8 +95,46 @@ module Roast
 
           manager = create_manager
 
-          result = manager.context.template(tilde_path, { name: "Full Path" })
-          assert_includes result, "Hello Full Path!"
+          result = manager.context.template(tilde_path, { name: "Path With Non-Existent ~User Reference" })
+          assert_includes result, "Hello Path With Non-Existent ~User Reference!"
+          assert_includes result, "This is a test template."
+        end
+      end
+    end
+
+    test "template method resolves path where leading tilde refers to a literal subdirectory" do
+      Dir.mktmpdir do |temp_dir|
+        Dir.chdir(temp_dir) do
+          tilde_path = "~/test_template.md.erb"
+          FileUtils.mkdir_p("~")
+          File.write(tilde_path, <<~ERB)
+            Hello <%= name%>!
+            This is a test template.
+          ERB
+
+          manager = create_manager
+
+          result = manager.context.template(tilde_path, { name: "Path With Leading Literal Tilde" })
+          assert_includes result, "Hello Path With Leading Literal Tilde!"
+          assert_includes result, "This is a test template."
+        end
+      end
+    end
+
+    test "template method resolves path with literal tilde in the middle of the path" do
+      Dir.mktmpdir do |temp_dir|
+        Dir.chdir(temp_dir) do
+          tilde_path = "something/~/test_template.md.erb"
+          FileUtils.mkdir_p("something/~")
+          File.write(tilde_path, <<~ERB)
+            Hello <%= name%>!
+            This is a test template.
+          ERB
+
+          manager = create_manager
+
+          result = manager.context.template(tilde_path, { name: "Path With Literal Tilde In The Middle" })
+          assert_includes result, "Hello Path With Literal Tilde In The Middle!"
           assert_includes result, "This is a test template."
         end
       end

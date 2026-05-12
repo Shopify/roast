@@ -218,7 +218,8 @@ module Roast
         candidate_paths << Pathname.new(File.expand_path("#{expanded_path}.erb"))
         candidate_paths << Pathname.new(File.expand_path("#{expanded_path}.md.erb"))
       rescue ArgumentError
-        # skip
+        # File.expand_path raises when expanding ~something/foo (assuming "something" is not a real user).
+        # Nothing to do here, falls back to other candidate paths without tilde expansion.
       end
       # Use the first path that exists
       resolved_path = candidate_paths.find(&:exist?)
