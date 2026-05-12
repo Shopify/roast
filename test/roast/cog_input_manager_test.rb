@@ -12,14 +12,14 @@ module Roast
       @templates_dir = File.join(@workflow_dir, "templates")
       FileUtils.mkdir_p(@templates_dir)
 
-      @template_path = File.join(@prompts_dir, "test_template.md.erb")
-      File.write(@template_path, <<~ERB)
+      @template_in_prompts_dir = File.join(@prompts_dir, "test_template.md.erb")
+      File.write(@template_in_prompts_dir, <<~ERB)
         Hello <%= name %>!
         This is a test template.
       ERB
 
-      @another_template_path = File.join(@templates_dir, "another_template.md.erb")
-      File.write(@another_template_path, <<~ERB)
+      @template_in_templates_dir = File.join(@templates_dir, "another_template.md.erb")
+      File.write(@template_in_templates_dir, <<~ERB)
         Hello <%= name %>!
         This is a test template.
       ERB
@@ -92,7 +92,7 @@ module Roast
     test "template method works with absolute path" do
       manager = create_manager
 
-      absolute_path = Pathname.new(@template_path).realpath
+      absolute_path = Pathname.new(@template_in_prompts_dir).realpath
       result = manager.context.template(absolute_path, { name: "Full Path" })
       assert_includes result, "Hello Full Path!"
       assert_includes result, "This is a test template."
