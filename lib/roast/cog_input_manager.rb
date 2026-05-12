@@ -177,11 +177,10 @@ module Roast
     # 5-7. Workflow directory prompts/: prompts/path, prompts/path.erb, prompts/path.md.erb
     # 8-10. Current directory: path, path.erb, path.md.erb
     # 11-13. Current directory prompts/: prompts/path, prompts/path.erb, prompts/path.md.erb
+    # 14-16. Tilde-expanded path: path, path.erb, path.md.erb
     #
     #: (String | Pathname, ?Hash) -> String
     def template(path, args = {})
-      # NOTE: Pathname does not expand ~ for home directory automatically.
-      # This is tracked in issue https://github.com/Shopify/roast/issues/663.
       path = Pathname.new(path) unless path.is_a?(Pathname)
 
       # Priority stack of places to look for a matching file
@@ -212,6 +211,16 @@ module Roast
       candidate_paths << pwd / "prompts" / "#{path}.erb"
       candidate_paths << pwd / "prompts" / "#{path}.md.erb"
 
+      # 14-16. Tilde expanded path
+      begin
+        expanded_path = Pathname.new(File.expand_path(path))
+        candidate_paths << expanded_path
+        candidate_paths << Pathname.new(File.expand_path("#{expanded_path}.erb"))
+        candidate_paths << Pathname.new(File.expand_path("#{expanded_path}.md.erb"))
+      rescue ArgumentError
+        # File.expand_path raises when expanding ~something/foo (assuming "something" is not a real user).
+        # Nothing to do here, falls back to other candidate paths without tilde expansion.
+      end
       # Use the first path that exists
       resolved_path = candidate_paths.find(&:exist?)
 
