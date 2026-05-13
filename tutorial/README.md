@@ -14,7 +14,7 @@ run coding agents, process data, and so much more.
 
 - Ruby installed (3.4.2+)
 - Roast gem installed
-- API keys for your AI providers of choice (to use LLM chat)
+- API keys for your AI provider (see [Configuration](https://github.com/Shopify/roast/blob/main/README.md#configuration) for setup)
 - Claude Code CLI installed and configured (to use coding agents)
 
 ## How to Use This Tutorial
