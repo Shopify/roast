@@ -8,7 +8,7 @@ Accepts either:
 
 ## Task
 
-Following the guidelines in `internal/documentation/`:
+Following the guidelines in `internal/documentation/comments/`:
 
 1. **Determine documentation type:**
    - For Config, Input, Output classes → Use `doc-comments-external.md` (user-facing, thorough)
