@@ -12,6 +12,12 @@ module Roast
             default_base_url: "https://api.openai.com/v1",
             default_model: "gpt-4o-mini",
           },
+          anthropic: {
+            api_key_env_var: "ANTHROPIC_API_KEY",
+            base_url_env_var: "ANTHROPIC_API_BASE",
+            default_base_url: "https://api.anthropic.com",
+            default_model: "claude-haiku-4-5",
+          },
         }.freeze #: Hash[Symbol, Hash[Symbol, String]]
 
         # Configure the cog to use a specified API provider when invoking the llm
@@ -75,6 +81,7 @@ module Roast
         #
         # #### Environment Variables
         # - OpenAI Provider: OPENAI_API_KEY
+        # - Anthropic Provider: ANTHROPIC_API_KEY
         #
         # #### See Also
         # - `api_key`
@@ -91,6 +98,7 @@ module Roast
         #
         # #### Environment Variables
         # - OpenAI Provider: OPENAI_API_KEY
+        # - Anthropic Provider: ANTHROPIC_API_KEY
         #
         # #### See Also
         # - `api_key`
@@ -126,6 +134,7 @@ module Roast
         #
         # #### Environment Variables
         # - OpenAI Provider: OPENAI_API_BASE
+        # - Anthropic Provider: ANTHROPIC_API_BASE
         #
         # #### See Also
         # - `base_url`
@@ -139,6 +148,7 @@ module Roast
         #
         # #### Environment Variables
         # - OpenAI Provider: OPENAI_API_BASE
+        # - Anthropic Provider: ANTHROPIC_API_BASE
         #
         # #### See Also
         # - `base_url`
