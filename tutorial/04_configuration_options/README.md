@@ -45,7 +45,7 @@ config do
   end
 
   agent do
-    model "claude-3-5-haiku-20241022"
+    model "claude-haiku-4-5"
     provider :claude
   end
 end
