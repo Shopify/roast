@@ -33,6 +33,11 @@ module Roast
           assert_equal :anthropic, @config.valid_provider!
         end
 
+        test "valid_provider! accepts and sets :perplexity" do
+          @config.provider(:perplexity)
+          assert_equal :perplexity, @config.valid_provider!
+        end
+
         test "valid_provider! raises on invalid provider" do
           @config.provider(:invalid_provider)
 
@@ -82,6 +87,13 @@ module Roast
           @config.provider(:openai)
           with_env("OPENAI_API_KEY", "openai-env-key") do
             assert_equal "openai-env-key", @config.valid_api_key!
+          end
+        end
+
+        test "valid_api_key! reads from perplexity environment variable when provider is perplexity" do
+          @config.provider(:perplexity)
+          with_env("PERPLEXITY_API_KEY", "perplexity-env-key") do
+            assert_equal "perplexity-env-key", @config.valid_api_key!
           end
         end
 
@@ -151,6 +163,11 @@ module Roast
         test "valid_model returns openai default model when provider is openai" do
           @config.provider(:openai)
           assert_equal "gpt-4o-mini", @config.valid_model
+        end
+
+        test "valid_model returns perplexity default model when provider is perplexity" do
+          @config.provider(:perplexity)
+          assert_equal "sonar", @config.valid_model
         end
 
         # Temperature configuration tests

@@ -18,6 +18,10 @@ module Roast
             default_base_url: "https://api.anthropic.com",
             default_model: "claude-haiku-4-5",
           },
+          perplexity: {
+            api_key_env_var: "PERPLEXITY_API_KEY",
+            default_model: "sonar",
+          },
         }.freeze #: Hash[Symbol, Hash[Symbol, String]]
 
         # Configure the cog to use a specified API provider when invoking the llm
@@ -82,6 +86,7 @@ module Roast
         # #### Environment Variables
         # - OpenAI Provider: OPENAI_API_KEY
         # - Anthropic Provider: ANTHROPIC_API_KEY
+        # - Perplexity Provider: PERPLEXITY_API_KEY
         #
         # #### See Also
         # - `api_key`
@@ -99,6 +104,7 @@ module Roast
         # #### Environment Variables
         # - OpenAI Provider: OPENAI_API_KEY
         # - Anthropic Provider: ANTHROPIC_API_KEY
+        # - Perplexity Provider: PERPLEXITY_API_KEY
         #
         # #### See Also
         # - `api_key`
