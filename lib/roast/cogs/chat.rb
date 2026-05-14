@@ -77,6 +77,8 @@ module Roast
           when :anthropic
             context.anthropic_api_key = config.valid_api_key!
             context.anthropic_api_base = config.valid_base_url
+          when :perplexity
+            context.perplexity_api_key = config.valid_api_key!
           end
         end
       end
