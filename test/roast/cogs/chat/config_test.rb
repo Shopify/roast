@@ -38,6 +38,11 @@ module Roast
           assert_equal :perplexity, @config.valid_provider!
         end
 
+        test "valid_provider! accepts and sets :gemini" do
+          @config.provider(:gemini)
+          assert_equal :gemini, @config.valid_provider!
+        end
+
         test "valid_provider! raises on invalid provider" do
           @config.provider(:invalid_provider)
 
@@ -97,6 +102,13 @@ module Roast
           end
         end
 
+        test "valid_api_key! reads from gemini environment variable when provider is gemini" do
+          @config.provider(:gemini)
+          with_env("GEMINI_API_KEY", "gemini-env-key") do
+            assert_equal "gemini-env-key", @config.valid_api_key!
+          end
+        end
+
         # Base URL configuration tests
         test "base_url sets base url value" do
           @config.base_url("https://custom.api.com/v1")
@@ -125,6 +137,13 @@ module Roast
           end
         end
 
+        test "valid_base_url returns gemini default base url when provider is gemini" do
+          @config.provider(:gemini)
+          with_env("GEMINI_API_BASE", nil) do
+            assert_equal "https://generativelanguage.googleapis.com/v1beta", @config.valid_base_url
+          end
+        end
+
         test "valid_base_url reads ANTHROPIC_API_BASE when provider is anthropic" do
           @config.provider(:anthropic)
           with_env("ANTHROPIC_API_BASE", "https://env.anthropic.com/v1") do
@@ -136,6 +155,13 @@ module Roast
           @config.provider(:openai)
           with_env("OPENAI_API_BASE", "https://env.openai.com/v1") do
             assert_equal "https://env.openai.com/v1", @config.valid_base_url
+          end
+        end
+
+        test "valid_base_url reads GEMINI_API_BASE when provider is gemini" do
+          @config.provider(:gemini)
+          with_env("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1") do
+            assert_equal "https://generativelanguage.googleapis.com/v1", @config.valid_base_url
           end
         end
 
@@ -168,6 +194,11 @@ module Roast
         test "valid_model returns perplexity default model when provider is perplexity" do
           @config.provider(:perplexity)
           assert_equal "sonar", @config.valid_model
+        end
+
+        test "valid_model returns gemini default model when provider is gemini" do
+          @config.provider(:gemini)
+          assert_equal "gemini-3.1-flash-lite", @config.valid_model
         end
 
         # Temperature configuration tests
