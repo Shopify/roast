@@ -106,7 +106,7 @@ block:
 config do
   chat do
     model "gpt-4o-mini" # Use OpenAI's fast model
-    provider :openai # Use OpenAI (can also be :anthropic or :perplexity)
+    provider :openai # Use OpenAI (can also be :anthropic, :perplexity or :gemini)
     show_prompt! # Display the prompt before sending
   end
 end
@@ -128,8 +128,9 @@ Common options you can set:
     - OpenAI: "gpt-4o-mini" (default), "gpt-4o", "gpt-4-turbo", etc.
     - Anthropic: "claude-haiku-4-5" (default), "claude-sonnet-4-6", "claude-opus-4-7", etc.
     - Perplexity: "sonar" (default), "sonar-pro", "sonar-deep-research", etc.
+    - Gemini: "gemini-3.1-flash-lite" (default), "gemini-3-flash-preview", "gemini-3.1-pro-preview", etc.
 - `provider :name` - Which LLM provider
-    - `:openai`, `:anthropic` or `:perplexity`
+    - `:openai`, `:anthropic`, `:perplexity` or `:gemini`
 - `show_prompt!` - Display the prompt being sent
 - `show_response!` - Display the response (on by default)
 - `show_stats!` - Display token usage statistics (on by default)

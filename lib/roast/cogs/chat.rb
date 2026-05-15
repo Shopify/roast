@@ -79,6 +79,9 @@ module Roast
             context.anthropic_api_base = config.valid_base_url
           when :perplexity
             context.perplexity_api_key = config.valid_api_key!
+          when :gemini
+            context.gemini_api_key = config.valid_api_key!
+            context.gemini_api_base = config.valid_base_url
           end
         end
       end
