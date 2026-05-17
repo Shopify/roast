@@ -47,8 +47,8 @@ bin/roast execute analyze_codebase.rb
 
 ## Core Cogs
 
-- **`chat`** - Send prompts to cloud-based LLMs (OpenAI, Anthropic, Gemini, etc.)
-- **`agent`** - Run local coding agents with filesystem access (Claude Code CLI, etc.)
+- **`chat`** - Send prompts to cloud-based LLMs
+- **`agent`** - Run local coding agents with filesystem access
 - **`ruby`** - Execute custom Ruby code within workflows
 - **`cmd`** - Run shell commands and capture output
 - **`map`** - Process collections in serial or parallel
@@ -69,8 +69,50 @@ gem 'roast-ai'
 ## Requirements
 
 - Ruby 3.0+
-- API keys for your AI provider (OpenAI/Anthropic)
-- Claude Code CLI installed (for agent cog)
+- API keys or local credentials for your AI provider
+- Claude Code CLI installed (for the default agent provider)
+
+## Provider Configuration
+
+Roast provider settings are configured in workflow `config` blocks. There is not currently a CLI flag or environment variable that changes the default provider globally; edit the workflow config to select a different provider.
+
+### Chat cog
+
+The `chat` cog currently supports the OpenAI provider. It uses `OPENAI_API_KEY` by default, and `OPENAI_API_BASE` can override the default base URL (`https://api.openai.com/v1`).
+
+```bash
+export OPENAI_API_KEY=...
+```
+
+You can also configure chat settings directly in a workflow:
+
+```ruby
+config do
+  chat do
+    provider :openai
+    model "gpt-4o-mini"
+  end
+end
+```
+
+### Agent cog
+
+The `agent` cog runs local agent CLIs. It defaults to `:claude` and currently supports:
+
+- `:claude` - Claude Code CLI
+- `:pi` - Pi CLI
+
+Select a provider in the workflow config:
+
+```ruby
+config do
+  agent do
+    provider :pi
+  end
+end
+```
+
+Agent providers must be installed and authenticated according to their own CLI requirements.
 
 ## Getting Started
 
