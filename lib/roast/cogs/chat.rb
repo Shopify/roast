@@ -70,8 +70,14 @@ module Roast
       #: () -> RubyLLM::Context
       def ruby_llm_context
         @ruby_llm_context ||= RubyLLM.context do |context|
-          context.openai_api_key = config.valid_api_key!
-          context.openai_api_base = config.valid_base_url
+          case config.valid_provider!
+          when :openai
+            context.openai_api_key = config.valid_api_key!
+            context.openai_api_base = config.valid_base_url
+          when :anthropic
+            context.anthropic_api_key = config.valid_api_key!
+            context.anthropic_api_base = config.valid_base_url
+          end
         end
       end
     end
