@@ -171,7 +171,7 @@ module Roast
         #
         #: () -> void
         def use_default_model!
-          @values[:model] = nil
+          @values.delete(:model)
         end
 
         # Get the validated, configured value of the model the cog is configured to use when running the agent
