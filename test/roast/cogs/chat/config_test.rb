@@ -105,13 +105,11 @@ module Roast
           assert_equal "gpt-4", @config.valid_model
         end
 
-        test "use_default_model! clears model value" do
+        test "use_default_model! resets model to provider default" do
           @config.model("gpt-4")
           @config.use_default_model!
 
-          # use_default_model! sets value to nil, which valid_model returns
-          # (nil means use provider's default at runtime)
-          assert_nil @config.valid_model
+          assert_equal Config::PROVIDERS.dig(:openai, :default_model), @config.valid_model
         end
 
         test "valid_model returns default when not set" do
