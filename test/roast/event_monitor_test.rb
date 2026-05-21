@@ -181,6 +181,23 @@ module Roast
       assert_includes @logger_output.string, "something went wrong"
     end
 
+    test "handle_log_event prefixes first line and indents subsequent lines" do
+      cog = TestCogSupport::TestCog.new(:my_step, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el, cog_el], { info: "line 1\nline 2\nline 3" })
+      EventMonitor.accept(event)
+      lines = @logger_output.string.lines
+      prefix = "test_cog(:my_step)"
+
+      assert_equal 1, lines.count { |line| line.include?(prefix) }
+      assert_includes lines.find { |line| line.include?("line 1") }, prefix
+      refute_includes lines.find { |line| line.include?("line 2") }, prefix
+      refute_includes lines.find { |line| line.include?("line 3") }, prefix
+      assert_equal 2, lines.count { |line| line.include?("·") }
+    end
+
     test "handle_begin_event logs cog begin events" do
       cog = TestCogSupport::TestCog.new(:step1, nil)
       cog_el = TaskContext::PathElement.new(cog: cog)
@@ -364,6 +381,24 @@ module Roast
       assert_includes @logger_output.string, "hello stdout"
     end
 
+    test "handle_stdout_event prefixes first line and indents subsequent lines" do
+      cog = TestCogSupport::TestCog.new(:my_step, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el, cog_el], { stdout: "line 1\nline 2\nline 3" })
+      EventMonitor.accept(event)
+      lines = @logger_output.string.lines
+      prefix = "test_cog(:my_step)"
+
+      assert_equal 1, lines.count { |line| line.include?(prefix) }
+      assert_includes lines.find { |line| line.include?("line 1") }, prefix
+      refute_includes lines.find { |line| line.include?("line 2") }, prefix
+      refute_includes lines.find { |line| line.include?("line 3") }, prefix
+      assert_equal 1, lines.count { |line| line.include?(" ❯ ") }
+      assert_equal 2, lines.count { |line| line.include?(" ❙ ") }
+    end
+
     test "handle_stderr_event does not output to console" do
       event = Event.new([], { stderr: "hello stderr" })
 
@@ -378,6 +413,24 @@ module Roast
       capture_io { EventMonitor.accept(event) }
 
       assert_includes @logger_output.string, "hello stderr"
+    end
+
+    test "handle_stderr_event prefixes first line and indents subsequent lines" do
+      cog = TestCogSupport::TestCog.new(:my_step, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el, cog_el], { stderr: "line 1\nline 2\nline 3" })
+      EventMonitor.accept(event)
+      lines = @logger_output.string.lines
+      prefix = "test_cog(:my_step)"
+
+      assert_equal 1, lines.count { |line| line.include?(prefix) }
+      assert_includes lines.find { |line| line.include?("line 1") }, prefix
+      refute_includes lines.find { |line| line.include?("line 2") }, prefix
+      refute_includes lines.find { |line| line.include?("line 3") }, prefix
+      assert_equal 1, lines.count { |line| line.include?(" ❯❯ ") }
+      assert_equal 2, lines.count { |line| line.include?(" ❙❙ ") }
     end
 
     test "handle_unknown_event logs unrecognized events at unknown level" do

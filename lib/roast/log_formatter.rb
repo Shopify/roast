@@ -27,9 +27,9 @@ module Roast
 
     #: (String, String) -> String
     def colourize(severity, line)
-      if line.include?("❯❯") # standard error lines
+      if line.include?("❯❯") || line.include?("❙❙") # standard error lines
         @rainbow.wrap(line).yellow
-      elsif line.include?("❯") # standard output lines
+      elsif line.include?("❯") || line.include?("❙") # standard output lines
         @rainbow.wrap(line)
       else
         case severity

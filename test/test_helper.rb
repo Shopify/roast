@@ -129,7 +129,7 @@ def run_cog(cog, config: nil, scope_value: nil, scope_index: 0)
   cog
 end
 
-# Extract original stdout/stderr content from log output by parsing ❯ and ❯❯ markers.
+# Extract original stdout/stderr content from log output by parsing ❯/❯❯ and ❙/❙❙ line markers.
 # Handles multiline log entries by treating non-log-prefix lines as continuations.
 #
 #: (?logger_output: String) -> [String, String]
@@ -142,12 +142,12 @@ def original_streams_from_logger_output(logger_output: @logger_output.string)
 
   all_lines.each do |line|
     if line.match?(log_prefix_pattern)
-      if line.include?(" ❯❯")
+      if line.include?(" ❯❯") || line.include?(" ❙❙")
         current_stream = :stderr
-        stderr_lines << line.sub(/^.*❯❯ ?/, "")
-      elsif line.include?(" ❯")
+        stderr_lines << line.sub(/^.*(❯❯|❙❙) ?/, "")
+      elsif line.include?(" ❯") || line.include?(" ❙")
         current_stream = :stdout
-        stdout_lines << line.sub(/^.*❯ ?/, "")
+        stdout_lines << line.sub(/^.*(❯|❙) ?/, "")
       else
         current_stream = nil
       end
