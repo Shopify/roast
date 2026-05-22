@@ -10,7 +10,7 @@ config do
   # Configure all chat cogs in this workflow
   chat do
     model "gpt-4o-mini"      # Use OpenAI's fast, cost-effective model
-    provider :openai         # Use OpenAI (alternative: :anthropic or :perplexity)
+    provider :openai         # Use OpenAI (alternative: :anthropic, :perplexity or :gemini)
     show_prompt!             # Display the prompt before sending it
     show_response!           # Display the response (this is the default)
     show_stats!              # Display token usage statistics (default)

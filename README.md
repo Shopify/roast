@@ -47,7 +47,7 @@ bin/roast execute analyze_codebase.rb
 
 ## Core Cogs
 
-- **`chat`** - Send prompts to cloud-based LLMs (OpenAI, Anthropic & Perplexity)
+- **`chat`** - Send prompts to cloud-based LLMs (OpenAI, Anthropic, Perplexity & Gemini)
 - **`agent`** - Run local coding agents with filesystem access (Claude Code CLI, etc.)
 - **`ruby`** - Execute custom Ruby code within workflows
 - **`cmd`** - Run shell commands and capture output
@@ -69,15 +69,15 @@ gem 'roast-ai'
 ## Requirements
 
 - Ruby 3.0+
-- API keys for your AI provider (OpenAI, Anthropic & Perplexity)
+- API keys for your AI provider (OpenAI, Anthropic, Perplexity & Gemini)
 - Claude Code CLI installed (for agent cog)
 
 ## Configuration
 
-Roast currently supports three LLM providers for the `chat` cog: **OpenAI**, **Anthropic** and **Perplexity**.
+Roast currently supports four LLM providers for the `chat` cog: **OpenAI**, **Anthropic**, **Perplexity** and **Gemini**.
 
-- Set `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY` and/or `PERPLEXITY_API_KEY` in your environment.
-- Optionally set `OPENAI_API_BASE` or `ANTHROPIC_API_BASE` to override the default endpoint. Perplexity does not support base URL override.
+- Set `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `PERPLEXITY_API_KEY` and/or `GEMINI_API_KEY` in your environment.
+- Optionally set `OPENAI_API_BASE`, `ANTHROPIC_API_BASE` and/or `GEMINI_API_BASE` to override the default endpoint. Perplexity does not support base URL override.
 
 The default model is set per-provider and can only be overridden inside a `config` block. See the [tutorial](https://github.com/Shopify/roast/blob/main/tutorial/01_your_first_workflow/README.md#adding-configuration) for examples.
 
