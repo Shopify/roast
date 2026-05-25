@@ -4,361 +4,386 @@ require "test_helper"
 
 module Roast
   module Cogs
-    class Chat < Cog
-      class ConfigTest < ActiveSupport::TestCase
-        def setup
-          @config = Config.new
+    class Chat::ConfigTest < ActiveSupport::TestCase
+      def setup
+        @config = Chat::Config.new
+      end
+
+      # Provider configuration tests
+      test "provider sets provider value" do
+        @config.provider(:openai)
+
+        assert_equal :openai, @config.valid_provider!
+      end
+
+      test "use_default_provider! clears provider value" do
+        @config.provider(:custom_provider)
+        @config.use_default_provider!
+
+        assert_equal :openai, @config.valid_provider!
+      end
+
+      test "valid_provider! returns default when not set" do
+        assert_equal :openai, @config.valid_provider!
+      end
+
+      test "valid_provider! accepts and sets :openai" do
+        @config.provider(:openai)
+        assert_equal :openai, @config.valid_provider!
+      end
+
+      test "valid_provider! accepts and sets :anthropic" do
+        @config.provider(:anthropic)
+        assert_equal :anthropic, @config.valid_provider!
+      end
+
+      test "valid_provider! accepts and sets :perplexity" do
+        @config.provider(:perplexity)
+        assert_equal :perplexity, @config.valid_provider!
+      end
+
+      test "valid_provider! accepts and sets :gemini" do
+        @config.provider(:gemini)
+        assert_equal :gemini, @config.valid_provider!
+      end
+
+      test "valid_provider! raises on invalid provider" do
+        @config.provider(:invalid_provider)
+
+        error = assert_raises(ArgumentError) do
+          @config.valid_provider!
         end
 
-        # Provider configuration tests
+        assert_match(/invalid_provider.*not a valid provider/, error.message)
+      end
 
-        test "use_default_provider! clears provider value" do
-          @config.provider(:custom_provider)
-          @config.use_default_provider!
+      # API key configuration tests
+      test "api_key sets api key value" do
+        @config.api_key("test-key-123")
 
-          assert_equal :openai, @config.valid_provider!
-        end
+        assert_equal "test-key-123", @config.valid_api_key!
+      end
 
-        test "valid_provider! returns default when not set" do
-          assert_equal :openai, @config.valid_provider!
-        end
+      test "use_api_key_from_environment! clears explicit api key" do
+        @config.api_key("explicit-key")
+        @config.use_api_key_from_environment!
 
-        test "valid_provider! accepts and sets :openai" do
-          @config.provider(:openai)
-          assert_equal :openai, @config.valid_provider!
-        end
-
-        test "valid_provider! accepts and sets :anthropic" do
-          @config.provider(:anthropic)
-          assert_equal :anthropic, @config.valid_provider!
-        end
-
-        test "valid_provider! accepts and sets :perplexity" do
-          @config.provider(:perplexity)
-          assert_equal :perplexity, @config.valid_provider!
-        end
-
-        test "valid_provider! accepts and sets :gemini" do
-          @config.provider(:gemini)
-          assert_equal :gemini, @config.valid_provider!
-        end
-
-        test "valid_provider! raises on invalid provider" do
-          @config.provider(:invalid_provider)
-
-          error = assert_raises(ArgumentError) do
-            @config.valid_provider!
+        with_env("OPENAI_API_KEY", nil) do
+          error = assert_raises(Cog::Config::InvalidConfigError) do
+            @config.valid_api_key!
           end
-
-          assert_match(/invalid_provider.*not a valid provider/, error.message)
+          assert_equal "no api key provided", error.message
         end
+      end
 
-        # API key configuration tests
-        test "api_key sets api key value" do
-          @config.api_key("test-key-123")
-
-          assert_equal "test-key-123", @config.valid_api_key!
+      test "valid_api_key! returns environment value when not explicitly set" do
+        with_env("OPENAI_API_KEY", "env-api-key") do
+          assert_equal "env-api-key", @config.valid_api_key!
         end
+      end
 
-        test "use_api_key_from_environment! clears explicit api key" do
-          @config.api_key("explicit-key")
-          @config.use_api_key_from_environment!
-
-          with_env("OPENAI_API_KEY", nil) do
-            error = assert_raises(Cog::Config::InvalidConfigError) do
-              @config.valid_api_key!
-            end
-            assert_equal "no api key provided", error.message
+      test "valid_api_key! raises when no api key provided" do
+        with_env("OPENAI_API_KEY", nil) do
+          error = assert_raises(Cog::Config::InvalidConfigError) do
+            @config.valid_api_key!
           end
+          assert_equal "no api key provided", error.message
         end
+      end
 
-        test "valid_api_key! raises when no api key provided" do
-          with_env("OPENAI_API_KEY", nil) do
-            error = assert_raises(Cog::Config::InvalidConfigError) do
-              @config.valid_api_key!
-            end
-            assert_equal "no api key provided", error.message
-          end
+      test "valid_api_key! reads from anthropic environment variable when provider is anthropic" do
+        @config.provider(:anthropic)
+        with_env("ANTHROPIC_API_KEY", "anthropic-env-key") do
+          assert_equal "anthropic-env-key", @config.valid_api_key!
         end
+      end
 
-        test "valid_api_key! reads from anthropic environment variable when provider is anthropic" do
-          @config.provider(:anthropic)
-          with_env("ANTHROPIC_API_KEY", "anthropic-env-key") do
-            assert_equal "anthropic-env-key", @config.valid_api_key!
-          end
+      test "valid_api_key! reads from openai environment variable when provider is openai" do
+        @config.provider(:openai)
+        with_env("OPENAI_API_KEY", "openai-env-key") do
+          assert_equal "openai-env-key", @config.valid_api_key!
         end
+      end
 
-        test "valid_api_key! reads from openai environment variable when provider is openai" do
-          @config.provider(:openai)
-          with_env("OPENAI_API_KEY", "openai-env-key") do
-            assert_equal "openai-env-key", @config.valid_api_key!
-          end
+      test "valid_api_key! reads from perplexity environment variable when provider is perplexity" do
+        @config.provider(:perplexity)
+        with_env("PERPLEXITY_API_KEY", "perplexity-env-key") do
+          assert_equal "perplexity-env-key", @config.valid_api_key!
         end
+      end
 
-        test "valid_api_key! reads from perplexity environment variable when provider is perplexity" do
-          @config.provider(:perplexity)
-          with_env("PERPLEXITY_API_KEY", "perplexity-env-key") do
-            assert_equal "perplexity-env-key", @config.valid_api_key!
-          end
+      test "valid_api_key! reads from gemini environment variable when provider is gemini" do
+        @config.provider(:gemini)
+        with_env("GEMINI_API_KEY", "gemini-env-key") do
+          assert_equal "gemini-env-key", @config.valid_api_key!
         end
+      end
 
-        test "valid_api_key! reads from gemini environment variable when provider is gemini" do
-          @config.provider(:gemini)
-          with_env("GEMINI_API_KEY", "gemini-env-key") do
-            assert_equal "gemini-env-key", @config.valid_api_key!
-          end
-        end
+      # Base URL configuration tests
+      test "base_url sets base url value" do
+        @config.base_url("https://custom.api.com/v1")
 
-        # Base URL configuration tests
-        test "base_url sets base url value" do
-          @config.base_url("https://custom.api.com/v1")
+        assert_equal "https://custom.api.com/v1", @config.valid_base_url
+      end
 
-          assert_equal "https://custom.api.com/v1", @config.valid_base_url
-        end
+      test "use_default_base_url! clears explicit base url" do
+        @config.base_url("https://custom.api.com/v1")
+        @config.use_default_base_url!
 
-        test "use_default_base_url! clears explicit base url" do
-          @config.base_url("https://custom.api.com/v1")
-          @config.use_default_base_url!
+        assert_equal "https://api.openai.com/v1", @config.valid_base_url
+      end
 
+      test "valid_base_url returns default when not set" do
+        with_env("OPENAI_API_BASE", nil) do
           assert_equal "https://api.openai.com/v1", @config.valid_base_url
         end
+      end
 
-        test "valid_base_url returns anthropic default base url when provider is anthropic" do
-          @config.provider(:anthropic)
-          with_env("ANTHROPIC_API_BASE", nil) do
-            assert_equal "https://api.anthropic.com", @config.valid_base_url
-          end
+      test "valid_base_url returns environment value when set" do
+        with_env("OPENAI_API_BASE", "https://env.api.com/v1") do
+          assert_equal "https://env.api.com/v1", @config.valid_base_url
+        end
+      end
+
+      test "valid_base_url returns anthropic default base url when provider is anthropic" do
+        @config.provider(:anthropic)
+        with_env("ANTHROPIC_API_BASE", nil) do
+          assert_equal "https://api.anthropic.com", @config.valid_base_url
+        end
+      end
+
+      test "valid_base_url returns openai default base url when provider is openai" do
+        @config.provider(:openai)
+        with_env("OPENAI_API_BASE", nil) do
+          assert_equal "https://api.openai.com/v1", @config.valid_base_url
+        end
+      end
+
+      test "valid_base_url returns gemini default base url when provider is gemini" do
+        @config.provider(:gemini)
+        with_env("GEMINI_API_BASE", nil) do
+          assert_equal "https://generativelanguage.googleapis.com/v1beta", @config.valid_base_url
+        end
+      end
+
+      test "valid_base_url reads ANTHROPIC_API_BASE when provider is anthropic" do
+        @config.provider(:anthropic)
+        with_env("ANTHROPIC_API_BASE", "https://env.anthropic.com/v1") do
+          assert_equal "https://env.anthropic.com/v1", @config.valid_base_url
+        end
+      end
+
+      test "valid_base_url reads OPENAI_API_BASE when provider is openai" do
+        @config.provider(:openai)
+        with_env("OPENAI_API_BASE", "https://env.openai.com/v1") do
+          assert_equal "https://env.openai.com/v1", @config.valid_base_url
+        end
+      end
+
+      test "valid_base_url reads GEMINI_API_BASE when provider is gemini" do
+        @config.provider(:gemini)
+        with_env("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1") do
+          assert_equal "https://generativelanguage.googleapis.com/v1", @config.valid_base_url
+        end
+      end
+
+      # Model configuration tests
+      test "model sets model value" do
+        @config.model("gpt-4")
+
+        assert_equal "gpt-4", @config.valid_model
+      end
+
+      test "use_default_model! resets model to provider default" do
+        @config.model("gpt-4")
+        @config.use_default_model!
+
+        assert_equal Chat::Config::PROVIDERS.dig(:openai, :default_model), @config.valid_model
+      end
+
+      test "valid_model returns default when not set" do
+        assert_equal "gpt-4o-mini", @config.valid_model
+      end
+
+      test "valid_model returns anthropic default model when provider is anthropic" do
+        @config.provider(:anthropic)
+        assert_equal "claude-haiku-4-5", @config.valid_model
+      end
+
+      test "valid_model returns openai default model when provider is openai" do
+        @config.provider(:openai)
+        assert_equal "gpt-4o-mini", @config.valid_model
+      end
+
+      test "valid_model returns perplexity default model when provider is perplexity" do
+        @config.provider(:perplexity)
+        assert_equal "sonar", @config.valid_model
+      end
+
+      test "valid_model returns gemini default model when provider is gemini" do
+        @config.provider(:gemini)
+        assert_equal "gemini-3.1-flash-lite", @config.valid_model
+      end
+
+      # Temperature configuration tests
+      test "temperature sets temperature value" do
+        @config.temperature(0.7)
+
+        assert_equal 0.7, @config.valid_temperature
+      end
+
+      test "temperature raises on value below 0" do
+        error = assert_raises(ArgumentError) do
+          @config.temperature(-0.1)
         end
 
-        test "valid_base_url returns openai default base url when provider is openai" do
-          @config.provider(:openai)
-          with_env("OPENAI_API_BASE", nil) do
-            assert_equal "https://api.openai.com/v1", @config.valid_base_url
-          end
+        assert_match(/temperature must be between 0.0 and 1.0/, error.message)
+      end
+
+      test "temperature raises on value above 1" do
+        error = assert_raises(ArgumentError) do
+          @config.temperature(1.5)
         end
 
-        test "valid_base_url returns gemini default base url when provider is gemini" do
-          @config.provider(:gemini)
-          with_env("GEMINI_API_BASE", nil) do
-            assert_equal "https://generativelanguage.googleapis.com/v1beta", @config.valid_base_url
-          end
-        end
+        assert_match(/temperature must be between 0.0 and 1.0/, error.message)
+      end
 
-        test "valid_base_url reads ANTHROPIC_API_BASE when provider is anthropic" do
-          @config.provider(:anthropic)
-          with_env("ANTHROPIC_API_BASE", "https://env.anthropic.com/v1") do
-            assert_equal "https://env.anthropic.com/v1", @config.valid_base_url
-          end
-        end
+      test "temperature accepts boundary value 0.0" do
+        @config.temperature(0.0)
 
-        test "valid_base_url reads OPENAI_API_BASE when provider is openai" do
-          @config.provider(:openai)
-          with_env("OPENAI_API_BASE", "https://env.openai.com/v1") do
-            assert_equal "https://env.openai.com/v1", @config.valid_base_url
-          end
-        end
+        assert_equal 0.0, @config.valid_temperature
+      end
 
-        test "valid_base_url reads GEMINI_API_BASE when provider is gemini" do
-          @config.provider(:gemini)
-          with_env("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1") do
-            assert_equal "https://generativelanguage.googleapis.com/v1", @config.valid_base_url
-          end
-        end
+      test "temperature accepts boundary value 1.0" do
+        @config.temperature(1.0)
 
-        # Model configuration tests
-        test "model sets model value" do
-          @config.model("gpt-4")
+        assert_equal 1.0, @config.valid_temperature
+      end
 
-          assert_equal "gpt-4", @config.valid_model
-        end
+      test "use_default_temperature! clears temperature value" do
+        @config.temperature(0.5)
+        @config.use_default_temperature!
 
-        test "use_default_model! resets model to provider default" do
-          @config.model("gpt-4")
-          @config.use_default_model!
+        assert_nil @config.valid_temperature
+      end
 
-          assert_equal Config::PROVIDERS.dig(:openai, :default_model), @config.valid_model
-        end
+      test "valid_temperature returns nil when not set" do
+        assert_nil @config.valid_temperature
+      end
 
-        test "valid_model returns anthropic default model when provider is anthropic" do
-          @config.provider(:anthropic)
-          assert_equal "claude-haiku-4-5", @config.valid_model
-        end
+      # Model verification configuration tests
+      test "verify_model_exists! enables model verification" do
+        @config.verify_model_exists!
 
-        test "valid_model returns openai default model when provider is openai" do
-          @config.provider(:openai)
-          assert_equal "gpt-4o-mini", @config.valid_model
-        end
+        assert @config.verify_model_exists?
+      end
 
-        test "valid_model returns perplexity default model when provider is perplexity" do
-          @config.provider(:perplexity)
-          assert_equal "sonar", @config.valid_model
-        end
+      test "no_verify_model_exists! disables model verification" do
+        @config.verify_model_exists!
+        @config.no_verify_model_exists!
 
-        test "valid_model returns gemini default model when provider is gemini" do
-          @config.provider(:gemini)
-          assert_equal "gemini-3.1-flash-lite", @config.valid_model
-        end
+        refute @config.verify_model_exists?
+      end
 
-        # Temperature configuration tests
-        test "temperature sets temperature value" do
-          @config.temperature(0.7)
+      test "verify_model_exists? returns false by default" do
+        refute @config.verify_model_exists?
+      end
 
-          assert_equal 0.7, @config.valid_temperature
-        end
+      test "assume_model_exists! is alias for no_verify_model_exists!" do
+        @config.verify_model_exists!
+        @config.assume_model_exists!
 
-        test "temperature raises on value below 0" do
-          error = assert_raises(ArgumentError) do
-            @config.temperature(-0.1)
-          end
+        refute @config.verify_model_exists?
+      end
 
-          assert_match(/temperature must be between 0.0 and 1.0/, error.message)
-        end
+      # Display configuration tests
+      test "show_prompt! enables prompt display" do
+        @config.show_prompt!
 
-        test "temperature raises on value above 1" do
-          error = assert_raises(ArgumentError) do
-            @config.temperature(1.5)
-          end
+        assert @config.show_prompt?
+      end
 
-          assert_match(/temperature must be between 0.0 and 1.0/, error.message)
-        end
+      test "no_show_prompt! disables prompt display" do
+        @config.show_prompt!
+        @config.no_show_prompt!
 
-        test "temperature accepts boundary value 0.0" do
-          @config.temperature(0.0)
+        refute @config.show_prompt?
+      end
 
-          assert_equal 0.0, @config.valid_temperature
-        end
+      test "show_prompt? returns false by default" do
+        refute @config.show_prompt?
+      end
 
-        test "temperature accepts boundary value 1.0" do
-          @config.temperature(1.0)
+      test "show_response! enables response display" do
+        @config.show_response!
 
-          assert_equal 1.0, @config.valid_temperature
-        end
+        assert @config.show_response?
+      end
 
-        test "use_default_temperature! clears temperature value" do
-          @config.temperature(0.5)
-          @config.use_default_temperature!
+      test "no_show_response! disables response display" do
+        @config.no_show_response!
 
-          assert_nil @config.valid_temperature
-        end
+        refute @config.show_response?
+      end
 
-        test "valid_temperature returns nil when not set" do
-          assert_nil @config.valid_temperature
-        end
+      test "show_response? returns true by default" do
+        assert @config.show_response?
+      end
 
-        # Model verification configuration tests
-        test "verify_model_exists! enables model verification" do
-          @config.verify_model_exists!
+      test "show_stats! enables stats display" do
+        @config.show_stats!
 
-          assert @config.verify_model_exists?
-        end
+        assert @config.show_stats?
+      end
 
-        test "no_verify_model_exists! disables model verification" do
-          @config.verify_model_exists!
-          @config.no_verify_model_exists!
+      test "no_show_stats! disables stats display" do
+        @config.no_show_stats!
 
-          refute @config.verify_model_exists?
-        end
+        refute @config.show_stats?
+      end
 
-        test "verify_model_exists? returns false by default" do
-          refute @config.verify_model_exists?
-        end
+      test "show_stats? returns true by default" do
+        assert @config.show_stats?
+      end
 
-        test "assume_model_exists! is alias for no_verify_model_exists!" do
-          @config.verify_model_exists!
-          @config.assume_model_exists!
+      test "display! enables all display options" do
+        @config.no_display!
+        @config.display!
 
-          refute @config.verify_model_exists?
-        end
+        assert @config.show_prompt?
+        assert @config.show_response?
+        assert @config.show_stats?
+      end
 
-        # Display configuration tests
-        test "show_prompt! enables prompt display" do
-          @config.show_prompt!
+      test "no_display! disables all display options" do
+        @config.display!
+        @config.no_display!
 
-          assert @config.show_prompt?
-        end
+        refute @config.show_prompt?
+        refute @config.show_response?
+        refute @config.show_stats?
+      end
 
-        test "no_show_prompt! disables prompt display" do
-          @config.show_prompt!
-          @config.no_show_prompt!
+      test "quiet! is alias for no_display!" do
+        @config.display!
+        @config.quiet!
 
-          refute @config.show_prompt?
-        end
+        refute @config.show_prompt?
+        refute @config.show_response?
+        refute @config.show_stats?
+      end
 
-        test "show_prompt? returns false by default" do
-          refute @config.show_prompt?
-        end
+      test "display? returns true when any display option is enabled" do
+        @config.no_display!
+        @config.show_prompt!
 
-        test "show_response! enables response display" do
-          @config.show_response!
+        assert @config.display?
+      end
 
-          assert @config.show_response?
-        end
+      test "display? returns false when all display options are disabled" do
+        @config.no_display!
 
-        test "no_show_response! disables response display" do
-          @config.no_show_response!
-
-          refute @config.show_response?
-        end
-
-        test "show_response? returns true by default" do
-          assert @config.show_response?
-        end
-
-        test "show_stats! enables stats display" do
-          @config.show_stats!
-
-          assert @config.show_stats?
-        end
-
-        test "no_show_stats! disables stats display" do
-          @config.no_show_stats!
-
-          refute @config.show_stats?
-        end
-
-        test "show_stats? returns true by default" do
-          assert @config.show_stats?
-        end
-
-        test "display! enables all display options" do
-          @config.no_display!
-          @config.display!
-
-          assert @config.show_prompt?
-          assert @config.show_response?
-          assert @config.show_stats?
-        end
-
-        test "no_display! disables all display options" do
-          @config.display!
-          @config.no_display!
-
-          refute @config.show_prompt?
-          refute @config.show_response?
-          refute @config.show_stats?
-        end
-
-        test "quiet! is alias for no_display!" do
-          @config.display!
-          @config.quiet!
-
-          refute @config.show_prompt?
-          refute @config.show_response?
-          refute @config.show_stats?
-        end
-
-        test "display? returns true when any display option is enabled" do
-          @config.no_display!
-          @config.show_prompt!
-
-          assert @config.display?
-        end
-
-        test "display? returns false when all display options are disabled" do
-          @config.no_display!
-
-          refute @config.display?
-        end
+        refute @config.display?
       end
     end
   end
