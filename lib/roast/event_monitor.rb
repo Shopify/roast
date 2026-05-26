@@ -130,6 +130,15 @@ module Roast
     end
 
     #: (Event) -> void
+    def handle_block_event(event)
+      block = event[:block]
+      header = "[#{block[:header]}]"
+      content = block[:content]
+      separator = "-" * 40
+      Roast::Log.logger.info { "#{format_path(event)} ↓\n\n#{header}\n#{separator}\n#{content}\n#{separator}" }
+    end
+
+    #: (Event) -> void
     def handle_unknown_event(event)
       Roast::Log.logger.unknown(event.inspect)
     end
