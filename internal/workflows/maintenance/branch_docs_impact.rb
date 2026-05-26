@@ -4,48 +4,61 @@
 #: self as Roast::Workflow
 
 config do
+  agent do
+    provider :claude
+    model "claude-opus-4-7"
+    quiet!
+  end
+  chat do
+    provider :openai
+    model "gpt-5"
+    quiet!
+  end
 end
 
 execute do
   cmd(:diff) do
-    current = %x(git rev-parse --abbrev-ref HEAD).strip
-    if current == "main"
-      warn "on main, nothing to compare"
-      skip!
-    end
     merge_base = %x(git merge-base origin/main HEAD).strip
-    diff = %x(git diff #{merge_base})
+    diff = %x(git diff --cached #{merge_base})
     if diff.strip.empty?
-      warn "no diff vs origin/main — stage or commit your changes first"
+      warn "no staged or committed changes vs origin/main"
       skip!
     end
-    "git diff #{merge_base}"
+    "git diff --cached #{merge_base}"
   end
 
   agent(:analyzer) do
     <<~PROMPT
-      Analyze how the following git diff affects existing documentation.
+      You are checking whether a git diff makes any existing documentation stale.
 
-      DO NOT run git, bash, or any other commands. The diff is the ONLY input.
-      DO NOT investigate the branch state, untracked files, or commit history.
-      Work only from the diff below.
+      Rules:
+      - Use ONLY the diff below. Do not run any commands.
+      - Be thorough about finding real issues — do not be conservative.
+      - But do NOT speculate about docs you cannot see in the diff.
+      - No markdown headers, no preamble, no caveats, no "limitations" sections.
+
+      Output format — pick exactly one:
+
+      If nothing in the diff affects existing docs, output a single line:
+        No documentation impact.
+
+      Otherwise, output one block per affected doc, separated by blank lines:
+        <doc/path.md>
+        Stale because: <one sentence>
+        Fix: <one sentence>
 
       --- DIFF START ---
       #{cmd!(:diff).text}
       --- DIFF END ---
-
-      For each documentation file in this repo that the diff affects, report:
-      1. The doc file path
-      2. What in the diff makes it stale
-      3. The specific edit needed to bring it back in sync
     PROMPT
   end
 
-  chat do
+  chat(:report) do
     <<~PROMPT
       Based on the following analysis, summarize the impact of the changes in this branch on the project's documentation.
       Highlight any significant improvements or regressions, and provide recommendations for any additional documentation updates that may be necessary.
       Do not unecessarily suggest updates if they are not needed.
+      Do not be verbose. Be super concise.
 
       Analysis:
       #{agent!(:analyzer).response}
@@ -60,5 +73,14 @@ execute do
 
       #{agent!(:analyzer).response}
     PROMPT
+  end
+
+  ruby(:output) do
+    files = cmd!(:diff).text.scan(%r{^diff --git a/\S+ b/(\S+)}).flatten
+
+    puts "Files considered (#{files.size}):"
+    files.each { |f| puts "  #{f}" }
+    puts agent!(:analyzer).response
+    puts(agent?(:fixer) ? "Fixes applied." : "(Run with -- fix to apply suggested edits.)")
   end
 end
