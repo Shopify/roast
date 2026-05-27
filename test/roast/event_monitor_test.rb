@@ -188,14 +188,16 @@ module Roast
 
       event = Event.new([em_el, cog_el], { info: "line 1\nline 2\nline 3" })
       EventMonitor.accept(event)
-      lines = @logger_output.string.lines
-      prefix = "test_cog(:my_step)"
 
-      assert_equal 1, lines.count { |line| line.include?(prefix) }
-      assert_includes lines.find { |line| line.include?("line 1") }, prefix
-      refute_includes lines.find { |line| line.include?("line 2") }, prefix
-      refute_includes lines.find { |line| line.include?("line 3") }, prefix
-      assert_equal 2, lines.count { |line| line.include?("·") }
+      messages = @logger_output.string.gsub(/^.*? -- /, "")
+      prefix = "test_cog(:my_step)"
+      continuation_prefix = "·" * prefix.length
+
+      assert_equal(<<~OUTPUT, messages)
+        #{prefix} line 1
+        #{continuation_prefix} line 2
+        #{continuation_prefix} line 3
+      OUTPUT
     end
 
     test "handle_begin_event logs cog begin events" do
@@ -388,15 +390,16 @@ module Roast
 
       event = Event.new([em_el, cog_el], { stdout: "line 1\nline 2\nline 3" })
       EventMonitor.accept(event)
-      lines = @logger_output.string.lines
-      prefix = "test_cog(:my_step)"
 
-      assert_equal 1, lines.count { |line| line.include?(prefix) }
-      assert_includes lines.find { |line| line.include?("line 1") }, prefix
-      refute_includes lines.find { |line| line.include?("line 2") }, prefix
-      refute_includes lines.find { |line| line.include?("line 3") }, prefix
-      assert_equal 1, lines.count { |line| line.include?(" ❯ ") }
-      assert_equal 2, lines.count { |line| line.include?(" ❙ ") }
+      messages = @logger_output.string.gsub(/^.*? -- /, "")
+      prefix = "test_cog(:my_step)"
+      continuation_prefix = "·" * prefix.length
+
+      assert_equal(<<~OUTPUT, messages)
+        #{prefix} ❯ line 1
+        #{continuation_prefix} ❙ line 2
+        #{continuation_prefix} ❙ line 3
+      OUTPUT
     end
 
     test "handle_stderr_event does not output to console" do
@@ -422,15 +425,16 @@ module Roast
 
       event = Event.new([em_el, cog_el], { stderr: "line 1\nline 2\nline 3" })
       EventMonitor.accept(event)
-      lines = @logger_output.string.lines
-      prefix = "test_cog(:my_step)"
 
-      assert_equal 1, lines.count { |line| line.include?(prefix) }
-      assert_includes lines.find { |line| line.include?("line 1") }, prefix
-      refute_includes lines.find { |line| line.include?("line 2") }, prefix
-      refute_includes lines.find { |line| line.include?("line 3") }, prefix
-      assert_equal 1, lines.count { |line| line.include?(" ❯❯ ") }
-      assert_equal 2, lines.count { |line| line.include?(" ❙❙ ") }
+      messages = @logger_output.string.gsub(/^.*? -- /, "")
+      prefix = "test_cog(:my_step)"
+      continuation_prefix = "·" * prefix.length
+
+      assert_equal(<<~OUTPUT, messages)
+        #{prefix} ❯❯ line 1
+        #{continuation_prefix} ❙❙ line 2
+        #{continuation_prefix} ❙❙ line 3
+      OUTPUT
     end
 
     test "handle_unknown_event logs unrecognized events at unknown level" do
