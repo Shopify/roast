@@ -72,30 +72,48 @@ module Examples
 
         logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~STDOUT
-          [USER PROMPT] What is 2+2?
+          [USER PROMPT]
+          ────────────────────────────────────────
+          What is 2+2?
+          ────────────────────────────────────────
           The user is asking a simple math question: "What is 2+2?"
 
           This is a straightforward arithmetic question. The answer is 4.
 
           This doesn't require any tool usage - it's just a basic math question. I should answer directly and concisely.
           2 + 2 = 4
-          [AGENT RESPONSE] 2 + 2 = 4
-          [USER PROMPT] Now multiply that by 3
+          [AGENT RESPONSE]
+          ────────────────────────────────────────
+          2 + 2 = 4
+          ────────────────────────────────────────
+          [USER PROMPT]
+          ────────────────────────────────────────
+          Now multiply that by 3
+          ────────────────────────────────────────
           The user is asking me to multiply the previous answer (4) by 3.
 
           4 × 3 = 12
 
           This is another straightforward arithmetic question. No tools needed.
           4 × 3 = 12
-          [AGENT RESPONSE] 4 × 3 = 12
-          [USER PROMPT] Now subtract 5
+          [AGENT RESPONSE]
+          ────────────────────────────────────────
+          4 × 3 = 12
+          ────────────────────────────────────────
+          [USER PROMPT]
+          ────────────────────────────────────────
+          Now subtract 5
+          ────────────────────────────────────────
           The user is asking me to subtract 5 from the previous answer (12).
 
           12 - 5 = 7
 
           This is another straightforward arithmetic question. No tools needed.
           12 - 5 = 7
-          [AGENT RESPONSE] 12 - 5 = 7
+          [AGENT RESPONSE]
+          ────────────────────────────────────────
+          12 - 5 = 7
+          ────────────────────────────────────────
           [AGENT STATS] Turns: 3
           Duration: 6 seconds
           Cost (USD): $0.0747
@@ -583,7 +601,10 @@ module Examples
 
         logged_stdout, logged_stderr = original_streams_from_logger_output
         expected_stdout = <<~STDOUT
-          [USER PROMPT] What is the world's largest lake?
+          [USER PROMPT]
+          ────────────────────────────────────────
+          What is the world's largest lake?
+          ────────────────────────────────────────
           The user is asking me a simple geography question about the world's largest lake. This is a straightforward factual question that doesn't require any tools or special context.
 
           The world's largest lake by surface area is the Caspian Sea, which covers about 143,550 square miles (371,000 square kilometers). It's technically called a "sea" but is actually a lake because it's not connected to the ocean.
@@ -610,9 +631,12 @@ module Examples
           Caspian spreads wide—
           Ancient waters vast and deep,
           World's largest lake gleams.
-          [AGENT RESPONSE] Caspian spreads wide—
+          [AGENT RESPONSE]
+          ────────────────────────────────────────
+          Caspian spreads wide—
           Ancient waters vast and deep,
           World's largest lake gleams.
+          ────────────────────────────────────────
           [AGENT STATS] Turns: 1
           Duration: 4 seconds
           Cost (USD): $0.050913
