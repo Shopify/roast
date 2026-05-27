@@ -437,6 +437,58 @@ module Roast
       OUTPUT
     end
 
+    test "handle_block_event does not output to console" do
+      event = Event.new([], { block: { header: "Header", content: "Content" } })
+
+      output = capture_io { EventMonitor.accept(event) }.first
+
+      assert_empty output
+    end
+
+    test "handle_block_event logs message at info level" do
+      event = Event.new([], { block: { header: "Header", content: "Content" } })
+
+      capture_io { EventMonitor.accept(event) }
+
+      assert_includes @logger_output.string, "Content"
+    end
+
+    test "handle_block_event includes header in output" do
+      event = Event.new([], { block: { header: "USER PROMPT", content: "Content" } })
+
+      EventMonitor.accept(event)
+
+      assert_includes @logger_output.string, "[USER PROMPT]"
+    end
+
+    test "handle_block_event includes content in output" do
+      event = Event.new([], { block: { header: "Header", content: "the body content" } })
+
+      EventMonitor.accept(event)
+
+      assert_includes @logger_output.string, "the body content"
+    end
+
+    test "handle_block_event renders header, separators, and content as a single block" do
+      cog = TestCogSupport::TestCog.new(:my_step, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el, cog_el], { block: { header: "USER PROMPT", content: "line 1\nline 2\nline 3" } })
+      EventMonitor.accept(event)
+
+      messages = @logger_output.string.gsub(/^.*? -- /, "")
+
+      assert_equal(<<~OUTPUT, messages)
+        test_cog(:my_step) [USER PROMPT]↓
+        #{EventMonitor::BLOCK_SEPARATOR}
+        line 1
+        line 2
+        line 3
+        #{EventMonitor::BLOCK_SEPARATOR}
+      OUTPUT
+    end
+
     test "handle_unknown_event logs unrecognized events at unknown level" do
       event = Event.new([], { custom_type: "data" })
       EventMonitor.accept(event)
