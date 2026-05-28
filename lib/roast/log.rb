@@ -21,6 +21,27 @@ module Roast
     extend self
     include Kernel
 
+    # A log message paired with its originating type, so downstream handlers
+    # (e.g. the formatter) can render or route it by type.
+    class Message
+      #: Symbol
+      attr_reader :type
+
+      #: String
+      attr_reader :text
+
+      #: (type: Symbol, text: String) -> void
+      def initialize(type:, text:)
+        @type = type
+        @text = text
+      end
+
+      #: () -> String
+      def to_s
+        text
+      end
+    end
+
     LOG_LEVELS = {
       DEBUG: ::Logger::DEBUG,
       INFO: ::Logger::INFO,

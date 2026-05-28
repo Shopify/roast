@@ -12,9 +12,11 @@
 # Log to standard output, always at the DEBUG level
 Roast::Log.logger = Logger.new($stdout).tap { |logger| logger.level = ::Logger::DEBUG }
 
-# Format log lines in a particular way
+# Format log lines in a particular way. `msg` may be a String or a
+# Roast::Log::Message (stdout/stderr output is wrapped to carry its type),
+# so normalise with #to_s before formatting.
 Roast::Log.logger.formatter = proc do |severity, time, progname, msg|
-  "#{severity[0..0]}, #{msg.strip} (at #{time})\n"
+  "#{severity[0..0]}, #{msg.to_s.strip} (at #{time})\n"
 end
 
 
