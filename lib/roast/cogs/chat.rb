@@ -42,13 +42,13 @@ module Roast
         chat.messages[num_existing_messages..].each do |message|
           case message.role
           when :user
-            puts "[USER PROMPT] #{message.content}" if config.show_prompt?
+            Event << { block: { header: "USER PROMPT", content: message.content } } if config.show_prompt?
           when :assistant
-            puts "[LLM RESPONSE] #{message.content}" if config.show_response?
+            Event << { block: { header: "LLM RESPONSE", content: message.content } } if config.show_response?
           else
             # No other message types are expected, but let's show them if they do appear
             # but only the user has requested some form of output
-            puts "[UNKNOWN] #{message.content}" if config.show_prompt? || config.show_response?
+            Event << { block: { header: "UNKNOWN", content: message.content } } if config.show_prompt? || config.show_response?
           end
         end
         if config.show_stats?

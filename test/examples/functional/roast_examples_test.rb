@@ -759,27 +759,17 @@ module Examples
           end
         RUBY
 
-        mock_chat = mock
-        mock_chat.stubs(:messages).returns([])
-        mock_chat.stubs(:with_temperature).returns(mock_chat)
+        mock_chat, mock_context = stub_ruby_llm_chat
 
-        mock_response = mock
-        mock_response.stubs(:content).returns("test response")
-        mock_response.stubs(:model_id).returns("gpt-4o")
-        mock_response.stubs(:input_tokens).returns(10)
-        mock_response.stubs(:output_tokens).returns(5)
-
-        mock_chat.expects(:ask).with("test message").returns(mock_response)
-
-        mock_context = mock
+        mock_chat.expects(:ask).with("test message").returns(
+          stub(content: "test response", model_id: "gpt-4o", input_tokens: 1, output_tokens: 1),
+        )
         mock_context.expects(:chat).with(
           model: "gpt-4o",
           provider: :openai,
           assume_model_exists: true,
         ).returns(mock_chat)
-
         RubyLLM.expects(:context).yields(mock_context).returns(mock_context)
-
         mock_context.expects(:openai_api_key=).with("dummy-test-key")
         mock_context.expects(:openai_api_base=).with("http://custom-base-url.example.com/v1")
 
@@ -790,6 +780,56 @@ module Examples
         end
 
         assert_empty stderr
+      end
+
+      test "chat cog emits USER PROMPT and LLM RESPONSE blocks when show_prompt and show_response are enabled" do
+        workflow_code = <<~RUBY
+          # typed: false
+          # frozen_string_literal: true
+
+          #: self as Roast::Workflow
+
+          config do
+            chat(:test) do
+              model("gpt-4o")
+              api_key("dummy-test-key")
+              assume_model_exists!
+              show_prompt!
+              show_response!
+              no_show_stats!
+            end
+          end
+
+          execute do
+            chat(:test) { "test message" }
+          end
+        RUBY
+
+        user_msg = stub(role: :user, content: "test message")
+        assistant_msg = stub(role: :assistant, content: "test response")
+        mock_chat, _mock_context = stub_ruby_llm_chat
+        mock_chat.stubs(:messages).returns([]).then.returns([user_msg, assistant_msg])
+
+        _stdout, stderr = in_sandbox :chat_block_events_test do
+          File.write("examples/chat_block_events_test.rb", workflow_code)
+          Roast::Workflow.from_file("examples/chat_block_events_test.rb", EMPTY_PARAMS)
+          File.delete("examples/chat_block_events_test.rb")
+        end
+
+        assert_empty stderr
+
+        logged_stdout, _logged_stderr = original_streams_from_logger_output
+        expected_stdout = <<~STDOUT
+          [USER PROMPT]
+          ────────────────────────────────────────
+          test message
+          ────────────────────────────────────────
+          [LLM RESPONSE]
+          ────────────────────────────────────────
+          test response
+          ────────────────────────────────────────
+        STDOUT
+        assert_equal expected_stdout, logged_stdout
       end
 
       test "temporary_directory.rb workflow runs successfully" do
@@ -822,6 +862,23 @@ module Examples
         EOF
         assert_equal expected_stdout, logged_stdout
         assert_empty logged_stderr
+      end
+
+      private
+
+      def stub_ruby_llm_chat
+        mock_chat = mock
+        mock_chat.stubs(:messages).returns([])
+        mock_chat.stubs(:with_temperature).returns(mock_chat)
+        mock_chat.stubs(:ask).returns(stub(content: "test response", model_id: "gpt-4o", input_tokens: 1, output_tokens: 1))
+
+        mock_context = mock
+        mock_context.stubs(:chat).returns(mock_chat)
+        mock_context.stubs(:openai_api_key=)
+        mock_context.stubs(:openai_api_base=)
+        RubyLLM.stubs(:context).yields(mock_context).returns(mock_context)
+
+        [mock_chat, mock_context]
       end
     end
   end
