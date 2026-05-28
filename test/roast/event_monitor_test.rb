@@ -181,6 +181,25 @@ module Roast
       assert_includes @logger_output.string, "something went wrong"
     end
 
+    test "handle_log_event prefixes first line and indents subsequent lines" do
+      cog = TestCogSupport::TestCog.new(:my_step, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el, cog_el], { info: "line 1\nline 2\nline 3" })
+      EventMonitor.accept(event)
+
+      messages = @logger_output.string.gsub(/^.*? -- /, "")
+      prefix = "test_cog(:my_step)"
+      continuation_prefix = "·" * prefix.length
+
+      assert_equal(<<~OUTPUT, messages)
+        #{prefix} line 1
+        #{continuation_prefix} line 2
+        #{continuation_prefix} line 3
+      OUTPUT
+    end
+
     test "handle_begin_event logs cog begin events" do
       cog = TestCogSupport::TestCog.new(:step1, nil)
       cog_el = TaskContext::PathElement.new(cog: cog)
@@ -364,6 +383,25 @@ module Roast
       assert_includes @logger_output.string, "hello stdout"
     end
 
+    test "handle_stdout_event prefixes first line and indents subsequent lines" do
+      cog = TestCogSupport::TestCog.new(:my_step, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el, cog_el], { stdout: "line 1\nline 2\nline 3" })
+      EventMonitor.accept(event)
+
+      messages = @logger_output.string.gsub(/^.*? -- /, "")
+      prefix = "test_cog(:my_step)"
+      continuation_prefix = "·" * prefix.length
+
+      assert_equal(<<~OUTPUT, messages)
+        #{prefix} ❯ line 1
+        #{continuation_prefix} ❙ line 2
+        #{continuation_prefix} ❙ line 3
+      OUTPUT
+    end
+
     test "handle_stderr_event does not output to console" do
       event = Event.new([], { stderr: "hello stderr" })
 
@@ -378,6 +416,25 @@ module Roast
       capture_io { EventMonitor.accept(event) }
 
       assert_includes @logger_output.string, "hello stderr"
+    end
+
+    test "handle_stderr_event prefixes first line and indents subsequent lines" do
+      cog = TestCogSupport::TestCog.new(:my_step, nil)
+      cog_el = TaskContext::PathElement.new(cog: cog)
+      em_el = mock_execution_manager_path_element
+
+      event = Event.new([em_el, cog_el], { stderr: "line 1\nline 2\nline 3" })
+      EventMonitor.accept(event)
+
+      messages = @logger_output.string.gsub(/^.*? -- /, "")
+      prefix = "test_cog(:my_step)"
+      continuation_prefix = "·" * prefix.length
+
+      assert_equal(<<~OUTPUT, messages)
+        #{prefix} ❯❯ line 1
+        #{continuation_prefix} ❙❙ line 2
+        #{continuation_prefix} ❙❙ line 3
+      OUTPUT
     end
 
     test "handle_unknown_event logs unrecognized events at unknown level" do

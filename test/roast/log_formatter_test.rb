@@ -199,6 +199,18 @@ module Roast
       assert_includes result, "❯❯"
     end
 
+    test "stderr continuation lines are yellow in TTY mode" do
+      formatter = LogFormatter.new(tty: true)
+      time = Time.new(2026, 1, 1)
+
+      result = formatter.call("INFO", time, nil, "···· ❙❙ other line of some error output")
+
+      assert_match ANSI_PATTERN, result
+      # \e[33m = yellow
+      assert_match(/\e\[33m/, result)
+      assert_includes result, "❙❙"
+    end
+
     test "stdout marker lines are not colourized in TTY mode" do
       formatter = LogFormatter.new(tty: true)
       time = Time.new(2026, 1, 1)
@@ -208,6 +220,16 @@ module Roast
       # Should not have colour codes (stdout lines are wrapped but no colour method called)
       refute_match ANSI_PATTERN, result
       assert_includes result, "❯"
+    end
+
+    test "stdout continuation lines are not colourized in TTY mode" do
+      formatter = LogFormatter.new(tty: true)
+      time = Time.new(2026, 1, 1)
+
+      result = formatter.call("INFO", time, nil, "···· ❙ other line of some output")
+
+      refute_match ANSI_PATTERN, result
+      assert_includes result, "❙"
     end
 
     test "stderr marker takes precedence over severity colour" do

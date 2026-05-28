@@ -116,17 +116,29 @@ module Roast
 
     #: (Event) -> void
     def handle_log_event(event)
-      Roast::Log.logger.add(event.log_severity, "#{format_path(event)} #{event.log_message}")
+      path = format_path(event)
+      event.log_message.lines.each_with_index do |line, idx|
+        path_prefix = idx.zero? ? path : "·" * path.length
+        Roast::Log.logger.add(event.log_severity, "#{path_prefix} #{line.rstrip}")
+      end
     end
 
     #: (Event) -> void
     def handle_stderr_event(event)
-      Roast::Log.logger.warn { "#{format_path(event)} ❯❯ #{event[:stderr]}" }
+      path = format_path(event)
+      event[:stderr].lines.each_with_index do |line, idx|
+        path_prefix = idx.zero? ? "#{path} ❯❯" : "#{"·" * path.length} ❙❙"
+        Roast::Log.logger.warn { "#{path_prefix} #{line.rstrip}" }
+      end
     end
 
     #: (Event) -> void
     def handle_stdout_event(event)
-      Roast::Log.logger.info { "#{format_path(event)} ❯ #{event[:stdout]}" }
+      path = format_path(event)
+      event[:stdout].lines.each_with_index do |line, idx|
+        path_prefix = idx.zero? ? "#{path} ❯" : "#{"·" * path.length} ❙"
+        Roast::Log.logger.info { "#{path_prefix} #{line.rstrip}" }
+      end
     end
 
     #: (Event) -> void
