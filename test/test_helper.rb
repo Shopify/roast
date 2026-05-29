@@ -148,6 +148,9 @@ def original_streams_from_logger_output(logger_output: @logger_output.string)
       elsif line.include?(" ❯") || line.include?(" ❙")
         current_stream = :stdout
         stdout_lines << line.sub(/^.*(❯|❙) ?/, "")
+      elsif (header_match = line.match(/(\[[^\]]+\])\s*↓/))
+        current_stream = :stdout
+        stdout_lines << "#{header_match[1]}\n"
       else
         current_stream = nil
       end
