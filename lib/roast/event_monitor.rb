@@ -6,6 +6,8 @@ module Roast
     extend self
     include Kernel
 
+    BLOCK_SEPARATOR = ("─" * 40).freeze #: String
+
     class EventMonitorError < StandardError; end
 
     class EventMonitorAlreadyStartedError < EventMonitorError; end
@@ -139,6 +141,14 @@ module Roast
         path_prefix = idx.zero? ? "#{path} ❯" : "#{"·" * path.length} ❙"
         Roast::Log.logger.info { "#{path_prefix} #{line.rstrip}" }
       end
+    end
+
+    #: (Event) -> void
+    def handle_block_event(event)
+      block = event[:block]
+      header = "[#{block[:header]}]"
+      content = block[:content]
+      Roast::Log.logger.info { "#{format_path(event)} #{header}↓\n#{BLOCK_SEPARATOR}\n#{content}\n#{BLOCK_SEPARATOR}" }
     end
 
     #: (Event) -> void
