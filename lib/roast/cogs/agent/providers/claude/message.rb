@@ -22,26 +22,24 @@ module Roast
               #: (Hash[Symbol, untyped]) -> Message
               def from_hash(hash)
                 type = hash.delete(:type)&.to_sym
-                case type
-                when :assistant
-                  Messages::AssistantMessage.new(type:, hash:)
-                when :result
-                  Messages::ResultMessage.new(type:, hash:)
-                when :system
-                  Messages::SystemMessage.new(type:, hash:)
-                when :text
-                  Messages::TextMessage.new(type:, hash:)
-                when :thinking
-                  Messages::ThinkingMessage.new(type:, hash:)
-                when :tool_result
-                  Messages::ToolResultMessage.new(type:, hash:)
-                when :tool_use
-                  Messages::ToolUseMessage.new(type:, hash:)
-                when :user
-                  Messages::UserMessage.new(type:, hash:)
+                message_class = resolve_message_class(type)
+                message_class.new(type:, hash:)
+              end
+
+              private
+
+              #: (Symbol?) -> singleton(Message)
+              def resolve_message_class(type)
+                return Messages::UnknownMessage if type.nil?
+
+                class_name = "#{type}_message".camelize
+                if Messages.const_defined?(class_name, false)
+                  Messages.const_get(class_name, false) # rubocop:disable Sorbet/ConstantsFromStrings
                 else
-                  Messages::UnknownMessage.new(type:, hash:)
+                  Messages::UnknownMessage
                 end
+              rescue NameError
+                Messages::UnknownMessage
               end
             end
 
