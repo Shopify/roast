@@ -42,13 +42,13 @@ module Roast
         chat.messages[num_existing_messages..].each do |message|
           case message.role
           when :user
-            puts "[USER PROMPT] #{message.content}" if config.show_prompt?
+            Event << { block: { header: "USER PROMPT", content: message.content } } if config.show_prompt?
           when :assistant
-            puts "[LLM RESPONSE] #{message.content}" if config.show_response?
+            Event << { block: { header: "LLM RESPONSE", content: message.content } } if config.show_response?
           else
             # No other message types are expected, but let's show them if they do appear
             # but only the user has requested some form of output
-            puts "[UNKNOWN] #{message.content}" if config.show_prompt? || config.show_response?
+            Event << { block: { header: "UNKNOWN", content: message.content } } if config.show_prompt? || config.show_response?
           end
         end
         if config.show_stats?
@@ -70,8 +70,19 @@ module Roast
       #: () -> RubyLLM::Context
       def ruby_llm_context
         @ruby_llm_context ||= RubyLLM.context do |context|
-          context.openai_api_key = config.valid_api_key!
-          context.openai_api_base = config.valid_base_url
+          case config.valid_provider!
+          when :openai
+            context.openai_api_key = config.valid_api_key!
+            context.openai_api_base = config.valid_base_url
+          when :anthropic
+            context.anthropic_api_key = config.valid_api_key!
+            context.anthropic_api_base = config.valid_base_url
+          when :perplexity
+            context.perplexity_api_key = config.valid_api_key!
+          when :gemini
+            context.gemini_api_key = config.valid_api_key!
+            context.gemini_api_base = config.valid_base_url
+          end
         end
       end
     end

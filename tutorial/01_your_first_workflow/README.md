@@ -106,7 +106,7 @@ block:
 config do
   chat do
     model "gpt-4o-mini" # Use OpenAI's fast model
-    provider :openai # Use OpenAI (can also be :anthropic)
+    provider :openai # Use OpenAI (can also be :anthropic, :perplexity or :gemini)
     show_prompt! # Display the prompt before sending
   end
 end
@@ -125,14 +125,18 @@ end
 Common options you can set:
 
 - `model "name"` - Which LLM model to use
-    - OpenAI: "gpt-4o", "gpt-4o-mini", "gpt-4-turbo"
-    - Anthropic: "claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022"
+    - OpenAI: "gpt-4o-mini" (default), "gpt-4o", "gpt-4-turbo", etc.
+    - Anthropic: "claude-haiku-4-5" (default), "claude-sonnet-4-6", "claude-opus-4-7", etc.
+    - Perplexity: "sonar" (default), "sonar-pro", "sonar-deep-research", etc.
+    - Gemini: "gemini-3.1-flash-lite" (default), "gemini-3-flash-preview", "gemini-3.1-pro-preview", etc.
 - `provider :name` - Which LLM provider
-    - `:openai` or `:anthropic`
+    - `:openai`, `:anthropic`, `:perplexity` or `:gemini`
 - `show_prompt!` - Display the prompt being sent
 - `show_response!` - Display the response (on by default)
 - `show_stats!` - Display token usage statistics (on by default)
 - `no_display!` - Turn off all output (useful when you just want to pass the output to a subsequent cog)
+
+**Note:** Unlike the api key and api base url, the model is **not** environment-controlled. You must set it inside a `config` block (shown above). The same applies to `provider` and other DSL options.
 
 ## Running the Workflows
 

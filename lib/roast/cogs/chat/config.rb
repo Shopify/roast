@@ -12,6 +12,22 @@ module Roast
             default_base_url: "https://api.openai.com/v1",
             default_model: "gpt-4o-mini",
           },
+          anthropic: {
+            api_key_env_var: "ANTHROPIC_API_KEY",
+            base_url_env_var: "ANTHROPIC_API_BASE",
+            default_base_url: "https://api.anthropic.com",
+            default_model: "claude-haiku-4-5",
+          },
+          perplexity: {
+            api_key_env_var: "PERPLEXITY_API_KEY",
+            default_model: "sonar",
+          },
+          gemini: {
+            api_key_env_var: "GEMINI_API_KEY",
+            base_url_env_var: "GEMINI_API_BASE",
+            default_base_url: "https://generativelanguage.googleapis.com/v1beta",
+            default_model: "gemini-3.1-flash-lite",
+          },
         }.freeze #: Hash[Symbol, Hash[Symbol, String]]
 
         # Configure the cog to use a specified API provider when invoking the llm
@@ -75,6 +91,9 @@ module Roast
         #
         # #### Environment Variables
         # - OpenAI Provider: OPENAI_API_KEY
+        # - Anthropic Provider: ANTHROPIC_API_KEY
+        # - Perplexity Provider: PERPLEXITY_API_KEY
+        # - Gemini Provider: GEMINI_API_KEY
         #
         # #### See Also
         # - `api_key`
@@ -91,6 +110,9 @@ module Roast
         #
         # #### Environment Variables
         # - OpenAI Provider: OPENAI_API_KEY
+        # - Anthropic Provider: ANTHROPIC_API_KEY
+        # - Perplexity Provider: PERPLEXITY_API_KEY
+        # - Gemini Provider: GEMINI_API_KEY
         #
         # #### See Also
         # - `api_key`
@@ -126,6 +148,8 @@ module Roast
         #
         # #### Environment Variables
         # - OpenAI Provider: OPENAI_API_BASE
+        # - Anthropic Provider: ANTHROPIC_API_BASE
+        # - Gemini Provider: GEMINI_API_BASE
         #
         # #### See Also
         # - `base_url`
@@ -139,6 +163,8 @@ module Roast
         #
         # #### Environment Variables
         # - OpenAI Provider: OPENAI_API_BASE
+        # - Anthropic Provider: ANTHROPIC_API_BASE
+        # - Gemini Provider: GEMINI_API_BASE
         #
         # #### See Also
         # - `base_url`
@@ -171,7 +197,7 @@ module Roast
         #
         #: () -> void
         def use_default_model!
-          @values[:model] = nil
+          @values.delete(:model)
         end
 
         # Get the validated, configured value of the model the cog is configured to use when running the agent
