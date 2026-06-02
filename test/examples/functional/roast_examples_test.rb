@@ -114,11 +114,14 @@ module Examples
           ────────────────────────────────────────
           12 - 5 = 7
           ────────────────────────────────────────
-          [AGENT STATS] Turns: 3
+          [AGENT STATS]
+          ────────────────────────────────────────
+          Turns: 3
           Duration: 6 seconds
           Cost (USD): $0.0747
           Tokens (claude-haiku-4-5-20251001): 27 in, 198 out
           Session ID: 51c68f29-7210-4c12-852f-0c169f621488
+          ────────────────────────────────────────
           ((2 + 2) * 3) - 5 = 7
         STDOUT
         assert_equal expected_stdout, logged_stdout
@@ -637,11 +640,14 @@ module Examples
           Ancient waters vast and deep,
           World's largest lake gleams.
           ────────────────────────────────────────
-          [AGENT STATS] Turns: 1
+          [AGENT STATS]
+          ────────────────────────────────────────
+          Turns: 1
           Duration: 4 seconds
           Cost (USD): $0.050913
           Tokens (claude-haiku-4-5-20251001): 9 in, 385 out
           Session ID: 6d6782cf-d193-4fc7-b5f4-414bc0cfcd3a
+          ────────────────────────────────────────
         STDOUT
         assert_equal expected_stdout, logged_stdout
         assert_empty logged_stderr
@@ -688,11 +694,14 @@ module Examples
           Ancient waters vast and deep,
           World's largest lake gleams.
           ────────────────────────────────────────
-          [AGENT STATS] Turns: 1
+          [AGENT STATS]
+          ────────────────────────────────────────
+          Turns: 1
           Duration: 0 seconds
           Cost (USD): $0.024634
           Tokens (claude-haiku-4-5-20251001): 9 in, 25 out
           Session ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          ────────────────────────────────────────
         STDOUT
         assert_equal expected_stdout, logged_stdout
         assert_empty logged_stderr

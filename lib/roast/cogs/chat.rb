@@ -53,11 +53,11 @@ module Roast
         end
         if config.show_stats?
           temperature = chat.instance_variable_get(:@temperature)
-          puts "[LLM STATS]"
-          puts "\tModel: #{response.model_id}"
-          puts "\tTemperature: #{format("%0.2f", temperature)}" if temperature
-          puts "\tInput Tokens: #{response.input_tokens}"
-          puts "\tOutput Tokens: #{response.output_tokens}"
+          lines = ["Model: #{response.model_id}"]
+          lines << "Temperature: #{format("%0.2f", temperature)}" if temperature
+          lines << "Input Tokens: #{response.input_tokens}"
+          lines << "Output Tokens: #{response.output_tokens}"
+          Event << { block: { header: "LLM STATS", content: lines.join("\n") } }
         end
 
         Output.new(Session.from_chat(chat), response.content)
