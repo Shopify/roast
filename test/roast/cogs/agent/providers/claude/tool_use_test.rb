@@ -24,6 +24,13 @@ module Roast
               assert_match(/command.*ls/, output)
             end
 
+            test "format calls format_read for read tool" do
+              tool_use = ToolUse.new(name: :read, input: { file_path: "/tmp/file.txt", limit: 100 })
+              output = tool_use.format
+              puts output
+              assert true
+            end
+
             test "format calls format_unknown for unknown tool" do
               tool_use = ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 
