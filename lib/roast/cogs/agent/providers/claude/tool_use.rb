@@ -30,6 +30,14 @@ module Roast
             private
 
             #: () -> String
+            def format_read
+              file_path = input[:file_path]
+              limit = input[:limit] ? input[:limit] : nil
+              offset = input[:offset] ? input[:offset] : nil
+              "READ #{file_path} #{"with limit: #{limit}" if limit} #{"with offset: #{offset}" if offset}"
+            end
+
+            #: () -> String
             def format_bash
               "BASH #{input.inspect}"
             end
