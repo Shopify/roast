@@ -47,7 +47,7 @@ bin/roast execute analyze_codebase.rb
 
 ## Core Cogs
 
-- **`chat`** - Send prompts to cloud-based LLMs (OpenAI, Anthropic & Perplexity)
+- **`chat`** - Send prompts to cloud-based LLMs (OpenAI, Anthropic, Perplexity & Gemini)
 - **`agent`** - Run local coding agents with filesystem access (Claude Code CLI, etc.)
 - **`ruby`** - Execute custom Ruby code within workflows
 - **`cmd`** - Run shell commands and capture output
@@ -69,19 +69,61 @@ gem 'roast-ai'
 ## Requirements
 
 - Ruby 3.0+
-- API keys for your AI provider (OpenAI, Anthropic & Perplexity)
-- Claude Code CLI installed (for agent cog)
+- API keys or local credentials for your AI provider
+- Claude Code CLI installed (for the default agent provider)
+
+## Provider Configuration
+
+Roast provider settings are configured in workflow `config` blocks. There is not currently a CLI flag or environment variable that changes the default provider globally; edit the workflow config to select a different provider.
+
+### Chat cog
+
+The `chat` cog currently supports the OpenAI provider. It uses `OPENAI_API_KEY` by default, and `OPENAI_API_BASE` can override the default base URL (`https://api.openai.com/v1`).
+
+```bash
+export OPENAI_API_KEY=...
+```
+
+You can also configure chat settings directly in a workflow:
+
+```ruby
+config do
+  chat do
+    provider :openai
+    model "gpt-4o-mini"
+  end
+end
+```
+
+### Agent cog
+
+The `agent` cog runs local agent CLIs. It defaults to `:claude` and currently supports:
+
+- `:claude` - Claude Code CLI
+- `:pi` - Pi CLI
+
+Select a provider in the workflow config:
+
+```ruby
+config do
+  agent do
+    provider :pi
+  end
+end
+```
+
+Agent providers must be installed and authenticated according to their own CLI requirements.
 
 ## Configuration
 
-Roast currently supports three LLM providers for the `chat` cog: **OpenAI**, **Anthropic** and **Perplexity**.
+Roast currently supports four LLM providers for the `chat` cog: **OpenAI**, **Anthropic**, **Perplexity** and **Gemini**.
 
-- Set `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY` and/or `PERPLEXITY_API_KEY` in your environment.
-- Optionally set `OPENAI_API_BASE` or `ANTHROPIC_API_BASE` to override the default endpoint. Perplexity does not support base URL override.
+- Set `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `PERPLEXITY_API_KEY` and/or `GEMINI_API_KEY` in your environment.
+- Optionally set `OPENAI_API_BASE`, `ANTHROPIC_API_BASE` and/or `GEMINI_API_BASE` to override the default endpoint. Perplexity does not support base URL override.
 
 The default model is set per-provider and can only be overridden inside a `config` block. See the [tutorial](https://github.com/Shopify/roast/blob/main/tutorial/01_your_first_workflow/README.md#adding-configuration) for examples.
 
-The `agent` cog is powered by the Claude Code CLI, which handles its own authentication.
+The `agent` cog is powered by the Claude Code CLI by default, which handles its own authentication.
 
 ## Getting Started
 

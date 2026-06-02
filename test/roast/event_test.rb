@@ -108,6 +108,12 @@ module Roast
       assert_equal :stderr, event.type
     end
 
+    test "type returns :block for block payload" do
+      event = Event.new([], { block: { header: "Header", content: "Content" } })
+
+      assert_equal :block, event.type
+    end
+
     test "type returns :unknown for unrecognized payload" do
       event = Event.new([], { custom: "data" })
 

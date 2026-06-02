@@ -42,22 +42,22 @@ module Roast
         chat.messages[num_existing_messages..].each do |message|
           case message.role
           when :user
-            puts "[USER PROMPT] #{message.content}" if config.show_prompt?
+            Event << { block: { header: "USER PROMPT", content: message.content } } if config.show_prompt?
           when :assistant
-            puts "[LLM RESPONSE] #{message.content}" if config.show_response?
+            Event << { block: { header: "LLM RESPONSE", content: message.content } } if config.show_response?
           else
             # No other message types are expected, but let's show them if they do appear
             # but only the user has requested some form of output
-            puts "[UNKNOWN] #{message.content}" if config.show_prompt? || config.show_response?
+            Event << { block: { header: "UNKNOWN", content: message.content } } if config.show_prompt? || config.show_response?
           end
         end
         if config.show_stats?
           temperature = chat.instance_variable_get(:@temperature)
-          puts "[LLM STATS]"
-          puts "\tModel: #{response.model_id}"
-          puts "\tTemperature: #{format("%0.2f", temperature)}" if temperature
-          puts "\tInput Tokens: #{response.input_tokens}"
-          puts "\tOutput Tokens: #{response.output_tokens}"
+          lines = ["Model: #{response.model_id}"]
+          lines << "Temperature: #{format("%0.2f", temperature)}" if temperature
+          lines << "Input Tokens: #{response.input_tokens}"
+          lines << "Output Tokens: #{response.output_tokens}"
+          Event << { block: { header: "LLM STATS", content: lines.join("\n") } }
         end
 
         Output.new(Session.from_chat(chat), response.content)
@@ -79,6 +79,9 @@ module Roast
             context.anthropic_api_base = config.valid_base_url
           when :perplexity
             context.perplexity_api_key = config.valid_api_key!
+          when :gemini
+            context.gemini_api_key = config.valid_api_key!
+            context.gemini_api_base = config.valid_base_url
           end
         end
       end

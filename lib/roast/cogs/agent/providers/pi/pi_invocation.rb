@@ -80,7 +80,7 @@ module Roast
               raise PiAlreadyStartedError if started?
 
               @started = true
-              puts "[USER PROMPT] #{@prompt}" if @show_prompt
+              Event << { block: { header: "USER PROMPT", content: @prompt } } if @show_prompt
               @start_time_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) * 1000).to_i
               _stdout, stderr, status = CommandRunner.execute(
                 command_line,
@@ -94,7 +94,7 @@ module Roast
                 @completed = true
                 @result.success = true
                 finalize_stats!
-                puts "[AGENT RESPONSE] #{@result.response}" if @show_response
+                Event << { block: { header: "AGENT RESPONSE", content: @result.response } } if @show_response
               else
                 @failed = true
                 @result.success = false

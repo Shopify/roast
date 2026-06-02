@@ -388,71 +388,70 @@ module Roast
               @invocation.send(:handle_message, second)
             end
 
-            test "run! prints prompt when show_prompt is enabled" do
+            test "run! emits USER PROMPT block event when show_prompt is enabled" do
               @config.show_prompt!
               invocation = ClaudeInvocation.new(@config, "Hello agent", nil)
 
-              output = capture_io do
-                CommandRunner.stub(:execute, ["", "", success_status]) do
-                  invocation.run!
-                end
+              Event.expects(:<<).with do |payload|
+                payload[:block] &&
+                  payload[:block][:header] == "USER PROMPT" &&
+                  payload[:block][:content] == "Hello agent"
               end
 
-              assert_match "[USER PROMPT] Hello agent", output.first
+              CommandRunner.stub(:execute, ["", "", success_status]) do
+                invocation.run!
+              end
             end
 
-            test "run! does not print prompt when show_prompt is disabled" do
+            test "run! does not emit USER PROMPT block event when show_prompt is disabled" do
               invocation = ClaudeInvocation.new(@config, "Hello agent", nil)
 
-              output = capture_io do
-                CommandRunner.stub(:execute, ["", "", success_status]) do
-                  invocation.run!
-                end
-              end
+              Event.expects(:<<).never
 
-              refute_match(/\[USER PROMPT\]/, output.first)
+              CommandRunner.stub(:execute, ["", "", success_status]) do
+                invocation.run!
+              end
             end
 
-            test "run! prints response when show_response is enabled" do
+            test "run! emits AGENT RESPONSE block event when show_response is enabled" do
               @config.show_response!
               invocation = ClaudeInvocation.new(@config, "Hello agent", nil)
 
               result_json = { type: "result", subtype: "success", result: "Here is my answer" }.to_json
-              output = capture_io do
-                CommandRunner.stub(:execute, ->(*_args, **kwargs) {
-                  kwargs[:stdout_handler]&.call(result_json)
-                  ["", "", success_status]
-                }) do
-                  invocation.run!
-                end
+              Event.expects(:<<).with do |payload|
+                payload[:block] &&
+                  payload[:block][:header] == "AGENT RESPONSE" &&
+                  payload[:block][:content] == "Here is my answer"
               end
 
-              assert_match "[AGENT RESPONSE] Here is my answer", output.first
+              CommandRunner.stub(:execute, ->(*_args, **kwargs) {
+                kwargs[:stdout_handler]&.call(result_json)
+                ["", "", success_status]
+              }) do
+                invocation.run!
+              end
             end
 
-            test "run! does not print response when show_response is disabled" do
+            test "run! does not emit AGENT RESPONSE block event when show_response is disabled" do
               @config.no_show_response!
               invocation = ClaudeInvocation.new(@config, "Hello agent", nil)
 
-              output = capture_io do
-                CommandRunner.stub(:execute, ["", "", success_status]) do
-                  invocation.run!
-                end
-              end
+              Event.expects(:<<).never
 
-              refute_match(/\[AGENT RESPONSE\]/, output.first)
+              CommandRunner.stub(:execute, ["", "", success_status]) do
+                invocation.run!
+              end
             end
 
-            test "run! does not print response on failure" do
+            test "run! does not emit AGENT RESPONSE block event on failure even when show_response is enabled" do
+              @config.show_response!
               invocation = ClaudeInvocation.new(@config, "Hello agent", nil)
 
-              output = capture_io do
-                CommandRunner.stub(:execute, ["", "Error", failure_status]) do
-                  invocation.run!
-                end
-              end
+              Event.expects(:<<).never
 
-              refute_match(/\[AGENT RESPONSE\]/, output.first)
+              CommandRunner.stub(:execute, ["", "Error", failure_status]) do
+                invocation.run!
+              end
             end
           end
         end

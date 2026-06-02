@@ -48,8 +48,9 @@ module Roast
       #: (Input) -> Output
       def execute(input)
         output = provider.invoke(input)
-        puts "[AGENT STATS] #{output.stats}" if config.show_stats?
-        puts "Session ID: #{output.session}" if config.show_stats?
+        if config.show_stats?
+          Event << { block: { header: "AGENT STATS", content: "#{output.stats}\nSession ID: #{output.session}" } }
+        end
         output
       end
 

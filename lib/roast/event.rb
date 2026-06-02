@@ -24,6 +24,7 @@ module Roast
       :end,
       :stdout,
       :stderr,
+      :block,
     ].freeze #: Array[Symbol]
 
     #: Array[TaskContext::PathElement]
