@@ -39,11 +39,13 @@ module Roast
             #: () -> String
             def format_taskoutput
               task_id = truncate(input[:task_id])
-              details = [
-                ("blocking" if input[:block]),
-                ("#{input[:timeout]}ms" if input[:timeout]),
-              ].compact.join(" · ")
-              "TASKOUTPUT #{task_id}\n  #{details}"
+              timeout_ms = input[:timeout]
+              timeout_str = if timeout_ms
+                secs = timeout_ms / 1000.0
+                secs == secs.to_i ? "#{secs.to_i}s timeout" : "#{secs}s timeout"
+              end
+              details = [("sync" if input[:block]), timeout_str].compact.join(" · ")
+              details.empty? ? "TASKOUTPUT ##{task_id}" : "TASKOUTPUT ##{task_id} (#{details})"
             end
 
             #: () -> String
@@ -53,7 +55,7 @@ module Roast
                 ("background" if input[:run_in_background]),
                 input[:subagent_type],
               ].compact.join(" · ")
-              "AGENT #{description}\n  #{details}"
+              details.empty? ? "AGENT #{description}" : "AGENT #{description} (#{details})"
             end
 
             #: () -> String
@@ -64,12 +66,13 @@ module Roast
                 input[:subagent_type],
                 input[:model],
               ].compact.join(" · ")
-              "TASK #{description}\n  #{details}"
+              details.empty? ? "TASK #{description}" : "TASK #{description} (#{details})"
             end
 
             #: () -> String
             def format_skill
-              "SKILL #{input[:skill]}\n  #{truncate(input[:args])}"
+              args = input[:args]
+              args ? "SKILL #{input[:skill]} (#{truncate(args)})" : "SKILL #{input[:skill]}"
             end
 
             #: () -> String
@@ -79,7 +82,7 @@ module Roast
                 .group_by { |t| t[:status] || t["status"] }
                 .transform_values(&:length)
               summary = counts.map { |status, n| "#{n} #{status}" }.join(" · ")
-              "TODOWRITE #{todos.length} todos\n  #{summary}"
+              summary.empty? ? "TODOWRITE #{todos.length} todos" : "TODOWRITE #{todos.length} todos (#{summary})"
             end
 
             #: () -> String
@@ -87,19 +90,24 @@ module Roast
               file_path = input[:file_path]
               old_lines = input[:old_string].to_s.lines
               new_lines = input[:new_string].to_s.lines
-              old_hint = truncate(old_lines.first.to_s.strip)
-              new_hint = truncate(new_lines.first.to_s.strip)
-              old_suffix = old_lines.length > 1 ? " (+#{old_lines.length - 1} lines)" : ""
-              new_suffix = new_lines.length > 1 ? " (+#{new_lines.length - 1} lines)" : ""
               replace_all = input[:replace_all] ? " · replace_all" : ""
-              "EDIT #{file_path}#{replace_all}\n  - \"#{old_hint}\"#{old_suffix}\n  + \"#{new_hint}\"#{new_suffix}"
+              old_desc = old_lines.length == 1 ? "\"#{truncate(old_lines.first.to_s.strip)}\"" : "#{old_lines.length} lines"
+              new_desc = new_lines.length == 1 ? "\"#{truncate(new_lines.first.to_s.strip)}\"" : "#{new_lines.length} lines"
+              "EDIT #{file_path}#{replace_all}\n  - #{old_desc}\n  + #{new_desc}"
             end
 
             #: () -> String
             def format_write
               file_path = input[:file_path]
-              preview = truncate(input[:content].to_s.lines.first.to_s.strip)
-              "WRITE #{file_path}\n  #{preview}"
+              lines = input[:content].to_s.lines
+              preview = truncate(lines.first.to_s.strip)
+              extra = lines.length - 1
+              suffix = if extra > 0
+                " (+#{extra} #{extra == 1 ? "line" : "lines"})"
+              else
+                ""
+              end
+              "WRITE #{file_path} \"#{preview}\"#{suffix}"
             end
 
             #: () -> String
@@ -109,13 +117,14 @@ module Roast
                 ("type=#{input[:type]}" if input[:type]),
                 ("-i" if input[:i]),
               ].compact.join(" · ")
-              second_line = modifiers.empty? ? nil : "  #{modifiers}"
-              ["GREP \"#{truncate(input[:pattern])}\" #{input[:path]}", second_line].compact.join("\n")
+              base = "GREP \"#{truncate(input[:pattern])}\" #{input[:path]}"
+              modifiers.empty? ? base : "#{base} (#{modifiers})"
             end
 
             #: () -> String
             def format_glob
-              "GLOB #{input[:pattern]}\n  #{input[:path]}"
+              path = input[:path]
+              path ? "GLOB #{input[:pattern]} (in #{path})" : "GLOB #{input[:pattern]}"
             end
 
             #: () -> String
@@ -127,14 +136,14 @@ module Roast
                 offset ||= 0
                 "lines #{offset + 1}–#{offset + limit}"
               end
-              details ? "READ #{file_path}\n  #{details}" : "READ #{file_path}"
+              details ? "READ #{file_path} (#{details})" : "READ #{file_path}"
             end
 
             #: () -> String
             def format_bash
               command = truncate(input[:command])
               description = input[:description]
-              description ? "BASH #{command}\n  #{description}" : "BASH #{command}"
+              description ? "BASH #{command} (#{description})" : "BASH #{command}"
             end
 
             #: () -> String
