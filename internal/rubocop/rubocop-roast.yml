@@ -1,0 +1,6 @@
+Roast/NoTestClassNesting:
+  Description: "Prevents nesting test classes inside reopened production classes. Use :: scoping instead."
+  Enabled: true
+  VersionAdded: "0.1.0"
+  Include:
+    - "test/**/*.rb"
