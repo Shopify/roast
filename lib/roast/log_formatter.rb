@@ -15,22 +15,22 @@ module Roast
     end
 
     def call(severity, time, _progname, msg)
+      type = msg.is_a?(Roast::Log::Message) ? msg.type : nil
       line = if @tty
         format(TTY_FORMAT, severity, msg2str(msg))
       else
         format(NON_TTY_FORMAT, severity, time.strftime(DATETIME_FORMAT), severity, msg2str(msg))
       end
-      colourize(severity, line)
+      colourize(severity, type, line)
     end
 
     private
 
-    #: (String, String) -> String
-    def colourize(severity, line)
-      if line.include?("❯❯") || line.include?("❙❙") # standard error lines
-        @rainbow.wrap(line).yellow
-      elsif line.include?("❯") || line.include?("❙") # standard output lines
-        @rainbow.wrap(line)
+    #: (String, Symbol?, String) -> String
+    def colourize(severity, type, line)
+      case type
+      when :stderr then @rainbow.wrap(line).yellow
+      when :stdout then @rainbow.wrap(line)
       else
         case severity
         when "ERROR", "FATAL" then @rainbow.wrap(line).red
@@ -47,6 +47,8 @@ module Roast
       msg = case msg
       when ::String
         msg.strip
+      when Roast::Log::Message
+        msg.text.strip
       else
         msg
       end

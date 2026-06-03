@@ -187,11 +187,12 @@ module Roast
       assert_match(/(\e\[38;5;214m)|(\e\[38;2;\d+;\d+\d+)/, result)
     end
 
-    test "stderr marker lines are yellow in TTY mode" do
+    test "stderr type messages are yellow in TTY mode" do
       formatter = LogFormatter.new(tty: true)
       time = Time.new(2026, 1, 1)
+      msg = Roast::Log::Message.new(type: :stderr, text: "path ❯❯ some error output")
 
-      result = formatter.call("INFO", time, nil, "path ❯❯ some error output")
+      result = formatter.call("INFO", time, nil, msg)
 
       assert_match ANSI_PATTERN, result
       # \e[33m = yellow
@@ -202,8 +203,9 @@ module Roast
     test "stderr continuation lines are yellow in TTY mode" do
       formatter = LogFormatter.new(tty: true)
       time = Time.new(2026, 1, 1)
+      msg = Roast::Log::Message.new(type: :stderr, text: "···· ❙❙ other line of some error output")
 
-      result = formatter.call("INFO", time, nil, "···· ❙❙ other line of some error output")
+      result = formatter.call("INFO", time, nil, msg)
 
       assert_match ANSI_PATTERN, result
       # \e[33m = yellow
@@ -211,11 +213,12 @@ module Roast
       assert_includes result, "❙❙"
     end
 
-    test "stdout marker lines are not colourized in TTY mode" do
+    test "stdout type messages are not colourized in TTY mode" do
       formatter = LogFormatter.new(tty: true)
       time = Time.new(2026, 1, 1)
+      msg = Roast::Log::Message.new(type: :stdout, text: "path ❯ some output")
 
-      result = formatter.call("INFO", time, nil, "path ❯ some output")
+      result = formatter.call("INFO", time, nil, msg)
 
       # Should not have colour codes (stdout lines are wrapped but no colour method called)
       refute_match ANSI_PATTERN, result
@@ -225,30 +228,33 @@ module Roast
     test "stdout continuation lines are not colourized in TTY mode" do
       formatter = LogFormatter.new(tty: true)
       time = Time.new(2026, 1, 1)
+      msg = Roast::Log::Message.new(type: :stdout, text: "···· ❙ other line of some output")
 
-      result = formatter.call("INFO", time, nil, "···· ❙ other line of some output")
+      result = formatter.call("INFO", time, nil, msg)
 
       refute_match ANSI_PATTERN, result
       assert_includes result, "❙"
     end
 
-    test "stderr marker takes precedence over severity colour" do
+    test "stderr type takes precedence over severity colour" do
       formatter = LogFormatter.new(tty: true)
       time = Time.new(2026, 1, 1)
+      msg = Roast::Log::Message.new(type: :stderr, text: "path ❯❯ error output")
 
-      # Even though ERROR would normally be red, ❯❯ should make it yellow
-      result = formatter.call("ERROR", time, nil, "path ❯❯ error output")
+      # Even though ERROR would normally be red, :stderr should make it yellow
+      result = formatter.call("ERROR", time, nil, msg)
 
       assert_match(/\e\[33m/, result) # yellow
       refute_match(/\e\[31m/, result) # not red
     end
 
-    test "stdout marker takes precedence over severity colour" do
+    test "stdout type takes precedence over severity colour" do
       formatter = LogFormatter.new(tty: true)
       time = Time.new(2026, 1, 1)
+      msg = Roast::Log::Message.new(type: :stdout, text: "path ❯ warn output")
 
-      # Even though WARN would normally be orange, ❯ should pass through uncoloured
-      result = formatter.call("WARN", time, nil, "path ❯ warn output")
+      # Even though WARN would normally be orange, :stdout should pass through uncoloured
+      result = formatter.call("WARN", time, nil, msg)
 
       refute_match ANSI_PATTERN, result
     end
