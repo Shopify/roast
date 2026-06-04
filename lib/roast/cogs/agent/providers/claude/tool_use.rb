@@ -49,6 +49,16 @@ module Roast
             end
 
             #: () -> String
+            def format_taskcreate
+              "TASKCREATE #{truncate(input[:subject])}"
+            end
+
+            #: () -> String
+            def format_taskupdate
+              "TASKUPDATE ##{input[:taskId]} → #{input[:status]}"
+            end
+
+            #: () -> String
             def format_agent
               description = truncate(input[:description])
               details = [
@@ -87,13 +97,11 @@ module Roast
 
             #: () -> String
             def format_edit
-              file_path = input[:file_path]
-              old_lines = input[:old_string].to_s.lines
-              new_lines = input[:new_string].to_s.lines
-              replace_all = input[:replace_all] ? " · replace_all" : ""
-              old_desc = old_lines.length == 1 ? "\"#{truncate(old_lines.first.to_s.strip)}\"" : "#{old_lines.length} lines"
-              new_desc = new_lines.length == 1 ? "\"#{truncate(new_lines.first.to_s.strip)}\"" : "#{new_lines.length} lines"
-              "EDIT #{file_path}#{replace_all}\n  - #{old_desc}\n  + #{new_desc}"
+              old_count = input[:old_string].to_s.lines.length
+              new_count = input[:new_string].to_s.lines.length
+              details = "-#{old_count} +#{new_count} lines"
+              details += " · replace all" if input[:replace_all]
+              "EDIT #{input[:file_path]} (#{details})"
             end
 
             #: () -> String
@@ -133,8 +141,8 @@ module Roast
               limit = input[:limit]
               offset = input[:offset]
               details = if limit
-                offset ||= 0
-                "lines #{offset + 1}–#{offset + limit}"
+                offset ||= 1
+                "lines #{offset}–#{offset + limit - 1}"
               end
               details ? "READ #{file_path} (#{details})" : "READ #{file_path}"
             end

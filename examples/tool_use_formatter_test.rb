@@ -20,7 +20,7 @@ execute do
 
       2. Use Grep to search for the pattern "def format" in lib/roast/cogs/agent/providers/claude/ with glob filter "*.rb" and case-insensitive flag enabled.
 
-      3. Use Read to read lib/roast/cogs/agent/providers/claude/tool_use.rb, lines 30 to 80 only (offset 29, limit 51).
+      3. Use Read to read lib/roast/cogs/agent/providers/claude/tool_use.rb, lines 30 to 80 only
 
       4. Use Bash to run: echo "this is a very long bash command output that tests whether our truncation logic handles long command strings gracefully without breaking the formatter" with description "Stress testing the bash formatter with an intentionally long command string to verify truncation at 50 characters"
 

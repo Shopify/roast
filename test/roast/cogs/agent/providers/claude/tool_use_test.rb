@@ -170,6 +170,32 @@ module Roast
               puts output
               assert true
             end
+
+            test "format calls format_taskcreate for taskcreate tool" do
+              tool_use = ToolUse.new(name: :taskcreate, input: {
+                subject: "Write tool result formatters for all tool types including bash read glob grep write edit",
+                description: "Write tool result formatters for all tool types including bash read glob grep write edit",
+                activeForm: "Writing tool result formatters",
+              })
+
+              output = tool_use.format
+
+              puts output
+              assert true
+            end
+
+            test "format calls format_taskupdate for taskupdate tool" do
+              tool_use = ToolUse.new(name: :taskupdate, input: {
+                taskId: "1",
+                status: "completed",
+              })
+
+              output = tool_use.format
+
+              puts output
+              assert true
+            end
+
             test "format calls format_unknown for unknown tool" do
               tool_use = ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 
