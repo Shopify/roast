@@ -349,6 +349,36 @@ module Roast
           assert_equal "TASK #{truncated} (#{long} · #{long})", output
         end
 
+        # format_agent
+
+        test "format_agent renders the description alone with no optional fields" do
+          tool_use = Claude::ToolUse.new(name: :agent, input: { description: "Find all callers" })
+
+          output = tool_use.format
+
+          assert_equal "AGENT Find all callers", output
+        end
+
+        test "format_agent renders the description with all optional fields" do
+          input = { description: "Audit", run_in_background: true, subagent_type: "Explore" }
+          tool_use = Claude::ToolUse.new(name: :agent, input: input)
+
+          output = tool_use.format
+
+          assert_equal "AGENT Audit (Explore · background)", output
+        end
+
+        test "format_agent truncates the description but not the subagent type" do
+          long = "a" * (Claude::ToolUse::TRUNCATE_LIMIT + 10)
+          truncated = "#{"a" * (Claude::ToolUse::TRUNCATE_LIMIT - 3)}..."
+          input = { description: long, subagent_type: long }
+          tool_use = Claude::ToolUse.new(name: :agent, input: input)
+
+          output = tool_use.format
+
+          assert_equal "AGENT #{truncated} (#{long})", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 
