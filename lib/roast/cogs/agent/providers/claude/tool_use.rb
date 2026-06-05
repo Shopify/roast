@@ -258,6 +258,35 @@ module Roast
               args ? "SKILL #{skill} (#{truncate(args)})" : "SKILL #{skill}"
             end
 
+            # Formats a Task tool-use line.
+            #
+            # Input fields:
+            #   :description       (String) – short label for the task       [required]
+            #   :subagent_type     (String) – which agent type to spawn       [optional]
+            #   :run_in_background (bool)   – run the agent asynchronously    [optional]
+            #   :model             (String) – model override for the agent    [optional]
+            #
+            # Output: "TASK <description>", with " (<details>)" appended when any
+            # optional field is set: :subagent_type, then "background" (when
+            # :run_in_background is set), then :model — joined with " · " in that
+            # order and shown as raw values (no key= labels). :description is
+            # truncated to TRUNCATE_LIMIT chars; the other fields are not.
+            #
+            # Examples:
+            #   TASK Find all callers (Explore · background · opus)
+            #   TASK Summarize the diff
+            #
+            #: () -> String
+            def format_task
+              description = truncate(input[:description])
+              details = [
+                input[:subagent_type],
+                ("background" if input[:run_in_background]),
+                input[:model],
+              ].compact.join(" · ")
+              details.empty? ? "TASK #{description}" : "TASK #{description} (#{details})"
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"
