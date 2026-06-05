@@ -314,6 +314,25 @@ module Roast
               details.empty? ? "AGENT #{description}" : "AGENT #{description} (#{details})"
             end
 
+            # Formats a TaskUpdate tool-use line.
+            #
+            # Input fields:
+            #   :taskId (Integer) – id of the task to update   [required]
+            #   :status (String)  – the task's new status      [required]
+            #
+            # Output: "TASKUPDATE #<taskId> → <status>" — the id is prefixed with
+            # "#" and joined to the status with " → ". Both fields are always
+            # shown and neither is truncated.
+            #
+            # Examples:
+            #   TASKUPDATE #1 → completed
+            #   TASKUPDATE #2 → in_progress
+            #
+            #: () -> String
+            def format_taskupdate
+              "TASKUPDATE ##{input[:taskId]} → #{input[:status]}"
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"
