@@ -80,6 +80,48 @@ module Roast
           assert_equal "BASH", output
         end
 
+        # format_read
+
+        test "format_read shows a closed range when offset and limit are set" do
+          tool_use = Claude::ToolUse.new(name: :read, input: { file_path: "/a.rb", offset: 30, limit: 51 })
+
+          output = tool_use.format
+
+          assert_equal "READ /a.rb (lines 30–80)", output
+        end
+
+        test "format_read defaults offset to 1 when only limit is given" do
+          tool_use = Claude::ToolUse.new(name: :read, input: { file_path: "/a.rb", limit: 50 })
+
+          output = tool_use.format
+
+          assert_equal "READ /a.rb (lines 1–50)", output
+        end
+
+        test "format_read shows an open-ended range from offset when limit is absent" do
+          tool_use = Claude::ToolUse.new(name: :read, input: { file_path: "/a.rb", offset: 30 })
+
+          output = tool_use.format
+
+          assert_equal "READ /a.rb (from line 30)", output
+        end
+
+        test "format_read renders a bare line with only a file path" do
+          tool_use = Claude::ToolUse.new(name: :read, input: { file_path: "/a.rb" })
+
+          output = tool_use.format
+
+          assert_equal "READ /a.rb", output
+        end
+
+        test "format_read has no trailing space when the file path is absent" do
+          tool_use = Claude::ToolUse.new(name: :read, input: {})
+
+          output = tool_use.format
+
+          assert_equal "READ", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 
