@@ -239,6 +239,25 @@ module Roast
               summary.empty? ? base : "#{base} (#{summary})"
             end
 
+            # Formats a Skill tool-use line.
+            #
+            # Input fields:
+            #   :skill (String) – name of the skill to invoke     [required]
+            #   :args  (String) – arguments passed to the skill   [optional]
+            #
+            # Output: "SKILL <skill>", with " (<args>)" appended when :args is
+            # present. :args is truncated to TRUNCATE_LIMIT chars; :skill is not.
+            #
+            # Examples:
+            #   SKILL pr-description (draft for the auth changes)
+            #   SKILL pr-description
+            #
+            #: () -> String
+            def format_skill
+              skill, args = input.values_at(:skill, :args)
+              args ? "SKILL #{skill} (#{truncate(args)})" : "SKILL #{skill}"
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"
