@@ -149,6 +149,13 @@ module Roast
               assert_kind_of Messages::UnknownMessage, message
             end
 
+            test "from_hash with invalid constant name type creates UnknownMessage" do
+              hash = { type: :"some-hyphenated-type", foo: "bar" }
+              message = Message.from_hash(hash)
+
+              assert_kind_of Messages::UnknownMessage, message
+            end
+
             test "from_hash removes type from hash" do
               hash = { type: :text, text: "Hello" }
               Message.from_hash(hash)
