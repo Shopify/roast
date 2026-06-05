@@ -287,6 +287,33 @@ module Roast
               details.empty? ? "TASK #{description}" : "TASK #{description} (#{details})"
             end
 
+            # Formats an Agent tool-use line.
+            #
+            # Input fields:
+            #   :description       (String) – short label for the work        [required]
+            #   :subagent_type     (String) – which agent type to spawn        [optional]
+            #   :run_in_background (bool)   – run the agent asynchronously     [optional]
+            #
+            # Output: "AGENT <description>", with " (<details>)" appended when any
+            # optional field is set: :subagent_type, then "background" (when
+            # :run_in_background is set) — joined with " · " in that order and shown
+            # as raw values (no key= labels). :description is truncated to
+            # TRUNCATE_LIMIT chars; :subagent_type is not.
+            #
+            # Examples:
+            #   AGENT Find all callers (Explore · background)
+            #   AGENT Summarize the diff
+            #
+            #: () -> String
+            def format_agent
+              description = truncate(input[:description])
+              details = [
+                input[:subagent_type],
+                ("background" if input[:run_in_background]),
+              ].compact.join(" · ")
+              details.empty? ? "AGENT #{description}" : "AGENT #{description} (#{details})"
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"
