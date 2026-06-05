@@ -212,6 +212,41 @@ module Roast
           assert_equal "WRITE /a.rb \"#{truncated}\" (+1 line)", output
         end
 
+        # format_edit
+
+        test "format_edit shows the line counts of a single-line replacement" do
+          tool_use = Claude::ToolUse.new(name: :edit, input: { file_path: "/a.rb", old_string: "foo", new_string: "bar" })
+
+          output = tool_use.format
+
+          assert_equal "EDIT /a.rb (-1 +1 lines)", output
+        end
+
+        test "format_edit counts the lines spanned by each string" do
+          tool_use = Claude::ToolUse.new(name: :edit, input: { file_path: "/a.rb", old_string: "a\nb", new_string: "x" })
+
+          output = tool_use.format
+
+          assert_equal "EDIT /a.rb (-2 +1 lines)", output
+        end
+
+        test "format_edit appends replace all when the flag is set" do
+          input = { file_path: "/a.rb", old_string: "foo", new_string: "bar", replace_all: true }
+          tool_use = Claude::ToolUse.new(name: :edit, input: input)
+
+          output = tool_use.format
+
+          assert_equal "EDIT /a.rb (-1 +1 lines · replace all)", output
+        end
+
+        test "format_edit shows zero counts when the strings are absent" do
+          tool_use = Claude::ToolUse.new(name: :edit, input: { file_path: "/a.rb" })
+
+          output = tool_use.format
+
+          assert_equal "EDIT /a.rb (-0 +0 lines)", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 

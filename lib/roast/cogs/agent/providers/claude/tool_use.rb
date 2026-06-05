@@ -187,6 +187,33 @@ module Roast
               "WRITE #{file_path} \"#{preview}\" (+#{count} #{line_label})"
             end
 
+            # Formats an Edit tool-use line.
+            #
+            # Input fields:
+            #   :file_path   (String) – absolute path to edit    [required]
+            #   :old_string  (String) – text being replaced      [required]
+            #   :new_string  (String) – replacement text         [required]
+            #   :replace_all (bool)   – replace every occurrence [optional]
+            #
+            # Output: "EDIT <file_path> (-<old> +<new> lines)", where <old> and
+            # <new> are the line counts of :old_string and :new_string. The
+            # count is always labeled " lines"; " · replace all" is appended
+            # when :replace_all is set.
+            #
+            # Examples:
+            #   EDIT /app/models/user.rb (-6 +6 lines)
+            #   EDIT /config/routes.rb (-1 +2 lines · replace all)
+            #
+            #: () -> String
+            def format_edit
+              file_path, old_string, new_string = input.values_at(:file_path, :old_string, :new_string)
+              old_count = old_string.to_s.lines.length
+              new_count = new_string.to_s.lines.length
+              details = "-#{old_count} +#{new_count} lines"
+              details = "#{details} · replace all" if input[:replace_all]
+              "EDIT #{file_path} (#{details})"
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"
