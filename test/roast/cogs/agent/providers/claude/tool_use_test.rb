@@ -13,13 +13,71 @@ module Roast
           assert_equal({ command: "ls" }, tool_use.input)
         end
 
-        test "format calls format_bash for bash tool" do
-          tool_use = Claude::ToolUse.new(name: :bash, input: { command: "ls" })
+        test "truncate returns the string unchanged at or below the limit" do
+          tool_use = Claude::ToolUse.new(name: :bash, input: {})
+          str = "a" * Claude::ToolUse::TRUNCATE_LIMIT
+
+          output = tool_use.send(:truncate, str)
+
+          assert_equal str, output
+        end
+
+        test "truncate appends ellipsis and stays at the limit for strings over it" do
+          tool_use = Claude::ToolUse.new(name: :bash, input: {})
+          str = "a" * (Claude::ToolUse::TRUNCATE_LIMIT + 1)
+
+          output = tool_use.send(:truncate, str)
+
+          assert_equal "#{"a" * (Claude::ToolUse::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "truncate handles nil without crashing" do
+          tool_use = Claude::ToolUse.new(name: :bash, input: {})
+
+          output = tool_use.send(:truncate, nil)
+
+          assert_equal "", output
+        end
+
+        test "truncate returns an empty string for an empty input" do
+          tool_use = Claude::ToolUse.new(name: :bash, input: {})
+          assert_equal "", tool_use.send(:truncate, "")
+        end
+
+        # format_bash
+
+        test "format_bash renders the command only when no description given" do
+          tool_use = Claude::ToolUse.new(name: :bash, input: { command: "ls -la" })
 
           output = tool_use.format
 
-          assert_match(/BASH/, output)
-          assert_match(/command.*ls/, output)
+          assert_equal "BASH ls -la", output
+        end
+
+        test "format_bash appends description in parentheses" do
+          tool_use = Claude::ToolUse.new(name: :bash, input: { command: "ls -la", description: "List directory contents" })
+
+          output = tool_use.format
+
+          assert_equal "BASH ls -la (List directory contents)", output
+        end
+
+        test "format_bash truncates command but not description" do
+          long = "a" * (Claude::ToolUse::TRUNCATE_LIMIT + 10)
+          truncated = "#{"a" * (Claude::ToolUse::TRUNCATE_LIMIT - 3)}..."
+          tool_use = Claude::ToolUse.new(name: :bash, input: { command: long, description: long })
+
+          output = tool_use.format
+
+          assert_equal "BASH #{truncated} (#{long})", output
+        end
+
+        test "format_bash has no trailing space when the command is absent" do
+          tool_use = Claude::ToolUse.new(name: :bash, input: {})
+
+          output = tool_use.format
+
+          assert_equal "BASH", output
         end
 
         test "format calls format_unknown for unknown tool" do
