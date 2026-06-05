@@ -108,6 +108,28 @@ module Roast
               details ? "#{label} (#{details})" : label
             end
 
+            # Formats a Glob tool-use line.
+            #
+            # Input fields:
+            #   :pattern (String) – glob pattern to match    [required]
+            #   :path    (String) – directory to search in   [optional]
+            #
+            # Output: "GLOB <pattern>", with " (in <path>)" appended when :path
+            # is present.
+            #
+            # Pattern is not truncated because glob expressions are typically short
+            # and meaningful in their entirety, unlike shell commands.
+            #
+            # Examples:
+            #   GLOB **/*.rb (in lib/roast)
+            #   GLOB **/*.rb
+            #
+            #: () -> String
+            def format_glob
+              pattern, path = input.values_at(:pattern, :path)
+              path ? "GLOB #{pattern} (in #{path})" : "GLOB #{pattern}"
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"
