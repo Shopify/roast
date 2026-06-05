@@ -130,7 +130,12 @@ module Roast
       path = format_path(event)
       event[:stderr].lines.each_with_index do |line, idx|
         path_prefix = idx.zero? ? "#{path} ❯❯" : "#{"·" * path.length} ❙❙"
-        Roast::Log.logger.warn { "#{path_prefix} #{line.rstrip}" }
+        Roast::Log.logger.warn do
+          Roast::Log::Message.new(
+            type: :stderr,
+            text: "#{path_prefix} #{line.rstrip}",
+          )
+        end
       end
     end
 
@@ -139,7 +144,12 @@ module Roast
       path = format_path(event)
       event[:stdout].lines.each_with_index do |line, idx|
         path_prefix = idx.zero? ? "#{path} ❯" : "#{"·" * path.length} ❙"
-        Roast::Log.logger.info { "#{path_prefix} #{line.rstrip}" }
+        Roast::Log.logger.info do
+          Roast::Log::Message.new(
+            type: :stdout,
+            text: "#{path_prefix} #{line.rstrip}",
+          )
+        end
       end
     end
 
