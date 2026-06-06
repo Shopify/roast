@@ -409,6 +409,67 @@ module Roast
           assert_equal "TASKCREATE #{truncated}", output
         end
 
+        # format_taskoutput
+
+        test "format_taskoutput renders the task id alone with no options" do
+          tool_use = Claude::ToolUse.new(name: :taskoutput, input: { task_id: "abc123" })
+
+          output = tool_use.format
+
+          assert_equal "TASKOUTPUT #abc123", output
+        end
+
+        test "format_taskoutput marks a blocking call as sync" do
+          tool_use = Claude::ToolUse.new(name: :taskoutput, input: { task_id: "abc123", block: true })
+
+          output = tool_use.format
+
+          assert_equal "TASKOUTPUT #abc123 (sync)", output
+        end
+
+        test "format_taskoutput marks a non-blocking call as async" do
+          tool_use = Claude::ToolUse.new(name: :taskoutput, input: { task_id: "abc123", block: false })
+
+          output = tool_use.format
+
+          assert_equal "TASKOUTPUT #abc123 (async)", output
+        end
+
+        test "format_taskoutput renders a whole-second timeout without a decimal" do
+          tool_use = Claude::ToolUse.new(name: :taskoutput, input: { task_id: "abc123", timeout: 1000 })
+
+          output = tool_use.format
+
+          assert_equal "TASKOUTPUT #abc123 (1s timeout)", output
+        end
+
+        test "format_taskoutput renders a fractional-second timeout with a decimal" do
+          tool_use = Claude::ToolUse.new(name: :taskoutput, input: { task_id: "abc123", timeout: 1500 })
+
+          output = tool_use.format
+
+          assert_equal "TASKOUTPUT #abc123 (1.5s timeout)", output
+        end
+
+        test "format_taskoutput joins sync and timeout in order" do
+          input = { task_id: "abc123", block: true, timeout: 30000 }
+          tool_use = Claude::ToolUse.new(name: :taskoutput, input: input)
+
+          output = tool_use.format
+
+          assert_equal "TASKOUTPUT #abc123 (sync · 30s timeout)", output
+        end
+
+        test "format_taskoutput truncates the task id" do
+          long = "a" * (Claude::ToolUse::TRUNCATE_LIMIT + 10)
+          truncated = "#{"a" * (Claude::ToolUse::TRUNCATE_LIMIT - 3)}..."
+          tool_use = Claude::ToolUse.new(name: :taskoutput, input: { task_id: long })
+
+          output = tool_use.format
+
+          assert_equal "TASKOUTPUT ##{truncated}", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 

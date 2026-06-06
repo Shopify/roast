@@ -350,6 +350,45 @@ module Roast
               "TASKCREATE #{truncate(input[:subject])}"
             end
 
+            # Formats a TaskOutput tool-use line.
+            #
+            # Input fields:
+            #   :task_id (String)  – id of the task to read        [required]
+            #   :block   (bool)    – wait for the task to complete [optional]
+            #   :timeout (Integer) – max wait in milliseconds      [optional]
+            #
+            # Output: "TASKOUTPUT #<task_id>", with " (<details>)" appended for any
+            # set options. :block renders its mode only when explicitly set — "sync"
+            # (true) or "async" (false) — and nothing when omitted. :timeout follows
+            # as "<n>s timeout" (whole seconds drop the decimal). Modifiers join with
+            # " · " in that order. :task_id is truncated to TRUNCATE_LIMIT chars.
+            #
+            # Examples:
+            #   TASKOUTPUT #abc123 (sync · 120s timeout)
+            #   TASKOUTPUT #abc123 (async · 5s timeout)
+            #   TASKOUTPUT #abc123
+            #
+            #: () -> String
+            def format_taskoutput
+              task_id = truncate(input[:task_id])
+              timeout_ms = input[:timeout]
+              timeout_str = if timeout_ms
+                seconds = ActiveSupport::NumberHelper.number_to_rounded(
+                  timeout_ms / 1000.0,
+                  delimiter: "",
+                  precision: 3,
+                  strip_insignificant_zeros: true,
+                )
+                "#{seconds}s timeout"
+              end
+              block_label = case input[:block]
+              when true then "sync"
+              when false then "async"
+              end
+              details = [block_label, timeout_str].compact.join(" · ")
+              details.empty? ? "TASKOUTPUT ##{task_id}" : "TASKOUTPUT ##{task_id} (#{details})"
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"
