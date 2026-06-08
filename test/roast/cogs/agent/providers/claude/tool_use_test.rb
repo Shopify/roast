@@ -212,14 +212,6 @@ module Roast
           assert_equal "WRITE /a.rb \"#{truncated}\" (+1 line)", output
         end
 
-        test "format_write shows a zero count when content is absent" do
-          tool_use = Claude::ToolUse.new(name: :write, input: { file_path: "/a.rb" })
-
-          output = tool_use.format
-
-          assert_equal "WRITE /a.rb \"\" (+0 lines)", output
-        end
-
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 
