@@ -1,4 +1,9 @@
-inherit_from: .rubocop_todo.yml
+inherit_from:
+  - .rubocop_todo.yml
+  - internal/rubocop/rubocop-roast.yml
+
+require:
+  - ./internal/rubocop/cop/roast/no_test_class_nesting
 
 plugins:
   - rubocop-sorbet
