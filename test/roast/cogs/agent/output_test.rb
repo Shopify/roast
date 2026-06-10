@@ -4,65 +4,63 @@ require "test_helper"
 
 module Roast
   module Cogs
-    class Agent < Cog
-      class OutputTest < ActiveSupport::TestCase
-        # Test implementation that sets response like real subclasses would
-        class TestOutput < Output
-          def initialize(response:, session: nil, stats: nil)
-            super()
-            @response = response
-            @session = session
-            @stats = stats
-          end
+    class Agent::OutputTest < ActiveSupport::TestCase
+      # Test implementation that sets response like real subclasses would
+      class TestOutput < Agent::Output
+        def initialize(response:, session: nil, stats: nil)
+          super()
+          @response = response
+          @session = session
+          @stats = stats
         end
+      end
 
-        test "provides text parsing from response" do
-          output = TestOutput.new(response: "  Test response  \n")
+      test "provides text parsing from response" do
+        output = TestOutput.new(response: "  Test response  \n")
 
-          assert_equal "Test response", output.text
-        end
+        assert_equal "Test response", output.text
+      end
 
-        test "provides line parsing from response" do
-          output = TestOutput.new(response: "  line1  \n  line2  ")
+      test "provides line parsing from response" do
+        output = TestOutput.new(response: "  line1  \n  line2  ")
 
-          assert_equal ["line1", "line2"], output.lines
-        end
+        assert_equal ["line1", "line2"], output.lines
+      end
 
-        test "provides JSON parsing from response" do
-          output = TestOutput.new(response: '{"key": "value"}')
+      test "provides JSON parsing from response" do
+        output = TestOutput.new(response: '{"key": "value"}')
 
-          assert_equal({ key: "value" }, output.json!)
-        end
+        assert_equal({ key: "value" }, output.json!)
+      end
 
-        test "provides safe JSON parsing from response" do
-          output = TestOutput.new(response: "not json")
+      test "provides safe JSON parsing from response" do
+        output = TestOutput.new(response: "not json")
 
-          assert_nil output.json
-        end
+        assert_nil output.json
+      end
 
-        test "provides float parsing from response" do
-          output = TestOutput.new(response: "42.5")
+      test "provides float parsing from response" do
+        output = TestOutput.new(response: "42.5")
 
-          assert_equal 42.5, output.float!
-        end
+        assert_equal 42.5, output.float!
+      end
 
-        test "provides safe float parsing from response" do
-          output = TestOutput.new(response: "not a number")
+      test "provides safe float parsing from response" do
+        output = TestOutput.new(response: "not a number")
 
-          assert_nil output.float
-        end
+        assert_nil output.float
+      end
 
-        test "provides integer parsing from response" do
-          output = TestOutput.new(response: "42")
+      test "provides integer parsing from response" do
+        output = TestOutput.new(response: "42")
 
-          assert_equal 42, output.integer!
-        end
+        assert_equal 42, output.integer!
+      end
 
-        test "provides safe integer parsing from response" do
-          output = TestOutput.new(response: "not a number")
+      test "provides safe integer parsing from response" do
+        output = TestOutput.new(response: "not a number")
 
-          assert_nil output.integer
-        end
+        assert_nil output.integer
       end
     end
   end

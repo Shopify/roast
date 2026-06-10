@@ -25,11 +25,11 @@ module TestCogSupport
   end
 
   class TestCog < Roast::Cog
-    class Config < Roast::Cog::Config; end
-    class Input < TestInput; end
-
     def execute(input)
       TestOutput.new(input.value)
     end
   end
+
+  class TestCog::Config < Roast::Cog::Config; end
+  class TestCog::Input < TestInput; end
 end

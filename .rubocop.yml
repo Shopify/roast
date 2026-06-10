@@ -32,6 +32,10 @@ Sorbet/FalseSigil:
     - "examples/**/*"
     - "lib/roast/sorbet_runtime_stub.rb"
 
+Style/ClassAndModuleChildren:
+  Exclude:
+    - 'test/**/*.rb'
+
 Style/MethodCallWithArgsParentheses:
   Enabled: true
   Exclude:
