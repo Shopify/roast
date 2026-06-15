@@ -31,7 +31,7 @@ module Roast
                 @content = hash.delete(:result) || ""
                 @success = hash.delete(:success) || subtype == "success"
                 if hash.delete(:is_error) || subtype == "error"
-                  @content = @content || hash.dig(:error, :message) || "Unknown error"
+                  @content = @content.presence || hash.dig(:error, :message) || "Unknown error"
                   hash.delete(:error)
                 end
 
