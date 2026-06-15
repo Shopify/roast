@@ -67,6 +67,24 @@ module Roast
               ok_line("#{count} #{"line".pluralize(count)}", preview)
             end
 
+            # Formats a Read tool-result line.
+            #
+            # Content: the file's contents, as a string.
+            #
+            # Output: "READ OK <n> <line|lines>" – <n> is the number of lines
+            # read, pluralized.
+            #
+            # Examples:
+            #   READ OK 42 lines
+            #   READ OK 1 line
+            #   READ OK 0 lines
+            #
+            #: () -> String
+            def format_read
+              count = content.to_s.lines.length
+              ok_line("#{count} #{"line".pluralize(count)}")
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"
