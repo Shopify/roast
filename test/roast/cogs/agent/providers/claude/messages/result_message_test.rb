@@ -14,12 +14,12 @@ module Roast
           assert_equal "Task completed", message.content
         end
 
-        test "initialize with error subtype sets content to empty string when no result" do
+        test "initialize with error subtype falls back to error message when no result" do
           hash = { subtype: "error", error: { message: "Something went wrong" } }
           message = ResultMessage.new(type: :result, hash:)
 
           refute message.success
-          assert_equal "", message.content
+          assert_equal "Something went wrong", message.content
         end
 
         test "initialize with is_error sets content from result" do
@@ -29,11 +29,11 @@ module Roast
           assert_equal "Error result", message.content
         end
 
-        test "initialize with is_error and no result sets content to empty string" do
+        test "initialize with is_error and no result falls back to Unknown error" do
           hash = { is_error: true }
           message = ResultMessage.new(type: :result, hash:)
 
-          assert_equal "", message.content
+          assert_equal "Unknown error", message.content
         end
 
         test "initialize sets content from result field" do
