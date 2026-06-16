@@ -625,6 +625,117 @@ module Roast
           assert_equal "SKILL OK", output
         end
 
+        test "format_todowrite reports a bare OK when there are no todos" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "todowrite", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Todos have been modified successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TODOWRITE OK", output
+        end
+
+        test "format_todowrite shows the completed count and the in-progress item" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: {
+              name: "todowrite",
+              input: {
+                todos: [
+                  { status: "completed", content: "Set up the project", activeForm: "Setting up the project" },
+                  { status: "in_progress", content: "Build the parser", activeForm: "Building the parser" },
+                  { status: "pending", content: "Write the tests", activeForm: "Writing the tests" },
+                ],
+              },
+            },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Todos have been modified successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TODOWRITE OK 1/3 done · Building the parser", output
+        end
+
+        test "format_todowrite falls back to the content when the in-progress item has no activeForm" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: {
+              name: "todowrite",
+              input: {
+                todos: [
+                  { status: "in_progress", content: "Build the parser" },
+                ],
+              },
+            },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Todos have been modified successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TODOWRITE OK 0/1 done · Build the parser", output
+        end
+
+        test "format_todowrite omits the active part when nothing is in progress" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: {
+              name: "todowrite",
+              input: {
+                todos: [
+                  { status: "completed", content: "Set up", activeForm: "Setting up" },
+                  { status: "completed", content: "Ship it", activeForm: "Shipping it" },
+                ],
+              },
+            },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Todos have been modified successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TODOWRITE OK 2/2 done", output
+        end
+
+        test "format_todowrite truncates a long in-progress label" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: {
+              name: "todowrite",
+              input: {
+                todos: [
+                  { status: "in_progress", content: "x" * 60, activeForm: "y" * 60 },
+                ],
+              },
+            },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Todos have been modified successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TODOWRITE OK 0/1 done · #{"y" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
         test "ok_line renders a bare OK line when given no parts" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,

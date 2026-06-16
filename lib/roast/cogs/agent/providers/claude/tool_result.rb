@@ -189,6 +189,32 @@ module Roast
               ok_line(tool_use_input[:skill])
             end
 
+            # Formats a TodoWrite tool-result line.
+            #
+            # Input: :todos – the todo list; each item is a hash with :status
+            # ("pending"/"in_progress"/"completed"), :content, and :activeForm.
+            #
+            # Output: "TODOWRITE OK <done>/<total> done · <active>" – the
+            # completed count over the total, then the in-progress item's
+            # :activeForm (or :content), truncated. The " · <active>" part is
+            # omitted when nothing is in progress; an empty list yields a bare
+            # "TODOWRITE OK".
+            #
+            # Examples:
+            #   TODOWRITE OK 3/8 done · Implementing the parser
+            #   TODOWRITE OK 8/8 done
+            #   TODOWRITE OK
+            #
+            #: () -> String
+            def format_todowrite
+              todos = tool_use_input[:todos] || []
+              done = todos.count { |todo| todo[:status] == "completed" }
+              active = todos.find { |todo| todo[:status] == "in_progress" }
+              progress = "#{done}/#{todos.length} done" if todos.any?
+              active_label = truncate(active[:activeForm] || active[:content]) if active
+              ok_line(progress, active_label)
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"
