@@ -157,6 +157,22 @@ module Roast
               ok_line(tool_use_input[:file_path])
             end
 
+            # Formats an Edit tool-result line.
+            #
+            # Input: :file_path – the path that was edited.
+            #
+            # Output: "EDIT OK <file_path>" – the file path, omitted if the
+            # input has none.
+            #
+            # Examples:
+            #   EDIT OK lib/roast/version.rb
+            #   EDIT OK
+            #
+            #: () -> String
+            def format_edit
+              ok_line(tool_use_input[:file_path])
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"
