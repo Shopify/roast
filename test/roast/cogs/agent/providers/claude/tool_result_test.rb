@@ -593,6 +593,38 @@ module Roast
           assert_equal "EDIT OK", output
         end
 
+        test "format_skill reports the invoked skill name" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "skill", input: { skill: "commit" } },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Skill completed.",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "SKILL OK commit", output
+        end
+
+        test "format_skill omits the skill when the input has none" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "skill", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Skill completed.",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "SKILL OK", output
+        end
+
         test "ok_line renders a bare OK line when given no parts" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
