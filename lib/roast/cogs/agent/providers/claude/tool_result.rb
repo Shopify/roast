@@ -173,6 +173,22 @@ module Roast
               ok_line(tool_use_input[:file_path])
             end
 
+            # Formats a Skill tool-result line.
+            #
+            # Input: :skill – the name of the invoked skill.
+            #
+            # Output: "SKILL OK <skill>" – the skill name, omitted if the
+            # input has none.
+            #
+            # Examples:
+            #   SKILL OK commit
+            #   SKILL OK
+            #
+            #: () -> String
+            def format_skill
+              ok_line(tool_use_input[:skill])
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"
