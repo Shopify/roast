@@ -529,6 +529,38 @@ module Roast
           assert_equal "GREP OK 1 match", output
         end
 
+        test "format_write reports the written file path" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "write", input: { file_path: "lib/roast/version.rb" } },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "File created successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "WRITE OK lib/roast/version.rb", output
+        end
+
+        test "format_write omits the path when the input has none" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "write", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "File created successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "WRITE OK", output
+        end
+
         test "ok_line renders a bare OK line when given no parts" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
