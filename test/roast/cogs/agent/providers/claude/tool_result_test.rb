@@ -385,6 +385,150 @@ module Roast
           assert_equal "GLOB OK 1 file found · NOTE #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
         end
 
+        test "format_grep reports the number of matches" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "lib/a.rb:1:foo\nlib/b.rb:2:bar\nlib/c.rb:3:baz",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 3 matches", output
+        end
+
+        test "format_grep counts a line-number-prefixed match without a path" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "42:def hello",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 1 match", output
+        end
+
+        test "format_grep ignores blank lines when counting matches" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "lib/a.rb:1:foo\n\nlib/b.rb:2:bar\n",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 2 matches", output
+        end
+
+        test "format_grep appends a non-match line as a NOTE when matches were found" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "lib/a.rb:1:foo\nlib/b.rb:2:bar\nResults are truncated",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 2 matches · NOTE Results are truncated", output
+        end
+
+        test "format_grep drops the NOTE when there are no matches" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "No matches found",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 0 matches", output
+        end
+
+        test "format_grep truncates a long NOTE" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "lib/a.rb:1:foo\n#{"x" * 60}",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 1 match · NOTE #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "format_grep does not misclassify a status message containing a slash as a match" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "lib/a.rb:1:foo\nFound 0/100 files",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 1 match · NOTE Found 0/100 files", output
+        end
+
+        test "format_grep counts bare relative paths as matches" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "components/a.rb\ncomponents/b.rb",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 2 matches", output
+        end
+
+        test "format_grep counts a root-level file match whose path has no slash" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Gemfile:395:gem \"verdict\"",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 1 match", output
+        end
+
         test "ok_line renders a bare OK line when given no parts" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
