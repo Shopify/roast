@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "nokogiri"
+
 module Roast
   module Cogs
     class Agent < Cog
@@ -290,6 +292,29 @@ module Roast
             def format_task
               preview = truncate(normalize_content(content).lines.first.to_s.strip)
               ok_line(preview)
+            end
+
+            # Formats a TaskOutput tool-result line.
+            #
+            # Content: sibling tags carrying the task's state, followed by a
+            # trailing <output> of arbitrary unescaped text. Parsed leniently
+            # as an XML fragment, which tolerates the absent single root and the
+            # unescaped <output> body.
+            #
+            # Output: "TASKOUTPUT OK <status>" – the text of <status>, or of
+            # <retrieval_status> when no <status> tag is present (as on a
+            # pending retrieval). The status is omitted when neither is present.
+            #
+            # Examples:
+            #   TASKOUTPUT OK completed
+            #   TASKOUTPUT OK pending
+            #   TASKOUTPUT OK
+            #
+            #: () -> String
+            def format_taskoutput
+              fragment = Nokogiri::XML::DocumentFragment.parse(content.to_s)
+              status = (fragment.at_xpath(".//status") || fragment.at_xpath(".//retrieval_status"))&.text&.strip
+              ok_line(status)
             end
 
             #: () -> String

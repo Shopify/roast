@@ -928,6 +928,70 @@ module Roast
           assert_equal "TASK OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
         end
 
+        test "format_taskoutput surfaces the status tag" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskoutput", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "<status>completed</status><output>done</output>",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKOUTPUT OK completed", output
+        end
+
+        test "format_taskoutput falls back to retrieval_status when status is absent" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskoutput", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "<retrieval_status>pending</retrieval_status>",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKOUTPUT OK pending", output
+        end
+
+        test "format_taskoutput tolerates an unescaped output body" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskoutput", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "<status>failed</status>\n<output>error: a < b && c > d</output>",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKOUTPUT OK failed", output
+        end
+
+        test "format_taskoutput reports a bare OK when no status tag is present" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskoutput", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "<output>just output</output>",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKOUTPUT OK", output
+        end
+
         test "ok_line renders a bare OK line when given no parts" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,

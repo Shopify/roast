@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency("activesupport", "~> 8.0")
   spec.add_dependency("async", ">= 2.34")
+  spec.add_dependency("nokogiri", ">= 1.18")
   spec.add_dependency("rainbow", ">= 3.0.0")
   spec.add_dependency("ruby_llm", ">= 1.13")
   spec.add_dependency("type_toolkit", ">= 0.0.5")
