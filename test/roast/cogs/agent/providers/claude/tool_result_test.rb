@@ -832,6 +832,54 @@ module Roast
           assert_equal "TASKCREATE OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
         end
 
+        test "format_agent previews the first line of the agent's content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "agent", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [{ type: "text", text: "Refactored the parser\nAll tests pass" }],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "AGENT OK Refactored the parser", output
+        end
+
+        test "format_agent reports a bare OK when there is no content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "agent", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "AGENT OK", output
+        end
+
+        test "format_agent truncates a long preview" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "agent", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [{ type: "text", text: "x" * 60 }],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "AGENT OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
         test "ok_line renders a bare OK line when given no parts" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
@@ -933,6 +981,46 @@ module Roast
           output = tool_result.send(:truncate, nil)
 
           assert_equal "", output
+        end
+
+        test "normalize_content joins content blocks into newline-separated text" do
+          tool_result = Claude::ToolResult.new(
+            tool_use: nil,
+            content: nil,
+            is_error: false,
+          )
+          blocks = [
+            { type: "text", text: "first block" },
+            { type: "text", text: "second block" },
+          ]
+
+          output = tool_result.send(:normalize_content, blocks)
+
+          assert_equal "first block\nsecond block", output
+        end
+
+        test "normalize_content skips blocks without a :text field" do
+          tool_result = Claude::ToolResult.new(
+            tool_use: nil,
+            content: nil,
+            is_error: false,
+          )
+
+          blocks = [{ type: "non-text type" }, { type: "text", text: "hi" }]
+          output = tool_result.send(:normalize_content, blocks)
+
+          assert_equal "hi", output
+        end
+
+        test "normalize_content coerces a non-array value with to_s" do
+          tool_result = Claude::ToolResult.new(
+            tool_use: nil,
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "plain", tool_result.send(:normalize_content, "plain")
+          assert_equal "", tool_result.send(:normalize_content, nil)
         end
       end
     end
