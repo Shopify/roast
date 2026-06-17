@@ -16,13 +16,13 @@ module Roast
             #: String?
             attr_reader :tool_use_description
 
-            #: String?
+            #: (String | Array[Hash[Symbol, untyped]])?
             attr_reader :content
 
             #: bool
             attr_reader :is_error
 
-            #: (tool_use: Messages::ToolUseMessage?, content: String?, is_error: bool) -> void
+            #: (tool_use: Messages::ToolUseMessage?, content: (String | Array[Hash[Symbol, untyped]])?, is_error: bool) -> void
             def initialize(tool_use:, content:, is_error:)
               @tool_name = tool_use&.name || :unknown
               @tool_use_input = tool_use&.input || {} #: Hash[Symbol, untyped]
@@ -251,6 +251,26 @@ module Roast
               ok_line(preview)
             end
 
+            # Formats an Agent tool-result line.
+            #
+            # Content: the subagent's final message, delivered as a list of
+            # content blocks and joined into text.
+            #
+            # Output: "AGENT OK <preview>" – the first line of that text,
+            # stripped and truncated to TRUNCATE_LIMIT chars. The preview is
+            # omitted when there is no content.
+            #
+            # Examples:
+            #   AGENT OK Refactored the parser; all tests pass
+            #   AGENT OK Migrated the user table and backfilled all...
+            #   AGENT OK
+            #
+            #: () -> String
+            def format_agent
+              preview = truncate(normalize_content(content).lines.first.to_s.strip)
+              ok_line(preview)
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"
@@ -289,6 +309,22 @@ module Roast
             def truncate(str)
               s = str.to_s
               s.length > TRUNCATE_LIMIT ? "#{s[0...TRUNCATE_LIMIT - 3]}..." : s
+            end
+
+            # The result's text. Agent and Task deliver a list of content
+            # blocks, which is joined into a string; every other shape is
+            # coerced with to_s.
+            #
+            #: ((String | Array[Hash[Symbol, untyped]])?) -> String
+            def normalize_content(value)
+              case value
+              when String
+                value
+              when Array
+                value.filter_map { |b| b[:text] }.join("\n")
+              else
+                value.to_s
+              end
             end
           end
         end
