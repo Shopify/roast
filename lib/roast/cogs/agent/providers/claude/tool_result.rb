@@ -271,6 +271,27 @@ module Roast
               ok_line(preview)
             end
 
+            # Formats a Task tool-result line.
+            #
+            # Content: the dispatched subagent's reply, or a launch notice
+            # when the run is backgrounded – delivered as a list of content
+            # blocks and joined into text.
+            #
+            # Output: "TASK OK <preview>" – the first line of that text,
+            # stripped and truncated to TRUNCATE_LIMIT chars. The preview is
+            # omitted when there is no content.
+            #
+            # Examples:
+            #   TASK OK Async agent launched successfully
+            #   TASK OK Migrated the user table and backfilled all...
+            #   TASK OK
+            #
+            #: () -> String
+            def format_task
+              preview = truncate(normalize_content(content).lines.first.to_s.strip)
+              ok_line(preview)
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"

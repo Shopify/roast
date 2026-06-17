@@ -880,6 +880,54 @@ module Roast
           assert_equal "AGENT OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
         end
 
+        test "format_task previews the first line of the result content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "task", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [{ type: "text", text: "Async agent launched successfully\nagentId: aae7c2c6" }],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASK OK Async agent launched successfully", output
+        end
+
+        test "format_task reports a bare OK when there is no content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "task", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASK OK", output
+        end
+
+        test "format_task truncates a long preview" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "task", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [{ type: "text", text: "x" * 60 }],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASK OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
         test "ok_line renders a bare OK line when given no parts" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
