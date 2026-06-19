@@ -17,8 +17,8 @@ simply requires `lib/roast.rb`). Invoked via `devx roast` (Shopify internal) or
 `bundle exec roast`. Source code lives at `Shopify/roast`.
 
 Key runtime dependencies: `activesupport` (~> 8.0), `async` (>= 2.34),
-`ruby_llm` (>= 1.8), `type_toolkit` (>= 0.0.5), `zeitwerk` (>= 2.6). Requires
-Ruby >= 3.3.0.
+`rainbow` (>= 3.0.0), `ruby_llm` (>= 1.13), `type_toolkit` (>= 0.0.5),
+`zeitwerk` (>= 2.6). Requires Ruby >= 3.3.0.
 
 All source files in `lib/` are `typed: true` under Sorbet, but the gem has **no
 `sorbet-runtime` dependency** — types are enforced at development time only, via
@@ -94,7 +94,7 @@ cog stacks; `start!` (line 61) runs the execution manager.
 This is the single most important concept in Roast. Master this, and everything
 else follows.
 
-Roast defines **three empty classes** — `ConfigContext`, `ExecutionContext`, and
+Roast defines **three context classes** — `ConfigContext`, `ExecutionContext`, and
 `CogInputContext` — onto which methods are **dynamically defined at runtime**
 using `define_singleton_method`. Each class serves a different purpose, and **the
 same method name does entirely different things depending on which context it
@@ -152,6 +152,8 @@ stack. **The input block runs later**, during `Cog#run!`, not during `prepare!`.
 
 **Source**: Has hardcoded control flow methods (`skip!`, `fail!`, `next!`,
 `break!`) and includes `Call::InputContext` and `Map::InputContext` modules.
+Unlike `ConfigContext` and `ExecutionContext`, this class is **not** blank at
+the class level — it defines 7 static methods before any dynamic binding occurs.
 
 At construction time (which happens during `ExecutionManager#initialize`),
 `CogInputManager` defines **three methods per registered cog type** on the
@@ -180,8 +182,8 @@ dynamic method binding are what make this possible.
 
 **For AI agents**: The RBI shim files (`sorbet/rbi/shims/lib/roast/`) are the
 canonical documentation for every dynamically-defined method across all three
-contexts. `config_context.rbi` (322 lines), `execution_context.rbi` (496 lines),
-and `cog_input_context.rbi` (1,197 lines) document types, usage examples, and
+contexts. `config_context.rbi` (323 lines), `execution_context.rbi` (496 lines),
+and `cog_input_context.rbi` (1,198 lines) document types, usage examples, and
 cross-references for every method. See
 [06-metaprogramming-map.md](06-metaprogramming-map.md) for the complete dynamic
 method binding reference.
@@ -241,6 +243,7 @@ Here is the complete end-to-end path from CLI invocation to workflow completion:
 Sync do                              # Enter async event loop
   Dir.mktmpdir("roast-") do |tmpdir| # Create ephemeral workspace
     EventMonitor.start!              # Begin event processing
+    context = WorkflowContext.new(params:, tmpdir:, workflow_dir:)
     workflow = Workflow.new(path, context)
     workflow.prepare!
     workflow.start!
@@ -291,7 +294,7 @@ proc collection arrays.
 ## The Cog Lifecycle
 
 What happens inside a single `cog.run!` call
-(`lib/roast/cog.rb`, lines 71–101):
+(`lib/roast/cog.rb`, lines 71–102):
 
 ```
 barrier.async(finished: false) do |task|
@@ -350,7 +353,7 @@ no threads and no mutexes.
 ### Deep Copy Discipline
 
 Because multiple fibers may share the same objects, Roast applies `deep_dup` at
-every boundary where data crosses between contexts. There are **12 identified
+every boundary where data crosses between contexts. There are **13 identified
 `deep_dup` sites** serving 5 purposes:
 - **Config isolation**: Prevent one cog from mutating config shared by others.
 - **Scope value isolation**: Prevent one cog from mutating the scope value seen

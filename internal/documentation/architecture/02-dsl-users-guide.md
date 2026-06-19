@@ -308,13 +308,13 @@ Every registered cog type gets three accessor methods on the `CogInputContext`, 
 
 | Method | Behavior | Returns |
 |--------|----------|---------|
-| `cmd(:name)` | Tolerant — returns `nil` if the cog was skipped, failed, stopped, or hasn't run yet | `Cog::Output?` |
+| `cmd(:name)` | Tolerant — blocks on async cogs, returns `nil` if the cog was skipped, failed, stopped, or hasn't run yet | `Cog::Output?` |
 | `cmd!(:name)` | Strict — blocks on async cogs, raises on any error state | `Cog::Output` |
-| `cmd?(:name)` | Boolean — `true` if the cog produced output | `bool` |
+| `cmd?(:name)` | Boolean — blocks on async cogs, `true` if the cog produced output | `bool` |
 
 **Critical**: All three methods **always** raise `CogDoesNotExistError` if the named cog doesn't exist in the current scope. The tolerant variant only suppresses state-related errors (skipped, failed, stopped, not-yet-run), never existence errors. This is intentional — a nonexistent cog name is likely a typo.
 
-**Blocking behavior**: `cmd!(:name)` calls `cog.wait` before checking state, which blocks the current fiber if the referenced cog is async and still running. This is how sync cogs naturally wait for async dependencies.
+**Blocking behavior**: All three accessor methods call `cog.wait` before checking state, which blocks the current fiber if the referenced cog is async and still running. This is how sync cogs naturally wait for async dependencies.
 
 > **Source**: `CogInputManager#cog_output!` at `lib/roast/cog_input_manager.rb:69–79`, `cog_output` at lines 54–61.
 
@@ -387,7 +387,7 @@ roast execute my_workflow.rb target1 target2 -- retry force name=Samantha
 
 ### Accessing Parameters
 
-These methods are available in any cog input block, defined on the `CogInputContext` by `CogInputManager#bind_workflow_context` (`lib/roast/cog_input_manager.rb:82–104`):
+These methods are available in any cog input block, defined on the `CogInputContext` by `CogInputManager#bind_workflow_context` (`lib/roast/cog_input_manager.rb:82–105`):
 
 | Method | Returns | Behavior |
 |--------|---------|----------|
@@ -892,18 +892,23 @@ Given `template("greeting", name: "World")`, the framework searches for the temp
 5. `workflow_dir / "prompts" / "greeting"`
 6. `workflow_dir / "prompts" / "greeting.erb"`
 7. `workflow_dir / "prompts" / "greeting.md.erb"`
-8. `pwd / "greeting"`
-9. `pwd / "greeting.erb"`
-10. `pwd / "greeting.md.erb"`
-11. `pwd / "prompts" / "greeting"`
-12. `pwd / "prompts" / "greeting.erb"`
-13. `pwd / "prompts" / "greeting.md.erb"`
+8. `workflow_dir / "templates" / "greeting"`
+9. `workflow_dir / "templates" / "greeting.erb"`
+10. `workflow_dir / "templates" / "greeting.md.erb"`
+11. `pwd / "greeting"`
+12. `pwd / "greeting.erb"`
+13. `pwd / "greeting.md.erb"`
+14. `pwd / "prompts" / "greeting"`
+15. `pwd / "prompts" / "greeting.erb"`
+16. `pwd / "prompts" / "greeting.md.erb"`
+17. `pwd / "templates" / "greeting"`
+18. `pwd / "templates" / "greeting.erb"`
+19. `pwd / "templates" / "greeting.md.erb"`
+20–22. Tilde-expanded (`~/`) variants of the workflow_dir and pwd paths
 
 The first existing file wins. Templates are rendered with `ERB.new(content).result_with_hash(args)`.
 
-**Known issue**: `Pathname` does not expand `~` for home directory paths (tracked in issue #663).
-
-> **Source**: `CogInputManager#template` at `lib/roast/cog_input_manager.rb:182–223`.
+> **Source**: `CogInputManager#template` at `lib/roast/cog_input_manager.rb:185–244`.
 
 ### Inline Prompts
 
@@ -994,7 +999,7 @@ Agent sessions work via the CLI provider's `--fork-session` flag. The session st
 | State machine repeat | `repeat(:x, run: :y) { { state: ... } }` | Hash as scope value |
 | Regex config for groups | `agent(/review_/) { async! }` | Pattern-based configuration |
 | Sync cog as barrier | Place a sync cog after async ones | Blocks until all prior cogs finish |
-| Template for prompts | `template("name", vars)` | 13-candidate search path |
+| Template for prompts | `template("name", vars)` | 22-candidate search path |
 | Session fork | `my.session = chat!(:a).session` | Deep copy = independent fork |
 | tmpdir for ephemeral work | `tmpdir` → `Pathname` | Auto-created, auto-cleaned |
 | Custom cog loading | `use "name"` or `use "name", from: "gem"` | See Section 14 note |

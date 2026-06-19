@@ -178,11 +178,18 @@ MCP servers provided by the LLM provider.
 | `use_default_provider!` | | Reset to default provider |
 | `api_key("sk-...")` | from ENV | Set an explicit API key |
 | `use_api_key_from_environment!` | | Clear explicit key, fall back to `OPENAI_API_KEY` |
-| `base_url("https://...")` | from ENV or `https://api.openai.com/v1` | Set the API base URL |
+| `base_url("https://...")` | from ENV or provider default | Set the API base URL |
 | `use_default_base_url!` | | Reset to env var or provider default |
 
-**Currently only one provider is supported**: `:openai`. The `PROVIDERS` hash
-(`chat/config.rb`, lines 8–15) maps `:openai` to its env var names and defaults.
+**Four providers are supported**: `:openai`, `:anthropic`, `:perplexity`, and `:gemini`. The `PROVIDERS` hash
+(`chat/config.rb`, lines 8–31) maps each provider to its env var names, defaults, and base URL.
+
+| Provider | API Key Env Var | Base URL Env Var | Default Base URL | Default Model |
+|---|---|---|---|---|
+| `:openai` | `OPENAI_API_KEY` | `OPENAI_API_BASE` | `https://api.openai.com/v1` | `gpt-4o-mini` |
+| `:anthropic` | `ANTHROPIC_API_KEY` | `ANTHROPIC_API_BASE` | `https://api.anthropic.com/v1` | `claude-sonnet-4-20250514` |
+| `:perplexity` | `PERPLEXITY_API_KEY` | `PERPLEXITY_API_BASE` | `https://api.perplexity.ai` | `sonar` |
+| `:gemini` | `GEMINI_API_KEY` | `GEMINI_API_BASE` | `https://generativelanguage.googleapis.com/v1beta/openai/` | `gemini-2.5-flash` |
 
 **Validated getters**: `valid_provider!`, `valid_api_key!` (raises
 `InvalidConfigError` if missing), `valid_base_url` (falls back through env →
@@ -257,7 +264,7 @@ The session captures the conversation message history for fork-style resumption.
 | `Session.from_chat(chat)` | Creates a session from a RubyLLM::Chat, **deep_dup**'ing all messages |
 | `session.first(n=2)` | Returns a new session with only the first `n` messages (deep_dup'd) |
 | `session.last(n=2)` | Returns a new session with only the last `n` messages (deep_dup'd) |
-| `session.apply!(chat)` | Replaces the chat's `@messages` via `instance_variable_set` (deep_dup'd); also restores temperature if captured |
+| `session.apply!(chat)` | Replaces the chat's `@messages` via `instance_variable_set` (deep_dup'd); note: `Session.from_chat` does not capture temperature, so the temperature restore path in `apply!` is effectively dead code |
 
 **Fork semantics**: Every `apply!` call deep-copies the messages, so multiple
 downstream cogs can fork from the same session state independently.
@@ -269,7 +276,7 @@ coupling to RubyLLM's internal structure.
 ### Execute Behavior
 
 1. Get or create a `RubyLLM::Context` (memoized per cog instance, configured
-   with `api_key` and `base_url`) (`chat.rb`, lines 71–76)
+   with `api_key` and `base_url` for the active provider) (`chat.rb`, lines 71–87)
 2. Create a new `RubyLLM::Chat` with the configured model, provider, and
    `assume_model_exists` flag (`chat.rb`, lines 32–36)
 3. Apply input session if present (fork semantics via deep_dup) (`chat.rb`,
@@ -451,7 +458,7 @@ the same forked session. Stats are merged across invocations.
 
 #### Pi Provider (`agent/providers/pi.rb`)
 
-**Command**: `pi --mode json -p [--model MODEL] [--fork SESSION | --no-session]`
+**Command**: `pi --mode json -p [--model MODEL] [--system-prompt PROMPT] [--append-system-prompt PROMPT] [--fork SESSION | --no-session]`
 
 Uses event-based message types (`session`, `turn_start`, `message_update`,
 `message_end`, `tool_execution_start/end`, `agent_end`) instead of Claude's
@@ -465,8 +472,9 @@ typed message classes. Stats are accumulated manually across streaming events.
 | Session fork | `--fork-session --resume ID` | `--fork ID` |
 | No session | (no flag) | `--no-session` |
 | Permissions | `--dangerously-skip-permissions` | (not supported) |
+| System prompt | `--system-prompt`, `--append-system-prompt` | `--system-prompt`, `--append-system-prompt` |
 | Stats | Single ResultMessage | Manual accumulation across events |
-| Text streaming | From ResultMessage | Via `text_delta` / `text_end` events |
+| Text streaming | From ResultMessage | Via `message_update` / `message_end` events |
 
 ### Execute Behavior
 

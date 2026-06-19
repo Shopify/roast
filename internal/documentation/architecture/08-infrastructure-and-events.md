@@ -59,7 +59,7 @@ All events enter the pipeline through exactly ONE entry point: `Event << { key: 
 
 ## 2. Event Class
 
-**Source**: `lib/roast/event.rb` (75 lines)
+**Source**: `lib/roast/event.rb` (76 lines)
 
 ### Structure
 
@@ -99,7 +99,7 @@ ensures that log messages are never misrouted.
 
 **Type keys**:
 - `LOG_TYPE_KEYS`: `[:fatal, :error, :warn, :info, :debug, :unknown]`
-- `OTHER_TYPE_KEYS`: `[:begin, :end, :stdout, :stderr]`
+- `OTHER_TYPE_KEYS`: `[:begin, :end, :stdout, :stderr, :block]`
 
 ### Severity Mapping (lines 55–65)
 
@@ -133,7 +133,7 @@ Events can be treated like hashes: `event[:begin]`, `event.key?(:stdout)`.
 
 ## 3. EventMonitor
 
-**Source**: `lib/roast/event_monitor.rb` (162 lines)
+**Source**: `lib/roast/event_monitor.rb` (195 lines)
 
 A **singleton module** (`extend self`) with two operational modes. This dual-mode
 design is critical for testability.
@@ -198,9 +198,10 @@ end
 | `handle_begin_event` | `:begin` | Logs "Starting" for cog begins; "🔥🔥🔥 Workflow Starting" for top-level EM |
 | `handle_begin_workflow_event` | first `:begin` | Debug dump of WorkflowContext (targets, args, kwargs, tmpdir, workflow_dir, pwd) |
 | `handle_end_event` | `:end` | Logs "Complete" for cog ends; "🔥🔥🔥 Workflow Complete" for top-level EM |
-| `handle_log_event` | any log key | `Log.logger.add(severity, "path message")` |
-| `handle_stdout_event` | `:stdout` | `Log.logger.info { "path ❯ content" }` (single chevron) |
-| `handle_stderr_event` | `:stderr` | `Log.logger.warn { "path ❯❯ content" }` (double chevron) |
+| `handle_log_event` | any log key | `Log.logger.add(severity, "path message")`; multi-line messages use `·` continuation dots |
+| `handle_stdout_event` | `:stdout` | `Log.logger.info { "path ❯ content" }` (single chevron); multi-line output uses `❙` continuation markers and wraps in `Roast::Log::Message` |
+| `handle_stderr_event` | `:stderr` | `Log.logger.warn { "path ❯❯ content" }` (double chevron); multi-line output uses `❙❙` continuation markers and wraps in `Roast::Log::Message` |
+| `handle_block_event` | `:block` | Emits a `BLOCK_SEPARATOR` constant as a visual delimiter in log output |
 | `handle_unknown_event` | unrecognized | `Log.logger.unknown(event.inspect)` |
 
 ### Time Preservation (line 70)
@@ -245,9 +246,9 @@ Produces human-readable paths:
 
 ```
 StandardError
-  └── EventMonitorError                     (line 9)
-        ├── EventMonitorAlreadyStartedError (line 11)
-        └── EventMonitorNotRunningError     (line 13)
+  └── EventMonitorError                     (line 11)
+        ├── EventMonitorAlreadyStartedError (line 13)
+        └── EventMonitorNotRunningError     (line 15)
 ```
 
 **Important**: NOT under `Roast::Error`. A `rescue Roast::Error` will NOT catch these.
@@ -479,7 +480,7 @@ changing between when the event is created and when the EventMonitor processes i
 
 ## 6. Logging
 
-**Source**: `lib/roast/log.rb` (99 lines), `lib/roast/log_formatter.rb` (55 lines)
+**Source**: `lib/roast/log.rb` (121 lines), `lib/roast/log_formatter.rb` (58 lines)
 
 ### The Two-Layer Design
 
@@ -497,7 +498,12 @@ Calling `Roast::Log.logger.info` from application code bypasses:
 
 ### Roast::Log Module (`lib/roast/log.rb`)
 
-**Public methods** (lines 35–62): `debug`, `info`, `warn`, `error`, `fatal`, `unknown`
+**Roast::Log::Message** (lines 26–43): A wrapper class that tags output text with
+a `:type` (`:stdout` or `:stderr`). This enables the LogFormatter to route
+colorization based on the message's originating stream rather than scanning for
+chevron markers in the string content.
+
+**Public methods** (lines 46–73): `debug`, `info`, `warn`, `error`, `fatal`, `unknown`
 — all simply emit Events:
 ```ruby
 def info(message)
@@ -538,8 +544,8 @@ I, [2026-01-01T12:00:00.000000] INFO -- Starting agent(:analyze)
 **ANSI colorization** (lines 29–44):
 | Content | Color |
 |---------|-------|
-| Lines containing `❯❯` (stderr) | Yellow |
-| Lines containing `❯` (stdout) | Default (no extra color) |
+| `Log::Message` with `:stderr` type | Yellow |
+| `Log::Message` with `:stdout` type | Default (no extra color) |
 | ERROR, FATAL | Red |
 | WARN | Orange (`#FF8C00`) |
 | INFO | Bright |
@@ -547,8 +553,9 @@ I, [2026-01-01T12:00:00.000000] INFO -- Starting agent(:analyze)
 
 Uses the `Rainbow` gem with TTY-awareness (`@rainbow.enabled = tty`).
 
-**`msg2str`** (lines 46–54): Strips whitespace from String messages before calling
-`super` (parent Logger::Formatter behavior).
+**`msg2str`** (lines 46–54): Handles `Log::Message` objects (extracting their text)
+and strips whitespace from String messages before calling `super` (parent
+Logger::Formatter behavior).
 
 ---
 

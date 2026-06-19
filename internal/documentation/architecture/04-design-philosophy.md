@@ -144,7 +144,7 @@ The workflow author sees one simple API: call a cog-type method with a name and 
 
 ### Why Blank Classes?
 
-`ConfigContext`, `ExecutionContext`, and `CogInputContext` are intentionally blank at the class level. All their methods are installed dynamically via `define_singleton_method` during `prepare!`. This means:
+`ConfigContext` and `ExecutionContext` are intentionally blank at the class level, with all their methods installed dynamically via `define_singleton_method` during `prepare!`. `CogInputContext` has a small static surface — 4 control flow methods (`skip!`, `fail!`, `next!`, `break!`) and 3 module-included helpers (`from`, `collect`, `reduce`) — with its cog-type accessors and workflow accessors installed dynamically. This means:
 
 1. **No method exists until it's needed** — typos produce clear `NoMethodError` at eval time
 2. **The method set is customizable** — custom cogs automatically get their own methods in all three contexts via the Registry → bind loop
@@ -187,7 +187,7 @@ The error hierarchy embodies a deliberate separation:
 The consumer-side hierarchy further separates:
 - `CogDoesNotExistError` — always fatal (programming error, raised even in tolerant mode)
 - `CogNotYetRunError`, `CogSkippedError`, `CogStoppedError` — swallowed by `outputs`, raised by `outputs!`
-- `CogFailedError` — always propagates (never swallowed by either variant)
+- `CogFailedError` — propagates from `outputs`/`outputs!` blocks (never swallowed by `compute_final_output`). However, the tolerant individual cog accessors (e.g., `cmd(:name)`) DO swallow `CogFailedError` and return `nil`, since `cog_output` rescues all `CogOutputAccessError` subclasses except `CogDoesNotExistError`.
 
 ---
 
@@ -203,7 +203,7 @@ Execution scopes (`execute(:name) { ... }`) are **globally addressable**. A `cal
 
 ### Trade-off
 
-The risk is naming collisions. With a flat namespace, two scopes with the same name overwrite silently (the `@execution_procs[scope]` array just accumulates). This is analogous to CSS selectors or Make targets — simple addressing at the cost of global uniqueness discipline.
+The risk is naming collisions. With a flat namespace, two scopes with the same name accumulate silently (the `@execution_procs[scope]` array appends blocks rather than replacing them). This is analogous to CSS selectors or Make targets — simple addressing at the cost of global uniqueness discipline.
 
 ---
 

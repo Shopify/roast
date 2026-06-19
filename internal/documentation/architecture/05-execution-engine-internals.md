@@ -532,11 +532,11 @@ All bound via `define_singleton_method` on the `CogInputContext`:
 | `kwarg?(key)` | `params.kwargs.include?(key)` | `bool` |
 | `kwargs` | `params.kwargs.dup` | `Hash[Symbol, String]` |
 | `tmpdir` | `Pathname.new(...).realpath` | `Pathname` |
-| `template(path, args)` | 13-candidate resolution + ERB | `String` |
+| `template(path, args)` | 22-candidate resolution + ERB | `String` |
 
 **Defensive copying**: `targets`, `args`, `kwargs` all return `.dup`. Lighter than `deep_dup` because their contents are simple values (strings, symbols).
 
-### 4.4 Template Resolution (lines 182–223) — 13-Candidate Priority Stack
+### 4.4 Template Resolution (lines 185–244) — 22-Candidate Priority Stack
 
 Given `template("greeting", name: "World")`:
 
@@ -548,19 +548,24 @@ Given `template("greeting", name: "World")`:
 5.  workflow_dir / "prompts" / path
 6.  workflow_dir / "prompts" / "#{path}.erb"
 7.  workflow_dir / "prompts" / "#{path}.md.erb"
-8.  pwd / path
-9.  pwd / "#{path}.erb"
-10. pwd / "#{path}.md.erb"
-11. pwd / "prompts" / path
-12. pwd / "prompts" / "#{path}.erb"
-13. pwd / "prompts" / "#{path}.md.erb"
+8.  workflow_dir / "templates" / path
+9.  workflow_dir / "templates" / "#{path}.erb"
+10. workflow_dir / "templates" / "#{path}.md.erb"
+11. pwd / path
+12. pwd / "#{path}.erb"
+13. pwd / "#{path}.md.erb"
+14. pwd / "prompts" / path
+15. pwd / "prompts" / "#{path}.erb"
+16. pwd / "prompts" / "#{path}.md.erb"
+17. pwd / "templates" / path
+18. pwd / "templates" / "#{path}.erb"
+19. pwd / "templates" / "#{path}.md.erb"
+20–22. Tilde-expanded (~/) variants of workflow_dir and pwd paths
 ```
 
 Uses `candidate_paths.find(&:exist?)` — first match wins. Renders with `ERB.new(resolved_path.read).result_with_hash(args)`.
 
 Raises `CogInputContext::ContextNotFoundError` if no candidate exists.
-
-**Known bug**: `Pathname` does NOT expand `~` for home directory. Tracked as [issue #663](https://github.com/Shopify/roast/issues/663).
 
 ### 4.5 Error Hierarchy
 
@@ -572,7 +577,8 @@ Roast::Error
     CogSkippedError
     CogFailedError
     CogStoppedError
-  CogInputContext::ContextNotFoundError  ← raised by template() and from()
+  CogInputContext::CogInputContextError
+    ContextNotFoundError           ← raised by template() and from()
 ```
 
 **Intentional separation**: `CogOutputAccessError` is a *consumer-side* error (raised when accessing another cog's output). `CogError` is a *producer-side* error (raised within a cog's own lifecycle). They're separate hierarchies under `Roast::Error` because they serve different error handling audiences.
@@ -581,7 +587,7 @@ Roast::Error
 
 ## 5. Cog.run! Lifecycle (Detailed)
 
-**File**: `lib/roast/cog.rb`, lines 71–101
+**File**: `lib/roast/cog.rb`, lines 71–102
 
 ### 5.1 Method Signature
 

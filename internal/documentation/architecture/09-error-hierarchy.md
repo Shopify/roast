@@ -19,9 +19,9 @@ StandardError
 │   ├── NoCommandProvidedError                # lib/roast/command_runner.rb:21
 │   └── TimeoutError                          # lib/roast/command_runner.rb:23
 │
-├── Roast::EventMonitor::EventMonitorError    # lib/roast/event_monitor.rb:9
-│   ├── EventMonitorAlreadyStartedError       # lib/roast/event_monitor.rb:11
-│   └── EventMonitorNotRunningError           # lib/roast/event_monitor.rb:13
+├── Roast::EventMonitor::EventMonitorError    # lib/roast/event_monitor.rb:11
+│   ├── EventMonitorAlreadyStartedError       # lib/roast/event_monitor.rb:13
+│   └── EventMonitorNotRunningError           # lib/roast/event_monitor.rb:15
 │
 └── Roast::ControlFlow::Base                  # lib/roast/control_flow.rb:7
     ├── SkipCog                               # lib/roast/control_flow.rb:11
@@ -111,7 +111,7 @@ Roast::Error                                              # lib/roast/error.rb:6
     └── PiFailedError                                    # ...pi_invocation.rb:18
 ```
 
-**Total**: 4 root branches, 14 intermediate error classes, 38 leaf error classes.
+**Total**: 4 root branches, 13 intermediate error classes, 37 leaf error classes.
 
 ---
 
@@ -173,9 +173,9 @@ These occur during `prepare!` when the cog graph is being assembled.
 
 | Error | Raised by | When |
 |-------|-----------|------|
-| `InvalidLoadableReference` | `Workflow#resolve_and_validate_loadable` (line 117, 123) | `use` references a class that doesn't exist or isn't a valid Roast primitive |
-| `CogAlreadyDefinedError` | `Cog::Store#push` (line 21) | Two cogs with the same name in the same scope |
-| `CouldNotDeriveCogNameError` | `Cog::Registry#derive_name` (line 63) | A custom cog class can't be converted to a method name via `demodulize.underscore` |
+| `InvalidLoadableReference` | `Workflow#use` (line 117, 123) | `use` references a class that doesn't exist or isn't a valid Roast primitive |
+| `CogAlreadyDefinedError` | `Cog::Store#insert` (line 21) | Two cogs with the same name in the same scope |
+| `CouldNotDeriveCogNameError` | `Cog::Registry#create_registration` (line 63) | A custom cog class can't be converted to a method name via `demodulize.underscore` |
 | `IllegalCogNameError` (EM) | `EM#bind_cog` (line 193) | Cog name collides with existing method on ExecutionContext |
 | `IllegalCogNameError` (CM) | `CM#bind_registered_cogs` (line 92) | Cog name collides with existing method on ConfigContext |
 
@@ -187,7 +187,7 @@ These occur during `prepare!` when the cog graph is being assembled.
 
 | Error | Raised by | When |
 |-------|-----------|------|
-| `InvalidConfigError` | `Config#validate!` overrides, `Config#working_directory` (lines 297–298), `Map::Config#valid_parallel!` (line 89), `Chat::Config#valid_api_key!` (line 102), `Chat::Config#valid_provider!` (line 41), `Agent::Config#valid_provider!` (line 41) | A config value is invalid or missing after the merge cascade completes |
+| `InvalidConfigError` | `Config#validate!` overrides, `Config#working_directory` (lines 297–298), `Map::Config#valid_parallel!` (line 89), `Chat::Config#valid_api_key!` (line 124), `Chat::Config#valid_provider!` (line 70), `Agent::Config#valid_provider!` (line 54) | A config value is invalid or missing after the merge cascade completes |
 
 **Caught internally?** Never — propagates as a fatal workflow configuration error.
 
@@ -223,10 +223,10 @@ These form the graduated tolerance model used by `CogInputManager`.
 
 | Error | Raised by | When |
 |-------|-----------|------|
-| `ExecutionScopeDoesNotExistError` | `EM#run!` (line 164) | `run:` param references a scope name that was never declared |
+| `ExecutionScopeDoesNotExistError` | `EM#prepare!` via private `my_execution_procs` (line 164) | `run:` param references a scope name that was never declared |
 | `ExecutionScopeNotSpecifiedError` | `Call::Manager` (line 94), `Map::Manager` (line 261), `Repeat::Manager` (line 211) | System cog created without `run:` parameter |
 | `OutputsAlreadyDefinedError` | `EM#on_outputs` (line 241), `EM#on_outputs!` (line 248) | Two `outputs`/`outputs!` blocks declared in same scope |
-| `ContextNotFoundError` | `CogInputManager#resolve_template_path` (line 219), `Call::InputContext#from` (line 149), `Map::InputContext#collect` (line 377), `Map::InputContext#reduce` (line 428) | Template file not found, or `from`/`collect`/`reduce` called with nil EM |
+| `ContextNotFoundError` | `CogInputManager#resolve_template_path` (line 240), `Call::InputContext#from` (line 149), `Map::InputContext#collect` (line 377), `Map::InputContext#reduce` (line 428) | Template file not found, or `from`/`collect`/`reduce` called with nil EM |
 | `MapIterationDidNotRunError` | `Map::Output#iteration` (line 220) | Accessing a map iteration that was broken/never executed |
 
 **Caught internally?** `ContextNotFoundError` in template resolution propagates to `Cog#run!`. The others always propagate.
@@ -237,7 +237,7 @@ These form the graduated tolerance model used by `CogInputManager`.
 
 | Error | Raised by | When |
 |-------|-----------|------|
-| `UnknownProviderError` | `Agent#execute` (line 66) | Config specifies an unrecognized provider name |
+| `UnknownProviderError` | `Agent#execute` (line 67) | Config specifies an unrecognized provider name |
 | `MissingProviderError` | (defined but not currently raised in source) | Reserved for future use |
 | `MissingPromptError` | (defined but not currently raised in source) | Reserved for future use |
 | `ClaudeAlreadyStartedError` | `ClaudeInvocation#start!` (line 77) | `start!` called on running invocation |
@@ -259,8 +259,8 @@ These form the graduated tolerance model used by `CogInputManager`.
 |-------|-----------|------|
 | `NoCommandProvidedError` | `CommandRunner.execute` (line 62) | Empty args array passed to execute |
 | `TimeoutError` | `CommandRunner.execute` (line 136) | Command exceeds configured timeout |
-| `EventMonitorAlreadyStartedError` | `EventMonitor.start!` (line 25) | `start!` called when queue is already open |
-| `EventMonitorNotRunningError` | `EventMonitor.stop!` (line 42) | `stop!` called when queue is already closed |
+| `EventMonitorAlreadyStartedError` | `EventMonitor.start!` (line 27) | `start!` called when queue is already open |
+| `EventMonitorNotRunningError` | `EventMonitor.stop!` (line 44) | `stop!` called when queue is already closed |
 
 **Caught internally?** `TimeoutError` is not caught — it propagates through the cmd cog's execute method. `EventMonitor` errors propagate to the CLI bootstrap.
 
@@ -270,7 +270,7 @@ These form the graduated tolerance model used by `CogInputManager`.
 
 | Layer | What it catches | What propagates |
 |-------|----------------|-----------------|
-| `Cog#run!` | `SkipCog`, `FailCog` (conditionally), stores `@error` for all others | `Next`, `Break`, `StandardError` (if `abort_on_failure?`) |
+| `Cog#run!` | `SkipCog`, `FailCog` (conditionally), `Next`/`Break` (marks `@skipped`, re-raises); sets `@failed = true` for all others | `Next`, `Break`, `StandardError` (if `abort_on_failure?`) |
 | `ExecutionManager#run!` (sync) | Nothing — re-raises immediately after `wait` | Everything |
 | `ExecutionManager#run!` (async barrier) | `Next` (swallowed), `Break` (stored + re-raised) | `Break`, other errors |
 | `compute_final_output` | `SkipCog`, `Next` (in outputs eval), `CogNotYetRunError`, `CogSkippedError`, `CogStoppedError` | `CogFailedError`, `CogDoesNotExistError` |

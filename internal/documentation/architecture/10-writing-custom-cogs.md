@@ -20,7 +20,7 @@ Every custom cog must satisfy a minimal contract to integrate with the Roast fra
 
 | # | Element | Details |
 |---|---------|---------|
-| 4 | **Nested `Config` class** inheriting from `Cog::Config` | Auto-discovered via `find_child_config_or_default` (cog.rb line 30). Falls back to base `Cog::Config` (empty, no validation). |
+| 4 | **Nested `Config` class** inheriting from `Cog::Config` | Auto-discovered via `find_child_config_or_default` (cog.rb line 29). Falls back to base `Cog::Config` (empty, no validation). |
 | 5 | **Nested `Output` class** inheriting from `Cog::Output` | **NOT auto-discovered** — unlike Config and Input, there is no `find_child_output_or_default`. Your `execute` method constructs and returns the Output directly. |
 
 ### The Auto-Discovery Asymmetry
@@ -712,6 +712,10 @@ Key patterns to copy:
 - `coerce` calls `super` — maintains the `coerce_ran?` flag
 - `Output#initialize` calls `super()` — empty parens (base has no-arg constructor)
 - `execute` returns an Output instance — never a raw value
+
+**Note**: `TestInput` and `TestOutput` are defined outside the `TestCog` class body
+using the `TestCogSupport` module namespace. This follows the project convention
+enforced by the `Roast/NoTestClassNesting` RuboCop cop.
 
 ---
 

@@ -16,7 +16,7 @@
 File.write("./tmp/claude-messages.log", "#{json}\n", mode: "a") if raw_dump_file
 ```
 
-The `raw_dump_file` parameter is accepted but **never used as the write target**. The write always goes to `./tmp/claude-messages.log` regardless of what path is passed. The parameter only controls whether any write occurs at all (truthiness gate).
+The `raw_dump_file` parameter is accepted but **never used as the write target**. The write always goes to `./tmp/claude-messages.log` regardless of what path is passed. The parameter only controls whether any write occurs at all (truthiness gate). Additionally, `raw_dump_file` IS used on line 17 to create the dump file's parent directory (`raw_dump_file&.dirname&.mkpath`), so it creates a stray directory at the custom path while writing data to the hardcoded path.
 
 **Impact**: Any code passing a custom dump path will silently write to the wrong location.
 
@@ -155,7 +155,7 @@ ActiveSupport's `present?` returns `false` for `false`, `""`, `[]`, `{}`, and `n
 | File | Line | Target | Purpose |
 |------|------|--------|---------|
 | `config_manager.rb` | 48 | `@global_config.@values` | Seed new config with global values |
-| `log.rb` | 78 | `@logger.@logdev` | Check if logger is writing to a stream |
+| `log.rb` | 99 | `@logger.@logdev` | Check if logger is writing to a stream |
 | `call.rb` | 148 | `call_cog_output.@execution_manager` | `from()` scope bridging |
 | `call.rb` | 152 | `em.@scope_value` | Extract scope value for `from()` |
 | `call.rb` | 153 | `em.@scope_index` | Extract scope index for `from()` |
@@ -173,7 +173,7 @@ ActiveSupport's `present?` returns `false` for `false`, `""`, `[]`, `{}`, and `n
 
 ### 2.5 `wait` Uses Bare Rescue
 
-**File**: `lib/roast/cog.rb:105–107`
+**File**: `lib/roast/cog.rb:105–109`
 
 ```ruby
 def wait
@@ -181,7 +181,7 @@ def wait
 rescue
 ```
 
-The bare `rescue` catches ALL exceptions (including `SignalException`, `SystemExit`, etc.) and silently swallows them. This means a cog that fails during async execution will appear to succeed if `wait` is called independently of `wait_for_task_with_exception_handling`.
+The bare `rescue` catches `StandardError` and its descendants (not `SignalException` or `SystemExit`) and silently swallows them. This means a cog that fails during async execution will appear to succeed if `wait` is called independently of `wait_for_task_with_exception_handling`.
 
 **Impact**: Direct `cog.wait` calls (as used in `CogInputManager` for blocking output access) will never raise — the cog's failure is only visible through its state (`failed?`, `stopped?`).
 
@@ -208,7 +208,7 @@ The default is now `true` (abort on failure), matching the RBI documentation.
 
 ### 4.1 Ghost RuboCop Exclusion
 
-**File**: `.rubocop.yml:33`
+**File**: `.rubocop.yml:38`
 
 ```yaml
 - "lib/roast/sorbet_runtime_stub.rb"
@@ -326,9 +326,9 @@ This means adding `async!` to a cog that uses `next!` will **silently break** th
 
 ---
 
-### 7.4 `map` Parallel Results Have `nil` Entries for Skipped Iterations
+### 7.4 `map` Parallel Results Have `nil` Entries for Unexecuted Iterations
 
-When a parallel map iteration calls `skip!` or `next!`, its entry in the results is `nil`. The `collect` helper preserves these nils unless filtered explicitly:
+When a parallel map iteration is terminated by `break!` before it starts, its entry in the results is `nil`. The `collect` helper preserves these nils unless filtered explicitly. Note: iterations where `skip!` or `next!` was called still have a valid `ExecutionManager` entry (the EM was created and `prepare!`/`run!` was called before the exception fired), so only truly un-started iterations produce `nil`.
 
 ```ruby
 collect(map!(:process)) { |output| output&.text }  # may contain nils
@@ -339,9 +339,9 @@ collect(map!(:process)) { |output| output&.text }.compact  # filtered
 
 ## 8. Development Environment Gotchas
 
-### 8.1 `ROAST_WORKING_DIRECTORY` Has Dual Usage
+### 8.1 `ROAST_WORKING_DIRECTORY` Is Used by CLI
 
-This environment variable is used both by the CLI (to set the working directory for all cmd cogs) AND by the functional test infrastructure (to override the sandbox path). Setting it for testing purposes may inadvertently affect workflow behavior.
+This environment variable is used by the CLI in two places: to resolve relative workflow paths and to `Dir.chdir` for workflow execution. Setting it changes the effective working directory for all cmd cogs.
 
 ---
 

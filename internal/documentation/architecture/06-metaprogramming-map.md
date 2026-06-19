@@ -107,7 +107,7 @@ end
 | **Signatures** | `outputs(&block)`, `outputs!(&block)` |
 | **Dispatch targets** | `on_outputs` (line 240), `on_outputs!` (line 247) |
 | **Behavior** | Stores the proc for later evaluation in `compute_final_output` |
-| **Mutual exclusion** | Both raise `OutputsAlreadyDefinedError` if either is already set (line 241/249) |
+| **Mutual exclusion** | Both raise `OutputsAlreadyDefinedError` if either is already set (line 241/248) |
 
 **Installation code** (lines 228–237):
 ```ruby
@@ -179,7 +179,7 @@ end
 | Method | Installer | Dispatch | Lines |
 |--------|-----------|----------|-------|
 | `outputs` | `bind_outputs` | `on_outputs` | EM:228–237 |
-| `outputs!` | `bind_outputs` | `on_outputs!` | EM:228–237 |
+| `outputs!` | `bind_outputs` | `on_outputs!` | EM:228–237, raises at EM:248 |
 | `agent` | `bind_cog` | `on_execute(Cogs::Agent, ...)` | EM:187–197 |
 | `chat` | `bind_cog` | `on_execute(Cogs::Chat, ...)` | EM:187–197 |
 | `cmd` | `bind_cog` | `on_execute(Cogs::Cmd, ...)` | EM:187–197 |
@@ -284,7 +284,7 @@ These are defined directly in `CogInputContext` class body (`lib/roast/cog_input
 |--------|-----------|------|
 | `from` | `(call_cog_output, &block)` | 147 |
 
-**From `SystemCogs::Map::InputContext`** (`lib/roast/system_cogs/map.rb:342–448`):
+**From `SystemCogs::Map::InputContext`** (`lib/roast/system_cogs/map.rb:342–449`):
 
 | Method | Signature | Line |
 |--------|-----------|------|
@@ -326,7 +326,7 @@ These are defined directly in `CogInputContext` class body (`lib/roast/cog_input
 | `kwargs` | `bind_workflow_context` | Dynamic | CIM:82–104 |
 | `tmpdir` | `bind_workflow_context` | Dynamic | CIM:82–104 |
 | `template(path, args)` | `bind_workflow_context` | Dynamic | CIM:82–104 |
-| `skip!(msg)` | Class body | Hardcoded | CIC:16 |
+| `skip!(msg)` | Class body | Hardcoded | CIC:15–16 |
 | `fail!(msg)` | Class body | Hardcoded | CIC:20 |
 | `next!(msg)` | Class body | Hardcoded | CIC:25 |
 | `break!(msg)` | Class body | Hardcoded | CIC:30 |
@@ -334,7 +334,7 @@ These are defined directly in `CogInputContext` class body (`lib/roast/cog_input
 | `collect(output, &blk)` | `Map::InputContext` module | Included | map.rb:375 |
 | `reduce(output, init, &blk)` | `Map::InputContext` module | Included | map.rb:426 |
 
-**Total**: 37 methods available on each `CogInputContext` instance (21 dynamic triplets + 10 dynamic workflow accessors + 4 hardcoded control flow + 2 module includes from `Map::InputContext` + 1 module include from `Call::InputContext`).
+**Total**: 38 methods available on each `CogInputContext` instance (21 dynamic triplets + 10 dynamic workflow accessors + 4 hardcoded control flow + 2 module includes from `Map::InputContext` + 1 module include from `Call::InputContext`).
 
 ---
 
@@ -456,8 +456,12 @@ Three locations in the codebase reach into objects via `instance_variable_get` r
 | `Call::InputContext#from` (line 148) | `call_cog_output` | `@execution_manager` | Output objects are opaque to consumers. The `from` method needs EM access to retrieve `final_output` and `cog_input_context`. |
 | `Map::InputContext#collect` (line 376) | `map_cog_output` | `@execution_managers` | Same pattern as above — the array of EMs is internal to the Output. |
 | `Map::InputContext#reduce` (line 427) | `map_cog_output` | `@execution_managers` | Same as collect. |
-| `Call::InputContext#from` (line 152) | `em` | `@scope_value` | Scope value is accessible via `attr_reader :scope_value`, but `@scope_index` is also an attr_reader. However, `instance_variable_get` is used for `@scope_value` to apply `.deep_dup` in the same call chain. |
+| `Call::InputContext#from` (line 152) | `em` | `@scope_value` | Scope value is accessible via `attr_reader`, but `instance_variable_get` is used to apply `.deep_dup` in the same call chain. |
 | `Call::InputContext#from` (line 153) | `em` | `@scope_index` | To pass it to the block. |
+| `Map::InputContext#collect` (line 382) | `em` | `@scope_value` | Per-iteration value in `collect()` with block. |
+| `Map::InputContext#collect` (line 383) | `em` | `@scope_index` | Per-iteration index in `collect()` with block. |
+| `Map::InputContext#reduce` (line 434) | `em` | `@scope_value` | Per-iteration value in `reduce()`. |
+| `Map::InputContext#reduce` (line 435) | `em` | `@scope_index` | Per-iteration index in `reduce()`. |
 
 ---
 
@@ -472,7 +476,7 @@ The three RBI shim files serve as **the authoritative API reference** for dynami
 |-----------|-------------|-------------|
 | `sorbet/rbi/shims/lib/roast/config_context.rbi` | 8 ConfigContext methods | 323 lines |
 | `sorbet/rbi/shims/lib/roast/execution_context.rbi` | 9 ExecutionContext methods | 496 lines |
-| `sorbet/rbi/shims/lib/roast/cog_input_context.rbi` | 37 CogInputContext methods | 1,198 lines |
+| `sorbet/rbi/shims/lib/roast/cog_input_context.rbi` | 38 CogInputContext methods | 1,198 lines |
 
 **Usage for AI agents**: When you need to understand what a DSL method does, look up its entry in the corresponding RBI file first. The comments there are written for human readers and are more comprehensive than the implementation code.
 
@@ -485,7 +489,7 @@ System cogs use `Manager` modules mixed into `ExecutionManager` to access its pr
 | Module | Source | Mixed in at | Provides |
 |--------|--------|-------------|----------|
 | `SystemCogs::Call::Manager` | `lib/roast/system_cogs/call.rb:87–116` | EM line 7 | `create_call_system_cog` |
-| `SystemCogs::Map::Manager` | `lib/roast/system_cogs/map.rb:255–338` | EM line 8 | `create_map_system_cog`, `create_execution_manager_for_map_item`, `execute_map_in_series`, `execute_map_in_parallel` |
+| `SystemCogs::Map::Manager` | `lib/roast/system_cogs/map.rb:255–339` | EM line 8 | `create_map_system_cog`, `create_execution_manager_for_map_item`, `execute_map_in_series`, `execute_map_in_parallel` |
 | `SystemCogs::Repeat::Manager` | `lib/roast/system_cogs/repeat.rb` | EM line 9 | `create_repeat_system_cog` |
 
 These modules freely access EM instance variables (`@cog_registry`, `@config_manager`, `@all_execution_procs`, `@workflow_context`) because they execute in the EM's context after being included.
@@ -494,8 +498,8 @@ These modules freely access EM instance variables (`@cog_registry`, `@config_man
 
 | Module | Source | Mixed in at | Provides |
 |--------|--------|-------------|----------|
-| `SystemCogs::Call::InputContext` | `lib/roast/system_cogs/call.rb:118–158` | CIC line 7 | `from` |
-| `SystemCogs::Map::InputContext` | `lib/roast/system_cogs/map.rb:341–449` | CIC line 8 | `collect`, `reduce` |
+| `SystemCogs::Call::InputContext` | `lib/roast/system_cogs/call.rb:119–158` | CIC line 7 | `from` |
+| `SystemCogs::Map::InputContext` | `lib/roast/system_cogs/map.rb:342–449` | CIC line 8 | `collect`, `reduce` |
 
 **Note**: There is no `Repeat::InputContext` module. Repeat cogs use `Map::Output` for their `.results` field, which enables reuse of `collect` and `reduce` without a separate module.
 
@@ -561,7 +565,7 @@ Given a method call `xyz(...)` in Roast DSL code:
 | `reduce(map!(:x), 0)` | `lib/roast/system_cogs/map.rb` → `InputContext#reduce` |
 | `skip!` / `fail!` / `next!` / `break!` | `lib/roast/cog_input_context.rb` (hardcoded) |
 | `target!` / `targets` / `args` / `kwargs` | `lib/roast/cog_input_manager.rb` → `bind_workflow_context` |
-| `template("path")` | `lib/roast/cog_input_manager.rb` → `#template` (line 182) |
+| `template("path")` | `lib/roast/cog_input_manager.rb` → `#template` (line 185) |
 
 ---
 

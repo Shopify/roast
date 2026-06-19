@@ -39,7 +39,7 @@ Control flow exceptions pass through four distinct layers, each with its own cat
 
 ### Layer 1: Cog.run!
 
-**Source**: `lib/roast/cog.rb:71–101`
+**Source**: `lib/roast/cog.rb:71–102`
 
 This is the innermost boundary. Every exception raised during cog input evaluation or execution is first caught here.
 
@@ -259,7 +259,7 @@ This is the definitive reference. Each cell describes what happens when the give
 | Context | Sync Cog | Async Cog |
 |---------|----------|-----------|
 | **In Call** | Propagates from `em.run!` → caught by Call::Manager (line 108). Scope ends early, returns normally. | Swallowed by inner EM's barrier handler (line 150). Scope ends normally. |
-| **In Map (serial)** | Caught by `rescue ControlFlow::Next` (line 294). Loop advances to next item. | N/A (serial mode = all cogs are sync within each iteration's EM). |
+| **In Map (serial)** | Caught by `rescue ControlFlow::Next` (line 294). Loop advances to next item. | Swallowed by inner EM's barrier handler. Task ends normally. Other iterations continue. (Serial mode controls iteration sequencing; individual cogs within iterations CAN be async.) |
 | **In Map (parallel)** | Propagates from `em.run!` → caught by per-task `rescue ControlFlow::Next` (line 316). Other iterations continue. | Swallowed by inner EM's barrier handler. Task ends normally. Other iterations continue. |
 | **In Repeat** | ⚠️ Propagates from `em.run!` → **NOT caught** by Repeat::Manager → **escapes repeat entirely** to parent scope. | Swallowed by inner EM's barrier handler. Iteration ends normally. `final_output` feeds next iteration. Loop continues. |
 | **Top-level** | ⚠️ Propagates from `em.run!` → **NOT caught** by `Workflow.start!` → **unhandled exception**. | Swallowed by EM's barrier handler. Workflow ends normally. |
@@ -270,9 +270,9 @@ This is the definitive reference. Each cell describes what happens when the give
 | Context | Sync Cog | Async Cog |
 |---------|----------|-----------|
 | **In Call** | Propagates from `em.run!` → caught by Call::Manager (line 108). Scope ends early, returns normally. | Re-raised by EM barrier handler (line 155) → caught by Call::Manager. Same result. |
-| **In Map (serial)** | Caught by `rescue ControlFlow::Break` (line 297). Loop exits via `break`. | N/A (serial). |
+| **In Map (serial)** | Caught by `rescue ControlFlow::Break` (line 297). Loop exits via `break`. | Async cogs CAN exist in serial map iterations; Break is re-raised by inner EM barrier handler → caught by outer map serial rescue (line 297). |
 | **In Map (parallel)** | Propagates from `em.run!` → ⚠️ goes to per-task fiber, not caught per-task → raised during `barrier.wait` → caught (line 326). Barrier stops. | Re-raised by inner EM barrier handler → caught by outer map `barrier.wait` (line 326). Barrier stops. |
-| **In Repeat** | Caught by `rescue ControlFlow::Break` (line 231). Loop exits. | Re-raised by inner EM barrier handler → caught by Repeat (line 231). Loop exits. |
+| **In Repeat** | Caught by `rescue ControlFlow::Break` (line 230). Loop exits. | Re-raised by inner EM barrier handler → caught by Repeat (line 230). Loop exits. |
 | **Top-level** | Caught by `Workflow.start!` (line 68). Graceful termination. | Re-raised by EM barrier handler → caught by `Workflow.start!`. Graceful termination. |
 | **In `outputs` block** | ⚠️ **NOT caught** by `compute_final_output` — propagates through the `ensure` block. See Section 6. | Same. |
 
@@ -303,9 +303,9 @@ CogOutputAccessError < Roast::Error      (NOT under ControlFlow::Base!)
 
 | Method | Blocks on async? | On error | Returns |
 |--------|-------------------|----------|---------|
-| `cog_type(:name)` (tolerant) | No | Catches all `CogOutputAccessError` **except** `CogDoesNotExistError` → returns `nil` | `Cog::Output?` |
+| `cog_type(:name)` (tolerant) | **Yes** — delegates to `cog_output!` which calls `cog.wait` (line 73) | Catches all `CogOutputAccessError` **except** `CogDoesNotExistError` → returns `nil` | `Cog::Output?` |
 | `cog_type!(:name)` (strict) | **Yes** — calls `cog.wait` (line 73) | Raises `CogSkippedError`, `CogFailedError`, `CogStoppedError`, `CogNotYetRunError` | `Cog::Output` |
-| `cog_type?(:name)` (query) | No | Returns `false` for any access error except `CogDoesNotExistError` | `bool` |
+| `cog_type?(:name)` (query) | **Yes** — delegates to `cog_output` which calls `cog.wait` | Returns `false` for any access error except `CogDoesNotExistError` | `bool` |
 
 The strict accessor (`!`) performs a **blocking wait** on async cogs before checking state. This is what makes sync cogs act as implicit barriers — any `!` access to a still-running async cog pauses the current fiber until that cog completes.
 
@@ -337,7 +337,7 @@ The check order matters: `skipped?` → `failed?` → `stopped?` → `succeeded?
 
 **Source**: `lib/roast/execution_manager.rb:254–283`
 
-The `compute_final_output` method runs in the `ensure` block of `ExecutionManager.run!` (line 112), guaranteeing it always executes. It is also called eagerly at line 109 (normal completion) and line 155 (before re-raising `Break`). The `@final_output_computed` flag (line 256) ensures idempotency.
+The `compute_final_output` method runs in the `ensure` block of `ExecutionManager.run!` (line 112), guaranteeing it always executes. It is also called eagerly at line 109 (normal completion) and line 155 (before re-raising `Break`). The `@final_output_computed` flag (line 255, with assignment on line 257) ensures idempotency.
 
 ### Error Handling Matrix
 
