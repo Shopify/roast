@@ -31,7 +31,7 @@ module Roast
       test "valid_provider! raises on invalid provider" do
         @config.provider(:invalid_provider)
 
-        error = assert_raises(ArgumentError) do
+        error = assert_raises(Cog::Config::InvalidConfigError) do
           @config.valid_provider!
         end
 
