@@ -67,7 +67,7 @@ module Roast
         def valid_provider!
           provider = @values[:provider] || PROVIDERS.keys.first
           unless PROVIDERS.include?(provider)
-            raise ArgumentError, "'#{provider}' is not a valid provider. Available providers include: #{PROVIDERS.keys.join(", ")}"
+            raise InvalidConfigError, "'#{provider}' is not a valid provider. Available providers include: #{PROVIDERS.keys.join(", ")}"
           end
 
           provider
