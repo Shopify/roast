@@ -189,13 +189,13 @@ module Roast
 
       # Model configuration tests
       test "model sets model value" do
-        @config.model("gpt-4")
+        @config.model("gpt-5.5")
 
-        assert_equal "gpt-4", @config.valid_model
+        assert_equal "gpt-5.5", @config.valid_model
       end
 
       test "use_default_model! resets model to provider default" do
-        @config.model("gpt-4")
+        @config.model("gpt-5.5")
         @config.use_default_model!
 
         assert_equal Chat::Config::PROVIDERS.dig(:openai, :default_model), @config.valid_model

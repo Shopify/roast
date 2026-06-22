@@ -125,7 +125,7 @@ end
 Common options you can set:
 
 - `model "name"` - Which LLM model to use
-    - OpenAI: "gpt-4o-mini" (default), "gpt-4o", "gpt-4-turbo", etc.
+    - OpenAI: "gpt-4o-mini" (default), "gpt-4o", "gpt-5.5", etc.
     - Anthropic: "claude-haiku-4-5" (default), "claude-sonnet-4-6", "claude-opus-4-7", etc.
     - Perplexity: "sonar" (default), "sonar-pro", "sonar-deep-research", etc.
     - Gemini: "gemini-3.1-flash-lite" (default), "gemini-3-flash-preview", "gemini-3.1-pro-preview", etc.

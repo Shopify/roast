@@ -190,13 +190,13 @@ module Roast
         end
 
         test "command_line includes model when configured" do
-          @config.model("anthropic/claude-sonnet-4-20250514")
+          @config.model("anthropic/claude-sonnet-4-6")
           invocation = Pi::PiInvocation.new(@config, "Test prompt", nil)
 
           command = invocation.send(:command_line)
           model_index = command.index("--model")
           assert model_index
-          assert_equal "anthropic/claude-sonnet-4-20250514", command[model_index + 1]
+          assert_equal "anthropic/claude-sonnet-4-6", command[model_index + 1]
         end
 
         test "command_line includes replace_system_prompt when configured" do
@@ -290,7 +290,7 @@ module Roast
             type: "message_end",
             message: {
               role: "assistant",
-              model: "claude-sonnet-4-20250514",
+              model: "claude-sonnet-4-6",
               content: [{ type: "text", text: "Response text" }],
               usage: {
                 input: 100,
@@ -306,9 +306,9 @@ module Roast
           @invocation.send(:handle_message, data)
 
           acc = @invocation.instance_variable_get(:@model_usage_accumulator)
-          assert acc.key?("claude-sonnet-4-20250514")
-          assert_equal 100, acc["claude-sonnet-4-20250514"][:input]
-          assert_equal 50, acc["claude-sonnet-4-20250514"][:output]
+          assert acc.key?("claude-sonnet-4-6")
+          assert_equal 100, acc["claude-sonnet-4-6"][:input]
+          assert_equal 50, acc["claude-sonnet-4-6"][:output]
         end
 
         test "accumulate_usage sums across multiple message_end events for the same model" do
@@ -336,17 +336,17 @@ module Roast
           sonnet_usage = { input: 20, output: 80, cacheRead: 0, cacheWrite: 0, cost: { total: 0.004 } }
 
           @invocation.send(:accumulate_usage, "claude-haiku-4-5-20251001",  haiku_usage)
-          @invocation.send(:accumulate_usage, "claude-sonnet-4-20250514",   sonnet_usage)
-          @invocation.send(:accumulate_usage, "claude-haiku-4-5-20251001",  haiku_usage)
+          @invocation.send(:accumulate_usage, "claude-sonnet-4-6", sonnet_usage)
+          @invocation.send(:accumulate_usage, "claude-haiku-4-5-20251001", haiku_usage)
 
           acc = @invocation.instance_variable_get(:@model_usage_accumulator)
           assert_equal 20,  acc["claude-haiku-4-5-20251001"][:input]
           assert_equal 100, acc["claude-haiku-4-5-20251001"][:output]
           assert_in_delta 0.002, acc["claude-haiku-4-5-20251001"][:cost], 0.00001
 
-          assert_equal 20,  acc["claude-sonnet-4-20250514"][:input]
-          assert_equal 80,  acc["claude-sonnet-4-20250514"][:output]
-          assert_in_delta 0.004, acc["claude-sonnet-4-20250514"][:cost], 0.00001
+          assert_equal 20,  acc["claude-sonnet-4-6"][:input]
+          assert_equal 80,  acc["claude-sonnet-4-6"][:output]
+          assert_in_delta 0.004, acc["claude-sonnet-4-6"][:cost], 0.00001
 
           assert_in_delta 0.006, @invocation.instance_variable_get(:@total_cost), 0.00001
         end
@@ -382,7 +382,7 @@ module Roast
 
         test "finalize_stats creates proper stats object" do
           acc = @invocation.instance_variable_get(:@model_usage_accumulator)
-          acc["claude-sonnet-4-20250514"] = { input: 100, output: 50, cache_read: 200, cache_write: 50, cost: 0.003 }
+          acc["claude-sonnet-4-6"] = { input: 100, output: 50, cache_read: 200, cache_write: 50, cost: 0.003 }
           @invocation.instance_variable_set(:@num_turns, 3)
           @invocation.instance_variable_set(:@total_cost, 0.003)
 
@@ -394,7 +394,7 @@ module Roast
           assert_equal 100, stats.usage.input_tokens
           assert_equal 50, stats.usage.output_tokens
           assert_in_delta 0.003, stats.usage.cost_usd
-          assert stats.model_usage.key?("claude-sonnet-4-20250514")
+          assert stats.model_usage.key?("claude-sonnet-4-6")
         end
 
         test "does not emit duplicate session events" do
