@@ -33,7 +33,6 @@ require "active_support/notifications"
 require "async"
 require "async/semaphore"
 require "rainbow"
-require "rexml/parsers/pullparser"
 require "ruby_llm"
 require "type_toolkit"
 

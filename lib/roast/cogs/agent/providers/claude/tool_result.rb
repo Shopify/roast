@@ -295,9 +295,9 @@ module Roast
             # Formats a TaskOutput tool-result line.
             #
             # Content: sibling tags carrying the task's state, followed by a
-            # trailing <output> of arbitrary unescaped text. A pull parser reads
-            # only as far as the status tag, so the absent single root and the
-            # unescaped <output> body are never reached.
+            # trailing <output> of arbitrary unescaped text. The status tag is
+            # matched directly, so the absent single root and the unescaped
+            # <output> body don't have to parse.
             #
             # Output: "TASKOUTPUT OK <status>" – the text of <status>, or of
             # <retrieval_status> when no <status> tag is present (as on a
@@ -329,7 +329,8 @@ module Roast
               summary.present? ? "#{prefix} #{summary}" : prefix
             end
 
-            # Renders "<TOOL> ERROR <message>" with any <tool_use_error> wrapper stripped.
+            # Renders "<TOOL> ERROR <message>" – the text inside the
+            # <tool_use_error> wrapper, or the raw content when it is unwrapped.
             #
             # Reads the instance's `content` and `tool_name` to produce a single-line
             # error summary. Error messages are intentionally NOT truncated so the full
@@ -341,7 +342,7 @@ module Roast
             #
             #: () -> String
             def error_line
-              message = content.to_s.gsub(%r{</?tool_use_error>}, "").strip
+              message = tag_text("tool_use_error") || content.to_s.strip
               "#{tool_name.to_s.upcase} ERROR #{message}".strip
             end
 
@@ -369,32 +370,18 @@ module Roast
               end
             end
 
-            # Pull-parses `source` and returns the stripped text of the first
-            # <tag> element, or nil when absent. Parsing stops as soon as the
-            # tag is found, so a malformed tail (such as an unescaped <output>
-            # body) is never reached, and a parse error yields nil.
+            # Returns the stripped text inside the first <tag>…</tag> pair in
+            # `source`, or nil when the tag is absent. The body is captured
+            # verbatim by a non-greedy match, so — unlike an XML parser — a body
+            # that itself contains bare angle brackets (such as an error message)
+            # is extracted intact.
             #
-            # Only suitable for tags whose body is plain text: the parser treats
-            # `<` as markup, so it cannot extract a body that itself contains
-            # angle brackets (e.g. an error message).
+            # Matches a single, flat element: the lazy capture stops at the first
+            # closing </tag>, and nested same-name tags are not handled.
             #
             #: (String, ?String) -> String?
             def tag_text(tag, source = content.to_s)
-              parser = REXML::Parsers::PullParser.new(source)
-              current = nil #: String?
-              while parser.has_next?
-                event = parser.pull
-                if event.start_element?
-                  current = event[0]
-                elsif event.end_element?
-                  current = nil
-                elsif event.text? && current == tag
-                  return event[0].strip
-                end
-              end
-              nil
-            rescue REXML::ParseException
-              nil
+              source[%r{<#{Regexp.escape(tag)}>(.*?)</#{Regexp.escape(tag)}>}m, 1]&.strip
             end
           end
         end
