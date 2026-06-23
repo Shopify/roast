@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "nokogiri"
-
 module Roast
   module Cogs
     class Agent < Cog
@@ -297,9 +295,9 @@ module Roast
             # Formats a TaskOutput tool-result line.
             #
             # Content: sibling tags carrying the task's state, followed by a
-            # trailing <output> of arbitrary unescaped text. Parsed leniently
-            # as an XML fragment, which tolerates the absent single root and the
-            # unescaped <output> body.
+            # trailing <output> of arbitrary unescaped text. A pull parser reads
+            # only as far as the status tag, so the absent single root and the
+            # unescaped <output> body are never reached.
             #
             # Output: "TASKOUTPUT OK <status>" – the text of <status>, or of
             # <retrieval_status> when no <status> tag is present (as on a
@@ -312,9 +310,7 @@ module Roast
             #
             #: () -> String
             def format_taskoutput
-              fragment = Nokogiri::XML::DocumentFragment.parse(content.to_s)
-              status = (fragment.at_xpath(".//status") || fragment.at_xpath(".//retrieval_status"))&.text&.strip
-              ok_line(status)
+              ok_line(tag_text("status") || tag_text("retrieval_status"))
             end
 
             #: () -> String
@@ -371,6 +367,34 @@ module Roast
               else
                 value.to_s
               end
+            end
+
+            # Pull-parses `source` and returns the stripped text of the first
+            # <tag> element, or nil when absent. Parsing stops as soon as the
+            # tag is found, so a malformed tail (such as an unescaped <output>
+            # body) is never reached, and a parse error yields nil.
+            #
+            # Only suitable for tags whose body is plain text: the parser treats
+            # `<` as markup, so it cannot extract a body that itself contains
+            # angle brackets (e.g. an error message).
+            #
+            #: (String, ?String) -> String?
+            def tag_text(tag, source = content.to_s)
+              parser = REXML::Parsers::PullParser.new(source)
+              current = nil #: String?
+              while parser.has_next?
+                event = parser.pull
+                if event.start_element?
+                  current = event[0]
+                elsif event.end_element?
+                  current = nil
+                elsif event.text? && current == tag
+                  return event[0].strip
+                end
+              end
+              nil
+            rescue REXML::ParseException
+              nil
             end
           end
         end

@@ -1324,31 +1324,15 @@ class REXML::Document < ::REXML::Element
   def namespaces_cache=(_arg0); end
 
   class << self
-    # Get the entity expansion limit. By default the limit is set to 10000.
-    #
-    # Deprecated. Use REXML::Security.entity_expansion_limit= instead.
-    #
     # source://rexml//lib/rexml/document.rb#417
     def entity_expansion_limit; end
 
-    # Set the entity expansion limit. By default the limit is set to 10000.
-    #
-    # Deprecated. Use REXML::Security.entity_expansion_limit= instead.
-    #
     # source://rexml//lib/rexml/document.rb#410
     def entity_expansion_limit=(val); end
 
-    # Get the entity expansion limit. By default the limit is set to 10240.
-    #
-    # Deprecated. Use REXML::Security.entity_expansion_text_limit instead.
-    #
     # source://rexml//lib/rexml/document.rb#431
     def entity_expansion_text_limit; end
 
-    # Set the entity expansion limit. By default the limit is set to 10240.
-    #
-    # Deprecated. Use REXML::Security.entity_expansion_text_limit= instead.
-    #
     # source://rexml//lib/rexml/document.rb#424
     def entity_expansion_text_limit=(val); end
 
@@ -3335,11 +3319,6 @@ class REXML::Entity < ::REXML::Child
   def write(out, indent = T.unsafe(nil)); end
 
   class << self
-    # Evaluates whether the given string matches an entity definition,
-    # returning true if so, and false otherwise.
-    #
-    # @return [Boolean]
-    #
     # source://rexml//lib/rexml/entity.rb#67
     def matches?(string); end
   end
@@ -3501,45 +3480,30 @@ module REXML::Functions
     # source://rexml//lib/rexml/functions.rb#190
     def concat(*objects); end
 
-    # Fixed by Mike Stok
-    #
     # source://rexml//lib/rexml/functions.rb#204
     def contains(string, test); end
 
     # source://rexml//lib/rexml/functions.rb#38
     def context=(value); end
 
-    # Returns the size of the given list of nodes.
-    #
     # source://rexml//lib/rexml/functions.rb#60
     def count(node_set); end
 
-    # UNTESTED
-    #
     # source://rexml//lib/rexml/functions.rb#347
     def false; end
 
     # source://rexml//lib/rexml/functions.rb#413
     def floor(number); end
 
-    # Helper method.
-    #
     # source://rexml//lib/rexml/functions.rb#87
     def get_namespace(node_set = T.unsafe(nil)); end
 
-    # Since REXML is non-validating, this method is not implemented as it
-    # requires a DTD
-    #
     # source://rexml//lib/rexml/functions.rb#66
     def id(object); end
 
-    # UNTESTED
-    #
     # source://rexml//lib/rexml/functions.rb#352
     def lang(language); end
 
-    # Returns the last node of the given list of nodes.
-    #
     # source://rexml//lib/rexml/functions.rb#51
     def last; end
 
@@ -3561,25 +3525,9 @@ module REXML::Functions
     # source://rexml//lib/rexml/functions.rb#265
     def normalize_space(string = T.unsafe(nil)); end
 
-    # UNTESTED
-    #
     # source://rexml//lib/rexml/functions.rb#337
     def not(object); end
 
-    # a string that consists of optional whitespace followed by an optional
-    # minus sign followed by a Number followed by whitespace is converted to
-    # the IEEE 754 number that is nearest (according to the IEEE 754
-    # round-to-nearest rule) to the mathematical value represented by the
-    # string; any other string is converted to NaN
-    #
-    # boolean true is converted to 1; boolean false is converted to 0
-    #
-    # a node-set is first converted to a string as if by a call to the string
-    # function and then converted in the same way as a string argument
-    #
-    # an object of a type other than the four basic types is converted to a
-    # number in a way that is dependent on that type
-    #
     # source://rexml//lib/rexml/functions.rb#387
     def number(object = T.unsafe(nil)); end
 
@@ -3598,77 +3546,24 @@ module REXML::Functions
     # source://rexml//lib/rexml/functions.rb#26
     def singleton_method_added(name); end
 
-    # Fixed by Mike Stok
-    #
     # source://rexml//lib/rexml/functions.rb#199
     def starts_with(string, test); end
 
-    # A node-set is converted to a string by returning the string-value of the
-    # node in the node-set that is first in document order. If the node-set is
-    # empty, an empty string is returned.
-    #
-    # A number is converted to a string as follows
-    #
-    # NaN is converted to the string NaN
-    #
-    # positive zero is converted to the string 0
-    #
-    # negative zero is converted to the string 0
-    #
-    # positive infinity is converted to the string Infinity
-    #
-    # negative infinity is converted to the string -Infinity
-    #
-    # if the number is an integer, the number is represented in decimal form
-    # as a Number with no decimal point and no leading zeros, preceded by a
-    # minus sign (-) if the number is negative
-    #
-    # otherwise, the number is represented in decimal form as a Number
-    # including a decimal point with at least one digit before the decimal
-    # point and at least one digit after the decimal point, preceded by a
-    # minus sign (-) if the number is negative; there must be no leading zeros
-    # before the decimal point apart possibly from the one required digit
-    # immediately before the decimal point; beyond the one required digit
-    # after the decimal point there must be as many, but only as many, more
-    # digits as are needed to uniquely distinguish the number from all other
-    # IEEE 754 numeric values.
-    #
-    # The boolean false value is converted to the string false. The boolean
-    # true value is converted to the string true.
-    #
-    # An object of a type other than the four basic types is converted to a
-    # string in a way that is dependent on that type.
-    #
     # source://rexml//lib/rexml/functions.rb#138
     def string(object = T.unsafe(nil)); end
 
-    # UNTESTED
-    #
     # source://rexml//lib/rexml/functions.rb#261
     def string_length(string); end
 
-    # A node-set is converted to a string by
-    # returning the concatenation of the string-value
-    # of each of the children of the node in the
-    # node-set that is first in document order.
-    # If the node-set is empty, an empty string is returned.
-    #
     # source://rexml//lib/rexml/functions.rb#178
     def string_value(o); end
 
-    # Take equal portions of Mike Stok and Sean Russell; mix
-    # vigorously, and pour into a tall, chilled glass.  Serves 10,000.
-    #
     # source://rexml//lib/rexml/functions.rb#228
     def substring(string, start, length = T.unsafe(nil)); end
 
-    # Kouhei fixed this too
-    #
     # source://rexml//lib/rexml/functions.rb#220
     def substring_after(string, test); end
 
-    # Kouhei fixed this
-    #
     # source://rexml//lib/rexml/functions.rb#209
     def substring_before(string, test); end
 
@@ -3678,13 +3573,9 @@ module REXML::Functions
     # source://rexml//lib/rexml/functions.rb#40
     def text; end
 
-    # This is entirely Mike Stok's beast
-    #
     # source://rexml//lib/rexml/functions.rb#275
     def translate(string, tr1, tr2); end
 
-    # UNTESTED
-    #
     # source://rexml//lib/rexml/functions.rb#342
     def true; end
 
@@ -4493,6 +4384,205 @@ REXML::Parsers::BaseParser::QNAME = T.let(T.unsafe(nil), Regexp)
 # source://rexml//lib/rexml/parsers/baseparser.rb#65
 REXML::Parsers::BaseParser::QNAME_STR = T.let(T.unsafe(nil), String)
 
+# A parsing event.  The contents of the event are accessed as an +Array?,
+# and the type is given either by the ...? methods, or by accessing the
+# +type+ accessor.  The contents of this object vary from event to event,
+# but are identical to the arguments passed to +StreamListener+s for each
+# event.
+#
+# source://rexml//lib/rexml/parsers/pullparser.rb#107
+class REXML::Parsers::PullEvent
+  # The type of this event.  Will be one of :tag_start, :tag_end, :text,
+  # :processing_instruction, :comment, :doctype, :attlistdecl, :entitydecl,
+  # :notationdecl, :entity, :cdata, :xmldecl, or :error.
+  #
+  # @return [PullEvent] a new instance of PullEvent
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#111
+  def initialize(arg); end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#115
+  def [](start, endd = T.unsafe(nil)); end
+
+  # Content: [ String text ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#164
+  def attlistdecl?; end
+
+  # Content: [ String text ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#195
+  def cdata?; end
+
+  # Content: [ String text ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#154
+  def comment?; end
+
+  # Content: [ String name, String pub_sys, String long_name, String uri ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#159
+  def doctype?; end
+
+  # Content: [ String text ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#169
+  def elementdecl?; end
+
+  # Content: [ String tag_name ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#139
+  def end_element?; end
+
+  # Content: [ String text ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#190
+  def entity?; end
+
+  # Due to the wonders of DTDs, an entity declaration can be just about
+  # anything.  There's no way to normalize it; you'll have to interpret the
+  # content yourself.  However, the following is true:
+  #
+  # * If the entity declaration is an internal entity:
+  #   [ String name, String value ]
+  # Content: [ String text ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#180
+  def entitydecl?; end
+
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#204
+  def error?; end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#129
+  def event_type; end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#208
+  def inspect; end
+
+  # Content: [ String text ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#149
+  def instruction?; end
+
+  # Content: [ String text ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#185
+  def notationdecl?; end
+
+  # Content: [ String tag_name, Hash attributes ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#134
+  def start_element?; end
+
+  # Content: [ String raw_text, String unnormalized_text ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#144
+  def text?; end
+
+  # Content: [ String version, String encoding, String standalone ]
+  #
+  # @return [Boolean]
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#200
+  def xmldecl?; end
+end
+
+# = Using the Pull Parser
+# <em>This API is experimental, and subject to change.</em>
+#  parser = PullParser.new( "<a>text<b att='val'/>txet</a>" )
+#  while parser.has_next?
+#    res = parser.next
+#    puts res[1]['att'] if res.start_tag? and res[0] == 'b'
+#  end
+# See the PullEvent class for information on the content of the results.
+# The data is identical to the arguments passed for the various events to
+# the StreamListener API.
+#
+# Notice that:
+#  parser = PullParser.new( "<a>BAD DOCUMENT" )
+#  while parser.has_next?
+#    res = parser.next
+#    raise res[1] if res.error?
+#  end
+#
+# Nat Price gave me some good ideas for the API.
+#
+# source://rexml//lib/rexml/parsers/pullparser.rb#29
+class REXML::Parsers::PullParser
+  include ::REXML::XMLTokens
+  extend ::Forwardable
+
+  # @return [PullParser] a new instance of PullParser
+  #
+  # source://rexml//lib/rexml/parsers/pullparser.rb#38
+  def initialize(stream); end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#45
+  def add_listener(listener); end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#62
+  def each; end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#35
+  def empty?(*args, **_arg1, &block); end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#34
+  def entity(*args, **_arg1, &block); end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#50
+  def entity_expansion_count; end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#54
+  def entity_expansion_limit=(limit); end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#58
+  def entity_expansion_text_limit=(limit); end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#33
+  def has_next?(*args, **_arg1, &block); end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#68
+  def peek(depth = T.unsafe(nil)); end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#78
+  def pull; end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#97
+  def reset; end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#36
+  def source(*args, **_arg1, &block); end
+
+  # source://rexml//lib/rexml/parsers/pullparser.rb#93
+  def unshift(token); end
+end
+
 # source://rexml//lib/rexml/parsers/streamparser.rb#6
 class REXML::Parsers::StreamParser
   # @return [StreamParser] a new instance of StreamParser
@@ -4796,11 +4886,6 @@ REXML::Source::Private::SPACES_PATTERN = T.let(T.unsafe(nil), Regexp)
 # source://rexml//lib/rexml/source.rb#38
 class REXML::SourceFactory
   class << self
-    # Generates a Source object
-    #
-    # @param arg Either a String, or an IO
-    # @return a Source, or nil if a bad argument was given
-    #
     # source://rexml//lib/rexml/source.rb#42
     def create_from(arg); end
   end
@@ -4986,26 +5071,18 @@ class REXML::Text < ::REXML::Child
   def clear_cache; end
 
   class << self
-    # check for illegal characters
-    #
     # source://rexml//lib/rexml/text.rb#116
     def check(string, pattern, doctype = T.unsafe(nil)); end
 
     # source://rexml//lib/rexml/text.rb#401
     def expand(ref, doctype, filter); end
 
-    # Escapes all possible entities
-    #
     # source://rexml//lib/rexml/text.rb#363
     def normalize(input, doctype = T.unsafe(nil), entity_filter = T.unsafe(nil)); end
 
-    # Reads text, substituting entities
-    #
     # source://rexml//lib/rexml/text.rb#337
     def read_with_substitution(input, illegal = T.unsafe(nil)); end
 
-    # Unescapes all possible entities
-    #
     # source://rexml//lib/rexml/text.rb#387
     def unnormalize(string, doctype = T.unsafe(nil), filter = T.unsafe(nil), illegal = T.unsafe(nil), entity_expansion_text_limit: T.unsafe(nil)); end
   end
@@ -5120,12 +5197,6 @@ class REXML::XMLDecl < ::REXML::Child
   def content(enc); end
 
   class << self
-    # Only use this if you do not want the XML declaration to be written;
-    # this object is ignored by the XML writer.  Otherwise, instantiate your
-    # own XMLDecl and add it to the document.
-    #
-    # Note that XML 1.1 documents *must* include an XML declaration
-    #
     # source://rexml//lib/rexml/xmldecl.rb#92
     def default; end
   end
@@ -5138,51 +5209,12 @@ class REXML::XPath
   include ::REXML::Functions
 
   class << self
-    # Iterates over nodes that match the given path, calling the supplied
-    # block with the match.
-    # element::
-    #   The context element
-    # path::
-    #   The xpath to search for.  If not supplied or nil, defaults to '*'
-    # namespaces::
-    #   If supplied, a Hash which defines a namespace mapping
-    # variables::
-    #   If supplied, a Hash which maps $variables in the query
-    #   to values. This can be used to avoid XPath injection attacks
-    #   or to automatically handle escaping string values.
-    #
-    #  XPath.each( node ) { |el| ... }
-    #  XPath.each( node, '/*[@attr='v']' ) { |el| ... }
-    #  XPath.each( node, 'ancestor::x' ) { |el| ... }
-    #  XPath.each( node, '/book/publisher/text()=$publisher', {}, {"publisher"=>"O'Reilly"}) \
-    #    {|el| ... }
-    #
     # source://rexml//lib/rexml/xpath.rb#55
     def each(element, path = T.unsafe(nil), namespaces = T.unsafe(nil), variables = T.unsafe(nil), options = T.unsafe(nil), &block); end
 
-    # Finds and returns the first node that matches the supplied xpath.
-    # element::
-    #   The context element
-    # path::
-    #   The xpath to search for.  If not supplied or nil, returns the first
-    #   node matching '*'.
-    # namespaces::
-    #   If supplied, a Hash which defines a namespace mapping.
-    # variables::
-    #   If supplied, a Hash which maps $variables in the query
-    #   to values. This can be used to avoid XPath injection attacks
-    #   or to automatically handle escaping string values.
-    #
-    #  XPath.first( node )
-    #  XPath.first( doc, "//b"} )
-    #  XPath.first( node, "a/x:b", { "x"=>"http://doofus" } )
-    #  XPath.first( node, '/book/publisher/text()=$publisher', {}, {"publisher"=>"O'Reilly"})
-    #
     # source://rexml//lib/rexml/xpath.rb#31
     def first(element, path = T.unsafe(nil), namespaces = T.unsafe(nil), variables = T.unsafe(nil), options = T.unsafe(nil)); end
 
-    # Returns an array of nodes matching a given XPath.
-    #
     # source://rexml//lib/rexml/xpath.rb#62
     def match(element, path = T.unsafe(nil), namespaces = T.unsafe(nil), variables = T.unsafe(nil), options = T.unsafe(nil)); end
   end
