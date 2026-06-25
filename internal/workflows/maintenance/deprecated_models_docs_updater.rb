@@ -54,7 +54,7 @@ execute do
 
   agent(:updater) do |my|
     finder = agent!(:model_finder)
-    skip! if finder.json!.fetch(:references, []).empty?
+    skip! if finder.json![:references].blank?
     my.session = finder.session
     <<~PROMPT
       For each reference you found of an outdated model, update the reference to use the suggested replacement model instead. Make sure to update all types of references, including documentation, doc comments and code references. Output the list of updated references in the following format:
