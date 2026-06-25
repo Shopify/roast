@@ -122,6 +122,24 @@ module Roast
           assert_equal "READ", output
         end
 
+        # format_glob
+
+        test "format_glob renders the pattern only when no path given" do
+          tool_use = Claude::ToolUse.new(name: :glob, input: { pattern: "**/*.rb" })
+
+          output = tool_use.format
+
+          assert_equal "GLOB **/*.rb", output
+        end
+
+        test "format_glob appends the search path in parentheses" do
+          tool_use = Claude::ToolUse.new(name: :glob, input: { pattern: "**/*.rb", path: "lib/roast" })
+
+          output = tool_use.format
+
+          assert_equal "GLOB **/*.rb (in lib/roast)", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 
