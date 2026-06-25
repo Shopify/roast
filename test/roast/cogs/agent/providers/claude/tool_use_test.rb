@@ -389,6 +389,26 @@ module Roast
           assert_equal "TASKUPDATE #1 → completed", output
         end
 
+        # format_taskcreate
+
+        test "format_taskcreate renders the subject" do
+          tool_use = Claude::ToolUse.new(name: :taskcreate, input: { subject: "Run formatter stress test" })
+
+          output = tool_use.format
+
+          assert_equal "TASKCREATE Run formatter stress test", output
+        end
+
+        test "format_taskcreate truncates the subject" do
+          long = "a" * (Claude::ToolUse::TRUNCATE_LIMIT + 10)
+          truncated = "#{"a" * (Claude::ToolUse::TRUNCATE_LIMIT - 3)}..."
+          tool_use = Claude::ToolUse.new(name: :taskcreate, input: { subject: long })
+
+          output = tool_use.format
+
+          assert_equal "TASKCREATE #{truncated}", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 

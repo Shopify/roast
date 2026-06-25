@@ -333,6 +333,23 @@ module Roast
               "TASKUPDATE ##{input[:taskId]} → #{input[:status]}"
             end
 
+            # Formats a TaskCreate tool-use line.
+            #
+            # Input fields:
+            #   :subject (String) – title of the task to create   [required]
+            #
+            # Output: "TASKCREATE <subject>", with :subject truncated to
+            # TRUNCATE_LIMIT chars.
+            #
+            # Examples:
+            #   TASKCREATE Run formatter stress test
+            #   TASKCREATE Review multiline edit output in tmp/formatter_st...
+            #
+            #: () -> String
+            def format_taskcreate
+              "TASKCREATE #{truncate(input[:subject])}"
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"
