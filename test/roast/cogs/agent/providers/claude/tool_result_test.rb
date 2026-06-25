@@ -145,10 +145,10 @@ module Roast
           assert_equal "ERROR LINE", output
         end
 
-        test "format includes description when present" do
+        test "format_unknown includes the description for an unknown tool" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
-            hash: { name: "bash", input: { description: "Run command" } },
+            hash: { name: "custom", input: { description: "Run command" } },
           )
           tool_result = Claude::ToolResult.new(
             tool_use: tool_use_message,
@@ -159,6 +159,70 @@ module Roast
           output = tool_result.format
 
           assert_match(/Run command/, output)
+        end
+
+        test "format_bash reports the line count and previews the first line" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "file1.txt\nfile2.txt\nfile3.txt",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "BASH OK 3 lines · file1.txt", output
+        end
+
+        test "format_bash uses the singular 'line' for a single line of output" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "the only line",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "BASH OK 1 line · the only line", output
+        end
+
+        test "format_bash truncates a long first-line preview" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "x" * 60,
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "BASH OK 1 line · #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "format_bash omits the preview when the command produced no output" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "BASH OK 0 lines", output
         end
 
         test "ok_line renders a bare OK line when given no parts" do

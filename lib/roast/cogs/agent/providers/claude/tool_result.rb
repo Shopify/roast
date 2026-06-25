@@ -45,6 +45,28 @@ module Roast
 
             private
 
+            # Formats a Bash tool-result line.
+            #
+            # Content: the command's combined stdout/stderr, as a string.
+            #
+            # Output: "BASH OK <n> <line|lines> · <preview>" – <n> is the number of
+            # output lines (pluralized), and <preview> is the first line, stripped and
+            # truncated to TRUNCATE_LIMIT chars. The " · <preview>" suffix is omitted
+            # when the command produced no output.
+            #
+            # Examples:
+            #   BASH OK 12 lines · Cloning into 'roast'...
+            #   BASH OK 1 line · hello world
+            #   BASH OK 0 lines
+            #
+            #: () -> String
+            def format_bash
+              lines = content.to_s.lines
+              count = lines.length
+              preview = truncate(lines.first.to_s.strip)
+              ok_line("#{count} #{"line".pluralize(count)}", preview)
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"
