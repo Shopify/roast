@@ -225,6 +225,70 @@ module Roast
           assert_equal "BASH OK 0 lines", output
         end
 
+        test "format_read uses the plural 'lines' for multiple lines of content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "read", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "line one\nline two\nline three",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "READ OK 3 lines", output
+        end
+
+        test "format_read uses the singular 'line' for a single line of content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "read", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "the only line",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "READ OK 1 line", output
+        end
+
+        test "format_read does not count a trailing newline as an extra line" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "read", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "line one\nline two\n",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "READ OK 2 lines", output
+        end
+
+        test "format_read reports zero lines for empty content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "read", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "READ OK 0 lines", output
+        end
+
         test "ok_line renders a bare OK line when given no parts" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
