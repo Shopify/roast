@@ -130,6 +130,38 @@ module Roast
               path ? "GLOB #{pattern} (in #{path})" : "GLOB #{pattern}"
             end
 
+            # Formats a Grep tool-use line.
+            #
+            # Input fields:
+            #   :pattern (String) – regex to search for          [required]
+            #   :path    (String) – file or directory to search  [optional]
+            #   :glob    (String) – filter files by glob         [optional]
+            #   :type    (String) – filter files by type         [optional]
+            #   :"-i"    (bool)   – case-insensitive match        [optional]
+            #
+            # Output: 'GREP "<pattern>"', then " <path>" when :path is present,
+            # then " (<modifiers>)" when any of :glob, :type, :"-i" are set —
+            # joined with " · " in that order. :pattern is truncated to
+            # TRUNCATE_LIMIT chars; other grep options (such as :"-n") are not
+            # displayed, as they shape grep's output rather than the search itself.
+            #
+            # Examples:
+            #   GREP "def format" lib/roast (glob=*.rb · -i)
+            #   GREP "TODO"
+            #
+            #: () -> String
+            def format_grep
+              pattern, path = input.values_at(:pattern, :path)
+              base = "GREP \"#{truncate(pattern)}\""
+              base = "#{base} #{path}" if path
+              modifiers = [
+                ("glob=#{input[:glob]}" if input[:glob]),
+                ("type=#{input[:type]}" if input[:type]),
+                ("-i" if input[:"-i"]),
+              ].compact.join(" · ")
+              modifiers.empty? ? base : "#{base} (#{modifiers})"
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"

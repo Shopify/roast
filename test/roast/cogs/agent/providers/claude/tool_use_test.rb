@@ -140,6 +140,50 @@ module Roast
           assert_equal "GLOB **/*.rb (in lib/roast)", output
         end
 
+        # format_grep
+
+        test "format_grep renders the quoted pattern alone with no path or modifiers" do
+          tool_use = Claude::ToolUse.new(name: :grep, input: { pattern: "TODO" })
+
+          output = tool_use.format
+
+          assert_equal "GREP \"TODO\"", output
+        end
+
+        test "format_grep appends the search path after the pattern" do
+          tool_use = Claude::ToolUse.new(name: :grep, input: { pattern: "TODO", path: "lib/roast" })
+
+          output = tool_use.format
+
+          assert_equal "GREP \"TODO\" lib/roast", output
+        end
+
+        test "format_grep wraps a modifier with the path present" do
+          tool_use = Claude::ToolUse.new(name: :grep, input: { pattern: "TODO", path: "lib", glob: "*.rb" })
+
+          output = tool_use.format
+
+          assert_equal "GREP \"TODO\" lib (glob=*.rb)", output
+        end
+
+        test "format_grep joins glob, type, and case-insensitive modifiers in order" do
+          tool_use = Claude::ToolUse.new(name: :grep, input: { pattern: "TODO", glob: "*.rb", type: "ruby", "-i": true })
+
+          output = tool_use.format
+
+          assert_equal "GREP \"TODO\" (glob=*.rb · type=ruby · -i)", output
+        end
+
+        test "format_grep truncates the pattern but not the path" do
+          long = "a" * (Claude::ToolUse::TRUNCATE_LIMIT + 10)
+          truncated = "#{"a" * (Claude::ToolUse::TRUNCATE_LIMIT - 3)}..."
+          tool_use = Claude::ToolUse.new(name: :grep, input: { pattern: long, path: long })
+
+          output = tool_use.format
+
+          assert_equal "GREP \"#{truncated}\" #{long}", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 
