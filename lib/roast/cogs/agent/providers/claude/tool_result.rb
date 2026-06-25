@@ -233,6 +233,24 @@ module Roast
               ok_line(preview)
             end
 
+            # Formats a TaskCreate tool-result line.
+            #
+            # Content: the text the tool returned.
+            #
+            # Output: "TASKCREATE OK <preview>" – the first line of content,
+            # stripped and truncated to TRUNCATE_LIMIT chars. The preview is
+            # omitted when there is no content.
+            #
+            # Examples:
+            #   TASKCREATE OK Task created successfully
+            #   TASKCREATE OK
+            #
+            #: () -> String
+            def format_taskcreate
+              preview = truncate(content.to_s.lines.first.to_s.strip)
+              ok_line(preview)
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"

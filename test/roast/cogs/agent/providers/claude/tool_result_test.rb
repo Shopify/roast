@@ -784,6 +784,54 @@ module Roast
           assert_equal "TASKUPDATE OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
         end
 
+        test "format_taskcreate previews the first line of the result content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskcreate", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "  Task created successfully  \nadditional detail",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKCREATE OK Task created successfully", output
+        end
+
+        test "format_taskcreate reports a bare OK when there is no content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskcreate", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKCREATE OK", output
+        end
+
+        test "format_taskcreate truncates a long preview" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskcreate", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "x" * 60,
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKCREATE OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
         test "ok_line renders a bare OK line when given no parts" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
