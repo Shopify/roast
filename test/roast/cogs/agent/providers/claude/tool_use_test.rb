@@ -311,6 +311,44 @@ module Roast
           assert_equal "SKILL #{long} (#{truncated})", output
         end
 
+        # format_task
+
+        test "format_task renders the description alone with no optional fields" do
+          tool_use = Claude::ToolUse.new(name: :task, input: { description: "Find all callers" })
+
+          output = tool_use.format
+
+          assert_equal "TASK Find all callers", output
+        end
+
+        test "format_task joins subagent type, background, and model in order" do
+          input = { description: "Audit", run_in_background: true, subagent_type: "Explore", model: "opus" }
+          tool_use = Claude::ToolUse.new(name: :task, input: input)
+
+          output = tool_use.format
+
+          assert_equal "TASK Audit (Explore · background · opus)", output
+        end
+
+        test "format_task omits background when run_in_background is false" do
+          tool_use = Claude::ToolUse.new(name: :task, input: { description: "Audit", run_in_background: false })
+
+          output = tool_use.format
+
+          assert_equal "TASK Audit", output
+        end
+
+        test "format_task truncates the description but not the subagent type or model" do
+          long = "a" * (Claude::ToolUse::TRUNCATE_LIMIT + 10)
+          truncated = "#{"a" * (Claude::ToolUse::TRUNCATE_LIMIT - 3)}..."
+          input = { description: long, subagent_type: long, model: long }
+          tool_use = Claude::ToolUse.new(name: :task, input: input)
+
+          output = tool_use.format
+
+          assert_equal "TASK #{truncated} (#{long} · #{long})", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 
