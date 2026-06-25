@@ -111,6 +111,36 @@ module Roast
               ok_line("#{count} #{"file".pluralize(count)} found", note)
             end
 
+            # Formats a Grep tool-result line.
+            #
+            # Content: newline-separated results. A line is a match when it
+            # starts with either a path segment containing "/" (a bare path or
+            # path:line:content), or an optional "file:" prefix followed by a
+            # "<digits>:" line number (line:content in single-file mode, or
+            # path:line:content for a root-level file with no "/"). Any other
+            # line is a status message (a no-match sentinel, a truncation
+            # notice, etc.).
+            #
+            # Output: "GREP OK <n> <match|matches>" – <n> is the number of match
+            # lines. When matches were found and a status message is present, it
+            # is appended as a truncated "NOTE <message>" part. A zero-result run
+            # omits the NOTE.
+            #
+            # Examples:
+            #   GREP OK 12 matches
+            #   GREP OK 1 match
+            #   GREP OK 0 matches
+            #   GREP OK 8 matches · NOTE Results truncated...
+            #
+            #: () -> String
+            def format_grep
+              lines = content.to_s.lines.map(&:strip).reject(&:empty?)
+              matches, notes = lines.partition { |line| line.match?(%r{\A\S+/}) || line.match?(/\A(?:\S+:)?\d+:/) }
+              count = matches.length
+              note = "NOTE #{truncate(notes.join(" "))}" if matches.any? && notes.any?
+              ok_line("#{count} #{"match".pluralize(count)}", note)
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"
