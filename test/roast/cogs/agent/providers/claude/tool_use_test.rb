@@ -184,6 +184,34 @@ module Roast
           assert_equal "GREP \"#{truncated}\" #{long}", output
         end
 
+        # format_write
+
+        test "format_write shows the preview and a singular count for one line" do
+          tool_use = Claude::ToolUse.new(name: :write, input: { file_path: "/a.rb", content: "hello" })
+
+          output = tool_use.format
+
+          assert_equal "WRITE /a.rb \"hello\" (+1 line)", output
+        end
+
+        test "format_write strips the preview and counts every line" do
+          tool_use = Claude::ToolUse.new(name: :write, input: { file_path: "/a.rb", content: "  def foo\n  bar\n  baz" })
+
+          output = tool_use.format
+
+          assert_equal "WRITE /a.rb \"def foo\" (+3 lines)", output
+        end
+
+        test "format_write truncates the preview" do
+          long = "a" * (Claude::ToolUse::TRUNCATE_LIMIT + 10)
+          truncated = "#{"a" * (Claude::ToolUse::TRUNCATE_LIMIT - 3)}..."
+          tool_use = Claude::ToolUse.new(name: :write, input: { file_path: "/a.rb", content: long })
+
+          output = tool_use.format
+
+          assert_equal "WRITE /a.rb \"#{truncated}\" (+1 line)", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 

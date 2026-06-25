@@ -162,6 +162,31 @@ module Roast
               modifiers.empty? ? base : "#{base} (#{modifiers})"
             end
 
+            # Formats a Write tool-use line.
+            #
+            # Input fields:
+            #   :file_path (String) – absolute path to write   [required]
+            #   :content   (String) – full file contents       [required]
+            #
+            # Output: 'WRITE <file_path> "<preview>" (+<n> lines)', where
+            # <preview> is the first line of :content (stripped, truncated to
+            # TRUNCATE_LIMIT chars) and <n> is the total number of lines written
+            # (singular " line" when <n> is 1). The count is always shown.
+            #
+            # Examples:
+            #   WRITE /app/models/user.rb "class User < ApplicationRecord" (+10 lines)
+            #   WRITE /config/app.yml "enabled: true" (+1 line)
+            #
+            #: () -> String
+            def format_write
+              file_path, content = input.values_at(:file_path, :content)
+              lines = content.to_s.lines
+              preview = truncate(lines.first.to_s.strip)
+              count = lines.length
+              line_label = count == 1 ? "line" : "lines"
+              "WRITE #{file_path} \"#{preview}\" (+#{count} #{line_label})"
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"
