@@ -247,6 +247,42 @@ module Roast
           assert_equal "EDIT /a.rb (-0 +0 lines)", output
         end
 
+        # format_todowrite
+
+        test "format_todowrite shows a zero count and no breakdown for an empty list" do
+          tool_use = Claude::ToolUse.new(name: :todowrite, input: {})
+
+          output = tool_use.format
+
+          assert_equal "TODOWRITE 0 todos", output
+        end
+
+        test "format_todowrite uses the singular label for a single todo" do
+          tool_use = Claude::ToolUse.new(name: :todowrite, input: { todos: [{ status: "pending" }] })
+
+          output = tool_use.format
+
+          assert_equal "TODOWRITE 1 todo (1 pending)", output
+        end
+
+        test "format_todowrite tallies each status with its count" do
+          todos = [{ status: "completed" }, { status: "pending" }, { status: "completed" }]
+          tool_use = Claude::ToolUse.new(name: :todowrite, input: { todos: todos })
+
+          output = tool_use.format
+
+          assert_equal "TODOWRITE 3 todos (2 completed · 1 pending)", output
+        end
+
+        test "format_todowrite orders the breakdown by where each status first appears" do
+          todos = [{ status: "pending" }, { status: "completed" }, { status: "completed" }]
+          tool_use = Claude::ToolUse.new(name: :todowrite, input: { todos: todos })
+
+          output = tool_use.format
+
+          assert_equal "TODOWRITE 3 todos (1 pending · 2 completed)", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 

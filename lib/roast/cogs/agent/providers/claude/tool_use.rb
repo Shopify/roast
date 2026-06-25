@@ -214,6 +214,31 @@ module Roast
               "EDIT #{file_path} (#{details})"
             end
 
+            # Formats a TodoWrite tool-use line.
+            #
+            # Input fields:
+            #   :todos (Array) – the full todo list   [required]
+            #
+            # Output: "TODOWRITE <n> todos" (singular "todo" when n is 1). When the
+            # list is non-empty, " (<breakdown>)" is appended — each distinct :status
+            # with its count ("<count> <status>"), joined with " · " in the order the
+            # statuses first appear.
+            #
+            # Examples:
+            #   TODOWRITE 3 todos (2 completed · 1 in_progress)
+            #   TODOWRITE 1 todo (1 in_progress)
+            #   TODOWRITE 0 todos
+            #
+            #: () -> String
+            def format_todowrite
+              todos = input[:todos] || []
+              counts = todos.group_by { |todo| todo[:status] }.transform_values(&:length)
+              summary = counts.map { |status, count| "#{count} #{status}" }.join(" · ")
+              label = todos.length == 1 ? "todo" : "todos"
+              base = "TODOWRITE #{todos.length} #{label}"
+              summary.empty? ? base : "#{base} (#{summary})"
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"
