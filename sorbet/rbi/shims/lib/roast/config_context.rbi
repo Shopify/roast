@@ -141,7 +141,7 @@ module Roast
     #
     # #### Configure the agent provider
     # - `provider(symbol)` - Set the agent provider (e.g., `:claude`)
-    # - `use_default_provider!` - Use the default provider (`:claude`)
+    # - `use_default_provider!` - Use the default provider (`:claude`, or `$ROAST_DEFAULT_AGENT_PROVIDER` when set)
     #
     # #### Configure the base command used to run the coding agent
     # - `command(string_or_array)` - Set the base command for invoking the agent

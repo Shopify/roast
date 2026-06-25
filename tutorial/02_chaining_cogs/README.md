@@ -127,7 +127,7 @@ execute do
 end
 ```
 
-The `agent` cog is backed by a locally installed coding agent -- Anthropic's Claude Code is the default provider.
+The `agent` cog is backed by a locally installed coding agent -- Anthropic's Claude Code is the default provider (set `ROAST_DEFAULT_AGENT_PROVIDER` to change it globally, e.g. to `pi`).
 You'll need to have Claude Code installed and configured correctly for this cog to run.
 
 ### When to Use Agent vs Chat

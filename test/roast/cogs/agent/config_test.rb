@@ -21,11 +21,15 @@ module Roast
         @config.provider(:fake_provider)
         @config.use_default_provider!
 
-        assert_equal @default_provider, @config.valid_provider!
+        with_env(Agent::Config::DEFAULT_PROVIDER_ENV_VAR, nil) do
+          assert_equal @default_provider, @config.valid_provider!
+        end
       end
 
       test "valid_provider! returns default when not set" do
-        assert_equal @default_provider, @config.valid_provider!
+        with_env(Agent::Config::DEFAULT_PROVIDER_ENV_VAR, nil) do
+          assert_equal @default_provider, @config.valid_provider!
+        end
       end
 
       test "valid_provider! raises on invalid provider" do
@@ -36,6 +40,36 @@ module Roast
         end
 
         assert_match(/invalid_provider.*not a valid provider/, error.message)
+      end
+
+      test "valid_provider! uses ROAST_DEFAULT_AGENT_PROVIDER when no provider is configured" do
+        with_env(Agent::Config::DEFAULT_PROVIDER_ENV_VAR, "pi") do
+          assert_equal :pi, @config.valid_provider!
+        end
+      end
+
+      test "explicitly configured provider takes precedence over ROAST_DEFAULT_AGENT_PROVIDER" do
+        @config.provider(:claude)
+
+        with_env(Agent::Config::DEFAULT_PROVIDER_ENV_VAR, "pi") do
+          assert_equal :claude, @config.valid_provider!
+        end
+      end
+
+      test "valid_provider! falls back to built-in default when ROAST_DEFAULT_AGENT_PROVIDER is blank" do
+        with_env(Agent::Config::DEFAULT_PROVIDER_ENV_VAR, "") do
+          assert_equal @default_provider, @config.valid_provider!
+        end
+      end
+
+      test "valid_provider! raises when ROAST_DEFAULT_AGENT_PROVIDER names an invalid provider" do
+        with_env(Agent::Config::DEFAULT_PROVIDER_ENV_VAR, "bogus") do
+          error = assert_raises(Cog::Config::InvalidConfigError) do
+            @config.valid_provider!
+          end
+
+          assert_match(/bogus.*not a valid provider/, error.message)
+        end
       end
 
       # Command configuration tests
