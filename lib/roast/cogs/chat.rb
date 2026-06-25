@@ -20,6 +20,14 @@ module Roast
     #
     # For tasks requiring local filesystem access or locally-configured tools, use the `agent` cog instead.
     class Chat < Cog
+      # Raised when the LLM response hits the max token limit, indicating the output was
+      # truncated and should not be considered usable.
+      class MaxTokensExceededError < Cog::CogError; end
+
+      # Anthropic always sends a max_tokens value in the request payload with this fallback
+      # when the model metadata doesn't specify one (see ruby_llm's Anthropic::Chat#build_base_payload).
+      ANTHROPIC_DEFAULT_MAX_TOKENS = 4096
+
       # The configuration object for this chat cog instance
       #
       #: Roast::Cogs::Chat::Config
@@ -60,10 +68,52 @@ module Roast
           Event << { block: { header: "LLM STATS", content: lines.join("\n") } }
         end
 
+        verify_response_not_truncated!(chat, response)
+
         Output.new(Session.from_chat(chat), response.content)
       end
 
       private
+
+      # Verify that the LLM response was not truncated by hitting the max token limit.
+      #
+      # ruby_llm does not expose a stop_reason/finish_reason from the provider response, so we
+      # detect truncation heuristically: if the output token count equals (or exceeds) the
+      # effective max token limit, the content was almost certainly cut off mid-generation.
+      #
+      # The effective limit is derived from the model metadata (chat.model.max_tokens). For
+      # Anthropic, the provider always sends max_tokens with a fallback of 4096, so we replicate
+      # that fallback here. For other providers, if the model metadata doesn't specify a limit
+      # (e.g., when assume_model_exists is used with an unknown model), the check is skipped
+      # because we have no ceiling to compare against.
+      #
+      #: (RubyLLM::Chat, RubyLLM::Message) -> void
+      def verify_response_not_truncated!(chat, response)
+        max_tokens = effective_max_tokens(chat)
+        return unless max_tokens
+        return unless response.output_tokens
+
+        if response.output_tokens >= max_tokens
+          raise MaxTokensExceededError,
+            "LLM response from #{response.model_id} was truncated at the max token limit " \
+              "(output: #{response.output_tokens} tokens, limit: #{max_tokens} tokens). " \
+              "The response content is likely incomplete and should not be used."
+        end
+      end
+
+      # Determine the effective max token limit for the chat request.
+      #
+      # Returns nil if the limit cannot be determined (e.g., the model is not in the registry
+      # and the provider doesn't have a known default).
+      #
+      #: (RubyLLM::Chat) -> Integer?
+      def effective_max_tokens(chat)
+        max_tokens = chat.model&.max_tokens
+        return max_tokens if max_tokens
+
+        # Anthropic always sends max_tokens with a 4096 fallback in the request payload
+        ANTHROPIC_DEFAULT_MAX_TOKENS if config.valid_provider! == :anthropic
+      end
 
       # Get a RubyLLM context configured for this chat cog
       #
