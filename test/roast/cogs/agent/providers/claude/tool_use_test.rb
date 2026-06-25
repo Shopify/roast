@@ -379,6 +379,16 @@ module Roast
           assert_equal "AGENT #{truncated} (#{long})", output
         end
 
+        # format_taskupdate
+
+        test "format_taskupdate renders the task id and status" do
+          tool_use = Claude::ToolUse.new(name: :taskupdate, input: { taskId: 1, status: "completed" })
+
+          output = tool_use.format
+
+          assert_equal "TASKUPDATE #1 → completed", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 
