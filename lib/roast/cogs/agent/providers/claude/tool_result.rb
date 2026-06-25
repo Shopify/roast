@@ -215,6 +215,24 @@ module Roast
               ok_line(progress, active_label)
             end
 
+            # Formats a TaskUpdate tool-result line.
+            #
+            # Content: the text the tool returned.
+            #
+            # Output: "TASKUPDATE OK <preview>" – the first line of content,
+            # stripped and truncated to TRUNCATE_LIMIT chars. The preview is
+            # omitted when there is no content.
+            #
+            # Examples:
+            #   TASKUPDATE OK Task updated successfully
+            #   TASKUPDATE OK
+            #
+            #: () -> String
+            def format_taskupdate
+              preview = truncate(content.to_s.lines.first.to_s.strip)
+              ok_line(preview)
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"
