@@ -76,6 +76,38 @@ module Roast
               description ? "#{label} (#{description})" : label
             end
 
+            # Formats a Read tool-use line.
+            #
+            # Input fields:
+            #   :file_path (String)  – absolute path to read         [required]
+            #   :offset    (Integer) – 1-based first line            [optional]
+            #   :limit     (Integer) – max number of lines to read   [optional]
+            #
+            # Output: "READ <file_path>", with a line range appended when :offset
+            # and/or :limit is given:
+            #   :limit set    → " (lines <start>–<end>)", start = :offset (default
+            #                   1), end = start + :limit - 1
+            #   :offset only  → " (from line <offset>)" (reads to end of file)
+            # With neither, the bare "READ <file_path>".
+            #
+            # Examples:
+            #   READ /app/models/user.rb (lines 30–80)
+            #   READ /app/models/user.rb (from line 30)
+            #   READ /app/models/user.rb
+            #
+            #: () -> String
+            def format_read
+              file_path, offset, limit = input.values_at(:file_path, :offset, :limit)
+              details = if limit
+                offset ||= 1
+                "lines #{offset}–#{offset + limit - 1}"
+              elsif offset
+                "from line #{offset}"
+              end
+              label = file_path.to_s.empty? ? "READ" : "READ #{file_path}"
+              details ? "#{label} (#{details})" : label
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{name}] #{input.inspect}"
