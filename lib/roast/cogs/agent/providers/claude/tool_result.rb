@@ -85,6 +85,32 @@ module Roast
               ok_line("#{count} #{"line".pluralize(count)}")
             end
 
+            # Formats a Glob tool-result line.
+            #
+            # Content: newline-separated matches. Lines starting with "/" are
+            # file paths; any other line is a status message (a no-match
+            # sentinel, a truncation notice, etc.).
+            #
+            # Output: "GLOB OK <n> <file|files> found" – <n> is the number of
+            # path lines. When paths were found and a status message is present,
+            # it is appended as a truncated "NOTE <message>" part. A zero-result
+            # run omits the NOTE.
+            #
+            # Examples:
+            #   GLOB OK 12 files found
+            #   GLOB OK 1 file found
+            #   GLOB OK 0 files found
+            #   GLOB OK 8 files found · NOTE Results truncated...
+            #
+            #: () -> String
+            def format_glob
+              lines = content.to_s.lines.map(&:strip).reject(&:empty?)
+              files, notes = lines.partition { |line| line.start_with?("/") }
+              count = files.length
+              note = "NOTE #{truncate(notes.join(" "))}" if files.any? && notes.any?
+              ok_line("#{count} #{"file".pluralize(count)} found", note)
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"

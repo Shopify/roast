@@ -289,6 +289,102 @@ module Roast
           assert_equal "READ OK 0 lines", output
         end
 
+        test "format_glob reports the number of matched files" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "/a/one.rb\n/a/two.rb\n/a/three.rb",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 3 files found", output
+        end
+
+        test "format_glob uses the singular 'file' for a single match" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "/a/only.rb",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 1 file found", output
+        end
+
+        test "format_glob ignores blank lines when counting files" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "/a/one.rb\n\n/a/two.rb\n",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 2 files found", output
+        end
+
+        test "format_glob appends a non-path line as a NOTE when files were found" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "/a/one.rb\n/a/two.rb\nResults are truncated",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 2 files found · NOTE Results are truncated", output
+        end
+
+        test "format_glob drops the NOTE when there are no matches" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "No files found",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 0 files found", output
+        end
+
+        test "format_glob truncates a long NOTE" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "/a/only.rb\n#{"x" * 60}",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 1 file found · NOTE #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
         test "ok_line renders a bare OK line when given no parts" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
