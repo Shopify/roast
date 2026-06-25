@@ -283,6 +283,34 @@ module Roast
           assert_equal "TODOWRITE 3 todos (1 pending · 2 completed)", output
         end
 
+        # format_skill
+
+        test "format_skill renders the skill name alone when no args given" do
+          tool_use = Claude::ToolUse.new(name: :skill, input: { skill: "pr-description" })
+
+          output = tool_use.format
+
+          assert_equal "SKILL pr-description", output
+        end
+
+        test "format_skill appends args in parentheses" do
+          tool_use = Claude::ToolUse.new(name: :skill, input: { skill: "pr-description", args: "draft for auth" })
+
+          output = tool_use.format
+
+          assert_equal "SKILL pr-description (draft for auth)", output
+        end
+
+        test "format_skill truncates args but not the skill name" do
+          long = "a" * (Claude::ToolUse::TRUNCATE_LIMIT + 10)
+          truncated = "#{"a" * (Claude::ToolUse::TRUNCATE_LIMIT - 3)}..."
+          tool_use = Claude::ToolUse.new(name: :skill, input: { skill: long, args: long })
+
+          output = tool_use.format
+
+          assert_equal "SKILL #{long} (#{truncated})", output
+        end
+
         test "format calls format_unknown for unknown tool" do
           tool_use = Claude::ToolUse.new(name: :unknown_tool, input: { arg: "value" })
 
