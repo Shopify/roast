@@ -103,6 +103,22 @@ module Roast
           assert_equal "BASH ERROR File has not been read yet.", output
         end
 
+        test "error_line preserves special characters in the tool_use_error body" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "<tool_use_error>parse error: a < b && c > d, see <ref>x</ref> & exit 1</tool_use_error>",
+            is_error: true,
+          )
+
+          output = tool_result.send(:error_line)
+
+          assert_equal "BASH ERROR parse error: a < b && c > d, see <ref>x</ref> & exit 1", output
+        end
+
         test "error_line handles nil content gracefully" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
@@ -926,6 +942,54 @@ module Roast
           output = tool_result.format
 
           assert_equal "TASK OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "format_taskoutput surfaces the status tag" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskoutput", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "<status>completed</status><output>done</output>",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKOUTPUT OK completed", output
+        end
+
+        test "format_taskoutput falls back to retrieval_status when status is absent" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskoutput", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "<retrieval_status>pending</retrieval_status>",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKOUTPUT OK pending", output
+        end
+
+        test "format_taskoutput reports a bare OK when no status tag is present" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskoutput", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "<output>just output</output>",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKOUTPUT OK", output
         end
 
         test "ok_line renders a bare OK line when given no parts" do
