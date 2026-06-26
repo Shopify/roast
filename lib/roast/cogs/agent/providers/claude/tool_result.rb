@@ -292,6 +292,25 @@ module Roast
               ok_line(preview)
             end
 
+            # Formats a TaskOutput tool-result line.
+            #
+            # Content: the polled task's payload – an XML-ish string carrying a
+            # <status> (or <retrieval_status>) tag and an <output> body.
+            #
+            # Output: "TASKOUTPUT OK <status>" – the text inside <status>, or
+            # inside <retrieval_status> when <status> is absent. The status is
+            # omitted when neither tag is present, leaving a bare "TASKOUTPUT OK".
+            #
+            # Examples:
+            #   TASKOUTPUT OK completed
+            #   TASKOUTPUT OK pending
+            #   TASKOUTPUT OK
+            #
+            #: () -> String
+            def format_taskoutput
+              ok_line(tag_text("status") || tag_text("retrieval_status"))
+            end
+
             #: () -> String
             def format_unknown
               "UNKNOWN [#{tool_name}] OK #{tool_use_description}\n#{content}"
@@ -322,6 +341,20 @@ module Roast
             def error_line
               message = content.to_s.gsub(%r{</?tool_use_error>}, "").strip
               "#{tool_name.to_s.upcase} ERROR #{message}".strip
+            end
+
+            # Returns the stripped text inside the first <tag>…</tag> pair in the
+            # result content, or nil when the tag is absent. The body is captured
+            # verbatim by a non-greedy match, so — unlike an XML parser — a body
+            # that itself contains bare angle brackets (such as an error message)
+            # is extracted intact.
+            #
+            # Matches a single, flat element: the lazy capture stops at the first
+            # closing </tag>, and nested same-name tags are not handled.
+            #
+            #: (String) -> String?
+            def tag_text(tag)
+              content.to_s[%r{<#{Regexp.escape(tag)}>(.*?)</#{Regexp.escape(tag)}>}m, 1]&.strip
             end
 
             # Truncates to TRUNCATE_LIMIT chars, appending "..." when cut. nil -> "".
