@@ -92,6 +92,7 @@ module Roast
       Sync do |sync_task|
         sync_task.annotate("ExecutionManager #{@scope}")
         TaskContext.begin_execution_manager(self)
+        execution_exception = false
         @cog_stack.each do |cog|
           cog_config = @config_manager.config_for(cog.class, cog.name)
           cog_task = cog.run!(
@@ -107,9 +108,12 @@ module Roast
         # noinspection RubyArgCount
         @barrier.wait { |task| wait_for_task_with_exception_handling(task) }
         compute_final_output # eagerly compute the final output (so it, too, can 'break!' subsequent executions in a loop)
+      rescue ControlFlow::FailCog
+        execution_exception = true
+        raise
       ensure
         @barrier.stop
-        compute_final_output
+        compute_final_output unless execution_exception
         TaskContext.end
         @running = false
       end

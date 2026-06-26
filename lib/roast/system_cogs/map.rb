@@ -307,17 +307,26 @@ module Roast
           barrier = Async::Barrier.new
           semaphore = Async::Semaphore.new(max_parallel_tasks, parent: barrier) if max_parallel_tasks.present?
           ems = {}
-          input.items.map.with_index do |item, index|
-            (semaphore || barrier).async(finished: false) do |task|
-              task.annotate("Map Invocation #{index + input.initial_index}")
-              ems[index] = em = create_execution_manager_for_map_item(run, item, index + input.initial_index)
-              em.prepare!
-              em.run!
-            rescue ControlFlow::Next
-              # TODO: do something with the message passed to next!
-              # proceed to next iteration
-            end
-          end #: Array[Async::Task]
+          barrier.async(finished: false) do |producer_task|
+            input.items.map.with_index do |item, index|
+              (semaphore || barrier).async(finished: false) do |task|
+                task.annotate("Map Invocation #{index + input.initial_index}")
+                ems[index] = em = create_execution_manager_for_map_item(run, item, index + input.initial_index)
+                em.prepare!
+                em.run!
+              rescue ControlFlow::Next
+                # TODO: do something with the message passed to next!
+                # proceed to next iteration
+              rescue ControlFlow::Break
+                # TODO: do something with the message passed to break!
+                producer_task.stop
+                raise
+              rescue StandardError => e
+                producer_task.stop
+                raise e
+              end
+            end #: Array[Async::Task]
+          end
 
           # Wait on the tasks in their completion order, so that an exception in a task will be raised as soon as it occurs
           # noinspection RubyArgCount

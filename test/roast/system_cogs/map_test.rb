@@ -395,6 +395,50 @@ module Roast
         assert_equal "B", results[1].value
         assert_equal "C", results[2].value
       end
+
+      test "parallel map aborts pending iterations when an iteration fails and abort_on_failure is enabled" do
+        started_items = []
+
+        config_proc = proc do
+          global { abort_on_failure! }
+          map(:my_map) { parallel 2 }
+        end
+        config_manager = ConfigManager.new(@registry, [config_proc])
+        config_manager.prepare!
+
+        exec_procs = {
+          nil => [proc {
+            map(:my_map, run: :parallel_failure) { ["slow", "fail", "later_1", "later_2"] }
+            outputs { collect(map(:my_map)) }
+          }],
+          parallel_failure: [proc {
+            test_cog(:step) do |_input, scope, _index|
+              started_items << scope
+
+              case scope
+              when "slow"
+                sleep 0.2
+                scope.upcase
+              when "fail"
+                raise ControlFlow::FailCog, "boom"
+              else
+                scope.upcase
+              end
+            end
+          }],
+        }
+        manager = ExecutionManager.new(
+          @registry, config_manager, exec_procs, @workflow_context
+        )
+        manager.prepare!
+
+        error = assert_raises(ControlFlow::FailCog) do
+          manager.run!
+        end
+
+        assert_equal "boom", error.message
+        assert_equal ["fail", "slow"], started_items.sort
+      end
     end
   end
 end
