@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    roast-ai (1.1.0)
+    roast-ai (1.2.0)
       activesupport (~> 8.0)
       async (>= 2.34)
       rainbow (>= 3.0.0)
@@ -317,7 +317,7 @@ CHECKSUMS
   regexp_parser (2.10.0) sha256=cb6f0ddde88772cd64bff1dbbf68df66d376043fe2e66a9ef77fcb1b0c548c61
   require-hooks (0.2.3) sha256=224be5b4be0fd2a47cb73286c500da366704a54ec195b6627366380c950efac8
   rexml (3.4.2) sha256=1384268554a37af5da5279431ca3f2f37d46f09ffdd6c95e17cc84c83ea7c417
-  roast-ai (1.1.0)
+  roast-ai (1.2.0)
   rubocop (1.77.0) sha256=1f360b4575ef7a124be27b0dfffa227a2b2d9420d22d4fd8bf179d702bcc88c0
   rubocop-ast (1.45.1) sha256=94042e49adc17f187ba037b33f941ba7398fede77cdf4bffafba95190a473a3e
   rubocop-shopify (2.17.1) sha256=03850eb1a9c4d1f9f0ac1d8d5aa51bb47a149e532cfb5e8d02ac6a90c8800a5f
