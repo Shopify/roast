@@ -13,6 +13,7 @@ config do
     model "gpt-5.4-nano"
   end
   agent do
+    provider :claude
     model "haiku"
     no_display!
     show_stats!

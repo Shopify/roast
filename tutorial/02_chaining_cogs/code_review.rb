@@ -8,8 +8,8 @@
 
 config do
   agent do
-    model "claude-haiku-4-5-20251001"
-    provider :claude
+    model "anthropic/claude-haiku-4-5-20251001"
+    provider :pi
   end
 
   chat do

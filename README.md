@@ -9,7 +9,7 @@ A Ruby-based domain-specific language for creating structured AI workflows. Buil
 Roast lets you orchestrate AI workflows by combining "cogs" - building blocks that interact with LLMs, run code, execute commands, and process data. Write workflows that:
 
 - **Chain AI steps together** - Output from one cog flows seamlessly to the next
-- **Run coding agents locally** - Full filesystem access with Claude Code or other providers
+- **Run coding agents locally** - Full filesystem access with Pi, Claude Code, or other providers
 - **Process collections** - Map operations over arrays with serial or parallel execution
 - **Control flow intelligently** - Conditional execution, iteration, and error handling
 - **Reuse workflow components** - Create modular, parameterized scopes
@@ -48,7 +48,7 @@ bin/roast execute analyze_codebase.rb
 ## Core Cogs
 
 - **`chat`** - Send prompts to cloud-based LLMs (OpenAI, Anthropic, Perplexity & Gemini)
-- **`agent`** - Run local coding agents with filesystem access (Claude Code CLI, etc.)
+- **`agent`** - Run local coding agents with filesystem access (Pi CLI, Claude Code CLI, etc.)
 - **`ruby`** - Execute custom Ruby code within workflows
 - **`cmd`** - Run shell commands and capture output
 - **`map`** - Process collections in serial or parallel
@@ -70,7 +70,7 @@ gem 'roast-ai'
 
 - Ruby 3.0+
 - API keys or local credentials for your AI provider
-- Claude Code CLI installed (for the default agent provider)
+- Pi CLI installed (for the default agent provider)
 
 ## Provider Configuration
 
@@ -100,7 +100,7 @@ end
 
 ### Agent cog
 
-The `agent` cog runs local agent CLIs. It defaults to `:claude` and currently supports:
+The `agent` cog runs local agent CLIs. It defaults to `:pi` and currently supports:
 
 - `:claude` - Claude Code CLI
 - `:pi` - Pi CLI
@@ -126,7 +126,7 @@ Roast currently supports four LLM providers for the `chat` cog: **OpenAI**, **An
 
 The default model is set per-provider and can only be overridden inside a `config` block. See the [tutorial](https://github.com/Shopify/roast/blob/main/tutorial/01_your_first_workflow/README.md#adding-configuration) for examples.
 
-The `agent` cog is powered by the Claude Code CLI by default, which handles its own authentication.
+The `agent` cog is powered by the Pi CLI by default, which handles its own authentication.
 
 ## Getting Started
 

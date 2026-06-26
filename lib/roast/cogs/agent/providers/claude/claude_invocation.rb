@@ -56,7 +56,9 @@ module Roast
             #: (Agent::Config, String, String?, ?fork_session: bool) -> void
             def initialize(config, prompt, session, fork_session: true)
               @base_command = config.valid_command #: (String | Array[String])?
-              @model = config.valid_model #: String?
+              # The Claude CLI expects a bare model name, while Pi expects a fully-qualified
+              # `anthropic/<model>` id. Strip the prefix so the same model string works for either provider.
+              @model = config.valid_model&.delete_prefix("anthropic/") #: String?
               @append_system_prompt = config.valid_append_system_prompt #: String?
               @replace_system_prompt = config.valid_replace_system_prompt #: String?
               @apply_permissions = config.apply_permissions? #: bool
