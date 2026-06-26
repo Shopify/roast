@@ -68,7 +68,7 @@ module Roast
           Event << { block: { header: "LLM STATS", content: lines.join("\n") } }
         end
 
-        verify_response_not_truncated!(chat, response)
+        verify_response_not_truncated!(response)
 
         Output.new(Session.from_chat(chat), response.content)
       end
@@ -81,15 +81,23 @@ module Roast
       # detect truncation heuristically: if the output token count equals (or exceeds) the
       # effective max token limit, the content was almost certainly cut off mid-generation.
       #
-      # The effective limit is derived from the model metadata (chat.model.max_tokens). For
-      # Anthropic, the provider always sends max_tokens with a fallback of 4096, so we replicate
-      # that fallback here. For other providers, if the model metadata doesn't specify a limit
-      # (e.g., when assume_model_exists is used with an unknown model), the check is skipped
-      # because we have no ceiling to compare against.
+      # The effective limit is derived from the ruby_llm model registry, which is populated
+      # from models.dev and provider APIs. This lookup is decoupled from the chat instance's
+      # `assume_model_exists` setting — even when the chat call itself skips registry
+      # verification (the default), we still consult the registry for token-limit metadata.
       #
-      #: (RubyLLM::Chat, RubyLLM::Message) -> void
-      def verify_response_not_truncated!(chat, response)
-        max_tokens = effective_max_tokens(chat)
+      # For Anthropic, the provider always sends max_tokens with a fallback of 4096 in the
+      # request payload, so if the model is not in the registry we replicate that fallback.
+      # For other providers, if the model is not in the registry, the check is skipped because
+      # we have no ceiling to compare against.
+      #
+      # Note: the `>=` boundary can produce false positives when output hits the limit exactly
+      # on a natural boundary. This is an unavoidable trade-off of the heuristic approach until
+      # ruby_llm exposes finish_reason.
+      #
+      #: (RubyLLM::Message) -> void
+      def verify_response_not_truncated!(response)
+        max_tokens = effective_max_tokens
         return unless max_tokens
         return unless response.output_tokens
 
@@ -103,14 +111,17 @@ module Roast
 
       # Determine the effective max token limit for the chat request.
       #
-      # Returns nil if the limit cannot be determined (e.g., the model is not in the registry
-      # and the provider doesn't have a known default).
+      # Queries the ruby_llm model registry directly, independent of the chat instance's
+      # `assume_model_exists` setting. This ensures the token limit is available even when
+      # the chat call itself uses the default permissive mode.
       #
-      #: (RubyLLM::Chat) -> Integer?
-      def effective_max_tokens(chat)
-        max_tokens = chat.model&.max_tokens
-        return max_tokens if max_tokens
-
+      # Returns nil if the model is not in the registry and the provider doesn't have a
+      # known default.
+      #
+      #: () -> Integer?
+      def effective_max_tokens
+        RubyLLM.models.find(config.valid_model, config.valid_provider!)&.max_tokens
+      rescue RubyLLM::ModelNotFoundError
         # Anthropic always sends max_tokens with a 4096 fallback in the request payload
         ANTHROPIC_DEFAULT_MAX_TOKENS if config.valid_provider! == :anthropic
       end

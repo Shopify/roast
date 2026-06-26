@@ -24,11 +24,8 @@ module Roast
       test "raises MaxTokensExceededError when output tokens equals max tokens for Anthropic" do
         @cog.config.provider(:anthropic)
 
-        mock_model = stub(max_tokens: nil)
-        mock_chat = mock_chat_with_response(
-          model: mock_model,
-          output_tokens: Chat::ANTHROPIC_DEFAULT_MAX_TOKENS,
-        )
+        stub_registry_max_tokens(4096, :anthropic)
+        mock_chat = mock_chat_with_response(output_tokens: 4096)
         stub_ruby_llm_context(mock_chat, :anthropic)
 
         error = assert_raises(Chat::MaxTokensExceededError) do
@@ -36,18 +33,15 @@ module Roast
         end
 
         assert_match(/truncated at the max token limit/, error.message)
-        assert_match(/output: #{Chat::ANTHROPIC_DEFAULT_MAX_TOKENS} tokens/, error.message)
-        assert_match(/limit: #{Chat::ANTHROPIC_DEFAULT_MAX_TOKENS} tokens/, error.message)
+        assert_match(/output: 4096 tokens/, error.message)
+        assert_match(/limit: 4096 tokens/, error.message)
       end
 
       test "raises MaxTokensExceededError when output tokens exceeds max tokens" do
         @cog.config.provider(:openai)
 
-        mock_model = stub(max_tokens: 4096)
-        mock_chat = mock_chat_with_response(
-          model: mock_model,
-          output_tokens: 4097,
-        )
+        stub_registry_max_tokens(4096, :openai)
+        mock_chat = mock_chat_with_response(output_tokens: 4097)
         stub_ruby_llm_context(mock_chat, :openai)
 
         assert_raises(Chat::MaxTokensExceededError) do
@@ -58,11 +52,8 @@ module Roast
       test "does not raise when output tokens is below max tokens" do
         @cog.config.provider(:openai)
 
-        mock_model = stub(max_tokens: 4096)
-        mock_chat = mock_chat_with_response(
-          model: mock_model,
-          output_tokens: 100,
-        )
+        stub_registry_max_tokens(4096, :openai)
+        mock_chat = mock_chat_with_response(output_tokens: 100)
         stub_ruby_llm_context(mock_chat, :openai)
 
         output = @cog.execute(make_input)
@@ -72,25 +63,19 @@ module Roast
       test "does not raise when output tokens is one below max tokens" do
         @cog.config.provider(:openai)
 
-        mock_model = stub(max_tokens: 4096)
-        mock_chat = mock_chat_with_response(
-          model: mock_model,
-          output_tokens: 4095,
-        )
+        stub_registry_max_tokens(4096, :openai)
+        mock_chat = mock_chat_with_response(output_tokens: 4095)
         stub_ruby_llm_context(mock_chat, :openai)
 
         output = @cog.execute(make_input)
         assert_equal "test response", output.response
       end
 
-      test "uses Anthropic 4096 fallback when model max_tokens is nil for Anthropic provider" do
+      test "uses Anthropic 4096 fallback when model is not in registry for Anthropic provider" do
         @cog.config.provider(:anthropic)
 
-        mock_model = stub(max_tokens: nil)
-        mock_chat = mock_chat_with_response(
-          model: mock_model,
-          output_tokens: 4096,
-        )
+        stub_registry_not_found(:anthropic)
+        mock_chat = mock_chat_with_response(output_tokens: 4096)
         stub_ruby_llm_context(mock_chat, :anthropic)
 
         assert_raises(Chat::MaxTokensExceededError) do
@@ -101,25 +86,19 @@ module Roast
       test "does not raise for Anthropic when output is below 4096 fallback" do
         @cog.config.provider(:anthropic)
 
-        mock_model = stub(max_tokens: nil)
-        mock_chat = mock_chat_with_response(
-          model: mock_model,
-          output_tokens: 4000,
-        )
+        stub_registry_not_found(:anthropic)
+        mock_chat = mock_chat_with_response(output_tokens: 4000)
         stub_ruby_llm_context(mock_chat, :anthropic)
 
         output = @cog.execute(make_input)
         assert_equal "test response", output.response
       end
 
-      test "uses model max_tokens when available even for Anthropic" do
+      test "uses registry max_tokens when available even for Anthropic" do
         @cog.config.provider(:anthropic)
 
-        mock_model = stub(max_tokens: 8192)
-        mock_chat = mock_chat_with_response(
-          model: mock_model,
-          output_tokens: 4096,
-        )
+        stub_registry_max_tokens(8192, :anthropic)
+        mock_chat = mock_chat_with_response(output_tokens: 4096)
         stub_ruby_llm_context(mock_chat, :anthropic)
 
         # 4096 < 8192, so no error
@@ -127,14 +106,11 @@ module Roast
         assert_equal "test response", output.response
       end
 
-      test "raises for Anthropic when output hits model-specified max_tokens" do
+      test "raises for Anthropic when output hits registry-specified max_tokens" do
         @cog.config.provider(:anthropic)
 
-        mock_model = stub(max_tokens: 8192)
-        mock_chat = mock_chat_with_response(
-          model: mock_model,
-          output_tokens: 8192,
-        )
+        stub_registry_max_tokens(8192, :anthropic)
+        mock_chat = mock_chat_with_response(output_tokens: 8192)
         stub_ruby_llm_context(mock_chat, :anthropic)
 
         assert_raises(Chat::MaxTokensExceededError) do
@@ -142,14 +118,11 @@ module Roast
         end
       end
 
-      test "skips check when max_tokens is nil for non-Anthropic provider" do
+      test "skips check when model is not in registry for non-Anthropic provider" do
         @cog.config.provider(:openai)
 
-        mock_model = stub(max_tokens: nil)
-        mock_chat = mock_chat_with_response(
-          model: mock_model,
-          output_tokens: 999_999,
-        )
+        stub_registry_not_found(:openai)
+        mock_chat = mock_chat_with_response(output_tokens: 999_999)
         stub_ruby_llm_context(mock_chat, :openai)
 
         # Can't determine the limit, so no error should be raised
@@ -160,11 +133,8 @@ module Roast
       test "skips check when response output_tokens is nil" do
         @cog.config.provider(:openai)
 
-        mock_model = stub(max_tokens: 4096)
-        mock_chat = mock_chat_with_response(
-          model: mock_model,
-          output_tokens: nil,
-        )
+        stub_registry_max_tokens(4096, :openai)
+        mock_chat = mock_chat_with_response(output_tokens: nil)
         stub_ruby_llm_context(mock_chat, :openai)
 
         output = @cog.execute(make_input)
@@ -184,9 +154,8 @@ module Roast
         end
       end
 
-      def mock_chat_with_response(model:, output_tokens:)
+      def mock_chat_with_response(output_tokens:)
         mock_chat = mock
-        mock_chat.stubs(:model).returns(model)
         mock_chat.stubs(:messages).returns([])
         mock_chat.stubs(:with_temperature).returns(mock_chat)
         mock_chat.stubs(:ask).returns(
@@ -212,6 +181,23 @@ module Roast
           mock_context.stubs(:anthropic_api_base=)
         end
         RubyLLM.stubs(:context).yields(mock_context).returns(mock_context)
+      end
+
+      # Stub the model registry to return a model with the given max_tokens.
+      # This tests the production path: effective_max_tokens calls RubyLLM.models.find.
+      def stub_registry_max_tokens(max_tokens, provider)
+        mock_model = stub(max_tokens: max_tokens)
+        mock_models = mock
+        mock_models.stubs(:find).returns(mock_model)
+        RubyLLM.stubs(:models).returns(mock_models)
+      end
+
+      # Stub the model registry to raise ModelNotFoundError, simulating an
+      # unknown model. This tests the Anthropic fallback path.
+      def stub_registry_not_found(provider)
+        mock_models = mock
+        mock_models.stubs(:find).raises(RubyLLM::ModelNotFoundError.new("Unknown model"))
+        RubyLLM.stubs(:models).returns(mock_models)
       end
     end
   end
