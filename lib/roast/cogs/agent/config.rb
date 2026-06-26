@@ -7,10 +7,19 @@ module Roast
       class Config < Cog::Config
         VALID_PROVIDERS = [:pi, :claude].freeze #: Array[Symbol]
 
+        # Environment variable that overrides the built-in default agent provider.
+        #
+        # When an agent cog does not explicitly configure a provider, Roast uses the provider named by
+        # this variable, falling back to the built-in default (`VALID_PROVIDERS.first`, i.e. `:pi`) when it
+        # is unset or blank. The value is normalized (surrounding whitespace stripped, then downcased)
+        # before lookup, and an explicit `provider` configured on the cog always takes precedence over it.
+        DEFAULT_PROVIDER_ENV_VAR = "ROAST_DEFAULT_AGENT_PROVIDER" #: String
+
         # Configure the cog to use a specified provider when invoking an agent
         #
         # The provider is the source of the agent tool itself.
-        # If no provider is specified, Pi (`:pi`) will be used as the default provider.
+        # If no provider is specified, Roast uses the provider named by the `ROAST_DEFAULT_AGENT_PROVIDER`
+        # environment variable, or Pi (`:pi`) when that variable is unset.
         #
         # A provider must be properly installed on your system in order for Roast to be able to use it.
         #
@@ -24,7 +33,8 @@ module Roast
 
         # Configure the cog to use the default provider when invoking an agent
         #
-        # The default provider used by Roast is Pi (`:pi`).
+        # The default provider is the one named by the `ROAST_DEFAULT_AGENT_PROVIDER` environment variable,
+        # or Pi (`:pi`) when that variable is unset.
         #
         # The provider must be properly installed on your system in order for Roast to be able to use it.
         #
@@ -38,6 +48,10 @@ module Roast
 
         # Get the validated provider name that the cog is configured to use when invoking an agent
         #
+        # The provider is resolved in order of precedence: the provider explicitly configured on the cog,
+        # then the `ROAST_DEFAULT_AGENT_PROVIDER` environment variable (normalized by stripping surrounding
+        # whitespace and downcasing), then the built-in default (`VALID_PROVIDERS.first`, i.e. `:pi`).
+        #
         # Note: this method will return the name of a valid provider or raise an `InvalidConfigError`.
         # It will __not__, however, validate that the agent is properly installed on your system.
         # If the agent is not properly installed, you will likely experience a failure when Roast attempts to
@@ -49,7 +63,8 @@ module Roast
         #
         #: () -> Symbol
         def valid_provider!
-          provider = @values[:provider] || VALID_PROVIDERS.first
+          env_default = ENV[DEFAULT_PROVIDER_ENV_VAR].presence&.strip&.downcase&.to_sym
+          provider = @values[:provider] || env_default || VALID_PROVIDERS.first
           unless VALID_PROVIDERS.include?(provider)
             raise InvalidConfigError, "'#{provider}' is not a valid provider. Available providers include: #{VALID_PROVIDERS.join(", ")}"
           end
