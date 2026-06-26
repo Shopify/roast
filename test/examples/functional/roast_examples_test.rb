@@ -885,6 +885,7 @@ module Examples
         mock_chat = mock
         mock_chat.stubs(:messages).returns([])
         mock_chat.stubs(:with_temperature).returns(mock_chat)
+        mock_chat.stubs(:model).returns(stub(max_tokens: 16_384))
         mock_chat.stubs(:ask).returns(stub(content: "test response", model_id: "gpt-4o", input_tokens: 1, output_tokens: 1))
 
         mock_context = mock
