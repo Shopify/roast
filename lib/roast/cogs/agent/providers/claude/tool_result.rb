@@ -327,7 +327,8 @@ module Roast
               summary.present? ? "#{prefix} #{summary}" : prefix
             end
 
-            # Renders "<TOOL> ERROR <message>" with any <tool_use_error> wrapper stripped.
+            # Renders "<TOOL> ERROR <message>" – the text inside the
+            # <tool_use_error> wrapper, or the whole content when it is unwrapped.
             #
             # Reads the instance's `content` and `tool_name` to produce a single-line
             # error summary. Error messages are intentionally NOT truncated so the full
@@ -339,7 +340,7 @@ module Roast
             #
             #: () -> String
             def error_line
-              message = content.to_s.gsub(%r{</?tool_use_error>}, "").strip
+              message = tag_text("tool_use_error") || content.to_s.strip
               "#{tool_name.to_s.upcase} ERROR #{message}".strip
             end
 
