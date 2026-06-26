@@ -127,7 +127,7 @@ execute do
 end
 ```
 
-The `agent` cog is backed by a locally installed coding agent -- Pi is the default provider.
+The `agent` cog is backed by a locally installed coding agent -- Pi is the default provider (set `ROAST_DEFAULT_AGENT_PROVIDER` to change it globally, e.g. to `claude`).
 You'll need to have Pi installed and configured correctly for this cog to run.
 
 ### Specifying a Model

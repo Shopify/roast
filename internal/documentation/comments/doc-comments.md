@@ -70,7 +70,8 @@ These files provide the primary interface between users and Roast. The documenta
 # Configure the cog to use a specified provider when invoking an agent
 #
 # The provider is the source of the agent tool itself.
-# If no provider is specified, Pi (`:pi`) will be used as the default provider.
+# If no provider is specified, Roast uses the provider named by the `ROAST_DEFAULT_AGENT_PROVIDER`
+# environment variable, or Pi (`:pi`) when that variable is unset.
 #
 # A provider must be properly installed on your system in order for Roast to be able to use it.
 #

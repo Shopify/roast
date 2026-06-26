@@ -165,7 +165,8 @@ shortened names can be confusing. Use the complete module path.
 ```ruby
 # Configure the cog to use the default provider when invoking an agent
 #
-# The default provider used by Roast is Pi (`:pi`).
+# The default provider is the one named by the `ROAST_DEFAULT_AGENT_PROVIDER` environment variable,
+# or Pi (`:pi`) when that variable is unset.
 #: () -> void
 def use_default_provider!
   @values[:provider] = nil
@@ -386,7 +387,8 @@ end
 # Configure the cog to use a specified provider when invoking an agent
 #
 # The provider is the source of the agent tool itself.
-# If no provider is specified, Pi (`:pi`) will be used as the default provider.
+# If no provider is specified, Roast uses the provider named by the `ROAST_DEFAULT_AGENT_PROVIDER`
+# environment variable, or Pi (`:pi`) when that variable is unset.
 #
 # A provider must be properly installed on your system in order for Roast to be able to use it.
 #
@@ -519,7 +521,7 @@ Methods in `config_context.rbi` expose cog configuration interfaces and are the 
 #
 # #### Configure the LLM provider
 # - `provider(symbol)` - Set the agent provider (e.g., `:claude`)
-# - `use_default_provider!` - Use the default provider (`:pi`)
+# - `use_default_provider!` - Use the default provider (`:pi`, or `$ROAST_DEFAULT_AGENT_PROVIDER` when set)
 #
 # #### Configure the base command used to run the coding agent
 # - `command(string_or_array)` - Set the base command for invoking the agent

@@ -74,7 +74,7 @@ gem 'roast-ai'
 
 ## Provider Configuration
 
-Roast provider settings are configured in workflow `config` blocks. There is not currently a CLI flag or environment variable that changes the default provider globally; edit the workflow config to select a different provider.
+Roast provider settings are configured in workflow `config` blocks. To change the default **agent** provider without editing each workflow, set the `ROAST_DEFAULT_AGENT_PROVIDER` environment variable (e.g. `export ROAST_DEFAULT_AGENT_PROVIDER=claude`). A `provider` set in a workflow's `config` always takes precedence over this variable, and an invalid value raises an error. This affects the `agent` cog only; the `chat` cog's provider is unaffected.
 
 ### Chat cog
 
@@ -97,7 +97,7 @@ end
 
 ### Agent cog
 
-The `agent` cog runs local agent CLIs. It defaults to `:pi` and currently supports:
+The `agent` cog runs local agent CLIs. It defaults to `:pi` (override globally with `ROAST_DEFAULT_AGENT_PROVIDER`) and currently supports:
 
 - `:claude` - Claude Code CLI
 - `:pi` - Pi CLI
