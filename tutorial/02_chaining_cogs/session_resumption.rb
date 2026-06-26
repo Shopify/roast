@@ -10,7 +10,7 @@ config do
     show_stats!
   end
   chat(:recall_code) do
-    model "gpt-4.1-nano"
+    model "gpt-5.4-nano"
   end
   agent do
     model "haiku"

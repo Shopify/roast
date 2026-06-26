@@ -19,6 +19,7 @@ module Roast
 
           assert_equal :bash, tool_result.tool_name
           assert_equal "List files", tool_result.tool_use_description
+          assert_equal({ description: "List files" }, tool_result.tool_use_input)
           assert_equal "file1.txt\nfile2.txt", tool_result.content
           refute tool_result.is_error
         end
@@ -32,6 +33,7 @@ module Roast
 
           assert_equal :unknown, tool_result.tool_name
           assert_nil tool_result.tool_use_description
+          assert_equal({}, tool_result.tool_use_input)
         end
 
         test "initialize with tool_use without description" do
@@ -85,10 +87,68 @@ module Roast
           assert_match(/error details/, output)
         end
 
-        test "format includes description when present" do
+        test "error_line strips the tool_use_error wrapper and upcases the tool name" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
-            hash: { name: "bash", input: { description: "Run command" } },
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "<tool_use_error>File has not been read yet.</tool_use_error>",
+            is_error: true,
+          )
+
+          output = tool_result.send(:error_line)
+
+          assert_equal "BASH ERROR File has not been read yet.", output
+        end
+
+        test "error_line handles nil content gracefully" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "read", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: nil,
+            is_error: true,
+          )
+
+          output = tool_result.send(:error_line)
+
+          assert_equal "READ ERROR", output
+        end
+
+        test "format error path keeps the full content" do
+          tool_result = Claude::ToolResult.new(
+            tool_use: nil,
+            content: "Error: command failed\n  at line 3\n  exit status 1",
+            is_error: true,
+          )
+
+          output = tool_result.format
+
+          assert_equal "UNKNOWN ERROR Error: command failed\n  at line 3\n  exit status 1", output
+        end
+
+        test "format routes errors through the error_line helper" do
+          tool_result = Claude::ToolResult.new(
+            tool_use: nil,
+            content: "error details",
+            is_error: true,
+          )
+
+          tool_result.expects(:error_line).returns("ERROR LINE")
+
+          output = tool_result.format
+
+          assert_equal "ERROR LINE", output
+        end
+
+        test "format_unknown includes the description for an unknown tool" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "custom", input: { description: "Run command" } },
           )
           tool_result = Claude::ToolResult.new(
             tool_use: tool_use_message,
@@ -99,6 +159,916 @@ module Roast
           output = tool_result.format
 
           assert_match(/Run command/, output)
+        end
+
+        test "format_bash reports the line count and previews the first line" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "file1.txt\nfile2.txt\nfile3.txt",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "BASH OK 3 lines · file1.txt", output
+        end
+
+        test "format_bash uses the singular 'line' for a single line of output" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "the only line",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "BASH OK 1 line · the only line", output
+        end
+
+        test "format_bash truncates a long first-line preview" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "x" * 60,
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "BASH OK 1 line · #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "format_bash omits the preview when the command produced no output" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "BASH OK 0 lines", output
+        end
+
+        test "format_read uses the plural 'lines' for multiple lines of content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "read", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "line one\nline two\nline three",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "READ OK 3 lines", output
+        end
+
+        test "format_read uses the singular 'line' for a single line of content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "read", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "the only line",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "READ OK 1 line", output
+        end
+
+        test "format_read does not count a trailing newline as an extra line" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "read", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "line one\nline two\n",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "READ OK 2 lines", output
+        end
+
+        test "format_read reports zero lines for empty content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "read", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "READ OK 0 lines", output
+        end
+
+        test "format_glob reports the number of matched files" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "/a/one.rb\n/a/two.rb\n/a/three.rb",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 3 files found", output
+        end
+
+        test "format_glob uses the singular 'file' for a single match" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "/a/only.rb",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 1 file found", output
+        end
+
+        test "format_glob ignores blank lines when counting files" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "/a/one.rb\n\n/a/two.rb\n",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 2 files found", output
+        end
+
+        test "format_glob appends a non-path line as a NOTE when files were found" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "/a/one.rb\n/a/two.rb\nResults are truncated",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 2 files found · NOTE Results are truncated", output
+        end
+
+        test "format_glob drops the NOTE when there are no matches" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "No files found",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 0 files found", output
+        end
+
+        test "format_glob truncates a long NOTE" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "glob", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "/a/only.rb\n#{"x" * 60}",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GLOB OK 1 file found · NOTE #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "format_grep reports the number of matches" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "lib/a.rb:1:foo\nlib/b.rb:2:bar\nlib/c.rb:3:baz",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 3 matches", output
+        end
+
+        test "format_grep counts a line-number-prefixed match without a path" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "42:def hello",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 1 match", output
+        end
+
+        test "format_grep ignores blank lines when counting matches" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "lib/a.rb:1:foo\n\nlib/b.rb:2:bar\n",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 2 matches", output
+        end
+
+        test "format_grep appends a non-match line as a NOTE when matches were found" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "lib/a.rb:1:foo\nlib/b.rb:2:bar\nResults are truncated",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 2 matches · NOTE Results are truncated", output
+        end
+
+        test "format_grep drops the NOTE when there are no matches" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "No matches found",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 0 matches", output
+        end
+
+        test "format_grep truncates a long NOTE" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "lib/a.rb:1:foo\n#{"x" * 60}",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 1 match · NOTE #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "format_grep does not misclassify a status message containing a slash as a match" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "lib/a.rb:1:foo\nFound 0/100 files",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 1 match · NOTE Found 0/100 files", output
+        end
+
+        test "format_grep counts bare relative paths as matches" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "components/a.rb\ncomponents/b.rb",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 2 matches", output
+        end
+
+        test "format_grep counts a root-level file match whose path has no slash" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "grep", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Gemfile:395:gem \"verdict\"",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "GREP OK 1 match", output
+        end
+
+        test "format_write reports the written file path" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "write", input: { file_path: "lib/roast/version.rb" } },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "File created successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "WRITE OK lib/roast/version.rb", output
+        end
+
+        test "format_write omits the path when the input has none" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "write", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "File created successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "WRITE OK", output
+        end
+
+        test "format_edit reports the edited file path" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "edit", input: { file_path: "lib/roast/version.rb" } },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "The file has been updated.",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "EDIT OK lib/roast/version.rb", output
+        end
+
+        test "format_edit omits the path when the input has none" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "edit", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "The file has been updated.",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "EDIT OK", output
+        end
+
+        test "format_skill reports the invoked skill name" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "skill", input: { skill: "commit" } },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Skill completed.",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "SKILL OK commit", output
+        end
+
+        test "format_skill omits the skill when the input has none" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "skill", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Skill completed.",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "SKILL OK", output
+        end
+
+        test "format_todowrite reports a bare OK when there are no todos" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "todowrite", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Todos have been modified successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TODOWRITE OK", output
+        end
+
+        test "format_todowrite shows the completed count and the in-progress item" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: {
+              name: "todowrite",
+              input: {
+                todos: [
+                  { status: "completed", content: "Set up the project", activeForm: "Setting up the project" },
+                  { status: "in_progress", content: "Build the parser", activeForm: "Building the parser" },
+                  { status: "pending", content: "Write the tests", activeForm: "Writing the tests" },
+                ],
+              },
+            },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Todos have been modified successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TODOWRITE OK 1/3 done · Building the parser", output
+        end
+
+        test "format_todowrite falls back to the content when the in-progress item has no activeForm" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: {
+              name: "todowrite",
+              input: {
+                todos: [
+                  { status: "in_progress", content: "Build the parser" },
+                ],
+              },
+            },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Todos have been modified successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TODOWRITE OK 0/1 done · Build the parser", output
+        end
+
+        test "format_todowrite omits the active part when nothing is in progress" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: {
+              name: "todowrite",
+              input: {
+                todos: [
+                  { status: "completed", content: "Set up", activeForm: "Setting up" },
+                  { status: "completed", content: "Ship it", activeForm: "Shipping it" },
+                ],
+              },
+            },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Todos have been modified successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TODOWRITE OK 2/2 done", output
+        end
+
+        test "format_todowrite truncates a long in-progress label" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: {
+              name: "todowrite",
+              input: {
+                todos: [
+                  { status: "in_progress", content: "x" * 60, activeForm: "y" * 60 },
+                ],
+              },
+            },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "Todos have been modified successfully",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TODOWRITE OK 0/1 done · #{"y" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "format_taskupdate previews the first line of the result content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskupdate", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "  Task updated successfully  \nadditional detail",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKUPDATE OK Task updated successfully", output
+        end
+
+        test "format_taskupdate reports a bare OK when there is no content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskupdate", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKUPDATE OK", output
+        end
+
+        test "format_taskupdate truncates a long preview" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskupdate", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "x" * 60,
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKUPDATE OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "format_taskcreate previews the first line of the result content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskcreate", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "  Task created successfully  \nadditional detail",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKCREATE OK Task created successfully", output
+        end
+
+        test "format_taskcreate reports a bare OK when there is no content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskcreate", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKCREATE OK", output
+        end
+
+        test "format_taskcreate truncates a long preview" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "taskcreate", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "x" * 60,
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASKCREATE OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "format_agent previews the first line of the agent's content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "agent", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [{ type: "text", text: "Refactored the parser\nAll tests pass" }],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "AGENT OK Refactored the parser", output
+        end
+
+        test "format_agent reports a bare OK when there is no content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "agent", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "AGENT OK", output
+        end
+
+        test "format_agent truncates a long preview" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "agent", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [{ type: "text", text: "x" * 60 }],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "AGENT OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "format_task previews the first line of the result content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "task", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [{ type: "text", text: "Async agent launched successfully\nagentId: aae7c2c6" }],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASK OK Async agent launched successfully", output
+        end
+
+        test "format_task reports a bare OK when there is no content" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "task", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASK OK", output
+        end
+
+        test "format_task truncates a long preview" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "task", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: [{ type: "text", text: "x" * 60 }],
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "TASK OK #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "ok_line renders a bare OK line when given no parts" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: nil,
+            is_error: false,
+          )
+
+          output = tool_result.send(:ok_line)
+
+          assert_equal "BASH OK", output
+        end
+
+        test "ok_line appends a single part and upcases the tool name" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: nil,
+            is_error: false,
+          )
+
+          output = tool_result.send(:ok_line, "3 files")
+
+          assert_equal "BASH OK 3 files", output
+        end
+
+        test "ok_line joins multiple parts with a dot separator" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: nil,
+            is_error: false,
+          )
+
+          output = tool_result.send(:ok_line, "3 lines", "preview text")
+
+          assert_equal "BASH OK 3 lines · preview text", output
+        end
+
+        test "ok_line drops blank and nil parts before joining" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "bash", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: nil,
+            is_error: false,
+          )
+
+          output = tool_result.send(:ok_line, "3 lines", "", nil)
+
+          assert_equal "BASH OK 3 lines", output
+        end
+
+        test "truncate returns strings within the limit unchanged" do
+          tool_result = Claude::ToolResult.new(
+            tool_use: nil,
+            content: nil,
+            is_error: false,
+          )
+          string_at_limit = "a" * Claude::ToolResult::TRUNCATE_LIMIT
+
+          output = tool_result.send(:truncate, string_at_limit)
+
+          assert_equal string_at_limit, output
+        end
+
+        test "truncate cuts longer strings to the limit with an ellipsis" do
+          tool_result = Claude::ToolResult.new(
+            tool_use: nil,
+            content: nil,
+            is_error: false,
+          )
+          limit = Claude::ToolResult::TRUNCATE_LIMIT
+
+          output = tool_result.send(:truncate, "a" * (limit + 10))
+
+          assert_equal "#{"a" * (limit - 3)}...", output
+          assert_equal limit, output.length
+        end
+
+        test "truncate maps nil to an empty string" do
+          tool_result = Claude::ToolResult.new(
+            tool_use: nil,
+            content: nil,
+            is_error: false,
+          )
+
+          output = tool_result.send(:truncate, nil)
+
+          assert_equal "", output
+        end
+
+        test "normalize_content joins content blocks into newline-separated text" do
+          tool_result = Claude::ToolResult.new(
+            tool_use: nil,
+            content: nil,
+            is_error: false,
+          )
+          blocks = [
+            { type: "text", text: "first block" },
+            { type: "text", text: "second block" },
+          ]
+
+          output = tool_result.send(:normalize_content, blocks)
+
+          assert_equal "first block\nsecond block", output
+        end
+
+        test "normalize_content skips blocks without a :text field" do
+          tool_result = Claude::ToolResult.new(
+            tool_use: nil,
+            content: nil,
+            is_error: false,
+          )
+
+          blocks = [{ type: "non-text type" }, { type: "text", text: "hi" }]
+          output = tool_result.send(:normalize_content, blocks)
+
+          assert_equal "hi", output
+        end
+
+        test "normalize_content coerces a non-array value with to_s" do
+          tool_result = Claude::ToolResult.new(
+            tool_use: nil,
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "plain", tool_result.send(:normalize_content, "plain")
+          assert_equal "", tool_result.send(:normalize_content, nil)
         end
       end
     end
