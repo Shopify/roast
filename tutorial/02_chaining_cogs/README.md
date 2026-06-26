@@ -127,8 +127,36 @@ execute do
 end
 ```
 
-The `agent` cog is backed by a locally installed coding agent -- Anthropic's Claude Code is the default provider.
-You'll need to have Claude Code installed and configured correctly for this cog to run.
+The `agent` cog is backed by a locally installed coding agent -- Pi is the default provider.
+You'll need to have Pi installed and configured correctly for this cog to run.
+
+### Specifying a Model
+
+Model names for the `agent` cog depend on the provider:
+
+- **Pi** (the default) needs a fully-qualified `provider/model` id:
+
+```ruby
+config do
+  agent do
+    model "anthropic/claude-haiku-4-5-20251001"
+  end
+end
+```
+
+- **Claude Code** (`provider :claude`) takes the bare model name -- just drop the `anthropic/` prefix:
+
+```ruby
+config do
+  agent do
+    provider :claude
+    model "claude-haiku-4-5-20251001"
+  end
+end
+```
+
+A bare name like `"claude-haiku-4-5-20251001"` (or a shorthand like `"haiku"`) **only** works when you've set
+`provider :claude`. On the default Pi provider it will fail, because Pi can't resolve an unqualified model name.
 
 ### When to Use Agent vs Chat
 
