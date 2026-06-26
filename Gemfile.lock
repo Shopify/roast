@@ -12,7 +12,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (8.0.2)
+    activesupport (8.0.4.1)
       base64
       benchmark (>= 0.3)
       bigdecimal
@@ -21,7 +21,7 @@ GEM
       drb
       i18n (>= 1.6, < 2)
       logger (>= 1.4.2)
-      minitest (>= 5.1)
+      minitest (>= 5.1, < 6)
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
@@ -35,11 +35,11 @@ GEM
       metrics (~> 0.12)
       traces (~> 0.18)
     base64 (0.3.0)
-    benchmark (0.4.1)
-    bigdecimal (3.2.2)
+    benchmark (0.5.0)
+    bigdecimal (4.1.2)
     coderay (1.1.3)
     concurrent-ruby (1.3.7)
-    connection_pool (2.5.3)
+    connection_pool (3.0.2)
     console (1.34.2)
       fiber-annotation
       fiber-local (~> 1.1)
@@ -84,7 +84,7 @@ GEM
       guard-compat (~> 1.2)
       minitest (>= 3.0)
     hashdiff (1.2.0)
-    i18n (1.14.7)
+    i18n (1.15.2)
       concurrent-ruby (~> 1.0)
     io-event (1.14.0)
     json (2.20.0)
@@ -252,16 +252,16 @@ DEPENDENCIES
   webmock
 
 CHECKSUMS
-  activesupport (8.0.2) sha256=8565cddba31b900cdc17682fd66ecd020441e3eef320a9930285394e8c07a45e
+  activesupport (8.0.4.1) sha256=822187e99ebca3e90bf03e6ccef5b57447592657f6b1676ccaaa25794ebfc7e6
   addressable (2.9.0) sha256=7fdf6ac3660f7f4e867a0838be3f6cf722ace541dd97767fa42bc6cfa980c7af
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   async (2.34.0) sha256=65ab207d4575c05bb6c5bac430f9f8d372d8288686e68e89f44eba094c77e1c1
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
-  benchmark (0.4.1) sha256=d4ef40037bba27f03b28013e219b950b82bace296549ec15a78016552f8d2cce
-  bigdecimal (3.2.2) sha256=39085f76b495eb39a79ce07af716f3a6829bc35eb44f2195e2753749f2fa5adc
+  benchmark (0.5.0) sha256=465df122341aedcb81a2a24b4d3bd19b6c67c1530713fd533f3ff034e419236c
+  bigdecimal (4.1.2) sha256=53d217666027eab4280346fba98e7d5b66baaae1b9c3c1c0ffe89d48188a3fbd
   coderay (1.1.3) sha256=dc530018a4684512f8f38143cd2a096c9f02a1fc2459edcfe534787a7fc77d4b
   concurrent-ruby (1.3.7) sha256=4412caec3a5ea2e5fdc52076724c071a81f2c0593d83b2ac8cbb8ca63b3151b0
-  connection_pool (2.5.3) sha256=cfd74a82b9b094d1ce30c4f1a346da23ee19dc8a062a16a85f58eab1ced4305b
+  connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
   console (1.34.2) sha256=1c036abf606ccec83f9dc28f0c31710fe5936ffe7ba5d235ae2865590a482d58
   crack (1.0.0) sha256=c83aefdb428cdc7b66c7f287e488c796f055c0839e6e545fec2c7047743c4a49
   docile (1.4.1) sha256=96159be799bfa73cdb721b840e9802126e4e03dfc26863db73647204c727f21e
@@ -282,7 +282,7 @@ CHECKSUMS
   guard-compat (1.2.1) sha256=3ad21ab0070107f92edfd82610b5cdc2fb8e368851e72362ada9703443d646fe
   guard-minitest (2.4.6) sha256=d89e83d029447c13b191599085d24b6e2fe61e402d275e46491cd3e82f561572
   hashdiff (1.2.0) sha256=c984f13e115bfc9953332e8e83bd9d769cfde9944e2d54e07eb9df7b76e140b5
-  i18n (1.14.7) sha256=ceba573f8138ff2c0915427f1fc5bdf4aa3ab8ae88c8ce255eb3ecf0a11a5d0f
+  i18n (1.15.2) sha256=00f9eb62412fe593b2a65a97daa75300d37abb8f7202ec748e94b6d46a9dd1b5
   io-event (1.14.0) sha256=e52abe4fa1f48e8b4311aa252c4b1f466716a038d01ff7ae83c72385bb209436
   json (2.20.0) sha256=9362bc6e55a952b056abf9167cf053358181c904cb70cd6eee0808ea830fc32b
   language_server-protocol (3.17.0.5) sha256=fd1e39a51a28bf3eec959379985a72e296e9f9acfce46f6a79d31ca8760803cc
