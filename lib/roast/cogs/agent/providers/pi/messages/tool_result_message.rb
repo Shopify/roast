@@ -30,23 +30,73 @@ module Roast
                 @tool_name = tool_name
                 @content = content
                 @is_error = is_error
+                @name = (tool_name || "unknown").to_s #: String
+                @input = {} #: Hash[Symbol, untyped]
               end
 
               #: (PiInvocation::Context) -> String?
               def format(context)
-                tool_call = context.tool_call(tool_call_id)
-                name = tool_name || tool_call&.name || "unknown"
-                status = is_error ? "ERROR" : "OK"
+                call = context.tool_call(tool_call_id)
+                @name = (tool_name || call&.name || "unknown").to_s
+                @input = call&.arguments || {}
 
-                # Truncate long tool results for progress display
-                c = content
-                display_content = if c && c.length > 200
-                  "#{c[0..197]}..."
-                else
-                  c
-                end
+                return error_line if is_error
 
-                "#{name.upcase} #{status}#{display_content ? " #{display_content}" : ""}"
+                format_method_name = "format_#{@name.downcase}".to_sym
+                return send(format_method_name) if respond_to?(format_method_name, true)
+
+                format_unknown
+              end
+
+              TRUNCATE_LIMIT = 45
+
+              private
+
+              #: () -> String
+              def format_bash
+                lines = content.to_s.lines
+                count = lines.length
+                ok_line("#{count} #{"line".pluralize(count)}")
+              end
+
+              #: () -> String
+              def format_read
+                count = content.to_s.lines.length
+                ok_line("#{count} #{"line".pluralize(count)}")
+              end
+
+              #: () -> String
+              def format_write
+                ok_line(@input[:path])
+              end
+
+              #: () -> String
+              def format_edit
+                ok_line(@input[:path])
+              end
+
+              #: () -> String
+              def format_unknown
+                preview = truncate(content.to_s.lines.first.to_s.strip)
+                ok_line(preview)
+              end
+
+              #: (*String?) -> String
+              def ok_line(*parts)
+                summary = parts.select(&:present?).join(" · ")
+                prefix = "#{@name.upcase} OK"
+                summary.present? ? "#{prefix} #{summary}" : prefix
+              end
+
+              #: () -> String
+              def error_line
+                "#{@name.upcase} ERROR #{content.to_s.strip}".strip
+              end
+
+              #: (String?) -> String
+              def truncate(str)
+                s = str.to_s
+                s.length > TRUNCATE_LIMIT ? "#{s[0...TRUNCATE_LIMIT - 3]}..." : s
               end
             end
           end
