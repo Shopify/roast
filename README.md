@@ -100,7 +100,7 @@ end
 
 ### Agent cog
 
-The `agent` cog runs local agent CLIs. It defaults to `:pi` and currently supports:
+The `agent` cog runs local agent CLIs. It defaults to `:pi` (override globally with `ROAST_DEFAULT_AGENT_PROVIDER`) and currently supports:
 
 - `:claude` - Claude Code CLI
 - `:pi` - Pi CLI
