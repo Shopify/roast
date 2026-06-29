@@ -5,6 +5,14 @@ module Roast
   module Cogs
     class Chat < Cog
       class Config < Cog::Config
+        # Environment variable that overrides the built-in default chat provider.
+        #
+        # When a chat cog does not explicitly configure a provider, Roast uses the provider named by
+        # this variable, falling back to the built-in default (`PROVIDERS.keys.first`, i.e. `:openai`) when it
+        # is unset or blank. The value is normalized (surrounding whitespace stripped, then downcased)
+        # before lookup, and an explicit `provider` configured on the cog always takes precedence over it.
+        DEFAULT_PROVIDER_ENV_VAR = "ROAST_DEFAULT_CHAT_PROVIDER" #: String
+
         PROVIDERS = {
           openai: {
             api_key_env_var: "OPENAI_API_KEY",
@@ -42,7 +50,8 @@ module Roast
 
         # Configure the cog to use the default provider when invoking the llm
         #
-        # The default LLM provider used by Roast is OpenAI (`:openai`).
+        # The default LLM provider is the one named by the `ROAST_DEFAULT_CHAT_PROVIDER` environment
+        # variable, or OpenAI (`:openai`) when that variable is unset.
         #
         # #### See Also
         # - `provider`
@@ -53,6 +62,10 @@ module Roast
         end
 
         # Get the validated provider name that the cog is configured to use when invoking the llm
+        #
+        # The provider is resolved in order of precedence: the provider explicitly configured on the cog,
+        # then the `ROAST_DEFAULT_CHAT_PROVIDER` environment variable (normalized by stripping surrounding
+        # whitespace and downcasing), then the built-in default (`PROVIDERS.keys.first`, i.e. `:openai`).
         #
         # Note: this method will return the name of a valid provider or raise an `InvalidConfigError`.
         # It will __not__, however, validate that the you have access to the provider's API.
@@ -65,7 +78,8 @@ module Roast
         #
         #: () -> Symbol
         def valid_provider!
-          provider = @values[:provider] || PROVIDERS.keys.first
+          env_default = ENV[DEFAULT_PROVIDER_ENV_VAR].presence&.strip&.downcase&.to_sym
+          provider = @values[:provider] || env_default || PROVIDERS.keys.first
           unless PROVIDERS.include?(provider)
             raise InvalidConfigError, "'#{provider}' is not a valid provider. Available providers include: #{PROVIDERS.keys.join(", ")}"
           end

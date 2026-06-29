@@ -74,23 +74,26 @@ gem 'roast-ai'
 
 ## Provider Configuration
 
-Roast provider settings are configured in workflow `config` blocks. There is not currently a CLI flag or environment variable that changes the default provider globally; edit the workflow config to select a different provider.
+Roast provider settings are configured in workflow `config` blocks. To change the default **chat** provider without editing each workflow, set the `ROAST_DEFAULT_CHAT_PROVIDER` environment variable (e.g. `export ROAST_DEFAULT_CHAT_PROVIDER=anthropic`). To change the default **agent** provider, set `ROAST_DEFAULT_AGENT_PROVIDER`. A `provider` set in a workflow's `config` always takes precedence over these variables, and an invalid value raises an error.
 
 ### Chat cog
 
-The `chat` cog currently supports the OpenAI provider. It uses `OPENAI_API_KEY` by default, and `OPENAI_API_BASE` can override the default base URL (`https://api.openai.com/v1`).
+The `chat` cog supports **OpenAI**, **Anthropic**, **Perplexity**, and **Gemini**. It defaults to `:openai` (override globally with `ROAST_DEFAULT_CHAT_PROVIDER`). Each provider reads its API key from a provider-specific environment variable:
 
-```bash
-export OPENAI_API_KEY=...
-```
+| Provider | API key env var | Base URL env var |
+|---|---|---|
+| `:openai` | `OPENAI_API_KEY` | `OPENAI_API_BASE` |
+| `:anthropic` | `ANTHROPIC_API_KEY` | `ANTHROPIC_API_BASE` |
+| `:perplexity` | `PERPLEXITY_API_KEY` | — |
+| `:gemini` | `GEMINI_API_KEY` | `GEMINI_API_BASE` |
 
-You can also configure chat settings directly in a workflow:
+You can configure the provider directly in a workflow:
 
 ```ruby
 config do
   chat do
-    provider :openai
-    model "gpt-4o-mini"
+    provider :anthropic
+    model "claude-haiku-4-5"
   end
 end
 ```

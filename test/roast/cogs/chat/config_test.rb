@@ -20,11 +20,49 @@ module Roast
         @config.provider(:custom_provider)
         @config.use_default_provider!
 
-        assert_equal :openai, @config.valid_provider!
+        with_env(Chat::Config::DEFAULT_PROVIDER_ENV_VAR, nil) do
+          assert_equal :openai, @config.valid_provider!
+        end
       end
 
       test "valid_provider! returns default when not set" do
-        assert_equal :openai, @config.valid_provider!
+        with_env(Chat::Config::DEFAULT_PROVIDER_ENV_VAR, nil) do
+          assert_equal :openai, @config.valid_provider!
+        end
+      end
+
+      test "valid_provider! uses env var when no provider is set" do
+        with_env(Chat::Config::DEFAULT_PROVIDER_ENV_VAR, "anthropic") do
+          assert_equal :anthropic, @config.valid_provider!
+        end
+      end
+
+      test "valid_provider! explicit provider takes precedence over env var" do
+        @config.provider(:gemini)
+        with_env(Chat::Config::DEFAULT_PROVIDER_ENV_VAR, "anthropic") do
+          assert_equal :gemini, @config.valid_provider!
+        end
+      end
+
+      test "valid_provider! normalizes env var value (strips whitespace and downcases)" do
+        with_env(Chat::Config::DEFAULT_PROVIDER_ENV_VAR, "  Anthropic  ") do
+          assert_equal :anthropic, @config.valid_provider!
+        end
+      end
+
+      test "valid_provider! raises on invalid env var value" do
+        with_env(Chat::Config::DEFAULT_PROVIDER_ENV_VAR, "invalid_provider") do
+          error = assert_raises(Cog::Config::InvalidConfigError) do
+            @config.valid_provider!
+          end
+          assert_match(/invalid_provider.*not a valid provider/, error.message)
+        end
+      end
+
+      test "valid_provider! ignores blank env var and falls back to default" do
+        with_env(Chat::Config::DEFAULT_PROVIDER_ENV_VAR, "   ") do
+          assert_equal :openai, @config.valid_provider!
+        end
       end
 
       test "valid_provider! accepts and sets :openai" do
