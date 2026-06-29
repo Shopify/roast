@@ -209,6 +209,17 @@ module Roast
           assert_equal "claude-opus-4-5-20251101", command[model_index + 1]
         end
 
+        test "command_line strips the anthropic/ prefix from the model" do
+          @config.model("anthropic/claude-opus-4-5-20251101")
+          invocation = Claude::ClaudeInvocation.new(@config, "Test prompt", nil)
+
+          command = invocation.send(:command_line)
+
+          model_index = command.index("--model")
+          assert model_index
+          assert_equal "claude-opus-4-5-20251101", command[model_index + 1]
+        end
+
         test "command_line includes replace_system_prompt when configured" do
           @config.replace_system_prompt("Custom system prompt")
           invocation = Claude::ClaudeInvocation.new(@config, "Test prompt", nil)

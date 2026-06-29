@@ -127,8 +127,29 @@ execute do
 end
 ```
 
-The `agent` cog is backed by a locally installed coding agent -- Anthropic's Claude Code is the default provider.
-You'll need to have Claude Code installed and configured correctly for this cog to run.
+The `agent` cog is backed by a locally installed coding agent -- Pi is the default provider.
+You'll need to have Pi installed and configured correctly for this cog to run.
+Roast also supports Claude code, which must be set explicitly in provider or an environment variable.
+
+### Specifying a Model
+
+Use a fully-qualified `provider/model` id:
+
+```ruby
+config do
+  agent do
+    model "anthropic/claude-haiku-4-5-20251001"
+  end
+end
+```
+
+Pi requires this qualified form. Claude Code expects a bare model name, so Roast strips the leading
+`anthropic/` prefix automatically when the `:claude` provider is used. Because of this, the same `model`
+string is portable across providers -- you can switch the agent provider without rewriting it.
+
+A bare name like `"claude-haiku-4-5-20251001"` (or a shorthand like `"haiku"`) still works when you've set
+`provider :claude`, but it will fail on the default Pi provider, which can't resolve an unqualified model name.
+Prefer the qualified form unless you have a reason not to.
 
 ### When to Use Agent vs Chat
 
