@@ -10,6 +10,39 @@ module Roast
           @context = Roast::Cogs::Agent::Providers::Pi::PiInvocation::Context.new
         end
 
+        test "format summarizes bash output with a line count and preview" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "bash",
+            content: "file1.rb\nfile2.rb",
+            is_error: false,
+          )
+
+          assert_equal "BASH OK 2 lines · file1.rb", msg.format(@context)
+        end
+
+        test "format pluralizes a single line of bash output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "bash",
+            content: "hello world",
+            is_error: false,
+          )
+
+          assert_equal "BASH OK 1 line · hello world", msg.format(@context)
+        end
+
+        test "format reports zero lines when bash produced no output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "bash",
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "BASH OK 0 lines", msg.format(@context)
+        end
+
         test "format renders NAME ERROR with the message for an error result" do
           msg = ToolResultMessage.new(
             tool_call_id: "1",
