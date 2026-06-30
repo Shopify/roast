@@ -32,24 +32,43 @@ module Roast
               def format
                 return unless name
 
-                case name.to_s.downcase
-                when "bash"
-                  "BASH #{arguments[:command]}"
-                when "read"
-                  "READ #{arguments[:path]}"
-                when "edit"
-                  "EDIT #{arguments[:path]}"
-                when "write"
-                  "WRITE #{arguments[:path]}"
-                when "grep"
-                  "GREP #{arguments[:pattern]} #{arguments[:path]}"
-                when "find"
-                  "FIND #{arguments[:pattern]} #{arguments[:path]}"
-                when "ls"
-                  "LS #{arguments[:path]}"
-                else
-                  "TOOL [#{name}] #{arguments.inspect}"
-                end
+                format_method_name = "format_#{name.to_s.downcase}".to_sym
+                return send(format_method_name) if respond_to?(format_method_name, true)
+
+                format_unknown
+              end
+
+              # Truncate long formatted tool-call strings to keep terminal output to generally one line, accounting for logger prefixing.
+              TRUNCATE_LIMIT = 45
+
+              private
+
+              # Formats a tool call for which Roast has no dedicated formatter.
+              #
+              # Output: "<NAME> <key>: <value>, ..." – the upcased tool name, then each
+              # argument as "<key>: <inspected value>" joined with ", ". Every value is
+              # truncated to TRUNCATE_LIMIT chars so one large argument can't flood the
+              # line; keys are always shown. No arguments renders the bare "<NAME>".
+              #
+              # Examples:
+              #   WEB_SEARCH query: "ruby pluralize", max_results: 5
+              #   DEPLOY
+              #
+              #: () -> String
+              def format_unknown
+                label = name.to_s.upcase
+                return label if arguments.empty?
+
+                details = arguments.map { |key, value| "#{key}: #{truncate(value.inspect)}" }.join(", ")
+                "#{label} #{details}"
+              end
+
+              # Truncates to TRUNCATE_LIMIT chars, appending "..." when cut. nil -> "".
+              #
+              #: (String?) -> String
+              def truncate(str)
+                s = str.to_s
+                s.length > TRUNCATE_LIMIT ? "#{s[0...TRUNCATE_LIMIT - 3]}..." : s
               end
             end
           end
