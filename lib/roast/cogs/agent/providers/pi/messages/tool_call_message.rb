@@ -95,7 +95,11 @@ module Roast
 
               #: () -> String
               def format_unknown
-                "UNKNOWN [#{name}] #{arguments.inspect}"
+                label = name.to_s.upcase
+                return label if arguments.empty?
+
+                details = arguments.map { |key, value| "#{key}: #{truncate(value.inspect)}" }.join(", ")
+                "#{label} #{details}"
               end
 
               #: (String?) -> String
