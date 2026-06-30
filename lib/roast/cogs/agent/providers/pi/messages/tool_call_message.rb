@@ -43,6 +43,24 @@ module Roast
 
               private
 
+              # Formats a bash tool call.
+              #
+              # Input fields:
+              #   :command (String) – shell command to execute   [required]
+              #
+              # Output: "BASH <command>", with :command truncated to TRUNCATE_LIMIT
+              # chars. A missing command renders the bare "BASH".
+              #
+              # Examples:
+              #   BASH ls -la
+              #   BASH
+              #
+              #: () -> String
+              def format_bash
+                command = truncate(arguments[:command])
+                command.empty? ? "BASH" : "BASH #{command}"
+              end
+
               # Formats a tool call for which Roast has no dedicated formatter.
               #
               # Output: "<NAME> <key>: <value>, ..." – the upcased tool name, then each
