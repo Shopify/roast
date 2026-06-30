@@ -11,6 +11,21 @@ module Roast
           assert_nil msg.format
         end
 
+        test "format renders BASH with the command" do
+          msg = ToolCallMessage.new(id: "1", name: "bash", arguments: { command: "ls -la" })
+          assert_equal "BASH ls -la", msg.format
+        end
+
+        test "format renders a bare BASH when the command is missing" do
+          msg = ToolCallMessage.new(id: "1", name: "bash", arguments: {})
+          assert_equal "BASH", msg.format
+        end
+
+        test "format truncates a long bash command" do
+          msg = ToolCallMessage.new(id: "1", name: "bash", arguments: { command: "x" * 100 })
+          assert_equal "BASH #{"x" * (ToolCallMessage::TRUNCATE_LIMIT - 3)}...", msg.format
+        end
+
         test "format renders an unhandled tool as NAME key: value, ..." do
           msg = ToolCallMessage.new(
             id: "1",
