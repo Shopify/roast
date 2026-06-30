@@ -74,6 +74,26 @@ module Roast
               end
 
               #: () -> String
+              def format_grep
+                pattern, path, glob = arguments.values_at(:pattern, :path, :glob)
+                base = "GREP \"#{truncate(pattern)}\""
+                base = "#{base} #{path}" if path.present?
+                glob.present? ? "#{base} (glob=#{glob})" : base
+              end
+
+              #: () -> String
+              def format_find
+                pattern, path = arguments.values_at(:pattern, :path)
+                path.present? ? "FIND #{pattern} (in #{path})" : "FIND #{pattern}"
+              end
+
+              #: () -> String
+              def format_ls
+                path = arguments[:path]
+                path.to_s.empty? ? "LS" : "LS #{path}"
+              end
+
+              #: () -> String
               def format_unknown
                 "UNKNOWN [#{name}] #{arguments.inspect}"
               end

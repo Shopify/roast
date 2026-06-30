@@ -76,6 +76,27 @@ module Roast
               end
 
               #: () -> String
+              def format_grep
+                lines = content.to_s.lines.map(&:strip).reject(&:empty?)
+                matches, notes = lines.partition { |line| line.match?(%r{\A\S+/}) || line.match?(/\A(?:\S+:)?\d+:/) }
+                count = matches.length
+                note = "NOTE #{truncate(notes.join(" "))}" if matches.any? && notes.any?
+                ok_line("#{count} #{"match".pluralize(count)}", note)
+              end
+
+              #: () -> String
+              def format_find
+                count = content.to_s.lines.map(&:strip).reject(&:empty?).length
+                ok_line("#{count} #{"path".pluralize(count)}")
+              end
+
+              #: () -> String
+              def format_ls
+                count = content.to_s.lines.map(&:strip).reject(&:empty?).length
+                ok_line("#{count} #{"entry".pluralize(count)}")
+              end
+
+              #: () -> String
               def format_unknown
                 preview = truncate(content.to_s.lines.first.to_s.strip)
                 ok_line(preview)
