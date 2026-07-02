@@ -76,6 +76,26 @@ module Roast
                 ok_line("#{count} #{"line".pluralize(count)}", preview)
               end
 
+              # Formats a read tool result.
+              #
+              # Content: the file's text.
+              #
+              # Output: "READ OK <n> <line|lines>" – <n> is the file's line count
+              # (pluralized). Blank lines are counted: this is the file's own length, so
+              # it deliberately differs from entry-listing tools (find/ls), which drop
+              # blanks because a blank isn't an entry.
+              #
+              # Examples:
+              #   READ OK 42 lines
+              #   READ OK 1 line
+              #   READ OK 0 lines
+              #
+              #: () -> String
+              def format_read
+                count = content.to_s.lines.length
+                ok_line("#{count} #{"line".pluralize(count)}")
+              end
+
               # Formats a result for which Roast has no dedicated formatter.
               #
               # Content: the tool's output text.

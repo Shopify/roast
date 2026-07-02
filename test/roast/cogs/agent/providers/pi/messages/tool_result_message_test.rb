@@ -43,6 +43,39 @@ module Roast
           assert_equal "BASH OK 0 lines", msg.format(@context)
         end
 
+        test "format summarizes read output with a line count" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "read",
+            content: "line one\nline two\nline three",
+            is_error: false,
+          )
+
+          assert_equal "READ OK 3 lines", msg.format(@context)
+        end
+
+        test "format pluralizes a single line of read output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "read",
+            content: "just one line",
+            is_error: false,
+          )
+
+          assert_equal "READ OK 1 line", msg.format(@context)
+        end
+
+        test "format reports zero lines when the file is empty" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "read",
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "READ OK 0 lines", msg.format(@context)
+        end
+
         test "format renders NAME ERROR with the message for an error result" do
           msg = ToolResultMessage.new(
             tool_call_id: "1",
