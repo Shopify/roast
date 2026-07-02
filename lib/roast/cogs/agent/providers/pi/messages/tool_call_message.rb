@@ -148,6 +148,38 @@ module Roast
                 "EDIT #{path} (#{count} #{"edit".pluralize(count)})"
               end
 
+              # Formats a grep tool call.
+              #
+              # Input fields:
+              #   :pattern (String)  – regex/text to search for      [required]
+              #   :path    (String)  – file or directory to search   [optional]
+              #   :glob    (String)  – glob filter for matched files [optional]
+              #   :limit   (Integer) – max number of matches         [optional]
+              #
+              # Output: 'GREP "<pattern>" <path> (glob: <glob>, limit: <limit>)' –
+              # <pattern> is truncated to TRUNCATE_LIMIT chars; <path> is shown only
+              # when present. The "glob:" and "limit:" details are each included only
+              # when present and joined with ", " inside a single trailing "(...)".
+              # `path`, `glob` and `limit` are left untruncated as they are usually short and
+              # contain important information that we don't want to truncate.
+              #
+              # Examples:
+              #   GREP "def format" lib (glob: *.rb, limit: 50)
+              #   GREP "TODO" (limit: 50)
+              #   GREP "TODO"
+              #
+              #: () -> String
+              def format_grep
+                pattern, path, glob, limit = arguments.values_at(:pattern, :path, :glob, :limit)
+                base = "GREP \"#{truncate(pattern)}\""
+                base = "#{base} #{path}" if path.present?
+                details = [
+                  ("glob: #{glob}" if glob.present?),
+                  ("limit: #{limit}" if limit.present?),
+                ].compact
+                details.any? ? "#{base} (#{details.join(", ")})" : base
+              end
+
               # Formats a tool call for which Roast has no dedicated formatter.
               #
               # Output: "<NAME> <key>: <value>, ..." – the upcased tool name, then each
