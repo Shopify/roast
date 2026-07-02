@@ -169,6 +169,30 @@ module Roast
           assert_equal "GREP \"#{"x" * (ToolCallMessage::TRUNCATE_LIMIT - 3)}...\" #{long}", msg.format
         end
 
+        test "format renders FIND with the search path but no limit" do
+          msg = ToolCallMessage.new(
+            id: "1",
+            name: "find",
+            arguments: { pattern: "*.rb", path: "lib" },
+          )
+          assert_equal "FIND *.rb (path: lib)", msg.format
+        end
+
+        test "format renders FIND with the path and limit joined in one parenthetical" do
+          msg = ToolCallMessage.new(id: "1", name: "find", arguments: { pattern: "*.rb", path: "lib", limit: 50 })
+          assert_equal "FIND *.rb (path: lib, limit: 50)", msg.format
+        end
+
+        test "format renders FIND with the limit but no path" do
+          msg = ToolCallMessage.new(id: "1", name: "find", arguments: { pattern: "*.rb", limit: 50 })
+          assert_equal "FIND *.rb (limit: 50)", msg.format
+        end
+
+        test "format renders FIND with only the pattern" do
+          msg = ToolCallMessage.new(id: "1", name: "find", arguments: { pattern: "*.rb" })
+          assert_equal "FIND *.rb", msg.format
+        end
+
         test "format renders an unhandled tool as NAME key: value, ..." do
           msg = ToolCallMessage.new(
             id: "1",
