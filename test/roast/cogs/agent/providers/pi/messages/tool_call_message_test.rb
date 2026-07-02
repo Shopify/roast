@@ -193,6 +193,16 @@ module Roast
           assert_equal "FIND *.rb", msg.format
         end
 
+        test "format renders LS with the path" do
+          msg = ToolCallMessage.new(id: "1", name: "ls", arguments: { path: "lib/roast" })
+          assert_equal "LS lib/roast", msg.format
+        end
+
+        test "format renders a bare LS when the path is missing" do
+          msg = ToolCallMessage.new(id: "1", name: "ls", arguments: {})
+          assert_equal "LS", msg.format
+        end
+
         test "format renders an unhandled tool as NAME key: value, ..." do
           msg = ToolCallMessage.new(
             id: "1",

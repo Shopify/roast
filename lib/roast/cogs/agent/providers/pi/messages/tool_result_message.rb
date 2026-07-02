@@ -178,6 +178,24 @@ module Roast
                 ok_line("#{count} #{"path".pluralize(count)}", note)
               end
 
+              # Formats an ls tool result.
+              #
+              # Content: directory entries, one per line.
+              #
+              # Output: "LS OK <n> <entry|entries>" – <n> is the number of non-blank
+              # lines (pluralized).
+              #
+              # Examples:
+              #   LS OK 8 entries
+              #   LS OK 1 entry
+              #   LS OK 0 entries
+              #
+              #: () -> String
+              def format_ls
+                count = content.to_s.lines.map(&:strip).reject(&:empty?).length
+                ok_line("#{count} #{"entry".pluralize(count)}")
+              end
+
               # Formats a result for which Roast has no dedicated formatter.
               #
               # Content: the tool's output text.
