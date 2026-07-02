@@ -124,6 +124,51 @@ module Roast
           assert_equal "EDIT lib/roast.rb (0 edits)", msg.format
         end
 
+        test "format renders GREP with the pattern, path, and glob" do
+          msg = ToolCallMessage.new(
+            id: "1",
+            name: "grep",
+            arguments: { pattern: "def format", path: "lib", glob: "*.rb" },
+          )
+          assert_equal 'GREP "def format" lib (glob: *.rb)', msg.format
+        end
+
+        test "format renders GREP with the pattern and path but no glob" do
+          msg = ToolCallMessage.new(id: "1", name: "grep", arguments: { pattern: "TODO", path: "lib/roast" })
+          assert_equal 'GREP "TODO" lib/roast', msg.format
+        end
+
+        test "format renders GREP with the pattern and glob but no path" do
+          msg = ToolCallMessage.new(id: "1", name: "grep", arguments: { pattern: "TODO", glob: "*.rb" })
+          assert_equal 'GREP "TODO" (glob: *.rb)', msg.format
+        end
+
+        test "format renders GREP with only the pattern" do
+          msg = ToolCallMessage.new(id: "1", name: "grep", arguments: { pattern: "TODO" })
+          assert_equal 'GREP "TODO"', msg.format
+        end
+
+        test "format renders GREP with the glob and limit joined in one parenthetical" do
+          msg = ToolCallMessage.new(id: "1", name: "grep", arguments: { pattern: "TODO", path: "lib", glob: "*.rb", limit: 50 })
+          assert_equal 'GREP "TODO" lib (glob: *.rb, limit: 50)', msg.format
+        end
+
+        test "format renders GREP with the limit but no glob" do
+          msg = ToolCallMessage.new(id: "1", name: "grep", arguments: { pattern: "TODO", limit: 50 })
+          assert_equal 'GREP "TODO" (limit: 50)', msg.format
+        end
+
+        test "format truncates a long grep pattern" do
+          msg = ToolCallMessage.new(id: "1", name: "grep", arguments: { pattern: "x" * 100 })
+          assert_equal "GREP \"#{"x" * (ToolCallMessage::TRUNCATE_LIMIT - 3)}...\"", msg.format
+        end
+
+        test "format truncates the grep pattern but not the path" do
+          long = "x" * 100
+          msg = ToolCallMessage.new(id: "1", name: "grep", arguments: { pattern: long, path: long })
+          assert_equal "GREP \"#{"x" * (ToolCallMessage::TRUNCATE_LIMIT - 3)}...\" #{long}", msg.format
+        end
+
         test "format renders an unhandled tool as NAME key: value, ..." do
           msg = ToolCallMessage.new(
             id: "1",
