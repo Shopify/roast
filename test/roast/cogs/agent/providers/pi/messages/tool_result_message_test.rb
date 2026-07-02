@@ -101,6 +101,31 @@ module Roast
           assert_equal "WRITE OK", msg.format(@context)
         end
 
+        test "format renders EDIT OK with the path from the originating call" do
+          @context.add_tool_call(
+            ToolCallMessage.new(id: "1", name: "edit", arguments: { path: "lib/roast/version.rb" }),
+          )
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "edit",
+            content: "The file has been updated successfully",
+            is_error: false,
+          )
+
+          assert_equal "EDIT OK lib/roast/version.rb", msg.format(@context)
+        end
+
+        test "format renders a bare EDIT OK when the path is unavailable" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "edit",
+            content: "The file has been updated successfully",
+            is_error: false,
+          )
+
+          assert_equal "EDIT OK", msg.format(@context)
+        end
+
         test "format renders NAME ERROR with the message for an error result" do
           msg = ToolResultMessage.new(
             tool_call_id: "1",

@@ -127,6 +127,27 @@ module Roast
                 "#{label} \"#{preview}\" (+#{count} #{"line".pluralize(count)})"
               end
 
+              # Formats an edit tool call.
+              #
+              # Input fields:
+              #   :path  (String) – file to edit                          [required]
+              #   :edits (Array)  – edit blocks, each {oldText, newText}   [required]
+              #
+              # Output: "EDIT <path> (<n> <edit|edits>)" – <n> is the number of edit
+              # blocks applied in the call. The count is always shown.
+              #
+              # Examples:
+              #   EDIT lib/roast.rb (1 edit)
+              #   EDIT config/app.yml (3 edits)
+              #
+              #: () -> String
+              def format_edit
+                path = arguments[:path]
+                edits = arguments[:edits] || []
+                count = edits.length
+                "EDIT #{path} (#{count} #{"edit".pluralize(count)})"
+              end
+
               # Formats a tool call for which Roast has no dedicated formatter.
               #
               # Output: "<NAME> <key>: <value>, ..." – the upcased tool name, then each
