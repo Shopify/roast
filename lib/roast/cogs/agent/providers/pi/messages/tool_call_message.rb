@@ -97,6 +97,36 @@ module Roast
                 details ? "#{label} (#{details})" : label
               end
 
+              # Formats a write tool call.
+              #
+              # Input fields:
+              #   :path    (String) – file to write   [required]
+              #   :content (String) – file contents   [required]
+              #
+              # Output: 'WRITE <path> "<preview>" (+<n> <line|lines>)' – <preview> is the
+              # first line of :content (stripped, truncated to TRUNCATE_LIMIT chars) and
+              # <n> the number of lines written. The content summary is appended only
+              # when :content is present; a missing path renders the bare "WRITE".
+              #
+              # Examples:
+              #   WRITE lib/roast.rb "class Roast" (+10 lines)
+              #   WRITE config/app.yml "enabled: true" (+1 line)
+              #   WRITE lib/roast.rb
+              #   WRITE
+              #
+              #: () -> String
+              def format_write
+                path, content = arguments.values_at(:path, :content)
+                path = path.to_s
+                label = path.empty? ? "WRITE" : "WRITE #{path}"
+                return label if content.nil?
+
+                lines = content.to_s.lines
+                preview = truncate(lines.first.to_s.strip)
+                count = lines.length
+                "#{label} \"#{preview}\" (+#{count} #{"line".pluralize(count)})"
+              end
+
               # Formats a tool call for which Roast has no dedicated formatter.
               #
               # Output: "<NAME> <key>: <value>, ..." – the upcased tool name, then each

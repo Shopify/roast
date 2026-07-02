@@ -96,6 +96,22 @@ module Roast
                 ok_line("#{count} #{"line".pluralize(count)}")
               end
 
+              # Formats a write tool result.
+              #
+              # Input: :path – the path that was written, from the originating call.
+              #
+              # Output: "WRITE OK <path>" – the file path, omitted when the call
+              # had none.
+              #
+              # Examples:
+              #   WRITE OK lib/roast/version.rb
+              #   WRITE OK
+              #
+              #: () -> String
+              def format_write
+                ok_line(@input[:path])
+              end
+
               # Formats a result for which Roast has no dedicated formatter.
               #
               # Content: the tool's output text.

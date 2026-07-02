@@ -61,6 +61,43 @@ module Roast
           assert_equal "READ lib/roast.rb", msg.format
         end
 
+        test "format renders WRITE with the path, preview, and line count" do
+          msg = ToolCallMessage.new(
+            id: "1",
+            name: "write",
+            arguments: { path: "lib/roast.rb", content: "line one\nline two\nline three" },
+          )
+          assert_equal 'WRITE lib/roast.rb "line one" (+3 lines)', msg.format
+        end
+
+        test "format renders a singular line count for single-line write content" do
+          msg = ToolCallMessage.new(
+            id: "1",
+            name: "write",
+            arguments: { path: "config/app.yml", content: "enabled: true" },
+          )
+          assert_equal 'WRITE config/app.yml "enabled: true" (+1 line)', msg.format
+        end
+
+        test "format truncates a long write preview" do
+          msg = ToolCallMessage.new(
+            id: "1",
+            name: "write",
+            arguments: { path: "lib/roast.rb", content: "x" * 100 },
+          )
+          assert_equal "WRITE lib/roast.rb \"#{"x" * (ToolCallMessage::TRUNCATE_LIMIT - 3)}...\" (+1 line)", msg.format
+        end
+
+        test "format renders WRITE with the path alone when content is absent" do
+          msg = ToolCallMessage.new(id: "1", name: "write", arguments: { path: "lib/roast.rb" })
+          assert_equal "WRITE lib/roast.rb", msg.format
+        end
+
+        test "format renders a bare WRITE when the path is missing" do
+          msg = ToolCallMessage.new(id: "1", name: "write", arguments: {})
+          assert_equal "WRITE", msg.format
+        end
+
         test "format renders an unhandled tool as NAME key: value, ..." do
           msg = ToolCallMessage.new(
             id: "1",
