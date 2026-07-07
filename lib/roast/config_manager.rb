@@ -3,15 +3,18 @@
 
 module Roast
   class ConfigManager
+    include WorkflowParamAccessors
+
     class ConfigManagerError < Roast::Error; end
     class ConfigManagerNotPreparedError < ConfigManagerError; end
     class ConfigManagerAlreadyPreparedError < ConfigManagerError; end
     class IllegalCogNameError < ConfigManagerError; end
 
-    #: (Cog::Registry, Array[^() -> void]) -> void
-    def initialize(cog_registry, config_procs)
+    #: (Cog::Registry, Array[^() -> void], WorkflowContext) -> void
+    def initialize(cog_registry, config_procs, workflow_context)
       @cog_registry = cog_registry
       @config_procs = config_procs
+      @workflow_context = workflow_context
       @config_context = ConfigContext.new #: ConfigContext
       @global_config = Cog::Config.new #: Cog::Config
       @general_configs = {} #: Hash[singleton(Cog), Cog::Config]
@@ -117,6 +120,7 @@ module Roast
       # NOTE: Sorbet expects the proc passed to instance_exec to be declared as taking an argument
       # but our cog_config_proc does not get an argument
       cog_config_proc = cog_config_proc #: as ^(untyped) -> void
+      bind_workflow_params(config_object)
       config_object.instance_exec(&cog_config_proc) if cog_config_proc
       nil
     end
@@ -134,8 +138,31 @@ module Roast
     #: (^() -> void ) -> void
     def on_global(global_config_proc)
       global_config_proc = global_config_proc #: as ^(untyped) -> void
+      bind_workflow_params(@global_config)
       @global_config.instance_exec(&global_config_proc) if global_config_proc
       nil
+    end
+
+    #: (Cog::Config) -> void
+    def bind_workflow_params(object)
+      target_bang_method = method(:target!)
+      targets_method = method(:targets)
+      arg_question_method = method(:arg?)
+      args_method = method(:args)
+      kwarg_method = method(:kwarg)
+      kwarg_bang_method = method(:kwarg!)
+      kwarg_question_method = method(:kwarg?)
+      kwargs_method = method(:kwargs)
+      object.instance_eval do
+        define_singleton_method(:target!, proc { target_bang_method.call })
+        define_singleton_method(:targets, proc { targets_method.call })
+        define_singleton_method(:arg?, proc { |value| arg_question_method.call(value) })
+        define_singleton_method(:args, proc { args_method.call })
+        define_singleton_method(:kwarg, proc { |key| kwarg_method.call(key) })
+        define_singleton_method(:kwarg!, proc { |key| kwarg_bang_method.call(key) })
+        define_singleton_method(:kwarg?, proc { |key| kwarg_question_method.call(key) })
+        define_singleton_method(:kwargs, proc { kwargs_method.call })
+      end
     end
   end
 end

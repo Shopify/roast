@@ -21,8 +21,13 @@ module Roast
       @registry.use(TestCog)
     end
 
+    def build_manager(config_procs = [], params: WorkflowParams.new([], [], {}))
+      workflow_context = WorkflowContext.new(params:, tmpdir: Dir.tmpdir, workflow_dir: Pathname.pwd)
+      ConfigManager.new(@registry, config_procs, workflow_context)
+    end
+
     test "prepare! transitions to prepared state" do
-      manager = ConfigManager.new(@registry, [])
+      manager = build_manager
 
       refute manager.prepared?
       manager.prepare!
@@ -30,7 +35,7 @@ module Roast
     end
 
     test "prepare! raises when called twice" do
-      manager = ConfigManager.new(@registry, [])
+      manager = build_manager
       manager.prepare!
 
       assert_raises(ConfigManager::ConfigManagerAlreadyPreparedError) do
@@ -44,14 +49,14 @@ module Roast
         test_cog { timeout 60 }
         timeout_set = true
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = build_manager([config_proc])
       manager.prepare!
 
       assert timeout_set
     end
 
     test "config_for raises when not prepared" do
-      manager = ConfigManager.new(@registry, [])
+      manager = build_manager
 
       assert_raises(ConfigManager::ConfigManagerNotPreparedError) do
         manager.config_for(TestCog)
@@ -59,7 +64,7 @@ module Roast
     end
 
     test "config_for returns default config when no config procs are provided" do
-      manager = ConfigManager.new(@registry, [])
+      manager = build_manager
       manager.prepare!
 
       config = manager.config_for(TestCog)
@@ -71,7 +76,7 @@ module Roast
       config_proc = proc do
         test_cog { timeout 60 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = build_manager([config_proc])
       manager.prepare!
 
       config = manager.config_for(TestCog)
@@ -83,7 +88,7 @@ module Roast
       config_proc = proc do
         test_cog(:my_step) { timeout 90 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = build_manager([config_proc])
       manager.prepare!
 
       scoped_config = manager.config_for(TestCog, :my_step)
@@ -97,7 +102,7 @@ module Roast
       config_proc = proc do
         test_cog(/^api_/) { timeout 120 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = build_manager([config_proc])
       manager.prepare!
 
       matching_config = manager.config_for(TestCog, :api_call)
@@ -112,7 +117,7 @@ module Roast
         test_cog { async! }
         test_cog(:my_step) { timeout 90 }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = build_manager([config_proc])
       manager.prepare!
 
       config = manager.config_for(TestCog, :my_step)
@@ -125,12 +130,176 @@ module Roast
       config_proc = proc do
         global { abort_on_failure! }
       end
-      manager = ConfigManager.new(@registry, [config_proc])
+      manager = build_manager([config_proc])
       manager.prepare!
 
       config = manager.config_for(TestCog)
 
       assert config.abort_on_failure?
+    end
+
+    test "target! returns the single target inside a cog config block" do
+      captured = nil
+      config_proc = proc do
+        test_cog { captured = target! }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new(["Gemfile"], [], {}))
+      manager.prepare!
+
+      assert_equal "Gemfile", captured
+    end
+
+    test "target! raises inside a cog config block when not exactly one target" do
+      config_proc = proc do
+        test_cog { target! }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new(["a", "b"], [], {}))
+
+      assert_raises(ArgumentError) do
+        manager.prepare!
+      end
+    end
+
+    test "targets returns the target array inside a cog config block" do
+      captured = nil
+      config_proc = proc do
+        test_cog { captured = targets }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new(["Gemfile", "Rakefile"], [], {}))
+      manager.prepare!
+
+      assert_equal ["Gemfile", "Rakefile"], captured
+    end
+
+    test "arg? returns true inside a cog config block when the flag is present" do
+      captured = nil
+      config_proc = proc do
+        test_cog { captured = arg?(:big) }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [:big], {}))
+      manager.prepare!
+
+      assert captured
+    end
+
+    test "arg? returns false inside a cog config block when the flag is absent" do
+      captured = nil
+      config_proc = proc do
+        test_cog { captured = arg?(:big) }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [], {}))
+      manager.prepare!
+
+      refute captured
+    end
+
+    test "args returns the arg array inside a cog config block" do
+      captured = nil
+      config_proc = proc do
+        test_cog { captured = args }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [:hello, :world], {}))
+      manager.prepare!
+
+      assert_equal [:hello, :world], captured
+    end
+
+    test "kwarg returns the value inside a cog config block" do
+      captured = nil
+      config_proc = proc do
+        test_cog { captured = kwarg(:name) }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [], { name: "test" }))
+      manager.prepare!
+
+      assert_equal "test", captured
+    end
+
+    test "kwarg returns nil inside a cog config block when the keyword is missing" do
+      captured = :sentinel
+      config_proc = proc do
+        test_cog { captured = kwarg(:missing) }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [], { name: "test" }))
+      manager.prepare!
+
+      assert_nil captured
+    end
+
+    test "kwarg! returns the value inside a cog config block" do
+      captured = nil
+      config_proc = proc do
+        test_cog { captured = kwarg!(:name) }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [], { name: "test" }))
+      manager.prepare!
+
+      assert_equal "test", captured
+    end
+
+    test "kwarg! raises inside a cog config block when the keyword argument is missing" do
+      config_proc = proc do
+        test_cog { kwarg!(:name) }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [], {}))
+
+      assert_raises(ArgumentError) do
+        manager.prepare!
+      end
+    end
+
+    test "kwarg? returns true inside a cog config block when the keyword is present" do
+      captured = nil
+      config_proc = proc do
+        test_cog { captured = kwarg?(:name) }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [], { name: "test" }))
+      manager.prepare!
+
+      assert captured
+    end
+
+    test "kwarg? returns false inside a cog config block when the keyword is missing" do
+      captured = nil
+      config_proc = proc do
+        test_cog { captured = kwarg?(:missing) }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [], { name: "test" }))
+      manager.prepare!
+
+      refute captured
+    end
+
+    test "kwargs returns the kwargs hash inside a cog config block" do
+      captured = nil
+      config_proc = proc do
+        test_cog { captured = kwargs }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [], { foo: "bar" }))
+      manager.prepare!
+
+      assert_equal({ foo: "bar" }, captured)
+    end
+
+    test "workflow params are accessible inside a global config block" do
+      config_proc = proc do
+        global { abort_on_failure! if arg?(:strict) }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [:strict], {}))
+      manager.prepare!
+
+      assert manager.config_for(TestCog).abort_on_failure?
+    end
+
+    test "workflow params are not accessible in the top-level config block body" do
+      config_proc = proc do
+        args
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [:big], {}))
+
+      assert_raises(NameError) do
+        manager.prepare!
+      end
     end
 
     test "prepare! raises IllegalCogNameError when cog name conflicts with existing method" do
@@ -144,7 +313,7 @@ module Roast
       end
       @registry.use(conflicting_cog)
 
-      manager = ConfigManager.new(@registry, [])
+      manager = build_manager
 
       assert_raises(ConfigManager::IllegalCogNameError) do
         manager.prepare!

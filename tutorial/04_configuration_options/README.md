@@ -111,6 +111,25 @@ end
 
 This is useful when you have multiple similar cogs that need the same configuration.
 
+### Configuring Based on Parameters
+
+Workflow parameter accessors (`target!`, `targets`, `arg?`, `args`, `kwarg`, `kwarg!`, `kwarg?`, `kwargs`; see Chapter 3)
+are available inside cog `config` blocks and the `global` block, so you can configure cogs based on how the workflow was
+invoked:
+
+```ruby
+config do
+  chat do
+    # Pick a cheaper model when invoked with the `fast` flag: `-- fast`
+    model(arg?(:fast) ? "gpt-5.4-nano" : "gpt-5")
+  end
+
+  global do
+    abort_on_failure! if arg?(:strict)
+  end
+end
+```
+
 ## Display Options
 
 Control what gets printed during workflow execution using display methods in your `config` block:

@@ -48,7 +48,7 @@ module Roast
 
       @preparing = true
       extract_dsl_procs!
-      @config_manager = ConfigManager.new(@cog_registry, @config_procs)
+      @config_manager = ConfigManager.new(@cog_registry, @config_procs, @workflow_context)
       @config_manager.not_nil!.prepare!
       # TODO: probably we should just not pass the params as the top-level scope value anymore
       @execution_manager = ExecutionManager.new(@cog_registry, @config_manager.not_nil!, @execution_procs, @workflow_context, scope_value: @workflow_context.params)

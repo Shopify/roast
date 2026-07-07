@@ -162,6 +162,7 @@ class and method comments on the relevant classes.
     * [Additional Example Workflows]([https://github.com/Shopify/roast/tree/main/examples](https://github.com/Shopify/roast/tree/main/examples)) (these comprise the Roast end-to-end test suite)
 * __Configuation__
     * [General configuration block: `config-context.rbi`](https://github.com/Shopify/roast/blob/main/sorbet/rbi/shims/lib/roast/config_context.rbi)
+    * [Workflow params in cog config blocks: `cog/config.rbi`](https://github.com/Shopify/roast/blob/main/sorbet/rbi/shims/lib/roast/cog/config.rbi)
     * [Global cog configuration: `cog/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cog/config.rb)
     * [Agent cog configuration: `agent/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/agent/config.rb)
     * [Chat cog configuration: `chat/config.rb`](https://github.com/Shopify/roast/blob/main/lib/roast/cogs/chat/config.rb)

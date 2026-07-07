@@ -4,6 +4,18 @@
 #: self as Roast::Workflow
 
 config do
+  # Workflow params are available inside cog config blocks and the `global` block, so you can
+  # configure cogs based on how the workflow was invoked.
+  chat do
+    # e.g., pick a cheaper model when the workflow is invoked with the `fast` flag:
+    #   roast execute examples/targets_and_params.rb -- fast
+    model(arg?(:fast) ? "gpt-5.4-nano" : "gpt-5")
+  end
+
+  # `global` config applies to every cog; the same param accessors work here too.
+  global do
+    abort_on_failure! if arg?(:strict)
+  end
 end
 
 execute do
