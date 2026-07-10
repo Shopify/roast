@@ -253,7 +253,7 @@ module Roast
         #
         #: (String) -> String?
         def normalize_number_string(raw)
-          # Remove common digit separators and currency codes
+          # Remove common digit separators and currency symbols
           normalized = raw.strip.gsub(/[\s$¢£€¥,_]/, "")
 
           # Validate it looks like a number (optional minus, digits, optional decimal, optional scientific notation)
