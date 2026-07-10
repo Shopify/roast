@@ -1,0 +1,47 @@
+You are auditing a SINGLE documentation comment in the Roast codebase for factual correctness
+against the real implementation. This is the only doc comment you are judging right now.
+
+## The comment under review
+
+- File: `<%= unit[:file] %>`
+- Documents: `<%= unit[:symbol] %>` (<%= unit[:kind] %>)
+- Source lines <%= unit[:start_line] %>-<%= unit[:end_line] %>
+<% if unit[:signature] %>- Declared RBS signature, type-checked and authoritative (treat as ground truth; correct the prose to match it, never the reverse): `<%= unit[:signature] %>`
+<% end %>
+Current comment text, verbatim (each line begins with `#`):
+
+<%= unit[:comment_text] %>
+
+## What to do
+
+1. Open `<%= unit[:file] %>` and read the actual implementation of `<%= unit[:symbol] %>`, plus any
+   closely related code (callers, the methods it delegates to, constants it names) needed to judge
+   the claims. Use only the real code in this repository as ground truth.
+2. Check every factual claim the comment makes: described behavior, parameters and return values,
+   defaults, side effects, cross-references, and any named entity (method, class, flag, env var).
+3. A claim is an issue ONLY if it is actually WRONG or misleading about the current code. Do not
+   flag wording, style, formatting, or things the comment simply leaves out.
+4. If a declared RBS signature is shown above, it is authoritative. A comment that contradicts its
+   types, arity, or nilability is an issue: fix the prose, and never restate or edit the signature
+   in your suggested fix.
+
+## Output
+
+Return ONLY a JSON object, with no surrounding prose and no code fences. Exactly these keys:
+
+{
+  "factual": true or false,
+  "issues": ["the specific wrong claim and why it is wrong", ...],
+  "confidence": 0.0 to 1.0,
+  "suggested_fix": "the full corrected comment block",
+  "evidence": "file:line references you relied on"
+}
+
+Rules for the fields:
+- If every claim is correct: "factual": true, "issues": [], and "suggested_fix" equal to the
+  original comment text unchanged.
+- If there is at least one issue: "factual": false, list each issue, and provide "suggested_fix"
+  as the COMPLETE corrected comment block. Each line must start with `# ` (a plain comment line),
+  with NO leading indentation, and do NOT include any `#:` RBS signature line. Preserve the parts of
+  the comment that were already correct; change only what is wrong.
+- "confidence" is how sure you are of this verdict and, when fixing, of the fix's correctness.
