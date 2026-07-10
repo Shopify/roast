@@ -35,8 +35,8 @@ module Roast
     # - `working_directory(path)` - Set the working directory for external commands invoked by the cog
     # - `use_current_working_directory!` - Use the current working directory
     #
-    #: () {() [self: Roast::Cog::Config] -> void} -> void
-    def global(&block); end
+    #: (?(Symbol | Regexp)?) {() [self: Roast::Cog::Config] -> void} -> void
+    def global(name_or_pattern = nil, &block); end
 
     # Configure the `call` cog
     #

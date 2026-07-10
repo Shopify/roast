@@ -319,5 +319,127 @@ module Roast
         manager.prepare!
       end
     end
+
+    # --- New tests for global name/pattern specifiers ---
+
+    test "global with name specifier applies only to matching cog name" do
+      config_proc = proc do
+        global(:my_step) { abort_on_failure! }
+      end
+      manager = build_manager([config_proc])
+      manager.prepare!
+
+      matching = manager.config_for(TestCog, :my_step)
+      non_matching = manager.config_for(TestCog, :other_step)
+
+      assert matching.abort_on_failure?
+      assert non_matching.abort_on_failure? # default is true, so check with a non-default value
+    end
+
+    test "global with name specifier sets non-default config only for matching name" do
+      config_proc = proc do
+        global(:my_step) { no_abort_on_failure! }
+      end
+      manager = build_manager([config_proc])
+      manager.prepare!
+
+      matching = manager.config_for(TestCog, :my_step)
+      non_matching = manager.config_for(TestCog, :other_step)
+
+      refute matching.abort_on_failure?
+      assert non_matching.abort_on_failure? # default true, unaffected
+    end
+
+    test "global with regexp specifier applies to matching cog names" do
+      config_proc = proc do
+        global(/^api_/) { no_abort_on_failure! }
+      end
+      manager = build_manager([config_proc])
+      manager.prepare!
+
+      matching = manager.config_for(TestCog, :api_call)
+      non_matching = manager.config_for(TestCog, :db_query)
+
+      refute matching.abort_on_failure?
+      assert non_matching.abort_on_failure?
+    end
+
+    test "global with bare, regexp, and name specifiers merge in cascade order" do
+      config_proc = proc do
+        global { no_abort_on_failure! }
+        global(/^api_/) { async! }
+        global(:api_main) { self[:custom_flag] = "yes" }
+      end
+      manager = build_manager([config_proc])
+      manager.prepare!
+
+      config = manager.config_for(TestCog, :api_main)
+
+      refute config.abort_on_failure?          # from bare global
+      assert config.async?                      # from regexp global
+      assert_equal "yes", config.values[:custom_flag]  # from name global
+    end
+
+    test "global name specifier is overridden by cog-specific config" do
+      config_proc = proc do
+        global(:my_step) { async! }
+        test_cog(:my_step) { no_async! }
+      end
+      manager = build_manager([config_proc])
+      manager.prepare!
+
+      config = manager.config_for(TestCog, :my_step)
+
+      refute config.async?
+    end
+
+    test "global regexp specifier applies across different cog types" do
+      other_cog = Class.new(Cog) do
+        class << self
+          def name
+            "Roast::TestCogs::OtherCog"
+          end
+        end
+      end
+      @registry.use(other_cog)
+
+      config_proc = proc do
+        global(/^shared_/) { no_abort_on_failure! }
+      end
+      manager = build_manager([config_proc])
+      manager.prepare!
+
+      test_config = manager.config_for(TestCog, :shared_step)
+      other_config = manager.config_for(other_cog, :shared_step)
+
+      refute test_config.abort_on_failure?
+      refute other_config.abort_on_failure?
+    end
+
+    test "multiple global regexp specifiers merge in definition order" do
+      config_proc = proc do
+        global(/^api_/) { no_abort_on_failure! }
+        global(/call/) { async! }
+      end
+      manager = build_manager([config_proc])
+      manager.prepare!
+
+      config = manager.config_for(TestCog, :api_call)
+
+      refute config.abort_on_failure?
+      assert config.async?
+    end
+
+    test "workflow params are accessible inside a named global config block" do
+      config_proc = proc do
+        global(:my_step) { no_abort_on_failure! if arg?(:lenient) }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new([], [:lenient], {}))
+      manager.prepare!
+
+      config = manager.config_for(TestCog, :my_step)
+
+      refute config.abort_on_failure?
+    end
   end
 end

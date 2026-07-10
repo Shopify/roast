@@ -16,10 +16,8 @@ module Roast
       @config_procs = config_procs
       @workflow_context = workflow_context
       @config_context = ConfigContext.new #: ConfigContext
-      @global_config = Cog::Config.new #: Cog::Config
-      @general_configs = {} #: Hash[singleton(Cog), Cog::Config]
-      @regexp_scoped_configs = {} #: Hash[singleton(Cog), Hash[Regexp, Cog::Config]]
-      @name_scoped_configs = {} #: Hash[singleton(Cog), Hash[Symbol, Cog::Config]]
+      @global_tier = ConfigTier.new { Cog::Config.new }
+      @cog_tiers = {} #: Hash[singleton(Cog), ConfigTier]
     end
 
     #: () -> void
@@ -47,37 +45,24 @@ module Roast
     def config_for(cog_class, name = nil)
       raise ConfigManagerNotPreparedError unless prepared?
 
-      # All cogs will always have a config; empty by default if the cog was never explicitly configured
-      config = cog_class.config_class.new(@global_config.instance_variable_get(:@values).deep_dup)
-      config = config.merge(fetch_general_config(cog_class))
-      @regexp_scoped_configs.fetch(cog_class, {}).select do |pattern, _|
-        pattern.match?(name.to_s) unless name.nil?
-      end.values.each { |cfg| config = config.merge(cfg) }
-      unless name.nil?
-        name_scoped_config = fetch_name_scoped_config(cog_class, name)
-        config = config.merge(name_scoped_config)
-      end
+      # Seed with the global general config values, constructing the cog-specific type
+      config = cog_class.config_class.new(@global_tier.general_config.values.deep_dup)
+
+      # Merge remaining global layers (matching regexps and name-scoped)
+      @global_tier.resolve(name).drop(1).each { |cfg| config = config.merge(cfg) }
+
+      # Apply the full cog-specific tier cascade (general, regexps, name)
+      cog_tier_for(cog_class).resolve(name).each { |cfg| config = config.merge(cfg) }
+
       config.validate!
       config
     end
 
     private
 
-    #: (singleton(Cog)) -> Cog::Config
-    def fetch_general_config(cog_class)
-      @general_configs[cog_class] ||= cog_class.config_class.new
-    end
-
-    #: (singleton(Cog), Regexp) -> Cog::Config
-    def fetch_regexp_scoped_config(cog_class, pattern)
-      regexp_scoped_configs_for_cog = @regexp_scoped_configs[cog_class] ||= {}
-      regexp_scoped_configs_for_cog[pattern] ||= cog_class.config_class.new
-    end
-
-    #: (singleton(Cog), Symbol) -> Cog::Config
-    def fetch_name_scoped_config(cog_class, name)
-      name_scoped_configs_for_cog = @name_scoped_configs[cog_class] ||= {}
-      name_scoped_configs_for_cog[name] ||= cog_class.config_class.new
+    #: (singleton(Cog)) -> ConfigTier
+    def cog_tier_for(cog_class)
+      @cog_tiers[cog_class] ||= ConfigTier.new { cog_class.config_class.new }
     end
 
     #: () -> void
@@ -100,22 +85,7 @@ module Roast
 
     #: (singleton(Cog), (Symbol | Regexp)?, ^() -> void ) -> void
     def on_config(cog_class, cog_name_or_pattern, cog_config_proc)
-      # Called when the cog method is invoked in the workflow's 'config' block.
-      # This allows configuration parameters to be set for the cog generally or for a specific named instance
-
-      # NOTE: cast to untyped is to intentional handling the 'unreachable' else case here.
-      # This method takes user input directly so additional validation with a clearer exception message will be helpful
-      cog_name_or_pattern = cog_name_or_pattern #: untyped
-      config_object = case cog_name_or_pattern
-      when NilClass
-        fetch_general_config(cog_class)
-      when Regexp
-        fetch_regexp_scoped_config(cog_class, cog_name_or_pattern)
-      when Symbol
-        fetch_name_scoped_config(cog_class, cog_name_or_pattern)
-      else
-        raise ArgumentError, "Invalid type '#{cog_name_or_pattern.class}' for cog_name_or_pattern"
-      end
+      config_object = cog_tier_for(cog_class).fetch(cog_name_or_pattern)
 
       # NOTE: Sorbet expects the proc passed to instance_exec to be declared as taking an argument
       # but our cog_config_proc does not get an argument
@@ -127,19 +97,20 @@ module Roast
 
     def bind_global
       on_global_method = method(:on_global)
-      method_to_bind = proc do |&global_proc|
-        on_global_method.call(global_proc)
+      method_to_bind = proc do |name_or_pattern = nil, &global_proc|
+        on_global_method.call(name_or_pattern, global_proc)
       end
       @config_context.instance_eval do
         define_singleton_method(:global, method_to_bind)
       end
     end
 
-    #: (^() -> void ) -> void
-    def on_global(global_config_proc)
+    #: ((Symbol | Regexp)?, ^() -> void ) -> void
+    def on_global(name_or_pattern, global_config_proc)
+      config_object = @global_tier.fetch(name_or_pattern)
       global_config_proc = global_config_proc #: as ^(untyped) -> void
-      bind_workflow_params(@global_config)
-      @global_config.instance_exec(&global_config_proc) if global_config_proc
+      bind_workflow_params(config_object)
+      config_object.instance_exec(&global_config_proc) if global_config_proc
       nil
     end
 
