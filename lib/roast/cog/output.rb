@@ -249,7 +249,7 @@ module Roast
           candidates.compact.uniq
         end
 
-        # Normalize a number string by removing separators and currency codes and validating format
+        # Normalize a number string by removing separators and currency symbols and validating format
         #
         #: (String) -> String?
         def normalize_number_string(raw)
