@@ -32,24 +32,80 @@ module Roast
               def format
                 return unless name
 
-                case name.to_s.downcase
-                when "bash"
-                  "BASH #{arguments[:command]}"
-                when "read"
-                  "READ #{arguments[:path]}"
-                when "edit"
-                  "EDIT #{arguments[:path]}"
-                when "write"
-                  "WRITE #{arguments[:path]}"
-                when "grep"
-                  "GREP #{arguments[:pattern]} #{arguments[:path]}"
-                when "find"
-                  "FIND #{arguments[:pattern]} #{arguments[:path]}"
-                when "ls"
-                  "LS #{arguments[:path]}"
-                else
-                  "TOOL [#{name}] #{arguments.inspect}"
-                end
+                format_method_name = "format_#{name.to_s.downcase}".to_sym
+                return send(format_method_name) if respond_to?(format_method_name, true)
+
+                format_unknown
+              end
+
+              TRUNCATE_LIMIT = 45
+
+              private
+
+              #: () -> String
+              def format_bash
+                command = truncate(arguments[:command])
+                command.empty? ? "BASH" : "BASH #{command}"
+              end
+
+              #: () -> String
+              def format_read
+                path = arguments[:path]
+                path.to_s.empty? ? "READ" : "READ #{path}"
+              end
+
+              #: () -> String
+              def format_write
+                path, content = arguments.values_at(:path, :content)
+                lines = content.to_s.lines
+                preview = truncate(lines.first.to_s.strip)
+                count = lines.length
+                line_label = count == 1 ? "line" : "lines"
+                "WRITE #{path} \"#{preview}\" (+#{count} #{line_label})"
+              end
+
+              #: () -> String
+              def format_edit
+                path = arguments[:path]
+                edits = arguments[:edits] || []
+                count = edits.length
+                edit_label = count == 1 ? "edit" : "edits"
+                "EDIT #{path} (#{count} #{edit_label})"
+              end
+
+              #: () -> String
+              def format_grep
+                pattern, path, glob = arguments.values_at(:pattern, :path, :glob)
+                base = "GREP \"#{truncate(pattern)}\""
+                base = "#{base} #{path}" if path.present?
+                glob.present? ? "#{base} (glob=#{glob})" : base
+              end
+
+              #: () -> String
+              def format_find
+                pattern, path = arguments.values_at(:pattern, :path)
+                path.present? ? "FIND #{pattern} (in #{path})" : "FIND #{pattern}"
+              end
+
+              #: () -> String
+              def format_ls
+                path = arguments[:path]
+                path.to_s.empty? ? "LS" : "LS #{path}"
+              end
+
+              #: () -> String
+              def format_unknown
+                label = name.to_s.upcase
+                return label if arguments.empty?
+
+                details = arguments.map { |key, value| "#{key}: #{truncate(value.inspect)}" }.join(", ")
+                "#{label} #{details}"
+              end
+
+              #: (String?) -> String
+              def truncate(str)
+                s = str.to_s
+                s.length > TRUNCATE_LIMIT ? "#{s[0...TRUNCATE_LIMIT - 3]}..." : s
               end
             end
           end
