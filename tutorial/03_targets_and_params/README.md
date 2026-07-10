@@ -187,6 +187,15 @@ execute do
 end
 ```
 
+Parameter accessors are also available inside cog `config` blocks and the `global` block:
+
+```ruby
+config do
+  chat { model(arg?(:fast) ? "gpt-5.4-nano" : "gpt-5") }
+  global { abort_on_failure! if arg?(:strict) }
+end
+```
+
 ## Running the Workflows
 
 To run the examples in this chapter:
@@ -220,7 +229,7 @@ bin/roast execute tutorial/03_targets_and_params/multiple_targets.rb \
 - Use `arg?(:name)` to check if an argument is present
 - Use `kwarg(:name)` to get a kwarg value (returns nil if missing)
 - Use `kwarg!(:name)` to require a kwarg (errors if missing)
-- All accessors work in any cog's input block
+- All accessors work in any cog's input block, and inside cog `config` / `global` blocks
 
 ## What's Next?
 
