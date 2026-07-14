@@ -249,11 +249,11 @@ module Roast
           candidates.compact.uniq
         end
 
-        # Normalize a number string by removing separators and currency codes and validating format
+        # Normalize a number string by removing separators and currency symbols and validating format
         #
         #: (String) -> String?
         def normalize_number_string(raw)
-          # Remove common digit separators and currency codes
+          # Remove common digit separators and currency symbols
           normalized = raw.strip.gsub(/[\s$¢£€¥,_]/, "")
 
           # Validate it looks like a number (optional minus, digits, optional decimal, optional scientific notation)
