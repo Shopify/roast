@@ -152,6 +152,32 @@ module Roast
                 ok_line("#{count} #{"match".pluralize(count)}", note)
               end
 
+              # Formats a find tool result.
+              #
+              # Content: matching paths, one per line, plus an optional status line –
+              # either a bracketed notice ("[2 results limit reached. ...]") or the
+              # no-results prose ("No files found matching pattern").
+              #
+              # Output: "FIND OK <n> <path|paths>[ · NOTE <status>]" – <n> counts the
+              # path lines only, and the notice's brackets are dropped. As in #format_grep,
+              # the NOTE is shown only alongside results: "0 paths" already says what the
+              # no-results prose would.
+              #
+              # Examples:
+              #   FIND OK 12 paths
+              #   FIND OK 1 path
+              #   FIND OK 2 paths · NOTE 2 results limit reached. Use limit=4 for m...
+              #   FIND OK 0 paths
+              #
+              #: () -> String
+              def format_find
+                lines = content.to_s.lines.map(&:strip).reject(&:empty?)
+                notes, paths = lines.partition { |line| line.sub!(/\A\[(.*)\]\z/, '\1') || line.match?(/\ANo files found/) }
+                count = paths.length
+                note = "NOTE #{truncate(notes.join(" "))}" if paths.any? && notes.any?
+                ok_line("#{count} #{"path".pluralize(count)}", note)
+              end
+
               # Formats a result for which Roast has no dedicated formatter.
               #
               # Content: the tool's output text.

@@ -180,6 +180,32 @@ module Roast
                 details.any? ? "#{base} (#{details.join(", ")})" : base
               end
 
+              # Formats a find tool call.
+              #
+              # Input fields:
+              #   :pattern (String)  – filename glob to match   [required]
+              #   :path    (String)  – directory to search in   [optional]
+              #   :limit   (Integer) – max number of results    [optional]
+              #
+              # Output: "FIND <pattern> (path: <path>, limit: <limit>)" – the "path:"
+              # and "limit:" details are each included only when present and joined
+              # with ", " inside a single trailing "(...)".
+              #
+              # Examples:
+              #   FIND *.rb (path: lib, limit: 50)
+              #   FIND *.rb (limit: 50)
+              #   FIND *.rb
+              #
+              #: () -> String
+              def format_find
+                pattern, path, limit = arguments.values_at(:pattern, :path, :limit)
+                details = [
+                  ("path: #{path}" if path.present?),
+                  ("limit: #{limit}" if limit.present?),
+                ].compact
+                details.any? ? "FIND #{pattern} (#{details.join(", ")})" : "FIND #{pattern}"
+              end
+
               # Formats a tool call for which Roast has no dedicated formatter.
               #
               # Output: "<NAME> <key>: <value>, ..." – the upcased tool name, then each

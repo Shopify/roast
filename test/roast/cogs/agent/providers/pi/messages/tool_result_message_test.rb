@@ -170,6 +170,64 @@ module Roast
           assert_equal "GREP OK 1 match · NOTE results truncated", msg.format(@context)
         end
 
+        test "format summarizes find output with a path count" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "find",
+            content: "lib/roast.rb\nlib/roast/version.rb\nlib/roast/cog.rb",
+            is_error: false,
+          )
+
+          assert_equal "FIND OK 3 paths", msg.format(@context)
+        end
+
+        test "format pluralizes a single find path" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "find",
+            content: "lib/roast.rb",
+            is_error: false,
+          )
+
+          assert_equal "FIND OK 1 path", msg.format(@context)
+        end
+
+        test "format reports zero find paths when there is no output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "find",
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "FIND OK 0 paths", msg.format(@context)
+        end
+
+        test "format keeps a find limit notice out of the path count and appends it as a NOTE" do
+          notice = "[2 results limit reached. Use limit=4 for more, or refine pattern]"
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "find",
+            content: "file4.txt\nfile5.txt\n\n#{notice}",
+            is_error: false,
+          )
+
+          unbracketed = notice.delete_prefix("[").delete_suffix("]")
+          truncated_notice = "#{unbracketed[0...ToolResultMessage::TRUNCATE_LIMIT - 3]}..."
+          assert_equal "FIND OK 2 paths · NOTE #{truncated_notice}", msg.format(@context)
+        end
+
+        test "format reports zero find paths when the output is the no-results notice" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "find",
+            content: "No files found matching pattern",
+            is_error: false,
+          )
+
+          assert_equal "FIND OK 0 paths", msg.format(@context)
+        end
+
         test "format renders NAME ERROR with the message for an error result" do
           msg = ToolResultMessage.new(
             tool_call_id: "1",
