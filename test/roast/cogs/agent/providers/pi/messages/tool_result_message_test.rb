@@ -126,6 +126,50 @@ module Roast
           assert_equal "EDIT OK", msg.format(@context)
         end
 
+        test "format summarizes grep output with a match count" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "grep",
+            content: "lib/roast.rb:1:class Roast\nlib/roast/version.rb:3:VERSION = \"1.0\"",
+            is_error: false,
+          )
+
+          assert_equal "GREP OK 2 matches", msg.format(@context)
+        end
+
+        test "format pluralizes a single grep match" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "grep",
+            content: "lib/roast.rb:1:class Roast",
+            is_error: false,
+          )
+
+          assert_equal "GREP OK 1 match", msg.format(@context)
+        end
+
+        test "format reports zero grep matches when there is no output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "grep",
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "GREP OK 0 matches", msg.format(@context)
+        end
+
+        test "format appends a NOTE when grep output includes non-match lines" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "grep",
+            content: "lib/roast.rb:1:class Roast\nresults truncated",
+            is_error: false,
+          )
+
+          assert_equal "GREP OK 1 match · NOTE results truncated", msg.format(@context)
+        end
+
         test "format renders NAME ERROR with the message for an error result" do
           msg = ToolResultMessage.new(
             tool_call_id: "1",

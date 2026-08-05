@@ -128,6 +128,30 @@ module Roast
                 ok_line(@input[:path])
               end
 
+              # Formats a grep tool result.
+              #
+              # Content: matching lines, and possibly informational notes, one per
+              # line.
+              #
+              # Output: "GREP OK <n> <match|matches>[ · NOTE <notes>]" – <n> counts
+              # lines that look like matches (a leading path or line-number prefix);
+              # any remaining lines are joined into a truncated NOTE, shown only when
+              # there are both matches and notes.
+              #
+              # Examples:
+              #   GREP OK 3 matches
+              #   GREP OK 1 match
+              #   GREP OK 0 matches
+              #
+              #: () -> String
+              def format_grep
+                lines = content.to_s.lines.map(&:strip).reject(&:empty?)
+                matches, notes = lines.partition { |line| line.match?(%r{\A\S+/}) || line.match?(/\A(?:\S+:)?\d+:/) }
+                count = matches.length
+                note = "NOTE #{truncate(notes.join(" "))}" if matches.any? && notes.any?
+                ok_line("#{count} #{"match".pluralize(count)}", note)
+              end
+
               # Formats a result for which Roast has no dedicated formatter.
               #
               # Content: the tool's output text.
