@@ -63,6 +63,40 @@ module Roast
                 command.empty? ? "BASH" : "BASH #{command}"
               end
 
+              # Formats a read tool call.
+              #
+              # Input fields:
+              #   :path   (String)  – file to read              [required]
+              #   :offset (Integer) – 1-indexed first line       [optional]
+              #   :limit  (Integer) – maximum number of lines    [optional]
+              #
+              # Output: "READ <path>", with a line range appended when :offset and/or
+              # :limit is given:
+              #   :limit >= 1  → " (lines <start>–<end>)", start = :offset (default 1),
+              #                  end = start + :limit - 1
+              #   :offset only → " (from line <offset>)" (reads to end of file); also the
+              #                  fallback when :limit <= 0, which has no sensible range
+              # With neither, the bare "READ <path>". A missing path renders "READ".
+              #
+              # Examples:
+              #   READ lib/roast.rb (lines 30–80)
+              #   READ lib/roast.rb (from line 30)
+              #   READ lib/roast.rb
+              #
+              #: () -> String
+              def format_read
+                path, offset, limit = arguments.values_at(:path, :offset, :limit)
+                path = path.to_s
+                details = if limit&.positive?
+                  offset ||= 1
+                  "lines #{offset}–#{offset + limit - 1}"
+                elsif offset
+                  "from line #{offset}"
+                end
+                label = path.empty? ? "READ" : "READ #{path}"
+                details ? "#{label} (#{details})" : label
+              end
+
               # Formats a tool call for which Roast has no dedicated formatter.
               #
               # Output: "<NAME> <key>: <value>, ..." – the upcased tool name, then each

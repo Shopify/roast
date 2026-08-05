@@ -26,6 +26,41 @@ module Roast
           assert_equal "BASH #{"x" * (ToolCallMessage::TRUNCATE_LIMIT - 3)}...", msg.format
         end
 
+        test "format renders READ with the path" do
+          msg = ToolCallMessage.new(id: "1", name: "read", arguments: { path: "lib/roast.rb" })
+          assert_equal "READ lib/roast.rb", msg.format
+        end
+
+        test "format renders a bare READ when the path is missing" do
+          msg = ToolCallMessage.new(id: "1", name: "read", arguments: {})
+          assert_equal "READ", msg.format
+        end
+
+        test "format renders READ with a closed line range when offset and limit are set" do
+          msg = ToolCallMessage.new(id: "1", name: "read", arguments: { path: "lib/roast.rb", offset: 30, limit: 51 })
+          assert_equal "READ lib/roast.rb (lines 30–80)", msg.format
+        end
+
+        test "format defaults the read offset to 1 when only limit is given" do
+          msg = ToolCallMessage.new(id: "1", name: "read", arguments: { path: "lib/roast.rb", limit: 50 })
+          assert_equal "READ lib/roast.rb (lines 1–50)", msg.format
+        end
+
+        test "format renders an open-ended read range from offset when limit is absent" do
+          msg = ToolCallMessage.new(id: "1", name: "read", arguments: { path: "lib/roast.rb", offset: 30 })
+          assert_equal "READ lib/roast.rb (from line 30)", msg.format
+        end
+
+        test "format falls back to the open-ended range when read limit is non-positive" do
+          msg = ToolCallMessage.new(id: "1", name: "read", arguments: { path: "lib/roast.rb", offset: 30, limit: 0 })
+          assert_equal "READ lib/roast.rb (from line 30)", msg.format
+        end
+
+        test "format omits the range entirely when read limit is non-positive and no offset is given" do
+          msg = ToolCallMessage.new(id: "1", name: "read", arguments: { path: "lib/roast.rb", limit: 0 })
+          assert_equal "READ lib/roast.rb", msg.format
+        end
+
         test "format renders an unhandled tool as NAME key: value, ..." do
           msg = ToolCallMessage.new(
             id: "1",
