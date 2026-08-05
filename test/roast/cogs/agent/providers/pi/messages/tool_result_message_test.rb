@@ -76,6 +76,31 @@ module Roast
           assert_equal "READ OK 0 lines", msg.format(@context)
         end
 
+        test "format renders WRITE OK with the path from the originating call" do
+          @context.add_tool_call(
+            ToolCallMessage.new(id: "1", name: "write", arguments: { path: "lib/roast/version.rb" }),
+          )
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "write",
+            content: "File written successfully",
+            is_error: false,
+          )
+
+          assert_equal "WRITE OK lib/roast/version.rb", msg.format(@context)
+        end
+
+        test "format renders a bare WRITE OK when the path is unavailable" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "write",
+            content: "File written successfully",
+            is_error: false,
+          )
+
+          assert_equal "WRITE OK", msg.format(@context)
+        end
+
         test "format renders NAME ERROR with the message for an error result" do
           msg = ToolResultMessage.new(
             tool_call_id: "1",
