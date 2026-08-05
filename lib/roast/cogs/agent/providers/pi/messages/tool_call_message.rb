@@ -206,6 +206,23 @@ module Roast
                 details.any? ? "FIND #{pattern} (#{details.join(", ")})" : "FIND #{pattern}"
               end
 
+              # Formats an ls tool call.
+              #
+              # Input fields:
+              #   :path (String) – directory to list   [optional]
+              #
+              # Output: "LS <path>" – a missing path renders the bare "LS".
+              #
+              # Examples:
+              #   LS lib/roast
+              #   LS
+              #
+              #: () -> String
+              def format_ls
+                path = arguments[:path]
+                path.to_s.empty? ? "LS" : "LS #{path}"
+              end
+
               # Formats a tool call for which Roast has no dedicated formatter.
               #
               # Output: "<NAME> <key>: <value>, ..." – the upcased tool name, then each

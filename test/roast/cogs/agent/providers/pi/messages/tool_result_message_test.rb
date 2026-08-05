@@ -228,6 +228,39 @@ module Roast
           assert_equal "FIND OK 0 paths", msg.format(@context)
         end
 
+        test "format summarizes ls output with an entry count" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "ls",
+            content: "lib\ntest\nREADME.md",
+            is_error: false,
+          )
+
+          assert_equal "LS OK 3 entries", msg.format(@context)
+        end
+
+        test "format pluralizes a single ls entry" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "ls",
+            content: "README.md",
+            is_error: false,
+          )
+
+          assert_equal "LS OK 1 entry", msg.format(@context)
+        end
+
+        test "format reports zero ls entries when there is no output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "ls",
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "LS OK 0 entries", msg.format(@context)
+        end
+
         test "format renders NAME ERROR with the message for an error result" do
           msg = ToolResultMessage.new(
             tool_call_id: "1",
