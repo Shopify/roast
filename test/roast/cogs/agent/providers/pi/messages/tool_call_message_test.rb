@@ -98,6 +98,32 @@ module Roast
           assert_equal "WRITE", msg.format
         end
 
+        test "format renders EDIT with the path and edit count" do
+          msg = ToolCallMessage.new(
+            id: "1",
+            name: "edit",
+            arguments: {
+              path: "lib/roast.rb",
+              edits: [{ oldText: "a", newText: "b" }, { oldText: "c", newText: "d" }],
+            },
+          )
+          assert_equal "EDIT lib/roast.rb (2 edits)", msg.format
+        end
+
+        test "format renders a singular edit count for a single edit" do
+          msg = ToolCallMessage.new(
+            id: "1",
+            name: "edit",
+            arguments: { path: "config/app.yml", edits: [{ oldText: "a", newText: "b" }] },
+          )
+          assert_equal "EDIT config/app.yml (1 edit)", msg.format
+        end
+
+        test "format renders zero edits when the edits array is missing" do
+          msg = ToolCallMessage.new(id: "1", name: "edit", arguments: { path: "lib/roast.rb" })
+          assert_equal "EDIT lib/roast.rb (0 edits)", msg.format
+        end
+
         test "format renders an unhandled tool as NAME key: value, ..." do
           msg = ToolCallMessage.new(
             id: "1",
