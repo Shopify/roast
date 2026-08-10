@@ -10,7 +10,7 @@ module Roast
           @context = Roast::Cogs::Agent::Providers::Pi::PiInvocation::Context.new
         end
 
-        test "format returns tool name and OK status for successful result" do
+        test "format summarizes bash output with a line count and preview" do
           msg = ToolResultMessage.new(
             tool_call_id: "1",
             tool_name: "bash",
@@ -18,10 +18,250 @@ module Roast
             is_error: false,
           )
 
-          assert_equal "BASH OK file1.rb\nfile2.rb", msg.format(@context)
+          assert_equal "BASH OK 2 lines · file1.rb", msg.format(@context)
         end
 
-        test "format returns tool name and ERROR status for error result" do
+        test "format pluralizes a single line of bash output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "bash",
+            content: "hello world",
+            is_error: false,
+          )
+
+          assert_equal "BASH OK 1 line · hello world", msg.format(@context)
+        end
+
+        test "format reports zero lines when bash produced no output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "bash",
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "BASH OK 0 lines", msg.format(@context)
+        end
+
+        test "format summarizes read output with a line count" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "read",
+            content: "line one\nline two\nline three",
+            is_error: false,
+          )
+
+          assert_equal "READ OK 3 lines", msg.format(@context)
+        end
+
+        test "format pluralizes a single line of read output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "read",
+            content: "just one line",
+            is_error: false,
+          )
+
+          assert_equal "READ OK 1 line", msg.format(@context)
+        end
+
+        test "format reports zero lines when the file is empty" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "read",
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "READ OK 0 lines", msg.format(@context)
+        end
+
+        test "format renders WRITE OK with the path from the originating call" do
+          @context.add_tool_call(
+            ToolCallMessage.new(id: "1", name: "write", arguments: { path: "lib/roast/version.rb" }),
+          )
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "write",
+            content: "File written successfully",
+            is_error: false,
+          )
+
+          assert_equal "WRITE OK lib/roast/version.rb", msg.format(@context)
+        end
+
+        test "format renders a bare WRITE OK when the path is unavailable" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "write",
+            content: "File written successfully",
+            is_error: false,
+          )
+
+          assert_equal "WRITE OK", msg.format(@context)
+        end
+
+        test "format renders EDIT OK with the path from the originating call" do
+          @context.add_tool_call(
+            ToolCallMessage.new(id: "1", name: "edit", arguments: { path: "lib/roast/version.rb" }),
+          )
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "edit",
+            content: "The file has been updated successfully",
+            is_error: false,
+          )
+
+          assert_equal "EDIT OK lib/roast/version.rb", msg.format(@context)
+        end
+
+        test "format renders a bare EDIT OK when the path is unavailable" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "edit",
+            content: "The file has been updated successfully",
+            is_error: false,
+          )
+
+          assert_equal "EDIT OK", msg.format(@context)
+        end
+
+        test "format summarizes grep output with a match count" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "grep",
+            content: "lib/roast.rb:1:class Roast\nlib/roast/version.rb:3:VERSION = \"1.0\"",
+            is_error: false,
+          )
+
+          assert_equal "GREP OK 2 matches", msg.format(@context)
+        end
+
+        test "format pluralizes a single grep match" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "grep",
+            content: "lib/roast.rb:1:class Roast",
+            is_error: false,
+          )
+
+          assert_equal "GREP OK 1 match", msg.format(@context)
+        end
+
+        test "format reports zero grep matches when there is no output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "grep",
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "GREP OK 0 matches", msg.format(@context)
+        end
+
+        test "format appends a NOTE when grep output includes non-match lines" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "grep",
+            content: "lib/roast.rb:1:class Roast\nresults truncated",
+            is_error: false,
+          )
+
+          assert_equal "GREP OK 1 match · NOTE results truncated", msg.format(@context)
+        end
+
+        test "format summarizes find output with a path count" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "find",
+            content: "lib/roast.rb\nlib/roast/version.rb\nlib/roast/cog.rb",
+            is_error: false,
+          )
+
+          assert_equal "FIND OK 3 paths", msg.format(@context)
+        end
+
+        test "format pluralizes a single find path" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "find",
+            content: "lib/roast.rb",
+            is_error: false,
+          )
+
+          assert_equal "FIND OK 1 path", msg.format(@context)
+        end
+
+        test "format reports zero find paths when there is no output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "find",
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "FIND OK 0 paths", msg.format(@context)
+        end
+
+        test "format keeps a find limit notice out of the path count and appends it as a NOTE" do
+          notice = "[2 results limit reached. Use limit=4 for more, or refine pattern]"
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "find",
+            content: "file4.txt\nfile5.txt\n\n#{notice}",
+            is_error: false,
+          )
+
+          unbracketed = notice.delete_prefix("[").delete_suffix("]")
+          truncated_notice = "#{unbracketed[0...ToolResultMessage::TRUNCATE_LIMIT - 3]}..."
+          assert_equal "FIND OK 2 paths · NOTE #{truncated_notice}", msg.format(@context)
+        end
+
+        test "format reports zero find paths when the output is the no-results notice" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "find",
+            content: "No files found matching pattern",
+            is_error: false,
+          )
+
+          assert_equal "FIND OK 0 paths", msg.format(@context)
+        end
+
+        test "format summarizes ls output with an entry count" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "ls",
+            content: "lib\ntest\nREADME.md",
+            is_error: false,
+          )
+
+          assert_equal "LS OK 3 entries", msg.format(@context)
+        end
+
+        test "format pluralizes a single ls entry" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "ls",
+            content: "README.md",
+            is_error: false,
+          )
+
+          assert_equal "LS OK 1 entry", msg.format(@context)
+        end
+
+        test "format reports zero ls entries when there is no output" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "ls",
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "LS OK 0 entries", msg.format(@context)
+        end
+
+        test "format renders NAME ERROR with the message for an error result" do
           msg = ToolResultMessage.new(
             tool_call_id: "1",
             tool_name: "bash",
@@ -32,34 +272,64 @@ module Roast
           assert_equal "BASH ERROR command not found", msg.format(@context)
         end
 
-        test "format truncates long content" do
-          long_content = "x" * 300
+        test "format does not truncate an error message" do
+          long_message = "boom " * 60
           msg = ToolResultMessage.new(
             tool_call_id: "1",
             tool_name: "read",
-            content: long_content,
-            is_error: false,
+            content: long_message,
+            is_error: true,
           )
 
-          result = msg.format(@context)
-          assert result.length < 220
-          assert result.end_with?("...")
+          assert_equal "READ ERROR #{long_message.strip}", msg.format(@context)
         end
 
-        test "format handles nil content" do
+        test "format renders a bare NAME ERROR when there is no content" do
           msg = ToolResultMessage.new(
             tool_call_id: "1",
             tool_name: "bash",
             content: nil,
+            is_error: true,
+          )
+
+          assert_equal "BASH ERROR", msg.format(@context)
+        end
+
+        test "format renders NAME OK with a one-line preview for an unhandled tool" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "web_search",
+            content: "3 results\nmore detail",
             is_error: false,
           )
 
-          assert_equal "BASH OK", msg.format(@context)
+          assert_equal "WEB_SEARCH OK 3 results", msg.format(@context)
         end
 
-        test "format uses tool name from context when tool_name is nil" do
-          tool_call = ToolCallMessage.new(id: "1", name: "edit", arguments: {})
-          @context.add_tool_call(tool_call)
+        test "format renders a bare NAME OK when there is no content" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "deploy",
+            content: nil,
+            is_error: false,
+          )
+
+          assert_equal "DEPLOY OK", msg.format(@context)
+        end
+
+        test "format truncates a long preview" do
+          msg = ToolResultMessage.new(
+            tool_call_id: "1",
+            tool_name: "web_search",
+            content: "x" * 300,
+            is_error: false,
+          )
+
+          assert_equal "WEB_SEARCH OK #{"x" * (ToolResultMessage::TRUNCATE_LIMIT - 3)}...", msg.format(@context)
+        end
+
+        test "format resolves the tool name from the originating call when the result omits it" do
+          @context.add_tool_call(ToolCallMessage.new(id: "1", name: "deploy", arguments: {}))
 
           msg = ToolResultMessage.new(
             tool_call_id: "1",
@@ -68,11 +338,10 @@ module Roast
             is_error: false,
           )
 
-          result = msg.format(@context)
-          assert result.start_with?("EDIT")
+          assert_equal "DEPLOY OK done", msg.format(@context)
         end
 
-        test "format falls back to unknown when no tool name available" do
+        test "format falls back to UNKNOWN when no tool name is available" do
           msg = ToolResultMessage.new(
             tool_call_id: "nonexistent",
             tool_name: nil,
@@ -80,8 +349,20 @@ module Roast
             is_error: false,
           )
 
-          result = msg.format(@context)
-          assert result.start_with?("UNKNOWN")
+          assert_equal "UNKNOWN OK result", msg.format(@context)
+        end
+
+        test "format falls back to the generic formatter when a dedicated formatter raises" do
+          klass = Class.new(ToolResultMessage) do
+            private
+
+            def format_boom
+              raise "boom"
+            end
+          end
+          msg = klass.new(tool_call_id: "1", tool_name: "boom", content: "some output", is_error: false)
+
+          assert_equal "BOOM OK some output", msg.format(@context)
         end
       end
     end
