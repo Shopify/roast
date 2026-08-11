@@ -305,6 +305,87 @@ module Roast
           assert_equal "READ OK 0 lines", output
         end
 
+        test "format_webfetch shows the fetched url and previews the first line of the answer" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "webfetch", input: { url: "https://example.com", prompt: "What is the main heading?" } },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "The main heading is \"Example Domain\".\n\nIt appears twice on the page.",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "WEBFETCH OK https://example.com · The main heading is \"Example Domain\".", output
+        end
+
+        test "format_webfetch previews a failed fetch that came back as a non-error result" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "webfetch", input: { url: "https://example.com/missing" } },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "The server returned HTTP 404 Not Found.\n\nThe response body was not retrieved.",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "WEBFETCH OK https://example.com/missing · The server returned HTTP 404 Not Found.", output
+        end
+
+        test "format_webfetch truncates the preview but not the url" do
+          long_url = "https://example.com/#{"a" * (Claude::ToolResult::TRUNCATE_LIMIT + 10)}"
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "webfetch", input: { url: long_url } },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "x" * 60,
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "WEBFETCH OK #{long_url} · #{"x" * (Claude::ToolResult::TRUNCATE_LIMIT - 3)}...", output
+        end
+
+        test "format_webfetch shows the url alone when the content is nil" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "webfetch", input: { url: "https://example.com" } },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: nil,
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "WEBFETCH OK https://example.com", output
+        end
+
+        test "format_webfetch collapses to a bare line when both url and content are absent" do
+          tool_use_message = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { name: "webfetch", input: {} },
+          )
+          tool_result = Claude::ToolResult.new(
+            tool_use: tool_use_message,
+            content: "",
+            is_error: false,
+          )
+
+          output = tool_result.format
+
+          assert_equal "WEBFETCH OK", output
+        end
+
         test "format_glob reports the number of matched files" do
           tool_use_message = Claude::Messages::ToolUseMessage.new(
             type: :tool_use,
