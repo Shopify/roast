@@ -20,6 +20,7 @@ module Roast
             class Context
               def initialize
                 @tool_uses = {} #: Hash[String, Messages::ToolUseMessage]
+                @task_subjects = {} #: Hash[String, String]
               end
 
               #: (String?) -> Messages::ToolUseMessage?
@@ -31,6 +32,23 @@ module Roast
               def add_tool_use(tool_use_message)
                 id = tool_use_message.id
                 @tool_uses[id] = tool_use_message if id
+              end
+
+              #: (Messages::ToolResultMessage) -> void
+              def add_tool_result(tool_result_message)
+                return if tool_result_message.is_error
+
+                tool_use_message = tool_use(tool_result_message.tool_use_id)
+                return unless tool_use_message && tool_use_message.name == :taskcreate
+
+                task_id = tool_result_message.content.to_s[/\ATask #(\d+) created successfully\b/, 1]
+                subject = tool_use_message.input[:subject]
+                @task_subjects[task_id] = subject if task_id && subject.present?
+              end
+
+              #: ((String | Integer)?) -> String?
+              def task_subject(task_id)
+                @task_subjects[task_id.to_s] if task_id
               end
             end
 
@@ -149,6 +167,8 @@ module Roast
                 @result.stats = message.stats
               when Messages::ToolUseMessage
                 @context.add_tool_use(message)
+              when Messages::ToolResultMessage
+                @context.add_tool_result(message)
               when Messages::UserMessage
                 message.messages.each { |msg| handle_message(msg) }
               end
