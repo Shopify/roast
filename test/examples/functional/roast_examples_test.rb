@@ -238,6 +238,30 @@ module Examples
         assert_equal expected_stdout, cleaned_stdout
       end
 
+      test "failure_handling.rb workflow runs successfully" do
+        stdout, stderr = in_sandbox :failure_handling do
+          assert_raises Roast::ControlFlow::FailCog do
+            Roast::Workflow.from_file("examples/failure_handling.rb", EMPTY_PARAMS)
+          end
+        end
+        assert_empty stdout
+        assert_empty stderr
+
+        logged_stdout, logged_stderr = original_streams_from_logger_output
+        expected_stdout = <<~EOF
+          0
+          count_gammas printed "0" and exited 1
+          no optional source configured
+          cmd?(:fetch_optional) -> false
+          cmd(:fetch_optional) -> nil
+          cmd!(:fetch_optional) raised Roast::CogInputManager::CogFailedError
+          ruby?(:check_optional) -> false
+          ❗️ This cog is expected to abort the workflow ❗️
+        EOF
+        assert_equal expected_stdout, logged_stdout
+        assert_empty logged_stderr
+      end
+
       test "json_output.rb workflow runs successfully" do
         stdout, stderr = in_sandbox :json_output do
           Roast::Workflow.from_file("examples/json_output.rb", EMPTY_PARAMS)
