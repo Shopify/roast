@@ -106,7 +106,7 @@ block:
 config do
   chat do
     model "gpt-4o-mini" # Use OpenAI's fast model
-    provider :openai # Use OpenAI (can also be :anthropic, :perplexity or :gemini)
+    provider :openai # Use OpenAI (can also be :anthropic, :perplexity, :gemini or :bedrock)
     show_prompt! # Display the prompt before sending
   end
 end
@@ -129,8 +129,9 @@ Common options you can set:
     - Anthropic: "claude-haiku-4-5" (default), "claude-sonnet-4-6", "claude-opus-4-7", etc.
     - Perplexity: "sonar" (default), "sonar-pro", "sonar-deep-research", etc.
     - Gemini: "gemini-3.1-flash-lite" (default), "gemini-3-flash-preview", "gemini-3.1-pro-preview", etc.
+    - Bedrock: "us.anthropic.claude-haiku-4-5-20251001-v1:0" (default), or any other Bedrock model or inference profile ID your account can use
 - `provider :name` - Which LLM provider
-    - `:openai`, `:anthropic`, `:perplexity` or `:gemini`
+    - `:openai`, `:anthropic`, `:perplexity`, `:gemini` or `:bedrock`
 - `show_prompt!` - Display the prompt being sent
 - `show_response!` - Display the response (on by default)
 - `show_stats!` - Display token usage statistics (on by default)
