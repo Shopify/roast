@@ -60,6 +60,7 @@ module Roast
               @append_system_prompt = config.valid_append_system_prompt #: String?
               @replace_system_prompt = config.valid_replace_system_prompt #: String?
               @working_directory = config.valid_working_directory #: Pathname?
+              @timeout = config.valid_timeout #: Integer?
               @prompt = prompt #: String
               @session = session #: String?
               @context = Context.new #: Context
@@ -86,6 +87,7 @@ module Roast
                 command_line,
                 working_directory: @working_directory,
                 stdin_content: @prompt,
+                timeout: @timeout,
                 stdout_handler: lambda { |line| handle_stdout(line) },
               )
               @end_time_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) * 1000).to_i #: Integer?
