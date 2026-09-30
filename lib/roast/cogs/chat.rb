@@ -143,6 +143,11 @@ module Roast
           when :gemini
             context.gemini_api_key = config.valid_api_key!
             context.gemini_api_base = config.valid_base_url
+          when :bedrock
+            context.bedrock_api_key = config.valid_api_key!
+            context.bedrock_secret_key = config.valid_aws_secret_access_key!
+            context.bedrock_session_token = config.valid_aws_session_token
+            context.bedrock_region = config.valid_aws_region!
           end
         end
       end

@@ -36,6 +36,10 @@ module Roast
             default_base_url: "https://generativelanguage.googleapis.com/v1beta",
             default_model: "gemini-3.1-flash-lite",
           },
+          bedrock: {
+            api_key_env_var: "AWS_ACCESS_KEY_ID",
+            default_model: "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+          },
         }.freeze #: Hash[Symbol, Hash[Symbol, String]]
 
         # Configure the cog to use a specified API provider when invoking the llm
@@ -108,6 +112,7 @@ module Roast
         # - Anthropic Provider: ANTHROPIC_API_KEY
         # - Perplexity Provider: PERPLEXITY_API_KEY
         # - Gemini Provider: GEMINI_API_KEY
+        # - Bedrock Provider: AWS_ACCESS_KEY_ID
         #
         # #### See Also
         # - `api_key`
@@ -127,6 +132,7 @@ module Roast
         # - Anthropic Provider: ANTHROPIC_API_KEY
         # - Perplexity Provider: PERPLEXITY_API_KEY
         # - Gemini Provider: GEMINI_API_KEY
+        # - Bedrock Provider: AWS_ACCESS_KEY_ID
         #
         # #### See Also
         # - `api_key`
@@ -188,6 +194,37 @@ module Roast
         def valid_base_url
           @values.fetch(:base_url, ENV[PROVIDERS.dig(valid_provider!, :base_url_env_var).not_nil!]) ||
             PROVIDERS.dig(valid_provider!, :default_base_url)
+        end
+
+        # Get the AWS secret access key used to sign requests when the Bedrock provider is selected
+        #
+        # Only the Bedrock provider uses this value. It is read from the `AWS_SECRET_ACCESS_KEY` environment variable.
+        # This method will raise InvalidConfigError if that variable is unset or blank.
+        #
+        #: () -> String
+        def valid_aws_secret_access_key!
+          ENV["AWS_SECRET_ACCESS_KEY"].presence || raise(InvalidConfigError, "AWS_SECRET_ACCESS_KEY is not set")
+        end
+
+        # Get the AWS session token used to sign requests with temporary credentials, such as those from AWS SSO
+        #
+        # Only the Bedrock provider uses this value. It is read from the `AWS_SESSION_TOKEN` environment variable.
+        # Returns nil if that variable is unset or blank, because long-term credentials need no session token.
+        #
+        #: () -> String?
+        def valid_aws_session_token
+          ENV["AWS_SESSION_TOKEN"].presence
+        end
+
+        # Get the AWS region that the Bedrock provider sends requests to
+        #
+        # Only the Bedrock provider uses this value. It is read from the `AWS_REGION` environment variable only.
+        # `AWS_DEFAULT_REGION` is ignored, so that a region left in a shell profile never selects a region silently.
+        # This method will raise InvalidConfigError if `AWS_REGION` is unset or blank.
+        #
+        #: () -> String
+        def valid_aws_region!
+          ENV["AWS_REGION"].presence || raise(InvalidConfigError, "AWS_REGION is not set")
         end
 
         # Configure the cog to use a specific model when invoking the agent
