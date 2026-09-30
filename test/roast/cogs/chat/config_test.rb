@@ -85,6 +85,11 @@ module Roast
         assert_equal :gemini, @config.valid_provider!
       end
 
+      test "valid_provider! accepts and sets :bedrock" do
+        @config.provider(:bedrock)
+        assert_equal :bedrock, @config.valid_provider!
+      end
+
       test "valid_provider! raises on invalid provider" do
         @config.provider(:invalid_provider)
 
@@ -154,6 +159,73 @@ module Roast
         @config.provider(:gemini)
         with_env("GEMINI_API_KEY", "gemini-env-key") do
           assert_equal "gemini-env-key", @config.valid_api_key!
+        end
+      end
+
+      test "valid_api_key! reads from AWS_ACCESS_KEY_ID when provider is bedrock" do
+        @config.provider(:bedrock)
+        with_env("AWS_ACCESS_KEY_ID", "aws-env-key") do
+          assert_equal "aws-env-key", @config.valid_api_key!
+        end
+      end
+
+      test "valid_api_key! raises when provider is bedrock and AWS_ACCESS_KEY_ID is unset" do
+        @config.provider(:bedrock)
+        with_env("AWS_ACCESS_KEY_ID", nil) do
+          assert_raises(Cog::Config::InvalidConfigError) { @config.valid_api_key! }
+        end
+      end
+
+      # AWS configuration tests
+      test "valid_aws_secret_access_key! reads from AWS_SECRET_ACCESS_KEY" do
+        with_env("AWS_SECRET_ACCESS_KEY", "aws-secret") do
+          assert_equal "aws-secret", @config.valid_aws_secret_access_key!
+        end
+      end
+
+      test "valid_aws_secret_access_key! raises when AWS_SECRET_ACCESS_KEY is unset or blank" do
+        [nil, ""].each do |value|
+          with_env("AWS_SECRET_ACCESS_KEY", value) do
+            error = assert_raises(Cog::Config::InvalidConfigError) { @config.valid_aws_secret_access_key! }
+            assert_match(/AWS_SECRET_ACCESS_KEY/, error.message)
+          end
+        end
+      end
+
+      test "valid_aws_region! reads from AWS_REGION" do
+        with_env("AWS_REGION", "us-west-2") do
+          assert_equal "us-west-2", @config.valid_aws_region!
+        end
+      end
+
+      test "valid_aws_region! raises when AWS_REGION is unset or blank" do
+        [nil, ""].each do |value|
+          with_env("AWS_REGION", value) do
+            error = assert_raises(Cog::Config::InvalidConfigError) { @config.valid_aws_region! }
+            assert_match(/AWS_REGION/, error.message)
+          end
+        end
+      end
+
+      test "valid_aws_region! ignores AWS_DEFAULT_REGION" do
+        with_env("AWS_REGION", nil) do
+          with_env("AWS_DEFAULT_REGION", "eu-west-1") do
+            assert_raises(Cog::Config::InvalidConfigError) { @config.valid_aws_region! }
+          end
+        end
+      end
+
+      test "valid_aws_session_token reads from AWS_SESSION_TOKEN" do
+        with_env("AWS_SESSION_TOKEN", "aws-token") do
+          assert_equal "aws-token", @config.valid_aws_session_token
+        end
+      end
+
+      test "valid_aws_session_token is nil when AWS_SESSION_TOKEN is unset or blank" do
+        [nil, ""].each do |value|
+          with_env("AWS_SESSION_TOKEN", value) do
+            assert_nil @config.valid_aws_session_token
+          end
         end
       end
 
@@ -261,6 +333,11 @@ module Roast
       test "valid_model returns gemini default model when provider is gemini" do
         @config.provider(:gemini)
         assert_equal "gemini-3.1-flash-lite", @config.valid_model
+      end
+
+      test "valid_model returns bedrock default model when provider is bedrock" do
+        @config.provider(:bedrock)
+        assert_equal "us.anthropic.claude-haiku-4-5-20251001-v1:0", @config.valid_model
       end
 
       # Temperature configuration tests
