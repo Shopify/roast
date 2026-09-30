@@ -182,7 +182,7 @@ module Roast
         def valid_timeout
           seconds = @values[:timeout]
           return if seconds.nil?
-          return seconds if (seconds.is_a?(Integer) || seconds.is_a?(Float)) && seconds.positive?
+          return seconds if seconds.positive?
 
           raise InvalidConfigError, "timeout must be a positive number of seconds, got #{seconds.inspect}"
         end
