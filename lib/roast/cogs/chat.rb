@@ -59,16 +59,19 @@ module Roast
             Event << { block: { header: "UNKNOWN", content: message.content } } if config.show_prompt? || config.show_response?
           end
         end
+        # The Bedrock Converse response has no modelId field, so ruby_llm leaves response.model_id nil for it.
+        # The chat model holds the ID that ruby_llm sent.
+        model_id = response.model_id || chat.model.id
         if config.show_stats?
           temperature = chat.instance_variable_get(:@temperature)
-          lines = ["Model: #{response.model_id}"]
+          lines = ["Model: #{model_id}"]
           lines << "Temperature: #{format("%0.2f", temperature)}" if temperature
           lines << "Input Tokens: #{response.input_tokens}"
           lines << "Output Tokens: #{response.output_tokens}"
           Event << { block: { header: "LLM STATS", content: lines.join("\n") } }
         end
 
-        verify_response_not_truncated!(response)
+        verify_response_not_truncated!(response, model_id)
 
         Output.new(Session.from_chat(chat), response.content)
       end
@@ -95,15 +98,15 @@ module Roast
       # on a natural boundary. This is an unavoidable trade-off of the heuristic approach until
       # ruby_llm exposes finish_reason.
       #
-      #: (RubyLLM::Message) -> void
-      def verify_response_not_truncated!(response)
+      #: (RubyLLM::Message, String) -> void
+      def verify_response_not_truncated!(response, model_id)
         max_tokens = effective_max_tokens
         return unless max_tokens
         return unless response.output_tokens
 
         if response.output_tokens >= max_tokens
           raise MaxTokensExceededError,
-            "LLM response from #{response.model_id} was truncated at the max token limit " \
+            "LLM response from #{model_id} was truncated at the max token limit " \
               "(output: #{response.output_tokens} tokens, limit: #{max_tokens} tokens). " \
               "The response content is likely incomplete and should not be used."
         end
