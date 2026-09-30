@@ -47,7 +47,7 @@ bin/roast execute analyze_codebase.rb
 
 ## Core Cogs
 
-- **`chat`** - Send prompts to cloud-based LLMs (OpenAI, Anthropic, Perplexity & Gemini)
+- **`chat`** - Send prompts to cloud-based LLMs (OpenAI, Anthropic, Perplexity, Gemini & Amazon Bedrock)
 - **`agent`** - Run local coding agents with filesystem access (Pi CLI, Claude Code CLI, etc.)
 - **`ruby`** - Execute custom Ruby code within workflows
 - **`cmd`** - Run shell commands and capture output
@@ -78,7 +78,7 @@ Roast provider settings are configured in workflow `config` blocks. To change th
 
 ### Chat cog
 
-The `chat` cog supports **OpenAI**, **Anthropic**, **Perplexity**, and **Gemini**. It defaults to `:openai` (override globally with `ROAST_DEFAULT_CHAT_PROVIDER`). Each provider reads its API key from a provider-specific environment variable:
+The `chat` cog supports **OpenAI**, **Anthropic**, **Perplexity**, **Gemini**, and **Amazon Bedrock**. It defaults to `:openai` (override globally with `ROAST_DEFAULT_CHAT_PROVIDER`). Each provider reads its API key from a provider-specific environment variable:
 
 | Provider | API key env var | Base URL env var |
 |---|---|---|
@@ -86,6 +86,14 @@ The `chat` cog supports **OpenAI**, **Anthropic**, **Perplexity**, and **Gemini*
 | `:anthropic` | `ANTHROPIC_API_KEY` | `ANTHROPIC_API_BASE` |
 | `:perplexity` | `PERPLEXITY_API_KEY` | — |
 | `:gemini` | `GEMINI_API_KEY` | `GEMINI_API_BASE` |
+| `:bedrock` | `AWS_ACCESS_KEY_ID` | — |
+
+The `:bedrock` provider also reads `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` (for temporary credentials) and `AWS_REGION` from the environment. It does not read AWS profiles. It reads every credential from the environment, so do not use `api_key` with `:bedrock`: it replaces only the access key ID and can pair it with a mismatched `AWS_SECRET_ACCESS_KEY`. The default model is a `us.` inference profile, so accounts outside the US must set `model` in the `chat` config block. To use AWS SSO, export temporary credentials first:
+
+```bash
+eval "$(aws configure export-credentials --profile my-profile --format env)"
+export AWS_REGION=us-west-2
+```
 
 You can configure the provider directly in a workflow:
 
@@ -119,9 +127,9 @@ Agent providers must be installed and authenticated according to their own CLI r
 
 ## Configuration
 
-Roast currently supports four LLM providers for the `chat` cog: **OpenAI**, **Anthropic**, **Perplexity** and **Gemini**.
+Roast currently supports five LLM providers for the `chat` cog: **OpenAI**, **Anthropic**, **Perplexity**, **Gemini** and **Amazon Bedrock**.
 
-- Set `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `PERPLEXITY_API_KEY` and/or `GEMINI_API_KEY` in your environment.
+- Set `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `PERPLEXITY_API_KEY` and/or `GEMINI_API_KEY` in your environment. For Bedrock, set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_REGION` instead.
 - Optionally set `OPENAI_API_BASE`, `ANTHROPIC_API_BASE` and/or `GEMINI_API_BASE` to override the default endpoint. Perplexity does not support base URL override.
 
 The default model is set per-provider and can only be overridden inside a `config` block. See the [tutorial](https://github.com/Shopify/roast/blob/main/tutorial/01_your_first_workflow/README.md#adding-configuration) for examples.
