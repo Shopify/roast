@@ -19,12 +19,15 @@ module Roast
         Sync do
           Dir.mktmpdir("roast-") do |tmpdir|
             EventMonitor.start!
-            workflow_dir = Pathname.new(workflow_path).dirname
-            workflow_context = WorkflowContext.new(params: params, tmpdir: tmpdir, workflow_dir: workflow_dir)
-            workflow = new(workflow_path, workflow_context)
-            workflow.prepare!
-            workflow.start!
-            EventMonitor.stop!
+            begin
+              workflow_dir = Pathname.new(workflow_path).dirname
+              workflow_context = WorkflowContext.new(params: params, tmpdir: tmpdir, workflow_dir: workflow_dir)
+              workflow = new(workflow_path, workflow_context)
+              workflow.prepare!
+              workflow.start!
+            ensure
+              EventMonitor.stop! if EventMonitor.running?
+            end
           end
         end
       end
