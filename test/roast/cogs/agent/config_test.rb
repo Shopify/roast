@@ -126,6 +126,39 @@ module Roast
         assert_nil @config.valid_model
       end
 
+      # Timeout configuration tests
+      test "valid_timeout returns nil when not set, so the agent can run indefinitely" do
+        assert_nil @config.valid_timeout
+      end
+
+      test "timeout sets timeout value in seconds" do
+        @config.timeout(300)
+
+        assert_equal 300, @config.valid_timeout
+      end
+
+      test "timeout accepts fractional seconds" do
+        @config.timeout(0.5)
+
+        assert_in_delta 0.5, @config.valid_timeout
+      end
+
+      test "no_timeout! clears timeout value" do
+        @config.timeout(300)
+        @config.no_timeout!
+
+        assert_nil @config.valid_timeout
+      end
+
+      test "valid_timeout raises on a timeout that is not a positive number" do
+        [0, -1].each do |seconds|
+          @config.timeout(seconds)
+
+          error = assert_raises(Cog::Config::InvalidConfigError) { @config.valid_timeout }
+          assert_match(/positive number of seconds/, error.message)
+        end
+      end
+
       # System prompt configuration tests
       test "replace_system_prompt sets replacement prompt" do
         @config.replace_system_prompt("Custom prompt")

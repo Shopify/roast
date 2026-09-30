@@ -45,6 +45,37 @@ module Roast
           assert_equal "Do something", stdin_received
         end
 
+        test "invoke passes no timeout to the command by default" do
+          input = Agent::Input.new
+          input.prompt = "Do something"
+
+          timeout_received = :unset
+          CommandRunner.stubs(:execute).with do |_args, **kwargs|
+            timeout_received = kwargs[:timeout]
+            true
+          end.returns(["", "", mock_status(success: true)])
+
+          @provider.invoke(input)
+
+          assert_nil timeout_received
+        end
+
+        test "invoke passes the configured timeout to the command" do
+          @config.timeout(300)
+          input = Agent::Input.new
+          input.prompt = "Do something"
+
+          timeout_received = nil
+          CommandRunner.stubs(:execute).with do |_args, **kwargs|
+            timeout_received = kwargs[:timeout]
+            true
+          end.returns(["", "", mock_status(success: true)])
+
+          @provider.invoke(input)
+
+          assert_equal 300, timeout_received
+        end
+
         test "invoke passes session from input to first invocation" do
           input = Agent::Input.new
           input.prompt = "Do something"

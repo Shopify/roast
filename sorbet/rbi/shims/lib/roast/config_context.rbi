@@ -151,6 +151,10 @@ module Roast
     # - `model(string)` - Set the model to use
     # - `use_default_model!` - Use the provider's default model
     #
+    # #### Configure a time limit
+    # - `timeout(seconds)` - Kill the agent and fail the cog if it runs longer than this
+    # - `no_timeout!` - Let the agent run for as long as it takes (default)
+    #
     # #### Configure the system prompt
     # - `replace_system_prompt(string)` - Completely replace the agent's default system prompt
     # - `no_replace_system_prompt!` - Don't replace the default system prompt (default)

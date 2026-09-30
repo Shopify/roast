@@ -146,6 +146,47 @@ module Roast
           @values[:model].presence
         end
 
+        # Configure the cog to stop the agent if it runs longer than the given number of seconds
+        #
+        # When the limit is reached, the agent process is killed and the cog raises
+        # `Roast::CommandRunner::TimeoutError`. By default there is no timeout.
+        #
+        # #### See Also
+        # - `no_timeout!`
+        #
+        #: (Integer | Float) -> void
+        def timeout(seconds)
+          @values[:timeout] = seconds
+        end
+
+        # Configure the cog to let the agent run for as long as it takes (the default)
+        #
+        # #### See Also
+        # - `timeout`
+        #
+        #: () -> void
+        def no_timeout!
+          @values[:timeout] = nil
+        end
+
+        # Get the validated number of seconds the agent may run before it is stopped
+        #
+        # Returns `nil` if the agent has no timeout. Raises an `InvalidConfigError` if the configured
+        # timeout is not a positive number.
+        #
+        # #### See Also
+        # - `timeout`
+        # - `no_timeout!`
+        #
+        #: () -> (Integer | Float)?
+        def valid_timeout
+          seconds = @values[:timeout]
+          return if seconds.nil?
+          return seconds if (seconds.is_a?(Integer) || seconds.is_a?(Float)) && seconds.positive?
+
+          raise InvalidConfigError, "timeout must be a positive number of seconds, got #{seconds.inspect}"
+        end
+
         # Configure the cog with a custom system prompt that will completely replace the agent's
         # default system prompt every time the agent is invoked
         #
