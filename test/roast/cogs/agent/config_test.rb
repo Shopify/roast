@@ -137,12 +137,6 @@ module Roast
         assert_equal 300, @config.valid_timeout
       end
 
-      test "timeout accepts fractional seconds" do
-        @config.timeout(0.5)
-
-        assert_in_delta 0.5, @config.valid_timeout
-      end
-
       test "no_timeout! clears timeout value" do
         @config.timeout(300)
         @config.no_timeout!

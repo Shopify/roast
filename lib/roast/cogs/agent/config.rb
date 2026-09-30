@@ -154,7 +154,7 @@ module Roast
         # #### See Also
         # - `no_timeout!`
         #
-        #: (Integer | Float) -> void
+        #: (Integer) -> void
         def timeout(seconds)
           @values[:timeout] = seconds
         end
@@ -172,13 +172,13 @@ module Roast
         # Get the validated number of seconds the agent may run before it is stopped
         #
         # Returns `nil` if the agent has no timeout. Raises an `InvalidConfigError` if the configured
-        # timeout is not a positive number.
+        # timeout is not positive.
         #
         # #### See Also
         # - `timeout`
         # - `no_timeout!`
         #
-        #: () -> (Integer | Float)?
+        #: () -> Integer?
         def valid_timeout
           seconds = @values[:timeout]
           return if seconds.nil?

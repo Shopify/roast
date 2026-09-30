@@ -63,7 +63,7 @@ module Roast
               @replace_system_prompt = config.valid_replace_system_prompt #: String?
               @apply_permissions = config.apply_permissions? #: bool
               @working_directory = config.valid_working_directory #: Pathname?
-              @timeout = config.valid_timeout #: (Integer | Float)?
+              @timeout = config.valid_timeout #: Integer?
               @context = Context.new #: Context
               @result = Result.new #: Result
               @raw_dump_file = config.valid_dump_raw_agent_messages_to_path #: Pathname?

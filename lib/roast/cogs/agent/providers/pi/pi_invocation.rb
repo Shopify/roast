@@ -60,7 +60,7 @@ module Roast
               @append_system_prompt = config.valid_append_system_prompt #: String?
               @replace_system_prompt = config.valid_replace_system_prompt #: String?
               @working_directory = config.valid_working_directory #: Pathname?
-              @timeout = config.valid_timeout #: (Integer | Float)?
+              @timeout = config.valid_timeout #: Integer?
               @prompt = prompt #: String
               @session = session #: String?
               @context = Context.new #: Context
