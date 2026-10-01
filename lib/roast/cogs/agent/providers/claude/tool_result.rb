@@ -85,6 +85,30 @@ module Roast
               ok_line("#{count} #{"line".pluralize(count)}")
             end
 
+            # Formats a WebFetch tool-result line.
+            #
+            # Input: :url – the URL that was fetched.
+            # Content: the answer the model produced from the fetched page. A page
+            # that could not be retrieved (e.g. an HTTP 404) still comes back as
+            # a non-error result whose content describes what happened.
+            #
+            # Output: "WEBFETCH OK <url> · <preview>" – the fetched :url followed
+            # by the first line of that answer, stripped and truncated to
+            # TRUNCATE_LIMIT chars. Either part is omitted when absent (no url, or
+            # no content), collapsing to just the other; :url is not truncated, as
+            # it is the identity of the fetch.
+            #
+            # Examples:
+            #   WEBFETCH OK https://example.com · The main heading is "Example Domain".
+            #   WEBFETCH OK https://example.com/missing · The server returned HTTP 404...
+            #   WEBFETCH OK https://example.com
+            #
+            #: () -> String
+            def format_webfetch
+              preview = truncate(content.to_s.lines.first.to_s.strip)
+              ok_line(tool_use_input[:url], preview)
+            end
+
             # Formats a Glob tool-result line.
             #
             # Content: newline-separated matches. Lines starting with "/" are
