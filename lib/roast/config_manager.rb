@@ -17,6 +17,7 @@ module Roast
       @workflow_context = workflow_context
       @config_context = ConfigContext.new #: ConfigContext
       @global_config = Cog::Config.new #: Cog::Config
+      @global_regexp_configs = {} #: Hash[Regexp, Cog::Config]
       @general_configs = {} #: Hash[singleton(Cog), Cog::Config]
       @regexp_scoped_configs = {} #: Hash[singleton(Cog), Hash[Regexp, Cog::Config]]
       @name_scoped_configs = {} #: Hash[singleton(Cog), Hash[Symbol, Cog::Config]]
@@ -48,12 +49,21 @@ module Roast
       raise ConfigManagerNotPreparedError unless prepared?
 
       # All cogs will always have a config; empty by default if the cog was never explicitly configured
-      config = cog_class.config_class.new(@global_config.instance_variable_get(:@values).deep_dup)
+      # Start with bare global config
+      config = cog_class.config_class.new(@global_config.values.deep_dup)
+      # Apply cog-type general config
       config = config.merge(fetch_general_config(cog_class))
-      @regexp_scoped_configs.fetch(cog_class, {}).select do |pattern, _|
-        pattern.match?(name.to_s) unless name.nil?
-      end.values.each { |cfg| config = config.merge(cfg) }
       unless name.nil?
+        # Apply matching global regexp configs (insertion order)
+        @global_regexp_configs.each do |pattern, cfg|
+          config = config.merge(cfg) if pattern.match?(name.to_s)
+        end
+        # Apply cog-type regexp configs
+        @regexp_scoped_configs.fetch(cog_class, {}).select do |pattern, _|
+          pattern.match?(name.to_s)
+        end.values.each { |cfg| config = config.merge(cfg) }
+        # NOTE: global name configs are not implemented, since names must be unique across all cog types
+        # Apply cog-type name config
         name_scoped_config = fetch_name_scoped_config(cog_class, name)
         config = config.merge(name_scoped_config)
       end
@@ -127,19 +137,36 @@ module Roast
 
     def bind_global
       on_global_method = method(:on_global)
-      method_to_bind = proc do |&global_proc|
-        on_global_method.call(global_proc)
+      method_to_bind = proc do |name_or_pattern = nil, &global_proc|
+        on_global_method.call(name_or_pattern, global_proc)
       end
       @config_context.instance_eval do
         define_singleton_method(:global, method_to_bind)
       end
     end
 
-    #: (^() -> void ) -> void
-    def on_global(global_config_proc)
+    #: (Regexp?, ^() -> void) -> void
+    def on_global(pattern, global_config_proc)
+      # Called when the 'global' method is invoked in the workflow's 'config' block.
+      # This allows common configuration parameters to be set for all cogs, or cogs of all types matching a pattern
+
+      # NOTE: cast to untyped is to intentional handling the 'unreachable' else case here.
+      # This method takes user input directly so additional validation with a clearer exception message will be helpful
+      pattern = pattern #: untyped
+      config_object = case pattern
+      when NilClass
+        @global_config
+      when Regexp
+        @global_regexp_configs[pattern] ||= Cog::Config.new
+      else
+        raise ArgumentError, "Invalid type '#{pattern.class}' for global pattern"
+      end
+
+      # NOTE: Sorbet expects the proc passed to instance_exec to be declared as taking an argument
+      # but our global_config_proc does not get an argument
       global_config_proc = global_config_proc #: as ^(untyped) -> void
-      bind_workflow_params(@global_config)
-      @global_config.instance_exec(&global_config_proc) if global_config_proc
+      bind_workflow_params(config_object)
+      config_object.instance_exec(&global_config_proc) if global_config_proc
       nil
     end
 

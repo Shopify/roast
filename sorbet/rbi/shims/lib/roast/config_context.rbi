@@ -16,6 +16,10 @@ module Roast
     #   global do
     #     # Configuration here applies to all cogs
     #   end
+    #
+    #   global(/pattern/) do
+    #     # Configuration here applies to all cogs whose name matches /pattern/
+    #   end
     # end
     # ```
     #
@@ -35,8 +39,8 @@ module Roast
     # - `working_directory(path)` - Set the working directory for external commands invoked by the cog
     # - `use_current_working_directory!` - Use the current working directory
     #
-    #: () {() [self: Roast::Cog::Config] -> void} -> void
-    def global(&block); end
+    #: (?Regexp?) {() [self: Roast::Cog::Config] -> void} -> void
+    def global(pattern = nil, &block); end
 
     # Configure the `call` cog
     #
