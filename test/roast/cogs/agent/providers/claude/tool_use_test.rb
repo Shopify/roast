@@ -389,6 +389,18 @@ module Roast
           assert_equal "TASKUPDATE #1 → completed", output
         end
 
+        test "format_taskupdate renders and escapes a known task subject" do
+          tool_use = Claude::ToolUse.new(
+            name: :taskupdate,
+            input: { taskId: 1, status: "completed" },
+            task_subject: 'Read "full" code',
+          )
+
+          output = tool_use.format
+
+          assert_equal 'TASKUPDATE "Read \\"full\\" code" → completed', output
+        end
+
         # format_taskcreate
 
         test "format_taskcreate renders the subject" do

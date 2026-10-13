@@ -60,6 +60,44 @@ module Roast
           assert_nil context.tool_use(nil)
         end
 
+        test "Context#add_tool_result ignores failed task creation" do
+          context = Claude::ClaudeInvocation::Context.new
+          task_create = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { id: "create_123", name: "TaskCreate", input: { subject: "Read full code" } },
+          )
+          task_created = Claude::Messages::ToolResultMessage.new(
+            type: :tool_result,
+            hash: {
+              tool_use_id: "create_123",
+              content: "Task #1 created successfully",
+              is_error: true,
+            },
+          )
+          context.add_tool_use(task_create)
+
+          context.add_tool_result(task_created)
+
+          assert_nil context.task_subject("1")
+        end
+
+        test "Context#add_tool_result ignores an unexpected task creation response" do
+          context = Claude::ClaudeInvocation::Context.new
+          task_create = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: { id: "create_123", name: "TaskCreate", input: { subject: "Read full code" } },
+          )
+          task_created = Claude::Messages::ToolResultMessage.new(
+            type: :tool_result,
+            hash: { tool_use_id: "create_123", content: "Task creation queued" },
+          )
+          context.add_tool_use(task_create)
+
+          context.add_tool_result(task_created)
+
+          assert_nil context.task_subject("1")
+        end
+
         test "Result initializes with empty response and success false" do
           result = Claude::ClaudeInvocation::Result.new
 
@@ -320,6 +358,61 @@ module Roast
 
           context = @invocation.instance_variable_get(:@context)
           assert_equal tool_use_message, context.tool_use("tool_123")
+        end
+
+        test "handle_message uses the created task subject when formatting a task update" do
+          @config.show_progress!
+          invocation = Claude::ClaudeInvocation.new(@config, "Test prompt", nil)
+          task_create = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: {
+              id: "create_123",
+              name: "TaskCreate",
+              input: { subject: "Read full code" },
+            },
+          )
+          task_created = Claude::Messages::ToolResultMessage.new(
+            type: :tool_result,
+            hash: {
+              tool_use_id: "create_123",
+              content: "Task #1 created successfully",
+            },
+          )
+          task_update = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: {
+              id: "update_123",
+              name: "TaskUpdate",
+              input: { taskId: 1, status: "completed" },
+            },
+          )
+
+          stdout, = capture_io do
+            invocation.send(:handle_message, task_create)
+            invocation.send(:handle_message, task_created)
+            invocation.send(:handle_message, task_update)
+          end
+
+          assert_includes stdout.lines, "TASKUPDATE \"Read full code\" → completed\n"
+        end
+
+        test "handle_message falls back to the task id when the create result is unavailable" do
+          @config.show_progress!
+          invocation = Claude::ClaudeInvocation.new(@config, "Test prompt", nil)
+          task_update = Claude::Messages::ToolUseMessage.new(
+            type: :tool_use,
+            hash: {
+              id: "update_123",
+              name: "TaskUpdate",
+              input: { taskId: "1", status: "completed" },
+            },
+          )
+
+          stdout, = capture_io do
+            invocation.send(:handle_message, task_update)
+          end
+
+          assert_equal "TASKUPDATE #1 → completed\n", stdout
         end
 
         test "handle_message processes AssistantMessage recursively" do
