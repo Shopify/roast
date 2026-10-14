@@ -236,6 +236,30 @@ module Roast
       end
     end
 
+    test "runs command with the given environment variables" do
+      stdout, _, _ = CommandRunner.execute(["sh", "-c", "echo $ROAST_TEST_VAR"], env: { "ROAST_TEST_VAR" => "hello" })
+
+      assert_equal "hello\n", stdout
+    end
+
+    test "unsets environment variables given a nil value" do
+      ENV["ROAST_TEST_VAR"] = "inherited"
+      stdout, _, _ = CommandRunner.execute(["sh", "-c", "echo ${ROAST_TEST_VAR-unset}"], env: { "ROAST_TEST_VAR" => nil })
+
+      assert_equal "unset\n", stdout
+    ensure
+      ENV.delete("ROAST_TEST_VAR")
+    end
+
+    test "ROAST_CMD_ENV_OVERRIDE__ variables take precedence over the given environment variables" do
+      ENV["ROAST_CMD_ENV_OVERRIDE__ROAST_TEST_VAR"] = "override"
+      stdout, _, _ = CommandRunner.execute(["sh", "-c", "echo $ROAST_TEST_VAR"], env: { "ROAST_TEST_VAR" => "hello" })
+
+      assert_equal "override\n", stdout
+    ensure
+      ENV.delete("ROAST_CMD_ENV_OVERRIDE__ROAST_TEST_VAR")
+    end
+
     test "removes nils from command args" do
       mock_stdin = mock.tap { |it| it.expects(:close).returns(nil) }
       mock_status = mock.tap { |it| it.expects(:exitstatus).returns(0) }

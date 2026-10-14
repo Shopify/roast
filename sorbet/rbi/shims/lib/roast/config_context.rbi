@@ -273,6 +273,10 @@ module Roast
     # - `fail_on_error!` - Consider the cog failed if the command returns a non-zero exit status (default)
     # - `no_fail_on_error!` - Don't fail the cog on non-zero exit status (exit status still available in output)
     #
+    # #### Configure the environment
+    # - `env(hash)` - Set environment variables for the command (a `nil` value unsets one)
+    # - `no_env!` - Run the command with Roast's own environment, unchanged (default)
+    #
     # #### Configure display output
     # - `show_stdout!` - Write STDOUT to the console
     # - `no_show_stdout!` - Don't write STDOUT to the console (default)

@@ -168,6 +168,40 @@ module Roast
           show_stdout? || show_stderr?
         end
 
+        # Configure the cog to run the command with these environment variables set
+        #
+        # Variables not named here are inherited from Roast's own environment. A `nil` value unsets
+        # the variable for the command.
+        #
+        # #### See Also
+        # - `no_env!`
+        #
+        #: (Hash[String | Symbol, String?]) -> void
+        def env(vars)
+          @values[:env] = vars
+        end
+
+        # Configure the cog to run the command with Roast's own environment, unchanged (the default)
+        #
+        # #### See Also
+        # - `env`
+        #
+        #: () -> void
+        def no_env!
+          @values[:env] = nil
+        end
+
+        # Get the validated environment variables the command will be run with, keyed by name
+        #
+        # #### See Also
+        # - `env`
+        # - `no_env!`
+        #
+        #: () -> Hash[String, String?]
+        def valid_env
+          (@values[:env] || {}).to_h { |name, value| [name.to_s, value&.to_s] }
+        end
+
         alias_method(:quiet!, :no_display!)
       end
 
@@ -281,6 +315,7 @@ module Roast
           .execute(
             [input.command] + input.args,
             working_directory: config.valid_working_directory,
+            env: config.valid_env,
             stdin_content: input.stdin,
             stdout_handler: stdout_handler,
             stderr_handler: stderr_handler,

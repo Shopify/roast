@@ -45,6 +45,7 @@ module Roast
       #: (
       #|  Array[String],
       #|  ?working_directory: (Pathname | String)?,
+      #|  ?env: Hash[String, String?],
       #|  ?timeout: (Integer | Float)?,
       #|  ?stdin_content: String?,
       #|  ?stdout_handler: (^(String) -> void)?,
@@ -53,6 +54,7 @@ module Roast
       def execute(
         args,
         working_directory: nil,
+        env: {},
         timeout: nil,
         stdin_content: nil,
         stdout_handler: nil,
@@ -69,7 +71,7 @@ module Roast
         stdin, stdout, stderr, wait_thread = Bundler.with_unbundled_env do
           Open3 #: as untyped
             .popen3(
-              env_overrides.merge({ "PWD" => working_directory&.to_s }).compact,
+              env.merge(env_overrides, { "PWD" => working_directory&.to_s }.compact),
               *args.map(&:to_s),
               { chdir: working_directory }.compact,
             )
