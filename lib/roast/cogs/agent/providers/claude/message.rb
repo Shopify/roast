@@ -14,8 +14,10 @@ module Roast
             class << self
               #: (String, ?raw_dump_file: Pathname?) -> Message
               def from_json(json, raw_dump_file: nil)
-                raw_dump_file&.dirname&.mkpath
-                File.write("./tmp/claude-messages.log", "#{json}\n", mode: "a") if raw_dump_file
+                if raw_dump_file
+                  raw_dump_file.dirname.mkpath
+                  File.write(raw_dump_file.to_s, "#{json}\n", mode: "a")
+                end
                 from_hash(JSON.parse(json, symbolize_names: true))
               end
 
