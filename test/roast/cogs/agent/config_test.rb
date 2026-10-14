@@ -353,6 +353,25 @@ module Roast
       test "valid_dump_raw_agent_messages_to_path returns nil when not set" do
         assert_nil @config.valid_dump_raw_agent_messages_to_path
       end
+
+      # Run record configuration tests
+      test "record_agent_runs_to sets record path" do
+        test_path = File.join(Dir.tmpdir, "agent_runs.jsonl")
+        @config.record_agent_runs_to(test_path)
+
+        assert_equal Pathname.new(test_path), @config.valid_record_agent_runs_to_path
+      end
+
+      test "valid_record_agent_runs_to_path returns nil when not set" do
+        assert_nil @config.valid_record_agent_runs_to_path
+      end
+
+      test "no_record_agent_runs! clears record path" do
+        @config.record_agent_runs_to(File.join(Dir.tmpdir, "agent_runs.jsonl"))
+        @config.no_record_agent_runs!
+
+        assert_nil @config.valid_record_agent_runs_to_path
+      end
     end
   end
 end
