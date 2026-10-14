@@ -105,6 +105,33 @@ module Roast
         refute @config.show_stdout?
         refute @config.show_stderr?
       end
+
+      # Timeout configuration tests
+      test "valid_timeout returns nil when not set, so the command can run indefinitely" do
+        assert_nil @config.valid_timeout
+      end
+
+      test "timeout sets timeout value in seconds" do
+        @config.timeout(30)
+
+        assert_equal 30, @config.valid_timeout
+      end
+
+      test "no_timeout! clears timeout value" do
+        @config.timeout(30)
+        @config.no_timeout!
+
+        assert_nil @config.valid_timeout
+      end
+
+      test "valid_timeout raises on a timeout that is not a positive number" do
+        [0, -1].each do |seconds|
+          @config.timeout(seconds)
+
+          error = assert_raises(Cog::Config::InvalidConfigError) { @config.valid_timeout }
+          assert_match(/positive number of seconds/, error.message)
+        end
+      end
     end
 
     class Cmd::InputTest < ActiveSupport::TestCase
@@ -313,6 +340,19 @@ module Roast
 
         assert cog.succeeded?
         assert_equal "configured via input", cog.output.text
+      end
+
+      test "run! raises TimeoutError when the command runs past its timeout" do
+        config = Cmd::Config.new
+        config.timeout(1)
+        cog = Cmd.new(:slow, ->(_input, _scope, _index) { ["sleep", "5"] })
+
+        time = Benchmark.realtime do
+          assert_raises(CommandRunner::TimeoutError) { run_cog(cog, config:) }
+        end
+
+        assert cog.failed?
+        assert_operator time, :<, 3, "command ran for much longer than configured timeout"
       end
     end
   end

@@ -273,6 +273,10 @@ module Roast
     # - `fail_on_error!` - Consider the cog failed if the command returns a non-zero exit status (default)
     # - `no_fail_on_error!` - Don't fail the cog on non-zero exit status (exit status still available in output)
     #
+    # #### Configure a time limit
+    # - `timeout(seconds)` - Kill the command and fail the cog if it runs longer than this
+    # - `no_timeout!` - Let the command run for as long as it takes (default)
+    #
     # #### Configure display output
     # - `show_stdout!` - Write STDOUT to the console
     # - `no_show_stdout!` - Don't write STDOUT to the console (default)
