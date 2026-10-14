@@ -68,6 +68,13 @@ module Roast
           result
         end
 
+        # Get the token counts and cost as a hash
+        #
+        #: () -> Hash[Symbol, untyped]
+        def to_h
+          { input_tokens:, output_tokens:, cost_usd: }
+        end
+
         private
 
         #: (Numeric?, Numeric?) -> Numeric?

@@ -211,6 +211,23 @@ module Roast
         assert_match(/Cost \(USD\): \$0\.05/, output)
         assert_match(/Tokens \(claude-3-opus\):/, output)
       end
+
+      test "to_h returns duration, turns, usage, and per-model usage" do
+        @stats.duration_ms = 5000
+        @stats.num_turns = 3
+        @stats.usage.cost_usd = 0.05
+        model_usage = Agent::Usage.new
+        model_usage.input_tokens = 100
+        @stats.model_usage["claude-3-opus"] = model_usage
+
+        expected = {
+          duration_ms: 5000,
+          num_turns: 3,
+          usage: { input_tokens: nil, output_tokens: nil, cost_usd: 0.05 },
+          model_usage: { "claude-3-opus" => { input_tokens: 100, output_tokens: nil, cost_usd: nil } },
+        }
+        assert_equal expected, @stats.to_h
+      end
     end
   end
 end

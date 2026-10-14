@@ -45,16 +45,69 @@ module Roast
       # The agent may make multiple turns (back-and-forth exchanges) during execution,
       # especially when using tools. Each turn is counted in the execution statistics.
       #
+      # If the cog is configured with `record_agent_runs_to`, a record of the run is appended to that file
+      # whether the run succeeds or fails.
+      #
       #: (Input) -> Output
       def execute(input)
-        output = provider.invoke(input)
-        if config.show_stats?
-          Event << { block: { header: "AGENT STATS", content: "#{output.stats}\nSession ID: #{output.session}" } }
+        started_at = Time.now
+        begin
+          output = provider.invoke(input)
+          if config.show_stats?
+            Event << { block: { header: "AGENT STATS", content: "#{output.stats}\nSession ID: #{output.session}" } }
+          end
+          output
+        rescue StandardError => e
+          error = e
+          raise
+        ensure
+          record_run(input, output, error, started_at) if config.valid_record_agent_runs_to_path
         end
-        output
       end
 
       private
+
+      #: (Input, Output?, StandardError?, Time) -> void
+      def record_run(input, output, error, started_at)
+        record = {
+          started_at: started_at.utc.iso8601(3),
+          finished_at: Time.now.utc.iso8601(3),
+          cog: { name: anonymous? ? nil : name, path: record_path },
+          provider: config.valid_provider!,
+          model: config.valid_model,
+          prompts: input.prompts,
+          system_prompt: { append: config.valid_append_system_prompt, replace: config.valid_replace_system_prompt },
+          status: run_status(output, error),
+          error: error && { class: error.class.name, message: error.message },
+          response: output&.response,
+          session: output&.session,
+          stats: output&.stats&.to_h,
+        }
+        path = config.valid_record_agent_runs_to_path.not_nil!
+        path.dirname.mkpath
+        File.write(path.to_s, "#{JSON.generate(record)}\n", mode: "a")
+      end
+
+      #: () -> Array[Hash[Symbol, untyped]]
+      def record_path
+        TaskContext.path.filter_map do |element|
+          cog = element.cog
+          execution_manager = element.execution_manager
+          if cog.present?
+            { cog: cog.type, name: cog.anonymous? ? nil : cog.name }
+          elsif execution_manager&.scope
+            { scope: execution_manager.scope, index: execution_manager.scope_index }
+          end
+        end
+      end
+
+      #: (Output?, StandardError?) -> String
+      def run_status(output, error)
+        return "timed_out" if error.is_a?(CommandRunner::TimeoutError)
+        return "failed" if error || output.nil?
+
+        "succeeded"
+      end
 
       #: () -> Provider
       def provider

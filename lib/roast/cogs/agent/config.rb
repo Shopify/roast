@@ -554,6 +554,49 @@ module Roast
           Pathname.new(@values[:dump_raw_agent_messages_to]) if @values[:dump_raw_agent_messages_to]
         end
 
+        # Configure the cog to append a record of each agent run to a file, as one JSON object per line
+        #
+        # Each record holds the run's start and finish times, the cog's name and its path in the workflow,
+        # the provider and model, the prompts and any appended or replacement system prompt, the final
+        # response, the session identifier, the execution statistics, and the run's status (`succeeded`,
+        # `failed`, or `timed_out`) with the error class and message if it did not succeed.
+        #
+        # Records include the full prompts and response, so they may contain sensitive text.
+        # Disabled by default.
+        #
+        # #### See Also
+        # - `no_record_agent_runs!`
+        #
+        #: (String) -> void
+        def record_agent_runs_to(filename)
+          @values[:record_agent_runs_to] = filename
+        end
+
+        # Configure the cog __not__ to record its agent runs
+        #
+        # This is the default behaviour.
+        #
+        # #### See Also
+        # - `record_agent_runs_to`
+        #
+        #: () -> void
+        def no_record_agent_runs!
+          @values[:record_agent_runs_to] = nil
+        end
+
+        # Get the validated, configured path to which agent run records should be appended
+        #
+        # Returns `nil` if agent runs should not be recorded.
+        #
+        # #### See Also
+        # - `record_agent_runs_to`
+        # - `no_record_agent_runs!`
+        #
+        #: () -> Pathname?
+        def valid_record_agent_runs_to_path
+          Pathname.new(@values[:record_agent_runs_to]) if @values[:record_agent_runs_to].present?
+        end
+
         alias_method(:skip_permissions!, :no_apply_permissions!)
         alias_method(:no_skip_permissions!, :apply_permissions!)
         alias_method(:quiet!, :no_display!)

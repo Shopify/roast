@@ -71,6 +71,15 @@ module Roast
         assert_equal 100, a.input_tokens
         assert_equal 200, b.input_tokens
       end
+
+      test "to_h returns token counts and cost" do
+        usage = Agent::Usage.new
+        usage.input_tokens = 100
+        usage.output_tokens = 50
+        usage.cost_usd = 0.01
+
+        assert_equal({ input_tokens: 100, output_tokens: 50, cost_usd: 0.01 }, usage.to_h)
+      end
     end
   end
 end
