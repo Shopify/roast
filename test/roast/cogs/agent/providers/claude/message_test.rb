@@ -77,6 +77,19 @@ module Roast
           assert_kind_of Claude::Messages::UnknownMessage, message
         end
 
+        test "from_json appends raw JSON to raw_dump_file" do
+          Dir.mktmpdir do |dir|
+            raw_dump_file = Pathname.new(dir).join("nested", "messages.log")
+            first = '{"type": "text", "text": "Hello"}'
+            second = '{"type": "text", "text": "World"}'
+
+            Claude::Message.from_json(first, raw_dump_file:)
+            Claude::Message.from_json(second, raw_dump_file:)
+
+            assert_equal "#{first}\n#{second}\n", raw_dump_file.read
+          end
+        end
+
         test "from_hash with assistant type creates AssistantMessage" do
           hash = { type: :assistant, message: { content: [] } }
           message = Claude::Message.from_hash(hash)
