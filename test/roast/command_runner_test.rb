@@ -253,6 +253,19 @@ module Roast
       assert_equal 0, status.exitstatus
     end
 
+    test "runs commands when Bundler is not loaded" do
+      slow_test!
+      script = 'require "roast"; print Sync { Roast::CommandRunner.execute(["echo", "hi"]).first }'
+      load_path_args = $LOAD_PATH.flat_map { |path| ["-I", path] }
+
+      stdout, stderr, status = Bundler.with_unbundled_env do
+        Open3.capture3(RbConfig.ruby, *load_path_args, "-e", script)
+      end
+
+      assert status.success?, stderr
+      assert_equal "hi\n", stdout
+    end
+
     test "raises NoCommandProvidedError when args is empty" do
       assert_raises(CommandRunner::NoCommandProvidedError) do
         CommandRunner.execute([])
