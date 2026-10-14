@@ -281,6 +281,10 @@ module Roast
     # - `env(hash)` - Set environment variables for the command (a `nil` value unsets one)
     # - `no_env!` - Run the command with Roast's own environment, unchanged (default)
     #
+    # #### Configure a time limit
+    # - `timeout(seconds)` - Kill the command and fail the cog if it runs longer than this
+    # - `no_timeout!` - Let the command run for as long as it takes (default)
+    #
     # #### Configure display output
     # - `show_stdout!` - Write STDOUT to the console
     # - `no_show_stdout!` - Don't write STDOUT to the console (default)
