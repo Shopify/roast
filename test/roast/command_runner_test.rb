@@ -141,6 +141,17 @@ module Roast
       assert_operator time, :<, 1, "command ran for much longer than configured timeout"
     end
 
+    test "timeout kills the command's child processes" do
+      time = Benchmark.realtime do
+        assert_raises(CommandRunner::TimeoutError) do
+          CommandRunner.execute(["sh", "-c", "sleep 4.321; echo done"], timeout: 0.1)
+        end
+      end
+
+      assert_operator time, :<, 1, "command ran for much longer than configured timeout"
+      assert_empty %x(pgrep -f "sleep 4.321"), "child process should be killed after timeout"
+    end
+
     test "captured output preserved with non-zero exit status" do
       stdout, stderr, status = CommandRunner.execute(
         ["bash", "-c", "echo 'output' && echo 'error' >&2 && exit 42"],
@@ -244,7 +255,7 @@ module Roast
         it.expects(:value).returns(mock_status).at_least_once
         it.expects(:alive?).returns(false)
       end
-      Open3.stubs(:popen3).with({}, "echo", "hello", "world", {}).returns([mock_stdin, "hello world\n", "", mock_wait_thread])
+      Open3.stubs(:popen3).with({}, "echo", "hello", "world", { pgroup: true }).returns([mock_stdin, "hello world\n", "", mock_wait_thread])
 
       stdout, stderr, status = CommandRunner.execute(["echo", nil, "hello", "world", nil])
 

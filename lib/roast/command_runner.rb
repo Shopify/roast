@@ -71,7 +71,8 @@ module Roast
             .popen3(
               env_overrides.merge({ "PWD" => working_directory&.to_s }).compact,
               *args.map(&:to_s),
-              { chdir: working_directory }.compact,
+              # Its own process group, so a timeout can kill everything it spawned along with it
+              { chdir: working_directory, pgroup: true }.compact,
             )
         end
         stdin.puts stdin_content if stdin_content.present?
@@ -161,23 +162,16 @@ module Roast
         return unless process_running?(pid)
 
         # First try TERM signal
-        Process.kill("TERM", pid)
+        Process.kill("TERM", -pid)
 
         # Give process a short time to terminate gracefully
         5.times do
           sleep(0.02)
-          return unless process_running?(pid)
+          break unless process_running?(pid)
         end
 
-        # If still running, use KILL signal
-        Process.kill("KILL", pid) if process_running?(pid)
-
-        # Also try to kill the process group to ensure child processes are killed
-        begin
-          Process.kill("-KILL", pid)
-        rescue
-          nil
-        end
+        # Children can outlive the command itself, so KILL whatever is left of its process group
+        Process.kill("KILL", -pid)
       rescue Errno::ESRCH
         # Process already terminated
       rescue Errno::EPERM
