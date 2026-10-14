@@ -168,6 +168,47 @@ module Roast
           show_stdout? || show_stderr?
         end
 
+        # Configure the cog to stop the command if it runs longer than the given number of seconds
+        #
+        # When the limit is reached, the command is killed and the cog raises
+        # `Roast::CommandRunner::TimeoutError`. By default there is no timeout.
+        #
+        # #### See Also
+        # - `no_timeout!`
+        #
+        #: (Integer) -> void
+        def timeout(seconds)
+          @values[:timeout] = seconds
+        end
+
+        # Configure the cog to let the command run for as long as it takes (the default)
+        #
+        # #### See Also
+        # - `timeout`
+        #
+        #: () -> void
+        def no_timeout!
+          @values[:timeout] = nil
+        end
+
+        # Get the validated number of seconds the command may run before it is stopped
+        #
+        # Returns `nil` if the command has no timeout. Raises an `InvalidConfigError` if the configured
+        # timeout is not positive.
+        #
+        # #### See Also
+        # - `timeout`
+        # - `no_timeout!`
+        #
+        #: () -> Integer?
+        def valid_timeout
+          seconds = @values[:timeout]
+          return if seconds.nil?
+          return seconds if seconds.positive?
+
+          raise InvalidConfigError, "timeout must be a positive number of seconds, got #{seconds.inspect}"
+        end
+
         alias_method(:quiet!, :no_display!)
       end
 
@@ -281,6 +322,7 @@ module Roast
           .execute(
             [input.command] + input.args,
             working_directory: config.valid_working_directory,
+            timeout: config.valid_timeout,
             stdin_content: input.stdin,
             stdout_handler: stdout_handler,
             stderr_handler: stderr_handler,
