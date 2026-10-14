@@ -105,6 +105,24 @@ module Roast
         refute @config.show_stdout?
         refute @config.show_stderr?
       end
+
+      # Environment configuration tests
+      test "valid_env returns an empty hash when not set" do
+        assert_equal({}, @config.valid_env)
+      end
+
+      test "env sets environment variables with string names" do
+        @config.env(PATH: "/opt/bin", "UNSET_ME" => nil)
+
+        assert_equal({ "PATH" => "/opt/bin", "UNSET_ME" => nil }, @config.valid_env)
+      end
+
+      test "no_env! clears environment variables" do
+        @config.env("PATH" => "/opt/bin")
+        @config.no_env!
+
+        assert_equal({}, @config.valid_env)
+      end
     end
 
     class Cmd::InputTest < ActiveSupport::TestCase
@@ -313,6 +331,16 @@ module Roast
 
         assert cog.succeeded?
         assert_equal "configured via input", cog.output.text
+      end
+
+      test "run! runs command with configured environment variables" do
+        config = Cmd::Config.new
+        config.env("ROAST_TEST_VAR" => "from config")
+        cog = Cmd.new(:env_test, ->(_input, _scope, _index) { ["sh", "-c", "echo $ROAST_TEST_VAR"] })
+
+        run_cog(cog, config:)
+
+        assert_equal "from config", cog.output.text
       end
     end
   end
