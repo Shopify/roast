@@ -100,6 +100,21 @@ module Roast
           lines.join("\n")
         end
 
+        # Get the statistics as a hash, with aggregate and per-model usage as nested hashes
+        #
+        # #### See Also
+        # - `Agent::Usage#to_h`
+        #
+        #: () -> Hash[Symbol, untyped]
+        def to_h
+          {
+            duration_ms:,
+            num_turns:,
+            usage: usage.to_h,
+            model_usage: model_usage.transform_values(&:to_h),
+          }
+        end
+
         private
 
         #: (Numeric?, Numeric?) -> Numeric?

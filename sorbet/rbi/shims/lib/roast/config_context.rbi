@@ -184,6 +184,10 @@ module Roast
     # #### Configure debugging
     # - `dump_raw_agent_messages_to(filename)` - Dump raw agent messages to a file for debugging
     #
+    # #### Configure run records
+    # - `record_agent_runs_to(filename)` - Append a JSON record of each agent run (prompts, response, session, stats, status) to a file
+    # - `no_record_agent_runs!` - Don't record agent runs (default)
+    #
     # #### Configure asynchronous execution
     # - `async!` - Run the cog asynchronously in the background
     # - `no_async!` (alias `sync!`) - Run the cog synchronously (default)
