@@ -149,7 +149,16 @@ module Roast
       end
 
       assert_operator time, :<, 1, "command ran for much longer than configured timeout"
-      assert_empty %x(pgrep -f "sleep 4.321"), "child process should be killed after timeout"
+
+      # KILL is delivered asynchronously, so give the child a moment to actually exit
+      survivors = nil
+      20.times do
+        survivors = IO.popen(["pgrep", "-f", "sleep 4.321"], &:read)
+        break if survivors.empty?
+
+        sleep(0.05)
+      end
+      assert_empty survivors, "child process should be killed after timeout"
     end
 
     test "captured output preserved with non-zero exit status" do
