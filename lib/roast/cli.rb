@@ -60,9 +60,8 @@ module Roast
         end
       end
 
-      # Async's fiber scheduler uses IO::Buffer, which Ruby flags as experimental. Ruby prints that warning
-      # once per process, on first use, so touching IO::Buffer here with experimental warnings off consumes it
-      # without hiding any other experimental warning from the workflow.
+      # Ruby warns once per process on first IO::Buffer use (Async's scheduler triggers it); priming it here
+      # with experimental warnings off consumes that warning without hiding the workflow's own.
       #: () -> void
       def silence_io_buffer_warning
         experimental = Warning[:experimental]
