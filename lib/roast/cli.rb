@@ -54,8 +54,23 @@ module Roast
         workflow_args, workflow_kwargs = parse_custom_workflow_args(extra_args)
         workflow_params = Roast::WorkflowParams.new(targets, workflow_args, workflow_kwargs)
         roast_working_directory = Pathname.new(File.expand_path(ENV["ROAST_WORKING_DIRECTORY"] || Dir.pwd))
+        silence_io_buffer_warning
         Dir.chdir(roast_working_directory) do
           Roast::Workflow.from_file(real_workflow_path, workflow_params)
+        end
+      end
+
+      # Async's fiber scheduler uses IO::Buffer, which Ruby flags as experimental. Ruby prints that warning
+      # once per process, on first use, so touching IO::Buffer here with experimental warnings off consumes it
+      # without hiding any other experimental warning from the workflow.
+      #: () -> void
+      def silence_io_buffer_warning
+        experimental = Warning[:experimental]
+        begin
+          Warning[:experimental] = false
+          IO::Buffer.new(0)
+        ensure
+          Warning[:experimental] = experimental
         end
       end
 

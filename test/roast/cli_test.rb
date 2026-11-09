@@ -226,5 +226,29 @@ module Roast
       CLI.expects(:run_execute).with(["examples/outputs.rb", "target1", "target2"], ["--verbose"]).once
       CLI.start(["examples/outputs.rb", "target1", "target2", "--", "--verbose"])
     end
+
+    # ── silence_io_buffer_warning ──
+
+    # Ruby warns about IO::Buffer once per process, so each case needs a fresh interpreter.
+    def run_in_fresh_ruby(script)
+      lib = File.expand_path("../../lib", __dir__)
+      _stdout, stderr, status = Open3.capture3(RbConfig.ruby, "-I#{lib}", "-e", "require 'roast'; #{script}")
+      assert status.success?, stderr
+      stderr
+    end
+
+    test "silence_io_buffer_warning consumes the one-time IO::Buffer warning" do
+      stderr = run_in_fresh_ruby("Roast::CLI.send(:silence_io_buffer_warning); IO::Buffer.new(1)")
+      refute_match(/IO::Buffer is experimental/, stderr)
+    end
+
+    test "silence_io_buffer_warning restores Warning[:experimental] and leaves other experimental warnings on" do
+      stderr = run_in_fresh_ruby(<<~RUBY)
+        Roast::CLI.send(:silence_io_buffer_warning)
+        abort("not restored") unless Warning[:experimental]
+        Warning.warn("some other experimental warning\\n", category: :experimental)
+      RUBY
+      assert_match(/some other experimental warning/, stderr)
+    end
   end
 end
