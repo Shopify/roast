@@ -139,8 +139,10 @@ module Roast
           input.prompts = ["Main task", "Finalizer"]
 
           fork_flags = []
+          no_session_flags = []
           CommandRunner.stubs(:execute).with do |args, **kwargs|
             fork_flags << args.include?("--fork")
+            no_session_flags << args.include?("--no-session")
             session_json = { type: "session", id: "session_1" }.to_json
             kwargs[:stdout_handler]&.call(session_json)
             true
@@ -148,9 +150,12 @@ module Roast
 
           @provider.invoke(input)
 
-          # First invocation has no session, so --no-session (no --fork).
+          # First invocation has no session to fork from. It must not pass
+          # --no-session, otherwise Pi keeps the session in memory only and the
+          # second invocation cannot --fork from it.
           # Second invocation forks from the first session.
           assert_equal [false, true], fork_flags
+          assert_equal [false, false], no_session_flags
         end
 
         test "invoke uses --fork for first invocation when input has session" do

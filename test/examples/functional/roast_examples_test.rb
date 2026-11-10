@@ -665,7 +665,6 @@ module Examples
             "anthropic/claude-haiku-4-5-20251001",
             "--append-system-prompt",
             "Always respond in haiku form",
-            "--no-session",
           ],
           expected_stdin_content: "What is the world's largest lake?",
         })

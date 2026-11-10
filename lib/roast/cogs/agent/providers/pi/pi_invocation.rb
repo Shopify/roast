@@ -339,11 +339,7 @@ module Roast
               command.push("--model", @model) if @model
               command.push("--system-prompt", @replace_system_prompt) if @replace_system_prompt
               command.push("--append-system-prompt", @append_system_prompt) if @append_system_prompt
-              if @session.present?
-                command.push("--fork", @session)
-              else
-                command.push("--no-session")
-              end
+              command.push("--fork", @session) if @session.present?
               command
             end
           end
