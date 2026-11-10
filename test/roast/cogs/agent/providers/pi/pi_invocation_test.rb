@@ -168,7 +168,7 @@ module Roast
           assert_includes command, "--mode"
           assert_includes command, "json"
           assert_includes command, "-p"
-          assert_includes command, "--no-session"
+          refute_includes command, "--no-session"
         end
 
         test "command_line uses custom command when configured as string" do
@@ -229,11 +229,11 @@ module Roast
           refute_includes command, "--no-session"
         end
 
-        test "command_line includes --no-session when no session is set" do
+        test "command_line does not pass --no-session or --fork when no session is set" do
           invocation = Pi::PiInvocation.new(@config, "Test prompt", nil)
 
           command = invocation.send(:command_line)
-          assert_includes command, "--no-session"
+          refute_includes command, "--no-session"
           refute_includes command, "--fork"
         end
 
