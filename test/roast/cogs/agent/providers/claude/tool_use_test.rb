@@ -122,6 +122,43 @@ module Roast
           assert_equal "READ", output
         end
 
+        # format_webfetch
+
+        test "format_webfetch appends the prompt in parentheses" do
+          tool_use = Claude::ToolUse.new(name: :webfetch, input: { url: "https://example.com", prompt: "What is the main heading?" })
+
+          output = tool_use.format
+
+          assert_equal "WEBFETCH https://example.com (What is the main heading?)", output
+        end
+
+        test "format_webfetch renders the url only when no prompt given" do
+          tool_use = Claude::ToolUse.new(name: :webfetch, input: { url: "https://example.com" })
+
+          output = tool_use.format
+
+          assert_equal "WEBFETCH https://example.com", output
+        end
+
+        test "format_webfetch truncates the prompt but not the url" do
+          long_url = "https://example.com/#{"a" * (Claude::ToolUse::TRUNCATE_LIMIT + 10)}"
+          long_prompt = "b" * (Claude::ToolUse::TRUNCATE_LIMIT + 10)
+          truncated = "#{"b" * (Claude::ToolUse::TRUNCATE_LIMIT - 3)}..."
+          tool_use = Claude::ToolUse.new(name: :webfetch, input: { url: long_url, prompt: long_prompt })
+
+          output = tool_use.format
+
+          assert_equal "WEBFETCH #{long_url} (#{truncated})", output
+        end
+
+        test "format_webfetch has no trailing space when the url is absent" do
+          tool_use = Claude::ToolUse.new(name: :webfetch, input: {})
+
+          output = tool_use.format
+
+          assert_equal "WEBFETCH", output
+        end
+
         # format_glob
 
         test "format_glob renders the pattern only when no path given" do

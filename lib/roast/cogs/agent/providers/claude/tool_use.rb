@@ -108,6 +108,27 @@ module Roast
               details ? "#{label} (#{details})" : label
             end
 
+            # Formats a WebFetch tool-use line.
+            #
+            # Input fields:
+            #   :url    (String) – the URL to fetch                       [required]
+            #   :prompt (String) – what to extract/answer from the page   [required]
+            #
+            # Output: "WEBFETCH <url>", with " (<prompt>)" appended when :prompt is
+            # present. :prompt is truncated to TRUNCATE_LIMIT chars; :url is not, as
+            # it is the identity of the fetch (like a file path in a Read).
+            #
+            # Examples:
+            #   WEBFETCH https://example.com (What is the main heading?)
+            #   WEBFETCH https://example.com
+            #
+            #: () -> String
+            def format_webfetch
+              url, prompt = input.values_at(:url, :prompt)
+              label = url.to_s.empty? ? "WEBFETCH" : "WEBFETCH #{url}"
+              prompt ? "#{label} (#{truncate(prompt)})" : label
+            end
+
             # Formats a Glob tool-use line.
             #
             # Input fields:
