@@ -25,7 +25,7 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    addressable (2.9.0)
+    addressable (2.9.1)
       public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
     async (2.34.0)
@@ -253,7 +253,7 @@ DEPENDENCIES
 
 CHECKSUMS
   activesupport (8.0.4.1) sha256=822187e99ebca3e90bf03e6ccef5b57447592657f6b1676ccaaa25794ebfc7e6
-  addressable (2.9.0) sha256=7fdf6ac3660f7f4e867a0838be3f6cf722ace541dd97767fa42bc6cfa980c7af
+  addressable (2.9.1) sha256=f1212365945455c84e8d031eea40fc6bedf0c663a78d95b3ab93591040bc5c35
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   async (2.34.0) sha256=65ab207d4575c05bb6c5bac430f9f8d372d8288686e68e89f44eba094c77e1c1
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
