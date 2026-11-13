@@ -291,6 +291,69 @@ module Roast
       assert manager.config_for(TestCog).abort_on_failure?
     end
 
+    test "global with regexp specifier applies to matching cog names" do
+      config_proc = proc do
+        global(/^api_/) { async! }
+      end
+      manager = build_manager([config_proc])
+      manager.prepare!
+
+      matching_config = manager.config_for(TestCog, :api_call)
+      non_matching_config = manager.config_for(TestCog, :db_query)
+
+      assert matching_config.async?
+      refute non_matching_config.async?
+    end
+
+    test "global regexp does not apply when cog name is nil" do
+      config_proc = proc do
+        global(/.*/) { async! }
+      end
+      manager = build_manager([config_proc])
+      manager.prepare!
+
+      config = manager.config_for(TestCog)
+
+      refute config.async?
+    end
+
+    test "global cascade order: bare < regexp" do
+      config_proc = proc do
+        global { self[:priority] = "bare" }
+        global(/my/) { self[:priority] = "regexp" }
+      end
+      manager = build_manager([config_proc])
+      manager.prepare!
+
+      # Regexp global should win over bare
+      config = manager.config_for(TestCog, :my_step)
+      assert_equal "regexp", config.values[:priority]
+    end
+
+    test "multiple global regexps apply in insertion order" do
+      config_proc = proc do
+        global(/^a/) { self[:priority] = "first" }
+        global(/api/) { self[:priority] = "second" }
+      end
+      manager = build_manager([config_proc])
+      manager.prepare!
+
+      # Both match :api_call — second one wins (applied last)
+      config = manager.config_for(TestCog, :api_call)
+      assert_equal "second", config.values[:priority]
+    end
+
+    test "workflow params are accessible inside a global regexp config block" do
+      captured = nil
+      config_proc = proc do
+        global(/something_/) { captured = target! }
+      end
+      manager = build_manager([config_proc], params: WorkflowParams.new(["Gemfile"], [], {}))
+      manager.prepare!
+
+      assert_equal "Gemfile", captured
+    end
+
     test "workflow params are not accessible in the top-level config block body" do
       config_proc = proc do
         args
