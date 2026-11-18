@@ -33,7 +33,8 @@ module Roast
 
               #: (ClaudeInvocation::Context) -> String?
               def format(context)
-                tool_use = ToolUse.new(name:, input:)
+                task_subject = context.task_subject(input[:taskId]) if name == :taskupdate
+                tool_use = ToolUse.new(name:, input:, task_subject:)
                 tool_use.format
               end
             end

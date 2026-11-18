@@ -13,10 +13,11 @@ module Roast
             #: Hash[Symbol, untyped]
             attr_reader :input
 
-            #: (name: Symbol, input: Hash[Symbol, untyped]) -> void
-            def initialize(name:, input:)
+            #: (name: Symbol, input: Hash[Symbol, untyped], ?task_subject: String?) -> void
+            def initialize(name:, input:, task_subject: nil)
               @name = name
               @input = input
+              @task_subject = task_subject
             end
 
             #: () -> String
@@ -320,17 +321,19 @@ module Roast
             #   :taskId (Integer) – id of the task to update   [required]
             #   :status (String)  – the task's new status      [required]
             #
-            # Output: "TASKUPDATE #<taskId> → <status>" — the id is prefixed with
-            # "#" and joined to the status with " → ". Both fields are always
-            # shown and neither is truncated.
+            # Output: 'TASKUPDATE "<subject>" → <status>' when the task's subject
+            # was observed in this invocation. Falls back to
+            # "TASKUPDATE #<taskId> → <status>" when it was not. Subjects are
+            # truncated to TRUNCATE_LIMIT chars and quoted.
             #
             # Examples:
-            #   TASKUPDATE #1 → completed
+            #   TASKUPDATE "Run formatter stress test" → completed
             #   TASKUPDATE #2 → in_progress
             #
             #: () -> String
             def format_taskupdate
-              "TASKUPDATE ##{input[:taskId]} → #{input[:status]}"
+              task = @task_subject.present? ? truncate(@task_subject).inspect : "##{input[:taskId]}"
+              "TASKUPDATE #{task} → #{input[:status]}"
             end
 
             # Formats a TaskCreate tool-use line.
