@@ -218,6 +218,14 @@ has no concurrent-writer coordination. For a remote store, replace the file I/O
 with its Ruby client calls and interpret that client's save and missing-result
 receipts before reporting success.
 
+For an optional remote-store example, the
+[ClickHouse Loom recipe](https://github.com/ClickHouse/loom/tree/58eefa54bff73dbb3466afd406a3ecfee6c0ca88/examples/roast-memory)
+uses the `clickhouse-loom` Ruby SDK in `ruby` cogs to save an explicitly selected
+fact and retrieve it in a later process. When following its setup steps, check
+out the linked revision after cloning. The guide covers credentials, configured
+identity, save/missing/error receipts, and a synthetic HTTP qualification without
+model calls. Loom is optional; this example adds no Roast dependency.
+
 ## Data Flow Example
 
 Here's how data flows through a typical workflow:
