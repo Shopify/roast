@@ -196,6 +196,28 @@ end
 
 The ruby cog's return value is accessible via `ruby!(:name).value`.
 
+### Keeping selected data across runs
+
+A cog output belongs to one workflow run. To reuse a selected result in another
+run, a `ruby` cog can write to an external store and return a receipt for later
+cogs. A later invocation can read the same key through the store's Ruby client.
+Keep the store's credentials and scope in application configuration.
+
+[external_state.rb](../../examples/external_state.rb) demonstrates the pattern
+with a local JSON file and a synthetic checklist fact, without a model call:
+
+```bash
+export ROAST_STATE_FILE="$PWD/rehearsal.json"
+ROAST_STATE_ACTION=save bin/roast execute examples/external_state.rb
+bin/roast execute examples/external_state.rb
+```
+
+Recall is the default. A missing file reports `abstain`; malformed JSON or a
+failed write fails the workflow. Run the example sequentially: its file store
+has no concurrent-writer coordination. For a remote store, replace the file I/O
+with its Ruby client calls and interpret that client's save and missing-result
+receipts before reporting success.
+
 ## Data Flow Example
 
 Here's how data flows through a typical workflow:
