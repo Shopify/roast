@@ -3,6 +3,8 @@
 
 require "json"
 
+#: self as Roast::Workflow
+
 execute do
   ruby(:state) do
     path = ENV.fetch("ROAST_STATE_FILE")
