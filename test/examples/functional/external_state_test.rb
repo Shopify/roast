@@ -36,10 +36,10 @@ module Examples::Functional
             assert_equal({ "status" => "abstain" }, run_example)
             File.write(path, "invalid JSON")
             assert_raises(JSON::ParserError) do
-            capture_io do
-              Roast::Workflow.from_file("examples/external_state.rb", Roast::WorkflowParams.new([], [], {}))
+              capture_io do
+                Roast::Workflow.from_file("examples/external_state.rb", Roast::WorkflowParams.new([], [], {}))
+              end
             end
-          end
           end
         end
       end
