@@ -25,6 +25,14 @@ module Roast
           mock
         end
 
+        def stub_pi_output(lines)
+          status = success_status
+          CommandRunner.stubs(:execute).with do |*, **options|
+            lines.each { |line| options[:stdout_handler].call(JSON.generate(line)) }
+            true
+          end.returns(["", "", status])
+        end
+
         test "Context#tool_call returns nil when tool_call_id is nil" do
           context = Pi::PiInvocation::Context.new
           assert_nil context.tool_call(nil)
@@ -412,6 +420,40 @@ module Roast
           Event.expects(:<<).twice
           @invocation.send(:handle_message, first)
           @invocation.send(:handle_message, second)
+        end
+
+        test "run! marks the invocation as failed when pi exits 0 after an API error" do
+          lines = [
+            { type: "message_end", message: { role: "assistant", content: [], stopReason: "error", errorMessage: "401 invalid x-api-key" } },
+          ]
+          stub_pi_output(lines)
+
+          @invocation.run!
+
+          assert @invocation.failed?
+          error = assert_raises(Pi::PiInvocation::PiFailedError) { @invocation.result }
+          assert_equal "401 invalid x-api-key", error.message
+        end
+
+        test "run! marks the invocation as failed when the last assistant message was aborted" do
+          stub_pi_output([{ type: "message_end", message: { role: "assistant", content: [], stopReason: "aborted" } }])
+
+          @invocation.run!
+
+          error = assert_raises(Pi::PiInvocation::PiFailedError) { @invocation.result }
+          assert_equal "Request aborted", error.message
+        end
+
+        test "run! succeeds when pi recovers from an API error by retrying" do
+          stub_pi_output([
+            { type: "message_end", message: { role: "assistant", content: [], stopReason: "error", errorMessage: "529 overloaded" } },
+            { type: "message_end", message: { role: "assistant", content: [{ type: "text", text: "Done" }], stopReason: "stop" } },
+          ])
+
+          @invocation.run!
+
+          assert_equal "Done", @invocation.result.response
+          assert @invocation.result.success
         end
       end
     end
