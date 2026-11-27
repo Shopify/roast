@@ -70,6 +70,7 @@ module Roast
               @show_progress = config.show_progress? #: bool
               @show_response = config.show_response? #: bool
               @num_turns = 0 #: Integer
+              @error_message = nil #: String?
               @total_cost = 0.0 #: Float
               @model_usage_accumulator = {} #: Hash[String, Hash[Symbol, Numeric]]
               @current_text_block = +"" #: String
@@ -92,7 +93,8 @@ module Roast
               )
               @end_time_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) * 1000).to_i #: Integer?
 
-              if status.success?
+              # In JSON mode, pi exits 0 even when the request to the model fails
+              if status.success? && !@error_message
                 @completed = true
                 @result.success = true
                 finalize_stats!
@@ -101,7 +103,7 @@ module Roast
                 @failed = true
                 @result.success = false
                 @result.response += "\n" unless @result.response.blank? || @result.response.ends_with?("\n")
-                @result.response += stderr
+                @result.response += @error_message || stderr
               end
             end
 
@@ -233,6 +235,12 @@ module Roast
 
               case role
               when :assistant
+                # Only the last assistant message counts, as pi may retry after an error
+                stop_reason = message[:stopReason]
+                @error_message = if stop_reason == "error" || stop_reason == "aborted"
+                  message[:errorMessage] || "Request #{stop_reason}"
+                end
+
                 # Extract usage from the final assistant message_end
                 usage = message[:usage]
                 model = message[:model]
